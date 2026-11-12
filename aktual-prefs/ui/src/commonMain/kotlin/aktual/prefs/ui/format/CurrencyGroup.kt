@@ -5,7 +5,7 @@ import aktual.budget.model.Currency
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormatConfig
-import aktual.core.icons.flags.flagPainter
+import aktual.core.icons.flags.Flag
 import aktual.core.icons.material.CurrencyPound
 import aktual.core.icons.material.LineEndArrowNotch
 import aktual.core.icons.material.LineStartArrowNotch
@@ -17,16 +17,8 @@ import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.vm.format.FormatSettingsState
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun CurrencyGroup(state: FormatSettingsState) =
@@ -40,7 +32,10 @@ internal fun CurrencyGroup(state: FormatSettingsState) =
       subtitle = null,
       searchPlaceholder = Strings.settingsCurrencySearch,
       searchTerms = { c -> listOf(c.code, c.symbol) },
-      optionPrefix = { c -> CurrencyFlag(c) },
+      optionPrefix = { c ->
+        // ISO 4217 codes start with the issuing country's ISO 3166 code, or EU for the euro
+        Flag(if (c == None || c == Unknown) null else c.code.take(2))
+      },
     )
     ListPreferenceItem(
       preference = state.symbolPosition,
@@ -61,26 +56,6 @@ internal fun CurrencyGroup(state: FormatSettingsState) =
       subtitle = null,
     )
   }
-
-@Composable
-private fun CurrencyFlag(currency: Currency) =
-  Box(modifier = Modifier.size(FLAG_WIDTH, FLAG_HEIGHT), contentAlignment = Center) {
-    // ISO 4217 codes start with the issuing country's ISO 3166 code, or EU for the euro
-    val painter =
-      if (currency == None || currency == Unknown) null else flagPainter(currency.code.take(2))
-    if (painter != null) {
-      Image(
-        painter = painter,
-        contentDescription = null,
-        contentScale = Crop,
-        modifier = Modifier.fillMaxSize().clip(FLAG_SHAPE),
-      )
-    }
-  }
-
-private val FLAG_SHAPE = RoundedCornerShape(2.dp)
-private val FLAG_WIDTH = 24.dp
-private val FLAG_HEIGHT = 18.dp
 
 @Composable
 private fun Currency.string(): String =

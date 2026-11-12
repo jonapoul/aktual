@@ -72,6 +72,7 @@ fun <T> AktualExposedDropDownMenu(
   isEnabled: Boolean = true,
   textStyle: TextStyle = LocalTextStyle.current,
   contentPadding: PaddingValues = DROPDOWN_CONTENT_PADDING,
+  leadingContent: (@Composable (T) -> Unit)? = null,
 ) {
   var isExpanded by remember { mutableStateOf(false) }
   var selectedOption by remember(value) { mutableStateOf(value) }
@@ -90,13 +91,15 @@ fun <T> AktualExposedDropDownMenu(
       trailingIconSize,
       contentPadding,
       layoutDirection,
+      leadingContent,
     ) {
       with(density) {
         val textWidth = textMeasurer.measure(selectedString, textStyle).size.width.toDp()
         val hPadding =
           contentPadding.calculateStartPadding(layoutDirection) +
             contentPadding.calculateEndPadding(layoutDirection)
-        textWidth + trailingIconSize + hPadding
+        val leadingWidth = if (leadingContent == null) 0.dp else trailingIconSize
+        textWidth + leadingWidth + trailingIconSize + hPadding
       }
     }
 
@@ -138,6 +141,7 @@ fun <T> AktualExposedDropDownMenu(
           singleLine = true,
           visualTransformation = None,
           interactionSource = interactionSource,
+          leadingIcon = leadingContent?.let { { it(selectedOption) } },
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
           colors = colors.exposedDropDownMenu(),
           contentPadding = contentPadding,
@@ -159,6 +163,7 @@ fun <T> AktualExposedDropDownMenu(
       options.fastForEach { o ->
         AktualDropdownMenuItem(
           text = { Text(string(o)) },
+          leadingIcon = leadingContent?.let { { it(o) } },
           contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
           onClick = {
             selectedOption = o

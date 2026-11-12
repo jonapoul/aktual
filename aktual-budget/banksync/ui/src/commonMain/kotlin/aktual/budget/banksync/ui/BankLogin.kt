@@ -5,6 +5,7 @@ import aktual.budget.banksync.vm.link.BankLoginStatus
 import aktual.budget.banksync.vm.link.LoginAccountType
 import aktual.budget.banksync.vm.link.LoginBankItem
 import aktual.budget.model.AccountSyncSource
+import aktual.core.icons.flags.Flag
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
@@ -144,6 +145,7 @@ private fun LoginHeader(
         onValueChange = { onAction(SelectCountry(it)) },
         options = login.countries,
         string = { countryName(it) },
+        leadingContent = { Flag(it) },
         isEnabled = isEnabled,
       )
     }

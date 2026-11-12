@@ -48,7 +48,7 @@ Create the file in the family's package, then append to the alphabetically-sorte
 
 ## Flags
 
-Country flags are vector drawables in `src/commonMain/composeResources/drawable/flag_<region>.xml`. Look one up with `flagPainter(regionCode)` in `aktual.core.icons.flags`, and add a branch to `flagResource` when adding a flag. Only the flags the app uses are bundled.
+Country flags are vector drawables in `src/commonMain/composeResources/drawable/flag_<region>.xml`. Show one with `Flag(regionCode)` (or get the painter with `flagPainter(regionCode)`) in `aktual.core.icons.flags`, and add a branch to `flagResource` when adding a flag. Only the flags the app uses are bundled.
 
 They come from the large (32x24) set of [Flagpack](https://github.com/Yummygum/flagpack-core) (`svg/l/`), with some exceptions:
 - `sa` and `ar` use the small set (`svg/s/`), since the large ones are over 100KB each.
@@ -60,6 +60,6 @@ Convert with `npx svg2vectordrawable`, but prepare the SVG first, since the conv
 - It turns named colours (`white`, `black`, `red`) black and ignores `style="fill:..."`. Use hex attributes.
 - It ignores `clip-path`, and only turns a `<mask>` into a clip when the mask is top-level (not in `<defs>`), defined before its use, and made of `<path>`s rather than `<rect>`s. Rewrite each `<clipPath>` as a `<mask>` that meets those rules.
 - It ignores `transform` on rects. Bake translations into `x`/`y`.
-- Flagpack's "outside" stroke masks only show the outer half of a stroke. Drop the mask and draw the stroke before the fill it outlines (e.g. South Africa).
+- Flagpack's "outside" stroke masks only show the outer half of a stroke. Drop the mask and draw the stroke before the fill it outlines (e.g. South Africa, Liechtenstein).
 
 Render the result and compare it with the source before committing.
