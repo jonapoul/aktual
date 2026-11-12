@@ -6,18 +6,30 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.model.PayeeLocationSort
+import aktual.budget.payees.domain.Address
+import aktual.budget.payees.domain.AddressBook
+import aktual.budget.payees.domain.AddressResult.Found
 import aktual.budget.payees.vm.locations.ListPayeeLocationsState.Success
+import aktual.prefs.PayeeLocationPreferences
+import aktual.prefs.PayeeLocationPreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import androidx.lifecycle.viewModelScope
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
 import org.junit.Test
@@ -89,16 +101,123 @@ class ListPayeeLocationsViewModelTest {
         .containsExactly(LocalChange(PAYEE_LOCATIONS, "loc", "tombstone", MessageValue.Number(0)))
     }
 
+  @Test
+  fun `Locations show their address once looked up`() = runDatabaseTest { scope ->
+    // given
+    insertPayee("tesco", "Tesco")
+    insertLocation("tesco", "tesco")
+    val lookup = FakeAddressLookup()
+    val viewModel = createViewModel(scope, addresses = lookup)
+
+    viewModel.state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThat(awaitSuccess().single().address).isNull()
+
+      // when
+      viewModel.requestAddress(HERE)
+      lookup.book.update { AddressBook(persistentMapOf(HERE to Found(Shop)), isEnabled = true) }
+
+      // then
+      assertThat(awaitSuccess().single().address).isEqualTo(Found(Shop))
+    }
+    assertThat(lookup.requests).containsExactly(HERE)
+  }
+
+  @Test
+  fun `Toggling address lookups`() = runDatabaseTest { scope ->
+    // given
+    val lookup = FakeAddressLookup()
+    val viewModel = createViewModel(scope, addresses = lookup)
+
+    viewModel.lookUpAddresses.test {
+      assertThatNextEmissionIsEqualTo(false)
+
+      // when
+      viewModel.setLookUpAddresses(true)
+
+      // then
+      assertThatNextEmissionIsEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `Sorts by date saved, newest first`() = runDatabaseTest { scope ->
+    // given
+    insertPayee("tesco", "Tesco")
+    insertPayee("argos", "Argos")
+    insertLocation("tesco-old", "tesco", Instant.parse("2026-11-01T12:00:00Z"))
+    insertLocation("tesco-new", "tesco")
+    insertLocation("argos", "argos")
+    val preferences = PayeeLocationPreferencesImpl(scope.buildPreferences())
+    preferences.sortField.set(DateSaved)
+    preferences.sortDirection.set(Descending)
+
+    // then
+    createViewModel(scope, preferences = preferences).state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThat(awaitSuccess().map { it.id.value })
+        .containsExactly("argos", "tesco-new", "tesco-old")
+    }
+  }
+
+  @Test
+  fun `Sorts by payee name, descending`() = runDatabaseTest { scope ->
+    // given
+    insertPayee("tesco", "Tesco")
+    insertPayee("argos", "Argos")
+    insertLocation("tesco-old", "tesco", Instant.parse("2026-11-01T12:00:00Z"))
+    insertLocation("tesco-new", "tesco")
+    insertLocation("argos", "argos")
+    val preferences = PayeeLocationPreferencesImpl(scope.buildPreferences())
+    preferences.sortDirection.set(Descending)
+
+    // then
+    createViewModel(scope, preferences = preferences).state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThat(awaitSuccess().map { it.id.value })
+        .containsExactly("tesco-new", "tesco-old", "argos")
+    }
+  }
+
+  @Test
+  fun `Setting the sort saves it`() = runDatabaseTest { scope ->
+    // given
+    val preferences = PayeeLocationPreferencesImpl(scope.buildPreferences())
+    val viewModel = createViewModel(scope, preferences = preferences)
+
+    viewModel.sort.test {
+      assertThatNextEmissionIsEqualTo(Default)
+
+      // when
+      viewModel.setSort(PayeeLocationSort(DateSaved, Ascending))
+
+      // then
+      assertThatNextEmissionIsEqualTo(PayeeLocationSort(DateSaved, Ascending))
+      assertThat(preferences.sortField.get()).isEqualTo(DateSaved)
+    }
+  }
+
+  private suspend fun ReceiveTurbine<ListPayeeLocationsState>.awaitSuccess() =
+    (awaitItem() as Success).locations
+
   private fun item(id: String, payee: String, name: String, date: LocalDate) =
     PayeeLocationItem(PayeeLocationId(id), PayeeId(payee), name, HERE, date)
 
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     sync: TestSyncController = TestSyncController(),
+    addresses: FakeAddressLookup = FakeAddressLookup(),
+    preferences: PayeeLocationPreferences = PayeeLocationPreferencesImpl(scope.buildPreferences()),
   ) =
     ListPayeeLocationsViewModel(
-      loader = loader(scope, sync),
+      loader = loader(scope, sync, addresses),
       deleter = deleter(scope, sync),
+      addressLookup = addresses,
+      preferences = preferences,
       viewModelContext = scope.viewModelContext,
     )
+
+  private companion object {
+    val Shop = Address("Tesco Express", "22 Strand")
+  }
 }

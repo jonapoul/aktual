@@ -160,6 +160,27 @@ class SecuritySettingsViewModelTest {
   }
 
   @Test
+  fun `Address lookups off by default and can be turned on`() = runTest {
+    val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val viewModel =
+      SecuritySettingsViewModel(
+        preferences,
+        authenticator,
+        location,
+        viewModelContext = unconfinedViewModelContext,
+      )
+
+    viewModel.state.test {
+      val initial = awaitItem().lookUpPayeeAddresses
+      assertThat(initial.value).isFalse()
+      initial.onChange(true)
+      assertThat(awaitItem().lookUpPayeeAddresses.value).isTrue()
+      assertThat(preferences.lookUpPayeeAddresses.get()).isTrue()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Hide preview forced on by the app lock`() = runTest {
     val preferences = SecurityPreferencesImpl(buildPreferences(unconfinedDispatcher))
     preferences.hidePreviewInAppSwitcher.set(false)

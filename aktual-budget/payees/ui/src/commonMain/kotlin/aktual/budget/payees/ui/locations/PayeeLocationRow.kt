@@ -1,11 +1,14 @@
 package aktual.budget.payees.ui.locations
 
+import aktual.budget.payees.ui.AddressText
 import aktual.budget.payees.ui.text
 import aktual.budget.payees.vm.locations.PayeeLocationItem
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.CheveronRight
 import aktual.core.icons.Location
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
+import aktual.core.model.Coordinates
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -51,6 +54,7 @@ internal fun SwipeablePayeeLocationRow(
   onOpenChange: (Boolean) -> Unit,
   onClick: () -> Unit,
   onDelete: () -> Unit,
+  onRequestAddress: (Coordinates) -> Unit,
   modifier: Modifier = Modifier,
   query: String = "",
 ) {
@@ -74,7 +78,12 @@ internal fun SwipeablePayeeLocationRow(
     modifier = modifier,
     shape = RowShape,
   ) {
-    PayeeLocationRow(location = location, onClick = onClick, query = query)
+    PayeeLocationRow(
+      location = location,
+      onClick = onClick,
+      onRequestAddress = onRequestAddress,
+      query = query,
+    )
   }
 }
 
@@ -83,6 +92,7 @@ internal fun SwipeablePayeeLocationRow(
 private fun PayeeLocationRow(
   location: PayeeLocationItem,
   onClick: () -> Unit,
+  onRequestAddress: (Coordinates) -> Unit,
   modifier: Modifier = Modifier,
   query: String = "",
 ) {
@@ -116,6 +126,13 @@ private fun PayeeLocationRow(
         overflow = Ellipsis,
       )
 
+      AddressText(
+        address = location.address,
+        coordinates = location.coordinates,
+        onRequest = onRequestAddress,
+        style = typography.bodyMedium,
+      )
+
       Row {
         val date = location.date
         if (date != null) {
@@ -138,6 +155,13 @@ private fun PayeeLocationRow(
         )
       }
     }
+
+    Icon(
+      modifier = Modifier.size(PayeeLocationsDS.chevronSize),
+      imageVector = AktualIcons.CheveronRight,
+      contentDescription = null,
+      tint = colors.pageTextSubdued,
+    )
   }
 }
 
@@ -168,6 +192,8 @@ internal fun ShimmerPayeeLocationRow(modifier: Modifier = Modifier) {
       ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.3f))
       ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.4f))
     }
+
+    Box(Modifier.size(PayeeLocationsDS.chevronSize))
   }
 }
 
@@ -178,7 +204,10 @@ private class PayeeLocationRowProvider :
 @Composable
 private fun PreviewPayeeLocationRow(
   @PreviewParameter(PayeeLocationRowProvider::class) params: ColorParams<PayeeLocationItem>,
-) = PreviewWithColorParams(params) { PayeeLocationRow(location = this, onClick = {}) }
+) =
+  PreviewWithColorParams(params) {
+    PayeeLocationRow(location = this, onClick = {}, onRequestAddress = {})
+  }
 
 @Preview
 @Composable
@@ -198,6 +227,7 @@ private fun PreviewSwipeablePayeeLocationRow(
       onOpenChange = {},
       onClick = {},
       onDelete = {},
+      onRequestAddress = {},
     )
   }
 

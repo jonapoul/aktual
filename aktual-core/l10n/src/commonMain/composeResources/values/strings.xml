@@ -1228,6 +1228,10 @@
   <string name="payees_locations_header_desktop">When you add a transaction near a saved location, its payee is suggested. Locations can only be saved from mobile, by tapping the location button next to a transaction's payee. They sync here once saved.</string>
   <string name="payees_locations_failure">Couldn't load saved locations</string>
   <string name="payees_locations_search">Search locations</string>
+  <string name="payees_locations_menu">Menu</string>
+  <string name="payees_locations_sort_payee">Payee</string>
+  <string name="payees_locations_sort_date_saved">Date saved</string>
+  <string name="payees_locations_attribution">Addresses © OpenStreetMap contributors</string>
   <string name="payees_locations_search_placeholder">Search by payee</string>
   <string name="payees_locations_search_no_results">No locations match “%1$s”</string>
   <string name="payees_edit_save">Save</string>
@@ -2223,6 +2227,7 @@
   <string name="transaction_location_find_nearby">Find nearby payees</string>
   <string name="transaction_location_save">Save location for this payee</string>
   <string name="transaction_location_saved">Location saved for %1$s</string>
+  <string name="transaction_location_saved_view">View</string>
   <string name="transaction_location_already_saved">%1$s already has a location saved near here</string>
   <string name="transaction_location_none_nearby">No payees saved near here</string>
   <string name="transaction_location_unavailable">Couldn’t get your location</string>
@@ -2448,6 +2453,8 @@
   <string name="settings_security_auto_save_locations">Save payee locations automatically</string>
   <string name="settings_security_auto_save_locations_desc">When you add a transaction, remember the payee's location so it can be suggested next time you're nearby.</string>
   <string name="settings_security_locations">Payee locations</string>
+  <string name="settings_security_look_up_addresses">Show addresses</string>
+  <string name="settings_security_look_up_addresses_desc">Look up the address of each saved location with OpenStreetMap. This sends the location to OpenStreetMap's Nominatim service.</string>
   <string name="settings_security_location_allowed">Location access granted</string>
   <string name="settings_security_location_denied">Location access not granted</string>
   <string name="settings_security_location_denied_desc">Tap to allow it. Nothing is saved without it.</string>

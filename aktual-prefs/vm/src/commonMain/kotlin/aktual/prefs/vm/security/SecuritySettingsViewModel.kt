@@ -42,6 +42,7 @@ internal constructor(
       val appLockTimeout by collectAsState(preferences.appLockTimeout)
       val hidePreview by collectAsState(preferences.hidePreviewInAppSwitcher)
       val autoSaveLocations by collectAsState(preferences.autoSavePayeeLocations)
+      val lookUpAddresses by collectAsState(preferences.lookUpPayeeAddresses)
       val isAvailable by isAvailable.collectAsState()
       val hasLocationPermission by hasLocationPermission.collectAsState()
       SecuritySettingsState(
@@ -70,6 +71,11 @@ internal constructor(
             value = autoSaveLocations,
             enabled = hasLocationPermission,
             onChange = { launchAndSet(preferences.autoSavePayeeLocations, it) },
+          ),
+        lookUpPayeeAddresses =
+          BooleanPreference(
+            value = lookUpAddresses,
+            onChange = { launchAndSet(preferences.lookUpPayeeAddresses, it) },
           ),
         isLocationSupported = locationProvider.isSupported,
         hasLocationPermission = hasLocationPermission,

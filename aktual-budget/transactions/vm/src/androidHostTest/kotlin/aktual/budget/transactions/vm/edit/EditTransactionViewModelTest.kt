@@ -2016,6 +2016,7 @@ class EditTransactionViewModelTest {
     override val appLockTimeout = FakePreference(AppLockTimeout.Default)
     override val hidePreviewInAppSwitcher = FakePreference(default = true)
     override val autoSavePayeeLocations = FakePreference(autoSave)
+    override val lookUpPayeeAddresses = FakePreference(default = false)
   }
 
   private suspend fun EditTransactionViewModel.saveNew(payee: PayeeId) = events.test {

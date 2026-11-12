@@ -21,6 +21,7 @@ import aktual.core.l10n.settings_security_auto_save_locations
 import aktual.core.l10n.settings_security_hide_preview
 import aktual.core.l10n.settings_security_locations
 import aktual.core.l10n.settings_security_lock_group
+import aktual.core.l10n.settings_security_look_up_addresses
 import aktual.core.l10n.settings_security_timeout
 import aktual.core.l10n.settings_theme
 import aktual.core.l10n.settings_theme_built_in
@@ -95,7 +96,11 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         ),
         SettingsIndexEntry(
           title = Res.string.settings_security_locations,
-          children = listOf(entry(Res.string.settings_security_auto_save_locations)),
+          children =
+            listOf(
+              entry(Res.string.settings_security_auto_save_locations),
+              entry(Res.string.settings_security_look_up_addresses),
+            ),
           needsLocation = true,
         ),
       ),

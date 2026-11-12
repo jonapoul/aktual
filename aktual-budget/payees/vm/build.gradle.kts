@@ -8,5 +8,10 @@ kotlin {
     api(project(":aktual-budget:payees:domain"))
     api(project(":aktual-budget:rules:domain"))
     implementation(libs.metrox.viewmodel)
+    implementation(project(":aktual-prefs"))
+  }
+
+  commonTestDependencies {
+    implementation(project(":aktual-prefs:impl"))
   }
 }

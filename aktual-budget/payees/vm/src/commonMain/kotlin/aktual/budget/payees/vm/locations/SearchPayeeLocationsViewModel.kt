@@ -1,9 +1,12 @@
 package aktual.budget.payees.vm.locations
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.AddressLookup
+import aktual.budget.payees.domain.AddressResult.Found
 import aktual.budget.payees.vm.locations.SearchPayeeLocationsState.Failure
 import aktual.budget.payees.vm.locations.SearchPayeeLocationsState.Results
 import aktual.budget.rules.domain.normalise
+import aktual.core.model.Coordinates
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -40,6 +43,7 @@ internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   private val loader: PayeeLocationsLoader,
   private val deleter: PayeeLocationDeleter,
+  private val addressLookup: AddressLookup,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
@@ -81,12 +85,17 @@ internal constructor(
 
   fun undoDelete(id: PayeeLocationId) = deleter.restore(id)
 
+  fun requestAddress(coordinates: Coordinates) = addressLookup.request(coordinates)
+
   // Null until the first load finishes
   private fun searchableLocations(): Flow<List<SearchableLocation>?> =
     loader
       .observe()
       .map<_, List<SearchableLocation>?> { locations ->
-        locations.map { SearchableLocation(it, normalise(it.payeeName)) }
+        locations.map { location ->
+          val address = (location.address as? Found)?.address?.title
+          SearchableLocation(location, normalise(location.payeeName), address?.let(::normalise))
+        }
       }
       .onStart { emit(null) }
 
@@ -99,7 +108,10 @@ internal constructor(
     if (locations == null) return Loading
 
     val normalised = normalise(trimmed)
-    val matching = locations.filter { normalised in it.payeeName }.map { it.location }
+    val matching =
+      locations
+        .filter { normalised in it.payeeName || it.address?.contains(normalised) == true }
+        .map { it.location }
     return if (matching.isEmpty()) {
       NoResults
     } else {
@@ -107,7 +119,11 @@ internal constructor(
     }
   }
 
-  private data class SearchableLocation(val location: PayeeLocationItem, val payeeName: String)
+  private data class SearchableLocation(
+    val location: PayeeLocationItem,
+    val payeeName: String,
+    val address: String?,
+  )
 
   private companion object {
     const val KEY_QUERY = "query"

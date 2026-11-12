@@ -1,6 +1,8 @@
 package aktual.budget.payees.ui.locations
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.model.PayeeLocationSort
+import aktual.budget.payees.ui.OpenStreetMapAttribution
 import aktual.budget.payees.ui.mapUrl
 import aktual.budget.payees.ui.showLocationDeleteFailed
 import aktual.budget.payees.ui.showLocationDeleted
@@ -12,11 +14,17 @@ import aktual.budget.payees.vm.locations.ListPayeeLocationsViewModel
 import aktual.budget.payees.vm.locations.PayeeLocationItem
 import aktual.budget.payees.vm.locations.PayeeLocationsEvent.Deleted
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Globe
 import aktual.core.icons.Refresh
 import aktual.core.icons.SearchAlternate
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SearchPayeeLocationsNavigator
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -32,12 +40,14 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SortSheet
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.components.BooleanPreferenceItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +82,8 @@ internal fun ListPayeeLocationsScreen(
   viewModel: ListPayeeLocationsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val lookUpAddresses by viewModel.lookUpAddresses.collectAsStateWithLifecycle()
+  val sort by viewModel.sort.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
   val uriHandler = LocalUriHandler.current
 
@@ -88,6 +100,8 @@ internal fun ListPayeeLocationsScreen(
   ListPayeeLocationsScaffold(
     modifier = modifier,
     state = state,
+    lookUpAddresses = lookUpAddresses,
+    sort = sort,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -95,6 +109,9 @@ internal fun ListPayeeLocationsScreen(
         OpenSearch -> toSearch()
         is OpenLocation -> uriHandler.openUri(action.coordinates.mapUrl())
         is DeleteLocation -> viewModel.delete(action.id)
+        is RequestAddress -> viewModel.requestAddress(action.coordinates)
+        is SetLookUpAddresses -> viewModel.setLookUpAddresses(action.enabled)
+        is SetSort -> viewModel.setSort(action.sort)
       }
     },
   )
@@ -103,11 +120,25 @@ internal fun ListPayeeLocationsScreen(
 @Composable
 private fun ListPayeeLocationsScaffold(
   state: ListPayeeLocationsState,
+  lookUpAddresses: Boolean,
+  sort: PayeeLocationSort,
   onAction: OnAction<ListPayeeLocationsAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  var showSortSheet by remember { mutableStateOf(false) }
+
+  if (showSortSheet) {
+    SortSheet(
+      fields = PayeeLocationSort.Field.Entries,
+      field = sort.field,
+      direction = sort.direction,
+      fieldLabel = { it.label() },
+      onChange = { field, direction -> onAction(SetSort(PayeeLocationSort(field, direction))) },
+      onDismiss = { showSortSheet = false },
+    )
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -124,6 +155,7 @@ private fun ListPayeeLocationsScaffold(
               contentDescription = Strings.payeesLocationsSearch,
               onClick = { onAction(OpenSearch) },
             )
+            ListPayeeLocationsMenu(onSort = { showSortSheet = true })
           }
         },
       )
@@ -140,6 +172,7 @@ private fun ListPayeeLocationsScaffold(
       ) {
         ListPayeeLocationsContent(
           state = state,
+          lookUpAddresses = lookUpAddresses,
           onAction = onAction,
           listState = listState,
           padding = hazedTopBarContentPadding(hazeState, innerPadding),
@@ -152,6 +185,7 @@ private fun ListPayeeLocationsScaffold(
 @Composable
 private fun ListPayeeLocationsContent(
   state: ListPayeeLocationsState,
+  lookUpAddresses: Boolean,
   onAction: OnAction<ListPayeeLocationsAction>,
   listState: LazyListState,
   padding: PaddingValues,
@@ -188,6 +222,7 @@ private fun ListPayeeLocationsContent(
     is Success ->
       PayeeLocationsList(
         locations = state.locations,
+        lookUpAddresses = lookUpAddresses,
         listState = listState,
         contentPadding = padding,
         onAction = onAction,
@@ -198,6 +233,7 @@ private fun ListPayeeLocationsContent(
 @Composable
 private fun PayeeLocationsList(
   locations: ImmutableList<PayeeLocationItem>,
+  lookUpAddresses: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: OnAction<ListPayeeLocationsAction>,
@@ -214,6 +250,16 @@ private fun PayeeLocationsList(
   ) {
     item(key = "notice") { NoticeBanner(text = payeeLocationsHeaderText()) }
 
+    item(key = "addresses") {
+      BooleanPreferenceItem(
+        value = lookUpAddresses,
+        onValueChange = { onAction(SetLookUpAddresses(it)) },
+        title = Strings.settingsSecurityLookUpAddresses,
+        subtitle = Strings.settingsSecurityLookUpAddressesDesc,
+        icon = AktualIcons.Globe,
+      )
+    }
+
     items(locations, key = { it.id.value }) { location ->
       SwipeablePayeeLocationRow(
         modifier = Modifier.animateItem(),
@@ -229,18 +275,55 @@ private fun PayeeLocationsList(
         },
         onClick = { onAction(OpenLocation(location.coordinates)) },
         onDelete = { onAction(DeleteLocation(location.id)) },
+        onRequestAddress = { onAction(RequestAddress(it)) },
       )
+    }
+
+    if (lookUpAddresses) {
+      item(key = "attribution") { OpenStreetMapAttribution() }
     }
 
     item(key = "bottom") { BottomSpacing() }
   }
 }
 
+@Composable
+private fun ListPayeeLocationsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    AktualIconButton(
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.payeesLocationsMenu,
+      onClick = { expanded = true },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.sort,
+        leadingIcon = MaterialIcons.Sort,
+        onClick = {
+          expanded = false
+          onSort()
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun PayeeLocationSort.Field.label(): String =
+  when (this) {
+    PayeeName -> Strings.payeesLocationsSortPayee
+    DateSaved -> Strings.payeesLocationsSortDateSaved
+  }
+
 @Composable internal expect fun payeeLocationsHeaderText(): String
 
 private class ListPayeeLocationsStateProvider :
   ColorParamsProvider<ListPayeeLocationsState>(
     Success(PayeeLocationsPreview.all),
+    Success(PayeeLocationsPreview.withAddresses),
     Empty,
     Loading,
     Failure("Database connection lost"),
@@ -251,4 +334,12 @@ private class ListPayeeLocationsStateProvider :
 private fun PreviewListPayeeLocationsScaffold(
   @PreviewParameter(ListPayeeLocationsStateProvider::class)
   params: ColorParams<ListPayeeLocationsState>,
-) = PreviewWithColorParams(params) { ListPayeeLocationsScaffold(state = this, onAction = {}) }
+) =
+  PreviewWithColorParams(params) {
+    ListPayeeLocationsScaffold(
+      state = this,
+      lookUpAddresses = this == Success(PayeeLocationsPreview.withAddresses),
+      sort = Default,
+      onAction = {},
+    )
+  }

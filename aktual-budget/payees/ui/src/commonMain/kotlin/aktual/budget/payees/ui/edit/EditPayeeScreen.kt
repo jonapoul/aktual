@@ -5,6 +5,8 @@ import aktual.budget.model.ConditionSet
 import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.ui.AddressText
+import aktual.budget.payees.ui.OpenStreetMapAttribution
 import aktual.budget.payees.ui.list.PayeeChip
 import aktual.budget.payees.ui.list.PayeesPreview
 import aktual.budget.payees.ui.list.RuleCountChip
@@ -109,6 +111,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
@@ -176,6 +179,7 @@ internal fun EditPayeeScreen(
         is OpenTransactions -> toTransactions(action.title, payeeFilter(id))
         is OpenLocation -> uriHandler.openUri(action.coordinates.mapUrl())
         is DeleteLocation -> viewModel.deleteLocation(action.id)
+        is RequestAddress -> viewModel.requestAddress(action.coordinates)
       }
     },
   )
@@ -473,6 +477,9 @@ private fun LocationsField(
       color = colors.pageTextSubdued,
     )
     locations.fastForEach { location -> LocationRow(location, onAction) }
+    if (locations.fastAny { it.address != null }) {
+      OpenStreetMapAttribution()
+    }
   }
 
 @Composable
@@ -497,6 +504,12 @@ private fun LocationRow(location: SavedLocation, onAction: OnAction<EditPayeeAct
       if (date != null) {
         Text(text = LocalDateFormatter.current.format(date), style = typography.bodyMedium)
       }
+      AddressText(
+        address = location.address,
+        coordinates = coordinates,
+        onRequest = { onAction(RequestAddress(it)) },
+        style = typography.bodySmall,
+      )
       Text(text = coordinatesText, style = typography.bodySmall, color = colors.pageTextSubdued)
     }
     AktualIconButton(

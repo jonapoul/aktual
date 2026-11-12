@@ -3,6 +3,7 @@ package aktual.prefs.ui.security
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheckCircle1
 import aktual.core.icons.ExclamationOutline
+import aktual.core.icons.Globe
 import aktual.core.icons.Location
 import aktual.core.icons.ViewHide
 import aktual.core.icons.material.MaterialIcons
@@ -112,6 +113,12 @@ private fun SecuritySettingsScaffold(
             subtitle = null,
             icon = AktualIcons.Location,
           )
+          BooleanPreferenceItem(
+            preference = state.lookUpPayeeAddresses,
+            title = Strings.settingsSecurityLookUpAddresses,
+            subtitle = Strings.settingsSecurityLookUpAddressesDesc,
+            icon = AktualIcons.Globe,
+          )
           LocationPermissionItem(
             hasPermission = state.hasLocationPermission,
             onRequest = onRequestLocation,
@@ -167,6 +174,7 @@ private class SecuritySettingsProvider :
       appLockTimeout = ListPreference(Minutes1),
       hidePreviewInAppSwitcher = BooleanPreference(true, enabled = false),
       autoSavePayeeLocations = BooleanPreference(true),
+      lookUpPayeeAddresses = BooleanPreference(false),
       isLocationSupported = true,
       hasLocationPermission = true,
       isScreenLockAvailable = true,
@@ -176,6 +184,7 @@ private class SecuritySettingsProvider :
       appLockTimeout = ListPreference(Immediately, enabled = false),
       hidePreviewInAppSwitcher = BooleanPreference(false),
       autoSavePayeeLocations = BooleanPreference(true, enabled = false),
+      lookUpPayeeAddresses = BooleanPreference(true),
       isLocationSupported = true,
       hasLocationPermission = false,
       isScreenLockAvailable = false,

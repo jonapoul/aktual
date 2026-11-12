@@ -2,6 +2,7 @@ package aktual.budget.payees.vm.locations
 
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.AddressResult
 import aktual.core.model.Coordinates
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
@@ -13,4 +14,6 @@ data class PayeeLocationItem(
   val payeeName: String,
   val coordinates: Coordinates,
   val date: LocalDate?,
+  // Null while address lookups are turned off
+  val address: AddressResult? = null,
 )
