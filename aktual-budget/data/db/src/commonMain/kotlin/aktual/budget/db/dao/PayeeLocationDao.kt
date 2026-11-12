@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.GetAllWithPayee
 import aktual.budget.db.GetForPayee
 import aktual.budget.db.GetInBounds
 import aktual.budget.db.withResult
@@ -23,6 +24,9 @@ class PayeeLocationDao(database: BudgetDatabase, private val contexts: Coroutine
 
   fun observeForPayee(payee: PayeeId): Flow<List<GetForPayee>> =
     queries.getForPayee(payee).asFlow().mapToList(contexts.default).distinctUntilChanged()
+
+  fun observeAll(): Flow<List<GetAllWithPayee>> =
+    queries.getAllWithPayee().asFlow().mapToList(contexts.default).distinctUntilChanged()
 
   suspend fun inBounds(
     minLatitude: Double,

@@ -12,11 +12,13 @@ import aktual.budget.payees.vm.list.Success
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.LightBulb
+import aktual.core.icons.Location
 import aktual.core.icons.Refresh
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
+import aktual.core.nav.ListPayeeLocationsNavigator
 import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualAlertDialog
@@ -75,6 +77,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun ListPayeesScreen(
   toSearch: SearchPayeesNavigator,
   toEdit: EditPayeeNavigator,
+  toLocations: ListPayeeLocationsNavigator,
   editRule: EditRuleNavigator,
   searchRules: SearchRulesNavigator,
   modifier: Modifier = Modifier,
@@ -103,6 +106,7 @@ internal fun ListPayeesScreen(
       when (action) {
         Retry -> viewModel.retry()
         OpenSearch -> toSearch()
+        OpenLocations -> toLocations()
         ToggleUnusedOnly -> viewModel.toggleUnusedOnly()
         OpenCategoryLearning -> Unit
         is SetLearningEnabled -> viewModel.setLearningEnabled(action.enabled)
@@ -229,6 +233,14 @@ private fun ListPayeesMenu(onAction: OnAction<ListPayeesAction>, modifier: Modif
         onClick = {
           expanded = false
           onAction(OpenCategoryLearning)
+        },
+      )
+      AktualDropdownMenuItem(
+        text = Strings.payeesLocationsTitle,
+        leadingIcon = AktualIcons.Location,
+        onClick = {
+          expanded = false
+          onAction(OpenLocations)
         },
       )
     }

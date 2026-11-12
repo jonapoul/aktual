@@ -125,6 +125,29 @@ class PayeeLocationsTest {
   }
 
   @Test
+  fun `Observing all lists live locations by payee name, newest first`() = runDatabaseTest {
+    insertPayee(SHOP)
+    insertPayee(CAFE)
+    insertPayee(BAKERY, tombstone = true)
+    insertLocation("shop-old", SHOP, HERE, createdAt = NOW_MILLIS - 1)
+    insertLocation("shop-new", SHOP, HERE)
+    insertLocation("shop-deleted", SHOP, HERE, tombstone = true)
+    insertLocation("cafe", CAFE, HERE)
+    insertLocation("bakery", BAKERY, HERE)
+
+    locations().observeAll().test {
+      assertThat(awaitItem())
+        .extracting(NamedPayeeLocation::id)
+        .containsExactly(
+          PayeeLocationId("cafe"),
+          PayeeLocationId("shop-new"),
+          PayeeLocationId("shop-old"),
+        )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Has nearby checks only that payee`() = runDatabaseTest {
     insertPayee(SHOP)
     insertPayee(CAFE)

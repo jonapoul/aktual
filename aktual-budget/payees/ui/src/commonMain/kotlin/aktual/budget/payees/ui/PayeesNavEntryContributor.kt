@@ -2,6 +2,8 @@ package aktual.budget.payees.ui
 
 import aktual.budget.payees.ui.edit.EditPayeeScreen
 import aktual.budget.payees.ui.list.ListPayeesScreen
+import aktual.budget.payees.ui.locations.ListPayeeLocationsScreen
+import aktual.budget.payees.ui.locations.SearchPayeeLocationsScreen
 import aktual.budget.payees.ui.search.SearchPayeesScreen
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetEntryScope
@@ -10,8 +12,12 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.EditPayeeNavRoute
 import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
+import aktual.core.nav.ListPayeeLocationsNavRoute
+import aktual.core.nav.ListPayeeLocationsNavigator
 import aktual.core.nav.ListPayeesNavRoute
 import aktual.core.nav.NavStack
+import aktual.core.nav.SearchPayeeLocationsNavRoute
+import aktual.core.nav.SearchPayeeLocationsNavigator
 import aktual.core.nav.SearchPayeesNavRoute
 import aktual.core.nav.SearchPayeesNavigator
 import aktual.core.nav.SearchRulesNavigator
@@ -30,6 +36,7 @@ class PayeesNavEntryContributor : BudgetNavEntryContributor {
       ListPayeesScreen(
         toEdit = EditPayeeNavigator(stack),
         toSearch = SearchPayeesNavigator(stack),
+        toLocations = ListPayeeLocationsNavigator(stack),
         editRule = EditRuleNavigator(stack),
         searchRules = SearchRulesNavigator(stack),
       )
@@ -52,6 +59,17 @@ class PayeesNavEntryContributor : BudgetNavEntryContributor {
         searchRules = SearchRulesNavigator(stack),
         toTransactions = TransactionsNavigator(stack),
       )
+    }
+
+    budgetEntry<ListPayeeLocationsNavRoute> {
+      ListPayeeLocationsScreen(
+        back = BackNavigator(stack),
+        toSearch = SearchPayeeLocationsNavigator(stack),
+      )
+    }
+
+    budgetEntry<SearchPayeeLocationsNavRoute> {
+      SearchPayeeLocationsScreen(back = BackNavigator(stack))
     }
   }
 }

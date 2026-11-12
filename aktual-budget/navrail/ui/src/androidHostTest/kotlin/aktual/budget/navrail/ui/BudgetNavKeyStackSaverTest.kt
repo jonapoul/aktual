@@ -23,6 +23,7 @@ import aktual.core.nav.EditRuleNavRoute
 import aktual.core.nav.EditScheduleNavRoute
 import aktual.core.nav.EditTagNavRoute
 import aktual.core.nav.HomeNavRoute
+import aktual.core.nav.ListPayeeLocationsNavRoute
 import aktual.core.nav.ListPayeesNavRoute
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.ListSchedulesNavRoute
@@ -31,6 +32,7 @@ import aktual.core.nav.NavStackImpl
 import aktual.core.nav.ReportNavRoute
 import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.ScheduleTransactionsNavRoute
+import aktual.core.nav.SearchPayeeLocationsNavRoute
 import aktual.core.nav.SearchPayeesNavRoute
 import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchRulesNavRoute
@@ -82,6 +84,8 @@ class BudgetNavKeyStackSaverTest {
         ListPayeesNavRoute,
         SearchPayeesNavRoute,
         EditPayeeNavRoute(PayeeId("payee")),
+        ListPayeeLocationsNavRoute,
+        SearchPayeeLocationsNavRoute,
       )
     val saver = budgetNavKeyStackSaver()
     val stack = NavStackImpl(appCloser = null, stack = keys.toMutableStateList())

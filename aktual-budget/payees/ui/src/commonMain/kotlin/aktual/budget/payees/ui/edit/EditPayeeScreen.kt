@@ -8,7 +8,12 @@ import aktual.budget.model.PayeeLocationId
 import aktual.budget.payees.ui.list.PayeeChip
 import aktual.budget.payees.ui.list.PayeesPreview
 import aktual.budget.payees.ui.list.RuleCountChip
+import aktual.budget.payees.ui.mapUrl
 import aktual.budget.payees.ui.openRules
+import aktual.budget.payees.ui.showLocationDeleteFailed
+import aktual.budget.payees.ui.showLocationDeleted
+import aktual.budget.payees.ui.showLocationRestoreFailed
+import aktual.budget.payees.ui.text
 import aktual.budget.payees.vm.edit.EditPayeeEvent.LocationDeleted
 import aktual.budget.payees.vm.edit.EditPayeeState
 import aktual.budget.payees.vm.edit.EditPayeeViewModel
@@ -24,10 +29,7 @@ import aktual.core.icons.Location
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.l10n.Plurals
-import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
-import aktual.core.l10n.payees_location_delete_failed
-import aktual.core.l10n.payees_location_restore_failed
 import aktual.core.model.Coordinates
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditRuleNavigator
@@ -60,7 +62,6 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
-import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.switch
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
@@ -113,13 +114,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlin.math.abs
-import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonPrimitive
-import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun EditPayeeScreen(
@@ -148,15 +146,9 @@ internal fun EditPayeeScreen(
       when (event) {
         FinishedSaving -> back()
         is LocationDeleted ->
-          snackbars.show { showLocationDeleted(event, onUndo = viewModel::restoreLocation) }
-        LocationDeleteFailed ->
-          snackbars.show {
-            showErrorSnackbar(getString(Res.string.payees_location_delete_failed))
-          }
-        LocationRestoreFailed ->
-          snackbars.show {
-            showErrorSnackbar(getString(Res.string.payees_location_restore_failed))
-          }
+          snackbars.show { showLocationDeleted(event.id, onUndo = viewModel::restoreLocation) }
+        LocationDeleteFailed -> snackbars.show { showLocationDeleteFailed() }
+        LocationRestoreFailed -> snackbars.show { showLocationRestoreFailed() }
       }
     }
   }
@@ -486,11 +478,7 @@ private fun LocationsField(
 @Composable
 private fun LocationRow(location: SavedLocation, onAction: OnAction<EditPayeeAction>) {
   val coordinates = location.coordinates
-  val coordinatesText =
-    Strings.payeesEditLocationCoordinates(
-      coordinates.latitude.fiveDecimals(),
-      coordinates.longitude.fiveDecimals(),
-    )
+  val coordinatesText = coordinates.text()
   Row(
     modifier =
       Modifier.fillMaxWidth().clickable(onClickLabel = Strings.payeesEditLocationOpen) {
@@ -698,16 +686,3 @@ private class EditPayeeStateProvider :
     Editing(PayeesPreview.transfer),
     Failure(cause = null),
   )
-
-private fun Coordinates.mapUrl(): String =
-  "https://www.openstreetmap.org/?mlat=$latitude&mlon=$longitude#map=$MAP_ZOOM/$latitude/$longitude"
-
-private fun Double.fiveDecimals(): String {
-  val scaled = (this * FIVE_DECIMALS).roundToLong()
-  val whole = abs(scaled) / FIVE_DECIMALS.toLong()
-  val fraction = (abs(scaled) % FIVE_DECIMALS.toLong()).toString().padStart(length = 5, '0')
-  return "${if (scaled < 0) "-" else ""}$whole.$fraction"
-}
-
-private const val MAP_ZOOM = 18
-private const val FIVE_DECIMALS = 100_000.0
