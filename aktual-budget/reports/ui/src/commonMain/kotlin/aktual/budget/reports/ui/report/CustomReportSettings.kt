@@ -2,6 +2,7 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.reports.components.YearMonthPicker
 import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.CUSTOM_BALANCE_TYPES
@@ -42,7 +43,6 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.YearMonthPicker
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

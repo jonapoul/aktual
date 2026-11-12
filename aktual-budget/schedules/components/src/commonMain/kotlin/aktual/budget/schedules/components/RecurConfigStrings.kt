@@ -1,12 +1,13 @@
 @file:Suppress("MagicNumber")
 
-package aktual.core.ui
+package aktual.budget.schedules.components
 
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurPattern
 import aktual.budget.model.RecurType
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.ui.stringLong
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.util.fastFold
 import androidx.compose.ui.util.fastMap

@@ -2,6 +2,7 @@ package aktual.budget.schedules.ui.edit
 
 import aktual.budget.model.Amount
 import aktual.budget.model.RecurConfig
+import aktual.budget.schedules.components.frequencyDescription
 import aktual.budget.schedules.vm.edit.EditScheduleState
 import aktual.budget.schedules.vm.edit.ScheduleAmount
 import aktual.budget.schedules.vm.edit.ScheduleDate
@@ -15,7 +16,6 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
-import aktual.core.ui.frequencyDescription
 import aktual.core.ui.redacted
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text

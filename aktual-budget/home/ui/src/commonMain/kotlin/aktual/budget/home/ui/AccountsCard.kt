@@ -1,5 +1,7 @@
 package aktual.budget.home.ui
 
+import aktual.budget.accounts.components.AccountSyncDot
+import aktual.budget.accounts.components.NewTransactionsBadge
 import aktual.budget.home.vm.AccountBalance
 import aktual.budget.home.vm.AccountSection
 import aktual.budget.home.vm.AccountsCardState
@@ -14,7 +16,6 @@ import aktual.budget.model.sumOf
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
-import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -22,7 +23,6 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerLine
