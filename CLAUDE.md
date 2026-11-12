@@ -29,6 +29,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
   - CSR can't infer a type argument from the name, so it doesn't apply where the parameter type mentions the call's own type parameter, like `get(key: DbMetadataKey<T>)`. Statically import `DbMetadataKey` companion keys instead (`import aktual.budget.model.DbMetadataKey.Companion.BudgetName`, then `prefs[BudgetName]`).
   - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
+- Don't use `FontFamily.Monospace` (except log messages and stack traces) or ` · ` dot separators in UI text. See [aktual-core/ui](aktual-core/ui/CLAUDE.md) for the alternatives.
 - When copying or porting third-party code or assets into the repo (fonts, icons, images, ported source) rather than adding a Gradle dependency, add an entry to `NonLibraryArtifacts` in `aktual-about/data/.../NonLibraryArtifacts.kt` so it shows on the licenses screen.
 - Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.

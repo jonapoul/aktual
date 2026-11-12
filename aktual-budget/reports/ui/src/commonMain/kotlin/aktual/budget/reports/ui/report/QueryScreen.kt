@@ -51,7 +51,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
@@ -150,7 +149,7 @@ internal fun QueryScaffold(
       TopAppBar(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = onBack) },
-        title = { Text(text = name, fontFamily = Monospace) },
+        title = { Text(text = name) },
         actions = {
           AktualIconButton(
             modifier = Modifier.testTag(Tags.RenameQuery),

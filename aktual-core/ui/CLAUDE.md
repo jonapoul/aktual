@@ -16,6 +16,11 @@ Never write a raw `N.sp` for a font size, line height or letter spacing. Import 
 
 Spacing uses `Dimens` (dp), not `AktualTheme`.
 
+## Fonts and separators
+
+- Don't use `FontFamily.Monospace`, except for preformatted text that relies on fixed-width alignment: log messages and stack traces. Elsewhere use the Inter feature helpers in `FontFeatures.kt`: `TextStyle.tabular()` for numbers that should line up (times, sizes, columns), `TextStyle.disambiguated()` for code and IDs (formulas, API keys). Names and prose get plain Inter.
+- Never join text with a ` · ` dot separator. Lay the pieces out as separate `Text`s with spacing, or use natural punctuation: commas (`joinToString()`), parentheses (`Queries (3)`), or `; ` when the items can contain commas.
+
 ## Cards
 
 Use the `CardColumn` (column) or `CardRow` composable for card containers, passing `contentPadding` and `onClick` rather than chaining `padding`/`clickable` yourself. `Modifier.card` is for cases `CardColumn` can't cover, like applying the card style conditionally or adding `shimmer()` after the padding.

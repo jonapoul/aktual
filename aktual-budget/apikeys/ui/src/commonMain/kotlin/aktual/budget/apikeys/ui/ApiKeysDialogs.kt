@@ -16,6 +16,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabled
+import aktual.core.ui.disambiguated
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.plainTextClipEntry
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -132,7 +133,11 @@ private fun CreatedKeyDialog(key: Token, onDismiss: () -> Unit) {
   ) {
     Text(text = Strings.apiKeysCreatedMessage, style = typography.bodyMedium)
     SelectionContainer {
-      Text(text = key.value, fontFamily = Monospace, fontSize = textSizes.small)
+      Text(
+        text = key.value,
+        style = LocalTextStyle.current.disambiguated(),
+        fontSize = textSizes.small,
+      )
     }
   }
 }

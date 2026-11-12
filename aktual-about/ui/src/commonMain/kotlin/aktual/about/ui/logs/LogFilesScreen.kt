@@ -43,6 +43,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
+import aktual.core.ui.tabular
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -272,12 +273,18 @@ private fun LogFileItem(
         style = typography.bodyMedium,
         color = colors.tableText,
       )
-      Text(
-        text = "${LogFileFormat.fileName(file.date)} · ${file.size}",
-        style = typography.labelSmall,
-        fontFamily = Monospace,
-        color = colors.pageTextLight,
-      )
+      Row(horizontalArrangement = spacedBy(Dimens.Large)) {
+        Text(
+          text = LogFileFormat.fileName(file.date),
+          style = typography.labelSmall.tabular(),
+          color = colors.pageTextLight,
+        )
+        Text(
+          text = file.size.toString(),
+          style = typography.labelSmall.tabular(),
+          color = colors.pageTextSubdued,
+        )
+      }
     }
 
     if (file.errorCount > 0) {
@@ -350,7 +357,7 @@ private fun ShimmerLogFileItem() =
     Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
       ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.3f))
       ShimmerLine(
-        typography.labelSmall.copy(fontFamily = Monospace),
+        typography.labelSmall,
         Modifier.fillMaxWidth(fraction = 0.6f),
       )
     }

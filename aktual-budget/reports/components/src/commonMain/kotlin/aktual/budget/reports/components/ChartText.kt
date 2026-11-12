@@ -30,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -130,7 +129,6 @@ private fun TextEditor(state: TextFieldState, modifier: Modifier = Modifier) =
     modifier = modifier.fillMaxSize(),
     state = state,
     placeholderText = Strings.reportsTextPlaceholder,
-    textStyle = LocalTextStyle.current.copy(fontFamily = Monospace),
     keyboardOptions =
       KeyboardOptions(
         autoCorrectEnabled = true,
@@ -310,94 +308,94 @@ private class TextChartProvider :
 @Language("Markdown")
 private val MARKDOWN_1 =
   """
-      # Title
-      ## Subtitle
-      ### Sub-subtitle
-      Text goes here
-      - Bullet 1
-      - Bullet 2
+  # Title
+  ## Subtitle
+  ### Sub-subtitle
+  Text goes here
+  - Bullet 1
+  - Bullet 2
 
-      More text goes below - *lorem ipsum* blah blah who cares just trying to **split over multiple lines like this**.
+  More text goes below - *lorem ipsum* blah blah who cares just trying to **split over multiple lines like this**.
 
-      ![Image](https://dummyimage.com/600x400/000/fff)
+  ![Image](https://dummyimage.com/600x400/000/fff)
 
-      Here's a [link to Google](https://www.google.com)
+  Here's a [link to Google](https://www.google.com)
 
-      ```
-      import androidx.compose.foundation.background
-      import androidx.compose.foundation.gestures.scrollable
-      import androidx.compose.foundation.layout.*
-      import androidx.compose.foundation.rememberScrollState
-      import androidx.compose.foundation.text.input.TextFieldState
-      import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-      import androidx.compose.foundation.verticalScroll
-      import androidx.compose.material.MaterialTheme
-      import androidx.compose.material.Surface
-      import androidx.compose.material.Text
-      import androidx.compose.runtime.*
-      import androidx.compose.ui.Modifier
-    import androidx.compose.ui.graphics.Brush
-      import androidx.compose.ui.graphics.SolidColor
-      import androidx.compose.ui.text.TextStyle
-      import androidx.compose.ui.unit.dp
-      import androidx.compose.ui.text.SpanStyle
-      import androidx.compose.ui.text.TextLinkStyles
+  ```kotlin
+  import androidx.compose.foundation.background
+  import androidx.compose.foundation.gestures.scrollable
+  import androidx.compose.foundation.layout.*
+  import androidx.compose.foundation.rememberScrollState
+  import androidx.compose.foundation.text.input.TextFieldState
+  import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+  import androidx.compose.foundation.verticalScroll
+  import androidx.compose.material.MaterialTheme
+  import androidx.compose.material.Surface
+  import androidx.compose.material.Text
+  import androidx.compose.runtime.*
+  import androidx.compose.ui.Modifier
+  import androidx.compose.ui.graphics.Brush
+  import androidx.compose.ui.graphics.SolidColor
+  import androidx.compose.ui.text.TextStyle
+  import androidx.compose.ui.unit.dp
+  import androidx.compose.ui.text.SpanStyle
+  import androidx.compose.ui.text.TextLinkStyles
   import androidx.compose.ui.text.TextStyle
   import androidx.compose.ui.text.font.FontStyle
   import androidx.compose.ui.text.style.TextAlign as ComposeTextAlign
-      import androidx.compose.ui.text.font.FontFamily
-      import androidx.compose.ui.text.style.TextDecoration
-      import androidx.compose.ui.tooling.preview.Preview
+  import androidx.compose.ui.text.font.FontFamily
+  import androidx.compose.ui.text.style.TextDecoration
+  import androidx.compose.ui.tooling.preview.Preview
 
-      @Composable
-      fun ScrollableBasicTextField() {
-          var text by remember { mutableStateOf("") }
-          val scrollState = rememberScrollState()
+  @Composable
+  fun ScrollableBasicTextField() {
+      var text by remember { mutableStateOf("") }
+      val scrollState = rememberScrollState()
 
-          Box(
+      Box(
+          modifier = Modifier
+              .height(150.dp)
+              .fillMaxWidth()
+              .background(MaterialTheme.colors.surface)
+              .verticalScroll(scrollState)
+              .padding(8.dp)
+      ) {
+          BasicTextField(
+              value = text,
+              onValueChange = { text = it },
               modifier = Modifier
-                  .height(150.dp)
-                  .fillMaxWidth()
-                  .background(MaterialTheme.colors.surface)
-                  .verticalScroll(scrollState)
-                  .padding(8.dp)
-          ) {
-              BasicTextField(
-                  value = text,
-                  onValueChange = { text = it },
-                  modifier = Modifier
-                      .fillMaxWidth(),
-                  textStyle = TextStyle.Default.copy(color = MaterialTheme.colors.onSurface),
-                  cursorBrush = SolidColor(MaterialTheme.colors.primary),
-                  maxLines = Int.MAX_VALUE,
-              )
+                  .fillMaxWidth(),
+              textStyle = TextStyle.Default.copy(color = MaterialTheme.colors.onSurface),
+              cursorBrush = SolidColor(MaterialTheme.colors.primary),
+              maxLines = Int.MAX_VALUE,
+          )
+      }
+  }
+
+  @Preview(showBackground = true)
+  @Composable
+  fun PreviewScrollableBasicTextField() {
+      MaterialTheme {
+          Surface {
+              ScrollableBasicTextField()
           }
       }
+  }
+  ```
 
-      @Preview(showBackground = true)
-      @Composable
-      fun PreviewScrollableBasicTextField() {
-          MaterialTheme {
-              Surface {
-                  ScrollableBasicTextField()
-              }
-          }
-      }
-      ```
+  ## Explanation:
 
-      ## Explanation:
+  - Box sets fixed height & fills width.
+  - verticalScroll(scrollState) makes the whole Box scrollable vertically.
+  - BasicTextField inside takes all available width and unlimited lines (maxLines = Int.MAX_VALUE).
+  - When the text is long enough to overflow the height, vertical scroll kicks in.
+  - You can add a placeholder, decorationBox, or other modifiers if you want.
 
-      - Box sets fixed height & fills width.
-      - verticalScroll(scrollState) makes the whole Box scrollable vertically.
-      - BasicTextField inside takes all available width and unlimited lines (maxLines = Int.MAX_VALUE).
-      - When the text is long enough to overflow the height, vertical scroll kicks in.
-      - You can add a placeholder, decorationBox, or other modifiers if you want.
+  ## Bonus: Scroll to cursor as you type (advanced)
 
-      ## Bonus: Scroll to cursor as you type (advanced)
+  If you want the text field to auto-scroll as the user types beyond the visible area, that requires tracking cursor position and syncing scroll. It’s a bit more complex but doable. Want me to prepare that snippet?
 
-      If you want the text field to auto-scroll as the user types beyond the visible area, that requires tracking cursor position and syncing scroll. It’s a bit more complex but doable. Want me to prepare that snippet?
-
-      Does this solve your scrollable BasicTextField need? Want me to add placeholder support or styling next?
+  Does this solve your scrollable BasicTextField need? Want me to add placeholder support or styling next?
   """
     .trimIndent()
 

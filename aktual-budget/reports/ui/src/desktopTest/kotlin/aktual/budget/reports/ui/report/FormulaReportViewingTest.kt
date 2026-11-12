@@ -30,7 +30,7 @@ class FormulaReportViewingTest {
     setViewer(FormulaReportMeta())
 
     // then
-    onNodeWithText("QUERIES · 0").assertExists()
+    onNodeWithText("QUERIES (0)").assertExists()
     onNodeWithText("No queries yet").assertExists()
     onNodeWithText("Dynamic").assertExists()
     onNodeWithText("On").assertExists()
@@ -42,7 +42,7 @@ class FormulaReportViewingTest {
     setViewer(FormulaReportMeta(fontSizeMode = Static, staticFontSize = 24.0, showTitle = false))
 
     // then
-    onNodeWithText("Static · 24").assertExists()
+    onNodeWithText("Static (24)").assertExists()
     onNodeWithText("Off").assertExists()
   }
 
@@ -52,8 +52,8 @@ class FormulaReportViewingTest {
     setViewer(meta(query(conditions = FOUR_CONDITIONS)))
 
     // then
-    onNodeWithText("QUERIES · 1").assertExists()
-    onNodeWithText("Payee is Employer · Category one of Food, Bills · +2").assertExists()
+    onNodeWithText("QUERIES (1)").assertExists()
+    onNodeWithText("Payee is Employer; Category one of Food, Bills; +2").assertExists()
   }
 
   @Test

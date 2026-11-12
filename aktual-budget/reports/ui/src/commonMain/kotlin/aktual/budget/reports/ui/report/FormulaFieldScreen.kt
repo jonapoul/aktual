@@ -22,6 +22,7 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.disambiguated
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -55,7 +56,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -142,7 +142,7 @@ private fun FormulaFieldScaffold(
           state = text,
           placeholderText =
             if (field == Formula) Strings.reportsFormulaEditorFormulaPlaceholder else null,
-          textStyle = typography.bodyMedium.copy(fontFamily = Monospace),
+          textStyle = typography.bodyMedium.disambiguated(),
           keyboardOptions = KeyboardOptions(capitalization = None, autoCorrectEnabled = false),
         )
 

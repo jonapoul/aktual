@@ -41,6 +41,7 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.disambiguated
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -92,7 +93,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -526,7 +526,7 @@ private fun Settings(
       }
       Value(
         text = draft.colorFormula.ifBlank { Strings.reportsFormulaViewerNotSet },
-        monospace = draft.colorFormula.isNotBlank(),
+        isCode = draft.colorFormula.isNotBlank(),
       )
     }
     Divider()
@@ -591,7 +591,7 @@ private fun FormulaText(formula: String, modifier: Modifier = Modifier) =
     Text(
       modifier = modifier,
       text = formula,
-      style = typography.bodyMedium.copy(fontFamily = Monospace),
+      style = typography.bodyMedium.disambiguated(),
       color = colors.pageTextPositive,
       maxLines = 1,
       overflow = Ellipsis,
@@ -645,7 +645,7 @@ private fun QueryRow(
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
       Text(
         text = name,
-        style = typography.bodyLarge.copy(fontFamily = Monospace, fontWeight = Medium),
+        style = typography.bodyLarge.copy(fontWeight = Medium),
         color = colors.tableText,
       )
       AnimatedVisibility(

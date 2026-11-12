@@ -4,12 +4,14 @@ import aktual.core.logging.LogLine
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.tabular
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -36,7 +38,7 @@ internal fun LogLineRow(
     Text(
       text = line.timestamp.time.timeString().take(TIME_LENGTH),
       color = colors.pageTextSubdued,
-      fontFamily = Monospace,
+      style = LocalTextStyle.current.tabular(),
       fontSize = LineFontSize,
       lineHeight = LineHeight,
     )
@@ -61,7 +63,6 @@ internal fun LogLineRow(
           ),
         text = tagText,
         color = colors.pageTextPositive,
-        fontFamily = Monospace,
         fontSize = LineFontSize,
         lineHeight = LineHeight,
       )

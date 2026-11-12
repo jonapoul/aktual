@@ -105,7 +105,7 @@ class BudgetSheetStackTest {
   private fun ComposeUiTest.back() = onNodeWithTag(Tags.SheetBack)
 
   private companion object {
-    const val MENU_TITLE = "Utilities · October 2026"
+    const val MENU_TITLE = "Utilities, October 2026"
     const val TRANSFER_ITEM = "Transfer to another category"
     const val TRANSFER_TITLE = "Transfer from Utilities"
   }

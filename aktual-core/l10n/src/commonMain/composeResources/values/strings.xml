@@ -626,8 +626,8 @@
   <string name="budgeting_failure_title">Couldn't load the budget</string>
   <string name="budgeting_failure_message">An unexpected error occurred</string>
 
-  <string name="budgeting_edit_title">%1$s · %2$s</string>
-  <string name="budgeting_edit_subtitle">Spent %1$s · Balance %2$s</string>
+  <string name="budgeting_edit_title">%1$s, %2$s</string>
+  <string name="budgeting_edit_subtitle">Spent %1$s, balance %2$s</string>
   <string name="budgeting_edit_save">Save</string>
   <string name="budgeting_edit_cancel">Cancel</string>
   <string name="budgeting_edit_budget">Edit budget for %1$s</string>
@@ -664,9 +664,10 @@
   <string name="budgeting_summary_available">Available funds</string>
   <string name="budgeting_summary_overspent">Overspent last month</string>
   <string name="budgeting_summary_held">For next month</string>
-  <string name="budgeting_summary_income">Income</string>
-  <string name="budgeting_summary_expenses">Expenses</string>
-  <string name="budgeting_summary_received">Received</string>
+  <string name="budgeting_summary_income_budgeted">Income budgeted</string>
+  <string name="budgeting_summary_income_received">Income received</string>
+  <string name="budgeting_summary_expenses_budgeted">Expenses budgeted</string>
+  <string name="budgeting_summary_expenses_spent">Expenses spent</string>
   <string name="budgeting_hold">Hold for next month</string>
   <string name="budgeting_hold_confirm">Hold</string>
   <string name="budgeting_hold_reset">Reset next month's hold</string>
@@ -743,20 +744,20 @@
   <string name="home_accounts_empty_action">Add account</string>
   <string name="home_accounts_failed">Couldn't load accounts</string>
   <string name="home_accounts_new_transaction">New transaction in %1$s</string>
-  <string name="home_upcoming_title">Upcoming · %1$s</string>
+  <string name="home_upcoming_title">Upcoming (%1$s)</string>
   <string name="home_upcoming_window_current_month">this month</string>
   <string name="home_upcoming_see_all">See all</string>
   <string name="home_upcoming_today">Today</string>
   <string name="home_upcoming_tomorrow">Tomorrow</string>
   <string name="home_upcoming_overdue">Overdue</string>
-  <string name="home_upcoming_row_detail">%1$s · %2$s</string>
+  <string name="home_upcoming_row_detail">%1$s, %2$s</string>
   <string name="home_upcoming_more">+%1$d more</string>
   <string name="home_upcoming_total">Total due</string>
   <string name="home_upcoming_failed">Couldn't load upcoming schedules</string>
   <string name="home_recent_title">Recent transactions</string>
   <string name="home_recent_hidden">Hidden while there are no transactions</string>
   <string name="home_recent_see_all">See all</string>
-  <string name="home_recent_row_detail">%1$s · %2$s</string>
+  <string name="home_recent_row_detail">%1$s, %2$s</string>
   <string name="home_recent_failed">Couldn't load recent transactions</string>
 
   <!-- budget-list -->
@@ -1663,10 +1664,10 @@
   <string name="reports_formula_viewer_appearance">Appearance</string>
   <string name="reports_formula_viewer_color_rule">Color rule</string>
   <string name="reports_formula_viewer_not_set">Not set</string>
-  <string name="reports_formula_viewer_static_size">Static · %1$s</string>
+  <string name="reports_formula_viewer_static_size">Static (%1$s)</string>
   <string name="reports_formula_viewer_on">On</string>
   <string name="reports_formula_viewer_off">Off</string>
-  <string name="reports_formula_viewer_queries">Queries · %1$d</string>
+  <string name="reports_formula_viewer_queries">Queries (%1$d)</string>
   <string name="reports_formula_viewer_no_conditions">No conditions</string>
   <string name="reports_formula_viewer_more_conditions">+%1$d</string>
   <string name="reports_formula_editor_close">Close editor</string>
@@ -2142,7 +2143,7 @@
   <string name="transactions_title_none">&lt;No title&gt;</string>
   <string name="transactions_choose_account">Choose account</string>
   <string name="transactions_uncategorised_title">Uncategorized</string>
-  <string name="transactions_category_title">%1$s · %2$s</string>
+  <string name="transactions_category_title">%1$s, %2$s</string>
   <string name="transactions_split">Split</string>
   <string name="transactions_split_no_payee">Split (no payee)</string>
   <string name="transactions_split_remaining">%1$s left</string>
@@ -2159,8 +2160,8 @@
   <string name="transaction_split_into">Split into %1$d</string>
   <string name="transaction_split_add">Add split</string>
   <string name="transaction_split_remove">Remove split</string>
-  <string name="transaction_split_total_expense">Total · expense</string>
-  <string name="transaction_split_total_income">Total · income</string>
+  <string name="transaction_split_total_expense">Total expense</string>
+  <string name="transaction_split_total_income">Total income</string>
   <string name="transaction_split_left">%1$s left to assign</string>
   <string name="transaction_split_over">%1$s over the total</string>
   <string name="transaction_split_fill">Fill remaining</string>

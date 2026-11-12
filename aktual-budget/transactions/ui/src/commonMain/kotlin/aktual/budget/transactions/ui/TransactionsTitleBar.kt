@@ -232,7 +232,7 @@ private class TransactionsTitleBarProvider :
     LoadedAccount.Group(OnBudget),
     LoadedAccount.SpecificTag("groceries"),
     LoadedAccount.SpecificCategory("Groceries", PREVIEW_MONTH),
-    LoadedAccount.Filtered("Groceries · Mar 26"),
+    LoadedAccount.Filtered("Groceries, Mar 26"),
   )
 
 private val PREVIEW_MONTH = YearMonth(2026, 10)

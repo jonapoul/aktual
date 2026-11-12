@@ -26,7 +26,6 @@ internal fun LogLetterBadge(
       modifier.width(14.dp).background(priority.background(colors), RoundedCornerShape(2.dp)),
     text = priority.letter.toString(),
     color = priority.foreground(colors),
-    fontFamily = Monospace,
     fontWeight = Medium,
     fontSize = fontSize,
     textAlign = Center,

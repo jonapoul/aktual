@@ -8,6 +8,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.disambiguated
 import aktual.core.ui.switch
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -38,7 +39,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -155,11 +155,10 @@ internal fun SwitchRow(
   }
 
 @Composable
-internal fun Value(text: String, monospace: Boolean = false) =
+internal fun Value(text: String, isCode: Boolean = false) =
   Text(
     text = text,
-    style =
-      if (monospace) typography.bodySmall.copy(fontFamily = Monospace) else typography.bodyMedium,
+    style = if (isCode) typography.bodySmall.disambiguated() else typography.bodyMedium,
     color = colors.tableHeaderText,
     maxLines = 1,
     overflow = Ellipsis,
