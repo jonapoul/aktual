@@ -16,6 +16,7 @@ internal fun yearStory(
   rule: McWithdrawalRule,
   surplusPotName: String,
   hasSurplusPot: Boolean,
+  lumpSumNames: List<String>,
 ): List<String> = buildList {
   val ruleSentence = row.ruleExplanation?.let { ruleDecisionSentence(it, rule) }
   ruleSentence?.let { +it }
@@ -30,11 +31,40 @@ internal fun yearStory(
   }
 
   addAll(fundingSentences(row))
+  lumpSumSentence(row, lumpSumNames)?.let { +it }
 
   if (hasSurplusPot && row.surplusSaved > 0) {
     +Strings.monteCarloStorySurplusSaved(row.surplusSaved.money(), surplusPotName)
   } else if (row.unspentIncome > 0) {
     +Strings.monteCarloStoryUnspent(row.unspentIncome.money())
+  }
+}
+
+// The one-off withdrawals the year called for, and whether the pots could pay them. Names are user
+// text, so they're quoted rather than woven in
+@Composable
+private fun lumpSumSentence(row: McRunDetailRow, names: List<String>): String? {
+  val requested = row.lumpSumAmounts.withIndex().filter { it.value > 0 }
+  if (requested.isEmpty()) return null
+  val quotedNames =
+    requested
+      .map { (i, _) ->
+        "“${names.getOrNull(i)?.ifEmpty { null } ?: Strings.monteCarloLumpSumNumbered(i + 1)}”"
+      }
+      .joinToString(", ")
+  val amount = requested.sumOf { it.value }.money()
+  // A single one-off is named only when the user named it
+  val singleName = if (requested.size == 1) names.getOrNull(requested[0].index).orEmpty() else ""
+  val isShort =
+    row.afterDepletion || row.lumpSumWithdrawal - row.lumpSumTax < row.lumpSumAmounts.sum()
+  return when {
+    isShort && requested.size > 1 -> Strings.monteCarloStoryLumpSumsShort(amount, quotedNames)
+    isShort && singleName.isNotEmpty() ->
+      Strings.monteCarloStoryLumpSumShortNamed(amount, singleName)
+    isShort -> Strings.monteCarloStoryLumpSumShort(amount)
+    requested.size > 1 -> Strings.monteCarloStoryLumpSumsTaken(amount, quotedNames)
+    singleName.isNotEmpty() -> Strings.monteCarloStoryLumpSumTakenNamed(amount, singleName)
+    else -> Strings.monteCarloStoryLumpSumTaken(amount)
   }
 }
 

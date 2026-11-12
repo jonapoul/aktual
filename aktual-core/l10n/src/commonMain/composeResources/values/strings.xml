@@ -849,7 +849,7 @@
   <string name="monte_carlo_percentile_best">Best run</string>
 
   <!-- Cashflow chart -->
-  <string name="monte_carlo_cashflow_desc">Money flowing in and out each year of this simulated run: withdrawals and income above zero; planned spending, tax, contributions and money saved into the surplus pot below. Tap a year for its breakdown.</string>
+  <string name="monte_carlo_cashflow_desc">Money flowing in and out each year of this simulated run: withdrawals and income above zero; planned spending, tax, contributions, money saved into the surplus pot and any one-off withdrawals below. Tap a year for its breakdown.</string>
   <string name="monte_carlo_cashflow_money_in">Money in</string>
   <string name="monte_carlo_cashflow_money_out">Money out</string>
   <string name="monte_carlo_cashflow_tax">Tax</string>
@@ -1024,7 +1024,7 @@
   <string name="monte_carlo_desc_pots">The invested accounts your plan draws from - each with its own balance, allocation, and return assumptions. Use the arrows to reorder pots; expand a pot for access, tax and fee settings.</string>
   <string name="monte_carlo_desc_income">Money you receive each year without drawing on your pots, in today’s money - a state pension, an annuity, rental or part-time work. It pays for spending first; the pots fund the rest.</string>
   <string name="monte_carlo_desc_contributions">Money you add to your pots each year, in today’s money - paid from one of your income streams, or from outside the plan.</string>
-  <string name="monte_carlo_desc_spending">How much you take out each year, and optional rules that adjust it as markets move.</string>
+  <string name="monte_carlo_desc_spending">How much you take out each year, optional rules that adjust it as markets move, and any one-off withdrawals on top.</string>
   <string name="monte_carlo_desc_tax">How withdrawals are taxed - your spending is what you keep after tax.</string>
   <string name="monte_carlo_help_income">Each income stream arrives every year in its age window (both ages inclusive), taxed the same way as pot withdrawals: at its own rate under the flat model, or by its taxable portion under the bands model, where it uses up the lower bands before any pot withdrawal is taxed. What is left after tax and any contributions paid from it goes towards the year’s spending; the pots only fund the remainder. Income beyond that is unspent: it is saved into the Surplus cash pot, or leaves the plan if you tick Assume any unspent money is spent under Manage surplus on the Plan details tab. You can also route specific amounts into a pot with a contribution.</string>
   <string name="monte_carlo_help_contributions">Each contribution is paid in at the start of every year in its age window (both ages inclusive), so it earns that year’s return. Leave the ages blank for “now” and “the end of the plan”. Tick Adjust by inflation to keep the amount’s buying power constant; untick it for a fixed amount that shrinks in real terms. A pot can receive any number of contributions - even one that is still locked for withdrawals.\n\nA contribution paid from an income stream is capped at what that stream brings in that year. Tick Before tax for a workplace pension or salary sacrifice, which is deducted before the income’s tax is worked out.</string>
@@ -1126,6 +1126,35 @@
   <string name="monte_carlo_field_income_name">Income name</string>
   <string name="monte_carlo_income_remove">Remove income</string>
   <string name="monte_carlo_income_add">Add income</string>
+  <string name="monte_carlo_group_lump_sums">One-off withdrawals</string>
+  <string name="monte_carlo_help_lump_sums">A single withdrawal at an age, on top of that year’s spending - a house deposit, a car, a pension’s tax-free lump sum. The amount is what you receive after tax, in today’s money, and each one has its own tax setting rather than the pot’s.\n\nThe withdrawal rule and the minimum spending never adjust it, but your pots are smaller afterwards, so a rule may react in later years. A lump sum the accessible pots can’t fund fails the plan, like unfunded spending.</string>
+  <string name="monte_carlo_lump_sum_numbered">One-off %1$d</string>
+  <string name="monte_carlo_field_lump_sum_name">One-off withdrawal name</string>
+  <string name="monte_carlo_field_age">Age</string>
+  <string name="monte_carlo_field_amount_after_tax">Amount (after tax)</string>
+  <string name="monte_carlo_field_taken_from">Taken from</string>
+  <string name="monte_carlo_help_taken_from">The pot the money comes out of first. If that pot can’t cover the whole amount, or hasn’t reached its access age yet, the rest follows your withdrawal order. Follow the withdrawal order takes all of it that way.</string>
+  <string name="monte_carlo_source_order">Follow the withdrawal order</string>
+  <string name="monte_carlo_lump_sum_remove">Remove one-off withdrawal</string>
+  <string name="monte_carlo_lump_sum_add">Add one-off withdrawal</string>
+  <string name="monte_carlo_lump_sum_outside_plan">Age %1$d is outside the plan (ages %2$d to %3$d), so this is never taken.</string>
+  <string name="monte_carlo_lump_sum_locked">%1$s can’t be accessed until age %2$d, so at age %3$d this comes from the withdrawal order instead.</string>
+  <string name="monte_carlo_lump_sum_that_pot">That pot</string>
+  <string name="monte_carlo_cashflow_lump_sums">One-off withdrawals</string>
+  <string name="monte_carlo_story_lump_sums_short">The %1$s of one-off withdrawals (%2$s) could not be fully funded.</string>
+  <string name="monte_carlo_story_lump_sum_short_named">The %1$s one-off withdrawal “%2$s” could not be fully funded.</string>
+  <string name="monte_carlo_story_lump_sum_short">The %1$s one-off withdrawal could not be fully funded.</string>
+  <string name="monte_carlo_story_lump_sums_taken">One-off withdrawals of %1$s (%2$s) were taken from the pots.</string>
+  <string name="monte_carlo_story_lump_sum_taken_named">A one-off withdrawal of %1$s, “%2$s”, was taken from the pots.</string>
+  <string name="monte_carlo_story_lump_sum_taken">A one-off withdrawal of %1$s was taken from the pots.</string>
+  <string name="monte_carlo_detail_totals_lump_sums">%1$s of that was one-off withdrawals.</string>
+  <string name="monte_carlo_detail_lump_sum">One-off</string>
+  <string name="monte_carlo_working_lump_sum_line">%1$s: %2$s</string>
+  <string name="monte_carlo_working_lump_sums_taxed">One-off withdrawals: %1$s gross − %2$s tax = %3$s received.</string>
+  <string name="monte_carlo_working_lump_sums_untaxed">One-off withdrawals: %1$s, untaxed.</string>
+  <string name="monte_carlo_working_lump_sums_none">One-off withdrawals: %1$s requested, but nothing could be taken.</string>
+  <string name="monte_carlo_working_lump_sums_partial_taxed">One-off withdrawals: %1$s requested, but only %2$s gross − %3$s tax = %4$s could be taken.</string>
+  <string name="monte_carlo_working_lump_sums_partial">One-off withdrawals: %1$s requested, but only %2$s could be taken.</string>
 
   <!-- Contributions -->
   <string name="monte_carlo_field_contribution_name">Contribution name</string>

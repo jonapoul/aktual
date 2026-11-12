@@ -10,6 +10,7 @@ import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.MonteCarloReportMeta
 import aktual.budget.reports.vm.addContribution
 import aktual.budget.reports.vm.addIncomeStream
+import aktual.budget.reports.vm.addLumpSum
 import aktual.budget.reports.vm.addPot
 import aktual.budget.reports.vm.addSpendingPhase
 import aktual.budget.reports.vm.addTaxBand
@@ -209,6 +210,8 @@ internal constructor(
   }
 
   fun addIncomeStream() = edit { it.addIncomeStream(uuidGenerator()) }
+
+  fun addLumpSum() = edit { it.addLumpSum(uuidGenerator()) }
 
   fun addContribution() = edit { it.addContribution(uuidGenerator()) }
 

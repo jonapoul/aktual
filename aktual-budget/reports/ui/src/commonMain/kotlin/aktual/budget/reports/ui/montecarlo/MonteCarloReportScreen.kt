@@ -98,6 +98,7 @@ fun MonteCarloReportScreen(
         is AddInvestmentPhase -> viewModel.addInvestmentPhase(action.potId)
         AddIncomeStream -> viewModel.addIncomeStream()
         AddContribution -> viewModel.addContribution()
+        AddLumpSum -> viewModel.addLumpSum()
         AddSpendingPhase -> viewModel.addSpendingPhase()
         AddTaxBand -> viewModel.addTaxBand()
         is SetKeepSurplus -> viewModel.setKeepSurplus(action.keep)

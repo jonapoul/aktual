@@ -18,6 +18,7 @@ enum class CashflowSeriesKind {
   Tax,
   Contribution,
   Surplus,
+  LumpSum,
 }
 
 // One stacked bar series. Labels are left to the UI: a user-given name, else a numbered fallback
@@ -49,6 +50,7 @@ enum class CashflowGroupKind {
   Spending,
   Contributions,
   Saved,
+  LumpSums,
 }
 
 // A headed section of the tooltip. Single-series groups (tax, saved) show only the heading row
@@ -63,7 +65,8 @@ data class CashflowGroup(
 data class CashflowChart(
   // Stacked above zero: pot withdrawals, then income streams
   val inflows: ImmutableList<CashflowSeries>,
-  // Stacked below zero: planned spending by phase, tax, contributions, then surplus savings
+  // Stacked below zero: planned spending by phase, tax, contributions, surplus savings, then
+  // one-off withdrawals
   val outflows: ImmutableList<CashflowSeries>,
   val years: ImmutableList<CashflowYear>,
   val groups: ImmutableList<CashflowGroup>,
@@ -72,9 +75,9 @@ data class CashflowChart(
     get() = inflows + outflows
 }
 
-// buildMonteCarloCashflowChart(): spending shows the plan rather than what was delivered, so in a
-// shortfall year the inflows visibly fall short of it. Fees stay out, since they never pass through
-// the user's hands
+// buildMonteCarloCashflowChart(): pot withdrawals include one-offs. Spending and one-offs show the
+// plan rather than what was delivered, so in a shortfall year the inflows visibly fall short. Fees
+// stay out, since they never pass through the user's hands
 fun buildCashflowChart(
   rows: List<McRunDetailRow>,
   config: McConfig,
@@ -82,7 +85,7 @@ fun buildCashflowChart(
 ): CashflowChart {
   val pots = config.pots
   val phases = config.spendingPhases.resolve()
-  val hasTax = rows.any { it.taxPaid != 0L || it.incomeTax != 0L }
+  val hasTax = rows.any { it.taxPaid != 0L || it.incomeTax != 0L || it.lumpSumTax != 0L }
 
   // Inflows take colours from the start of the palette and outflows from the end, so the two sides
   // only share a colour once the palette is exhausted
@@ -118,12 +121,24 @@ fun buildCashflowChart(
   val surplusSeries =
     CashflowSeries(Surplus, 0, "", outflowColor(phases.size + config.contributions.size))
 
+  // Only one-offs the run called for get a series, funded or not
+  val lumpSumSeries =
+    config.lumpSums.mapIndexedNotNull { i, lumpSum ->
+      if (rows.any { it.lumpSumAmounts.getOrElse(i) { 0 } != 0L }) {
+        val color = outflowColor(phases.size + config.contributions.size + 1 + i)
+        CashflowSeries(LumpSum, i, lumpSum.name, color)
+      } else {
+        null
+      }
+    }
+
   val inflows = potSeries + incomeSeries
   val outflows = buildList {
     addAll(phaseSeries)
     if (hasTax) +taxSeries
     addAll(contributionSeries)
     if (hasSurplus) +surplusSeries
+    addAll(lumpSumSeries)
   }
   val all = inflows + outflows
 
@@ -139,6 +154,9 @@ fun buildCashflowChart(
       +CashflowGroup(Contributions, indices(contributionSeries), listMembers = true)
     }
     if (hasSurplus) +CashflowGroup(Saved, indices(listOf(surplusSeries)), listMembers = false)
+    if (lumpSumSeries.isNotEmpty()) {
+      +CashflowGroup(LumpSums, indices(lumpSumSeries), listMembers = true)
+    }
   }
 
   // Each series' position among the phases, or -1 for other kinds
@@ -174,15 +192,11 @@ fun buildCashflowChart(
 // Positive for money in, negative for money out
 private fun McRunDetailRow.amountFor(series: CashflowSeries, isActivePhase: Boolean): Long =
   when (series.kind) {
-    Pot -> potWithdrawals.getOrElse(series.index) { 0 }
-
+    Pot -> potWithdrawals.getOrElse(series.index) { 0 } + potLumpSums.getOrElse(series.index) { 0 }
     Income -> incomeAmounts.getOrElse(series.index) { 0 }
-
     Phase -> if (isActivePhase) -plannedSpending else 0
-
-    Tax -> -(taxPaid + incomeTax)
-
+    Tax -> -(taxPaid + incomeTax + lumpSumTax)
     Contribution -> -contributionAmounts.getOrElse(series.index) { 0 }
-
     Surplus -> -surplusSaved
+    LumpSum -> -lumpSumAmounts.getOrElse(series.index) { 0 }
   }

@@ -245,6 +245,21 @@ data class McIncomeStream(
   val taxableFraction: Double = 1.0,
 )
 
+// A single withdrawal at an age on top of that year's spending. The amount is what's received after
+// tax, with its own tax treatment rather than the pot's
+@Immutable
+data class McLumpSum(
+  val id: String,
+  val age: Int,
+  val name: String = "",
+  val amount: Double = 1_000_000.0,
+  val adjustsWithInflation: Boolean = true,
+  // Drawn first when accessible; null follows the withdrawal order
+  val sourcePotId: String? = null,
+  val taxRate: Double = 0.0,
+  val taxableFraction: Double = 0.0,
+)
+
 @Immutable
 data class McTaxBand(val id: String = "band-1", val from: Double = 0.0, val rate: Double = 0.0)
 
@@ -276,6 +291,7 @@ data class McConfig(
   val spendingPhases: ImmutableList<McSpendingPhase> = persistentListOf(McSpendingPhase()),
   val contributions: ImmutableList<McContribution> = persistentListOf(),
   val incomeStreams: ImmutableList<McIncomeStream> = persistentListOf(),
+  val lumpSums: ImmutableList<McLumpSum> = persistentListOf(),
   // null means flat withdrawals
   val inflationMean: Double? = DEFAULT_INFLATION_MEAN,
   val inflationStdDev: Double = 0.02,
@@ -288,6 +304,10 @@ data class McConfig(
 ) {
   val horizonYears: Int
     get() = (targetAge - currentAge).coerceIn(MIN_HORIZON_YEARS, MAX_HORIZON_YEARS)
+
+  // The plan's last simulated year is the one before the target age
+  val lastPlanAge: Int
+    get() = targetAge - 1
 }
 
 // getPotAssetWeights(): null means the pot draws normally from its own mean and volatility
@@ -451,6 +471,9 @@ fun MonteCarloReportMeta.toConfig(): McConfig {
         .orEmpty()
         .mapIndexed { i, stream -> stream.toIncomeStream(i) }
         .toImmutableList(),
+    // A lump sum without an age has no year to land in, so it's dropped rather than guessed
+    lumpSums =
+      lumpSums.orEmpty().mapIndexedNotNull { i, lumpSum -> lumpSum.toLumpSum(i) }.toImmutableList(),
     inflationMean = inflationMean,
     inflationStdDev = inflationStdDev ?: defaults.inflationStdDev,
     taxModel = taxModel?.takeIf { it != Unknown } ?: defaults.taxModel,
@@ -571,6 +594,19 @@ private fun IncomeStream.toIncomeStream(index: Int): McIncomeStream {
   )
 }
 
+private fun LumpSum.toLumpSum(index: Int): McLumpSum? {
+  val age = age ?: return null
+  val defaults = McLumpSum(id = id.ifEmpty { "lump-sum-${index + 1}" }, age = age)
+  return defaults.copy(
+    name = name.orEmpty(),
+    amount = amount?.toDouble() ?: defaults.amount,
+    adjustsWithInflation = adjustsWithInflation ?: defaults.adjustsWithInflation,
+    sourcePotId = sourcePotId,
+    taxRate = taxRate ?: defaults.taxRate,
+    taxableFraction = taxableFraction ?: defaults.taxableFraction,
+  )
+}
+
 // Writes the whole config over the stored meta, like upstream's save, keeping fields the config
 // doesn't own (the name)
 fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
@@ -655,6 +691,19 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
           adjustsWithInflation = stream.adjustsWithInflation,
           taxRate = stream.taxRate,
           taxableFraction = stream.taxableFraction,
+        )
+      },
+    lumpSums =
+      lumpSums.map { lumpSum ->
+        LumpSum(
+          id = lumpSum.id,
+          name = lumpSum.name,
+          age = lumpSum.age,
+          amount = lumpSum.amount.toMinor(),
+          adjustsWithInflation = lumpSum.adjustsWithInflation,
+          sourcePotId = lumpSum.sourcePotId,
+          taxRate = lumpSum.taxRate,
+          taxableFraction = lumpSum.taxableFraction,
         )
       },
     inflationMean = inflationMean,
