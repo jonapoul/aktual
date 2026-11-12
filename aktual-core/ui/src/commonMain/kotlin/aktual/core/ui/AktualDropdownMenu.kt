@@ -76,6 +76,7 @@ fun AktualDropdownMenuItem(
     leadingIcon = leadingIcon,
     trailingIcon = trailingIcon,
     enabled = enabled,
+    colors = colors,
     contentPadding = contentPadding,
     interactionSource = interactionSource,
   )
