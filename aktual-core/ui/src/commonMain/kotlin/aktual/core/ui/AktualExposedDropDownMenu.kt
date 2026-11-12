@@ -3,7 +3,6 @@ package aktual.core.ui
 import aktual.budget.model.DateRangeType
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -20,7 +19,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -145,17 +143,9 @@ fun <T> AktualExposedDropDownMenu(
       },
     )
 
-    ExposedDropdownMenu(
-      modifier = Modifier.background(colors.menuBackground),
-      expanded = isExpanded,
-      onDismissRequest = { isExpanded = false },
-      matchAnchorWidth = false,
-    ) {
-      DisposableEffect(Unit) {
-        dialogBlurState.activeDialogCount++
-        onDispose { dialogBlurState.activeDialogCount-- }
-      }
-
+    // Not ExposedDropdownMenu: on Android its popup isn't touch modal, so taps outside it reach
+    // the content underneath instead of only dismissing the menu
+    AktualDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
       options.fastForEach { o ->
         AktualDropdownMenuItem(
           text = { Text(string(o)) },
