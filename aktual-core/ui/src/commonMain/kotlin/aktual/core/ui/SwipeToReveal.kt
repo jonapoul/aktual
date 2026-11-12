@@ -70,7 +70,7 @@ fun SwipeToReveal(
   val openOffsetPx = with(LocalDensity.current) { (SwipeButtonWidth * actions.size).toPx() }
   val swipeState =
     remember(openOffsetPx) {
-      AnchoredDraggableState(initialValue = SwipeState.Closed).apply {
+      AnchoredDraggableState<SwipeState>(initialValue = if (isOpen) Open else Closed).apply {
         updateAnchors(
           DraggableAnchors {
             SwipeState.Closed at 0f
