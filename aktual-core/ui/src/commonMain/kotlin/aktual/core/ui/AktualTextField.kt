@@ -3,6 +3,7 @@ package aktual.core.ui
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
+import aktual.core.theme.Colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -65,31 +66,6 @@ fun AktualTextField(
   isError: Boolean = false,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
-  val borderColor =
-    if (isError) {
-      AktualTheme.colors.errorBorder
-    } else if (isFocused) {
-      AktualTheme.colors.formInputBorderSelected
-    } else {
-      AktualTheme.colors.formInputBackgroundSelected
-    }
-
-  val borderModifier =
-    if (showBorder) {
-      Modifier.border(1.dp, borderColor, shape)
-    } else {
-      Modifier
-    }
-
-  val shadowModifier =
-    if (isFocused && showBorder) {
-      val shadowColor =
-        if (isError) AktualTheme.colors.errorBorder else AktualTheme.colors.formInputShadowSelected
-      Modifier.shadow(4.dp, shape, ambientColor = shadowColor)
-    } else {
-      Modifier
-    }
-
   val focusRequester = remember { FocusRequester() }
   val keyboard = LocalSoftwareKeyboardController.current
 
@@ -149,9 +125,13 @@ fun AktualTextField(
           outputTransformation = outputTransformation,
           interactionSource = interactionSource,
           placeholder =
-            placeholderText?.let {
+            placeholderText?.let { text ->
               {
-                Text(text = it, textAlign = textStyle.textAlign, modifier = Modifier.fillMaxWidth())
+                Text(
+                  text = text,
+                  textAlign = textStyle.textAlign,
+                  modifier = Modifier.fillMaxWidth(),
+                )
               }
             },
           leadingIcon = leadingIcon,
@@ -161,7 +141,8 @@ fun AktualTextField(
           colors = colors,
           container = {
             TextFieldDefaults.Container(
-              modifier = borderModifier.then(shadowModifier),
+              modifier =
+                Modifier.outline(AktualTheme.colors, showBorder, isFocused, isError, shape),
               enabled = isEnabled,
               isError = isError,
               interactionSource = interactionSource,
@@ -172,6 +153,26 @@ fun AktualTextField(
         ),
     )
   }
+}
+
+private fun Modifier.outline(
+  colors: Colors,
+  showBorder: Boolean,
+  isFocused: Boolean,
+  isError: Boolean,
+  shape: Shape,
+): Modifier {
+  if (!showBorder) return this
+  val borderColor =
+    when {
+      isError -> colors.errorBorder
+      isFocused -> colors.formInputBorderSelected
+      else -> colors.formInputBackgroundSelected
+    }
+  val bordered = border(1.dp, borderColor, shape)
+  if (!isFocused) return bordered
+  val shadowColor = if (isError) colors.errorBorder else colors.formInputShadowSelected
+  return bordered.shadow(4.dp, shape, ambientColor = shadowColor)
 }
 
 @Composable
