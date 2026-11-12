@@ -17,7 +17,6 @@ import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithCompositionLocals
-import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -138,14 +137,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
       shape = RounderCardShape,
       fontSize = textSizes.large,
       onClick = onUnlock,
-      prefix = {
-        Icon(
-          modifier = Modifier.size(22.dp),
-          imageVector = MaterialIcons.Fingerprint,
-          contentDescription = null,
-        )
-        HorizontalSpacer(8.dp)
-      },
+      icon = MaterialIcons.Fingerprint,
     )
 
     VerticalSpacer(12.dp)

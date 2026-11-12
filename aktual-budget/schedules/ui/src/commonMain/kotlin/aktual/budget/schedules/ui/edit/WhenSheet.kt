@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -282,7 +281,7 @@ private fun DateField(
     NormalTextButton(
       modifier = Modifier.fillMaxWidth(),
       text = date.formatted(),
-      prefix = { Icon(imageVector = AktualIcons.Calendar3, contentDescription = null) },
+      icon = AktualIcons.Calendar3,
       onClick = { showDialog = true },
     )
   }

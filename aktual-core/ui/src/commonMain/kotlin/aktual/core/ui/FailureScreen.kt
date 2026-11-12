@@ -79,7 +79,7 @@ fun FailureCard(
       VerticalSpacer(30.dp)
 
       PrimaryTextButton(
-        prefix = { Icon(imageVector = action.icon, contentDescription = action.text()) },
+        icon = action.icon,
         text = action.text(),
         isEnabled = action.enabled,
         onClick = action.onClick,

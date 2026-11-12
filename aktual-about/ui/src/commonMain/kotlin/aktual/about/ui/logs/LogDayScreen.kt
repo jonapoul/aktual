@@ -60,7 +60,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -396,13 +395,7 @@ internal fun LiveButton(isFollowing: Boolean, onAction: OnAction<LogsAction>) =
   NormalTextButton(
     text = if (isFollowing) Strings.logsPause else Strings.logsResume,
     onClick = { onAction(if (isFollowing) Pause else Resume) },
-    prefix = {
-      Icon(
-        modifier = Modifier.size(18.dp),
-        imageVector = if (isFollowing) MaterialIcons.Pause else MaterialIcons.PlayArrow,
-        contentDescription = null,
-      )
-    },
+    icon = if (isFollowing) MaterialIcons.Pause else MaterialIcons.PlayArrow,
   )
 
 @PortraitPreview

@@ -387,7 +387,7 @@ private fun LogFilesBottomBar(onDelete: () -> Unit, onExport: () -> Unit) =
         modifier = Modifier.weight(2f),
         text = Strings.logsExport,
         onClick = onExport,
-        prefix = { Icon(imageVector = MaterialIcons.Share, contentDescription = null) },
+        icon = MaterialIcons.Share,
       )
     }
     BottomSpacing()

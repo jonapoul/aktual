@@ -202,7 +202,7 @@ internal fun EditTransactionForm(
           BareTextButton(
             modifier = Modifier.align(CenterHorizontally),
             text = Strings.transactionsSplit,
-            prefix = { Icon(imageVector = AktualIcons.Split, contentDescription = null) },
+            icon = AktualIcons.Split,
             onClick = { onAction(SplitTransaction) },
           )
         }

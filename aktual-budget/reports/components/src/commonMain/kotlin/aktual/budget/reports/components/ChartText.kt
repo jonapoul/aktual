@@ -32,7 +32,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -227,14 +226,14 @@ private fun TextChartButtons(
         modifier = Modifier.weight(1f),
         text = Strings.reportsTextSave,
         isEnabled = hasChanges,
-        prefix = { Icon(imageVector = AktualIcons.Check, contentDescription = null) },
+        icon = AktualIcons.Check,
         onClick = onSave,
       )
     } else {
       PrimaryTextButton(
         modifier = Modifier.fillMaxWidth(),
         text = Strings.reportsTextEdit,
-        prefix = { Icon(imageVector = AktualIcons.Pencil1, contentDescription = null) },
+        icon = AktualIcons.Pencil1,
         onClick = onEdit,
       )
     }
