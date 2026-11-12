@@ -366,7 +366,7 @@ private fun FormulaReportTopBar(
 ) {
   val isEditing = loaded?.isEditing == true
   TopAppBar(
-    modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+    modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       AnimatedContent(targetState = isEditing, transitionSpec = { swap() }) { editing ->

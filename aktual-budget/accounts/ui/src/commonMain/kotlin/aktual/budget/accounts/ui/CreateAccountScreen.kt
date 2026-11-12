@@ -121,7 +121,7 @@ private fun CreateAccountScaffold(
     modifier = modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
         title = { Text(Strings.accountsCreateTitle) },

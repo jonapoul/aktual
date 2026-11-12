@@ -157,7 +157,7 @@ private fun InfoTopBar(
   onAction: OnAction<InfoAction>,
 ) {
   TopAppBar(
-    modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+    modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(NavBack) } },
     title = {

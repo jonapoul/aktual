@@ -110,7 +110,7 @@ private fun BankSyncProvidersScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(CloseProviders) }) },
         title = { Text(text = Strings.bankSyncProvidersTitle) },

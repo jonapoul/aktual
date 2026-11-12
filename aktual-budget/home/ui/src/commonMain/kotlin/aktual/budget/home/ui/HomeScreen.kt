@@ -262,7 +262,7 @@ private fun HomeContent(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
         title = { HomeTitle(budgetName = state.budgetName) },
