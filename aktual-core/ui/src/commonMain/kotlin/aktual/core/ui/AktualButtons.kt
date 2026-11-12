@@ -13,6 +13,7 @@ import aktual.core.ui.AktualTheme.typography
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -28,19 +29,23 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -323,15 +328,29 @@ fun BasicIconButton(
   val background =
     if (isEnabled) buttonColors.containerColor else buttonColors.disabledContainerColor
 
-  IconButton(
-    modifier = modifier.background(background, shape),
-    onClick = onClick,
-    enabled = isEnabled,
-    colors = buttonColors,
-    interactionSource = interactionSource,
-    content = content,
-  )
+  val contentColor = if (isEnabled) buttonColors.contentColor else buttonColors.disabledContentColor
+
+  Box(
+    modifier =
+      modifier
+        .clip(shape)
+        .background(background)
+        .clickable(
+          onClick = onClick,
+          enabled = isEnabled,
+          role = Button,
+          interactionSource = interactionSource,
+          indication = ripple(color = contentColor),
+        )
+        .minimumInteractiveComponentSize()
+        .size(IconButtonSize),
+    contentAlignment = Center,
+  ) {
+    CompositionLocalProvider(LocalContentColor provides contentColor, content = content)
+  }
 }
+
+private val IconButtonSize = 40.dp
 
 @Immutable
 fun interface IconButtonColorProvider {
