@@ -215,7 +215,7 @@ private fun CategoryPicker(
   val choose = Strings.accountsCloseChooseCategory
   val labels =
     groups
-      .flatMap { group -> group.categories.map { it.id to "${group.name} · ${it.name}" } }
+      .flatMap { group -> group.categories.map { it.id to "${it.name} (${group.name})" } }
       .toMap()
   AktualExposedDropDownMenu(
     modifier = Modifier.fillMaxWidth(),

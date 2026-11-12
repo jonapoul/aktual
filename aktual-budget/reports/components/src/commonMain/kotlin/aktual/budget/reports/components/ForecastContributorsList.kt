@@ -220,7 +220,7 @@ private fun ContributorRow(contributor: ForecastContributor, onClick: () -> Unit
   }
   AmountRow(
     name = contributor.name?.ifBlank { null } ?: Strings.reportsBalanceForecastUnnamed,
-    subtitle = details.joinToString(separator = " · "),
+    subtitle = details.joinToString(),
     amount = contributor.amount,
     onClickName = onClick,
   )

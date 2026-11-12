@@ -279,11 +279,18 @@ private fun CrashReportItem(
         maxLines = 2,
         overflow = Ellipsis,
       )
-      Text(
-        text = "${report.timeLabel()} · ${report.version}",
-        style = typography.labelSmall,
-        color = colors.pageTextSubdued,
-      )
+      Row(horizontalArrangement = spacedBy(Dimens.Large)) {
+        Text(
+          text = report.timeLabel(),
+          style = typography.labelSmall,
+          color = colors.pageTextSubdued,
+        )
+        Text(
+          text = report.version,
+          style = typography.labelSmall,
+          color = colors.pageTextSubdued,
+        )
+      }
     }
 
     Icon(

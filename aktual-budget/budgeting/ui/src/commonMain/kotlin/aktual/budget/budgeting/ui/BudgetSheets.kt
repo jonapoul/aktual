@@ -513,10 +513,10 @@ private fun BudgetSummary.rows(): List<Pair<String, Amount>> =
 
     is Tracking ->
       listOf(
-        "${Strings.budgetingSummaryIncome} · ${Strings.budgetingBudgeted}" to incomeBudgeted,
-        "${Strings.budgetingSummaryIncome} · ${Strings.budgetingSummaryReceived}" to received,
-        "${Strings.budgetingSummaryExpenses} · ${Strings.budgetingBudgeted}" to budgeted,
-        "${Strings.budgetingSummaryExpenses} · ${Strings.budgetingSpent}" to spent,
+        Strings.budgetingSummaryIncomeBudgeted to incomeBudgeted,
+        Strings.budgetingSummaryIncomeReceived to received,
+        Strings.budgetingSummaryExpensesBudgeted to budgeted,
+        Strings.budgetingSummaryExpensesSpent to spent,
       )
   }
 

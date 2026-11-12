@@ -28,7 +28,7 @@ class BudgetCategoryScaffoldTest {
   @Test
   fun `Unhides a hidden category from its menu`() =
     runCategoryTest(PREVIEW_CATEGORY.copy(isHidden = true)) {
-      onNodeWithText("Food · Hidden").assertExists()
+      onNodeWithText("Food, Hidden").assertExists()
       onNodeWithTag(BudgetTags.CategoryMenu).performClick()
       onNodeWithText("Unhide category").performClick()
 

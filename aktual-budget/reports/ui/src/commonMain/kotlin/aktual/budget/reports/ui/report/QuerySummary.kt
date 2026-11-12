@@ -73,7 +73,7 @@ internal fun TimeFrame?.label(): String {
 }
 
 private const val MAX_SUMMARY_CONDITIONS = 2
-private const val SEPARATOR = " · "
+private const val SEPARATOR = "; "
 
 @Suppress("MagicNumber", "StringLiteralDuplication")
 internal val PREVIEW_FORMULA_META =

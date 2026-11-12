@@ -140,7 +140,7 @@ private fun AccountMenuSheet(
               Plurals.accountsManageTransactionCount(count, count),
             )
           Text(
-            text = details.joinToString(separator = " · "),
+            text = details.joinToString(),
             style = typography.bodyMedium,
             color = colors.pageTextSubdued,
           )

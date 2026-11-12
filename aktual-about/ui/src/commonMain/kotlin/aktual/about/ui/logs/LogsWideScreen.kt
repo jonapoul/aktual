@@ -31,6 +31,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.scrollbar
+import aktual.core.ui.tabular
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,6 +56,7 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -396,7 +398,7 @@ private fun RowScope.MonoCell(
         .padding(end = 12.dp),
     text = text,
     color = color,
-    fontFamily = Monospace,
+    style = LocalTextStyle.current.tabular(),
     fontSize = textSizes.small,
     maxLines = 1,
     overflow = Ellipsis,
@@ -424,13 +426,27 @@ private fun DetailPane(line: LogLine?) {
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
           verticalAlignment = CenterVertically,
         ) {
-          Text(
+          Row(
             modifier = Modifier.weight(1f),
-            text =
-              "${line.timestamp.time.timeString()} · ${line.priority.label()} · ${line.tag.orEmpty()}",
-            style = typography.labelMedium,
-            color = colors.pageTextLight,
-          )
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = CenterVertically,
+          ) {
+            Text(
+              text = line.timestamp.time.timeString(),
+              style = typography.labelMedium.tabular(),
+              color = colors.pageTextLight,
+            )
+            LogLabelBadge(line.priority)
+            line.tag?.let { tag ->
+              Text(
+                text = tag,
+                style = typography.labelMedium,
+                color = colors.pageTextLight,
+                maxLines = 1,
+                overflow = Ellipsis,
+              )
+            }
+          }
           DisableSelection {
             AktualButton(
               text = Strings.logsCopy,

@@ -7,6 +7,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
+import aktual.core.ui.disambiguated
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.font.FontFamily.Companion.Monospace
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.util.fastForEach
@@ -106,7 +106,7 @@ private fun ShortcutChip(
         content = tint ?: colors.tableText,
         border = if (highlight) accent else colors.tableBorder,
       ),
-    textStyle = typography.labelMedium.copy(fontFamily = Monospace),
+    textStyle = typography.labelMedium.disambiguated(),
     onClick = onClick,
   )
 }

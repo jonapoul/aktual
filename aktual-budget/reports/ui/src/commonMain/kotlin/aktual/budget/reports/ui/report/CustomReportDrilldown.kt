@@ -50,5 +50,5 @@ private fun drilldownTitle(
     )
     .filter { it.isNotBlank() }
     .ifEmpty { listOf(data.title) }
-    .joinToString(" · ")
+    .joinToString()
 }

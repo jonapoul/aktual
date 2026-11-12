@@ -145,7 +145,7 @@ internal fun BudgetCategoryScaffold(
                   loaded?.group?.takeIf { it.isNotEmpty() },
                   Strings.budgetingCategoryHidden.takeIf { loaded?.isHidden == true },
                 )
-                .joinToString(separator = " · ")
+                .joinToString()
             if (subtitle.isNotEmpty()) {
               Text(
                 text = subtitle,

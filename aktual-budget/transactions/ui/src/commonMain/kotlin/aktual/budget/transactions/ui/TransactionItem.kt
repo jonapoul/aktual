@@ -275,9 +275,9 @@ private fun categoryText(
     when {
       transaction.split == Parent -> {
         withStyle(SpanStyle(fontStyle = Italic)) { append(split) }
-        if (shownParts != null) append(" · $shownParts")
+        if (shownParts != null) append(", $shownParts")
         if (remaining != null) {
-          append(" · ")
+          append(", ")
           withStyle(warning) { append(remaining) }
         }
       }
@@ -291,7 +291,7 @@ private fun categoryText(
     }
 
     if (account != null) {
-      if (length > 0) append(" · ")
+      if (length > 0) append(", ")
       append(account)
     }
   }
@@ -507,7 +507,7 @@ private fun SplitChildRow(
         buildAnnotatedString {
           if (payee != null) {
             withStyle(payeeStyle) { append(payee) }
-            if (category.isNotEmpty()) append(" · ")
+            if (category.isNotEmpty()) append(", ")
           }
           append(category)
         },
