@@ -245,7 +245,7 @@ private fun EditTagTopBar(
   onRequestDiscard: () -> Unit,
 ) {
   TopAppBar(
-    modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+    modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {

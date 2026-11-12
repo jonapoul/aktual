@@ -129,7 +129,7 @@ internal fun BudgetCategoryScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scroll.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scroll),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = onBack) },
         title = {

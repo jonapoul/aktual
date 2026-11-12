@@ -265,7 +265,7 @@ private fun EditTransactionScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       EditTransactionTopBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollState),
         state = state,
         canSave = loaded?.canSave == true && isAmountValid,
         onBack = { onBack() },

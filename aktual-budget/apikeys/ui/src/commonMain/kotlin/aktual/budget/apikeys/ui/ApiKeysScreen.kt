@@ -112,7 +112,7 @@ private fun ApiKeysScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
         title = { Text(text = Strings.apiKeysTitle) },

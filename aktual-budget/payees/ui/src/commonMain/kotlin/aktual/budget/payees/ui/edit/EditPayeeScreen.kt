@@ -318,7 +318,7 @@ private fun EditPayeeTopBar(
   onRequestDiscard: () -> Unit,
 ) {
   TopAppBar(
-    modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+    modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {

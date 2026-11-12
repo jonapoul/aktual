@@ -8,6 +8,7 @@ import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -132,13 +133,19 @@ fun Modifier.hazedTopBar(
   }
 }
 
-/** Convenience overload that derives the scroll offset straight from [listState]. */
 @Composable
 fun Modifier.hazedTopBar(
   state: HazedTopBarState,
   listState: LazyListState,
   config: HazeConfig = LocalHazeConfig.current,
 ): Modifier = hazedTopBar(state, scrollOffset = { listState.topBarHazeOffset() }, config = config)
+
+@Composable
+fun Modifier.hazedTopBar(
+  state: HazedTopBarState,
+  scrollState: ScrollState,
+  config: HazeConfig = LocalHazeConfig.current,
+): Modifier = hazedTopBar(state, scrollOffset = { scrollState.value.toFloat() }, config = config)
 
 // Pixels the list content has scrolled up behind the top bar. Once we're past the first item we're
 // definitely fully scrolled, so report a saturating value to hold the blur at max.

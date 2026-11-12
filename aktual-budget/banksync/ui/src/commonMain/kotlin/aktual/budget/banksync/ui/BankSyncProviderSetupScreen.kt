@@ -116,7 +116,7 @@ private fun BankSyncProviderSetupScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(CloseSetup) }) },
         title = { Text(text = Strings.bankSyncSetupTitle(providerName(state.source))) },
