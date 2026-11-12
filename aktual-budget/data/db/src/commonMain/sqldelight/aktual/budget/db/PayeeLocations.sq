@@ -24,6 +24,14 @@ getForPayee:
   WHERE tombstone IS NOT 1 AND payee_id = ?
   ORDER BY created_at DESC;
 
+getAllWithPayee:
+  SELECT pl.id, pl.payee_id, COALESCE(a.name, p.name) AS payee_name, pl.latitude, pl.longitude, pl.created_at
+  FROM payee_locations pl
+  JOIN payees p ON pl.payee_id = p.id
+  LEFT JOIN accounts a ON (p.transfer_acct = a.id AND a.tombstone = 0)
+  WHERE pl.tombstone IS NOT 1 AND p.tombstone IS NOT 1
+  ORDER BY payee_name COLLATE NOCASE, pl.created_at DESC;
+
 -- A box around a point, since SQLite has no trig functions to measure distance with
 getInBounds:
   SELECT pl.id, pl.payee_id, pl.latitude, pl.longitude

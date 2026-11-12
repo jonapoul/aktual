@@ -159,6 +159,16 @@ class EditPayeeNavigator(private val stack: NavStack<BudgetNavKey>) {
 }
 
 @Immutable
+class ListPayeeLocationsNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(ListPayeeLocationsNavRoute)
+}
+
+@Immutable
+class SearchPayeeLocationsNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(SearchPayeeLocationsNavRoute)
+}
+
+@Immutable
 class BankSyncNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(BankSyncNavRoute)
 }

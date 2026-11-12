@@ -113,6 +113,10 @@ data class CreateTransactionNavRoute(
 
 @Serializable data class EditPayeeNavRoute(val id: PayeeId) : BudgetNavKey.Payees
 
+@Serializable data object ListPayeeLocationsNavRoute : BudgetNavKey.Payees
+
+@Serializable data object SearchPayeeLocationsNavRoute : BudgetNavKey.Payees
+
 @Serializable data object BankSyncNavRoute : BudgetNavKey.BankSync
 
 @Serializable data class BankSyncSettingsNavRoute(val id: AccountId) : BudgetNavKey.BankSync

@@ -1,5 +1,6 @@
 package aktual.budget.payees.domain
 
+import aktual.budget.db.GetAllWithPayee
 import aktual.budget.db.GetForPayee
 import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.PayeeLocationDao
@@ -24,6 +25,14 @@ import kotlinx.coroutines.flow.map
 
 data class PayeeLocation(
   val id: PayeeLocationId,
+  val coordinates: Coordinates,
+  val createdAt: Instant?,
+)
+
+data class NamedPayeeLocation(
+  val id: PayeeLocationId,
+  val payee: PayeeId,
+  val payeeName: String,
   val coordinates: Coordinates,
   val createdAt: Instant?,
 )
@@ -71,6 +80,16 @@ class PayeeLocations(
 
   fun observe(payee: PayeeId): Flow<List<PayeeLocation>> =
     dao.observeForPayee(payee).map { rows -> rows.mapNotNull { it.toLocation() } }
+
+  // Every alive payee's locations, by payee name then newest first
+  fun observeAll(): Flow<List<NamedPayeeLocation>> =
+    dao.observeAll().map { rows -> rows.mapNotNull { it.toLocation() } }
+
+  private fun GetAllWithPayee.toLocation(): NamedPayeeLocation? {
+    val payee = payee_id ?: return null
+    val coordinates = Coordinates.orNull(latitude, longitude) ?: return null
+    return NamedPayeeLocation(id, payee, payee_name.orEmpty(), coordinates, created_at)
+  }
 
   private fun GetForPayee.toLocation(): PayeeLocation? =
     Coordinates.orNull(latitude, longitude)?.let { PayeeLocation(id, it, created_at) }
