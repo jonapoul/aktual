@@ -12,7 +12,6 @@ import aktual.log
 import aktual.prefs.SecurityPreferences
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
-import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -88,7 +87,7 @@ internal constructor(
     val result =
       runCatchingCancellable(
         attempt = {
-          val place = api.reverse(key, Locale.getDefault().toLanguageTag())
+          val place = api.reverse(key, defaultLanguageTag())
           place.toAddress()?.let(::Found) ?: NotFound
         },
         onFailure = { e ->
@@ -106,3 +105,5 @@ internal constructor(
     val MIN_INTERVAL = 1.seconds
   }
 }
+
+internal expect fun defaultLanguageTag(): String

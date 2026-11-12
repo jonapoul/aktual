@@ -14,7 +14,6 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import java.io.IOException
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
@@ -77,7 +76,7 @@ class AddressLookupTest {
   fun `Failed lookup is retried on the next request`() = runTest {
     preferences.lookUpPayeeAddresses.set(true)
     var fail = true
-    val api = FakeNominatimApi(onCall = { if (fail) throw IOException("Offline") })
+    val api = FakeNominatimApi(onCall = { if (fail) error("Offline") })
     val lookup = lookup(api)
 
     lookup.request(London)
