@@ -15,6 +15,7 @@ The build scans per subdirectory and produces one `*Responses` object per:
 - `/api/actual/secret/*.json` → `SecretResponses` (bank sync provider credentials)
 - `/api/actual/api-keys/*.json` → `ApiKeysResponses` (dashed directory names become PascalCase)
 - `/api/github/*.json` → `GithubResponses`
+- `/api/nominatim/*.json` → `NominatimResponses`
 - `/api/theme/*.{css,json}` → `ThemeResponses`
 
 Filename → constant: `login-success.200.json` → `LOGIN_SUCCESS_200`. Files with `.rest` extension or `>100KB` are excluded.

@@ -29,7 +29,7 @@ buildConfig {
     .forEach { addResponsesClass(it) }
 
   addResponsesClass(apiDir.dir("github").asFile)
-
+  addResponsesClass(apiDir.dir("nominatim").asFile)
   addResponsesClass(apiDir.dir("theme").asFile)
 }
 

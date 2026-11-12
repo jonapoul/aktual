@@ -1,6 +1,7 @@
 package aktual.budget.payees.ui.locations
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.ui.OpenStreetMapAttribution
 import aktual.budget.payees.ui.mapUrl
 import aktual.budget.payees.ui.showLocationDeleteFailed
 import aktual.budget.payees.ui.showLocationDeleted
@@ -12,6 +13,7 @@ import aktual.budget.payees.vm.locations.ListPayeeLocationsViewModel
 import aktual.budget.payees.vm.locations.PayeeLocationItem
 import aktual.budget.payees.vm.locations.PayeeLocationsEvent.Deleted
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Globe
 import aktual.core.icons.Refresh
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
@@ -38,6 +40,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.components.BooleanPreferenceItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +75,7 @@ internal fun ListPayeeLocationsScreen(
   viewModel: ListPayeeLocationsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val lookUpAddresses by viewModel.lookUpAddresses.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
   val uriHandler = LocalUriHandler.current
 
@@ -88,6 +92,7 @@ internal fun ListPayeeLocationsScreen(
   ListPayeeLocationsScaffold(
     modifier = modifier,
     state = state,
+    lookUpAddresses = lookUpAddresses,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -95,6 +100,8 @@ internal fun ListPayeeLocationsScreen(
         OpenSearch -> toSearch()
         is OpenLocation -> uriHandler.openUri(action.coordinates.mapUrl())
         is DeleteLocation -> viewModel.delete(action.id)
+        is RequestAddress -> viewModel.requestAddress(action.coordinates)
+        is SetLookUpAddresses -> viewModel.setLookUpAddresses(action.enabled)
       }
     },
   )
@@ -103,6 +110,7 @@ internal fun ListPayeeLocationsScreen(
 @Composable
 private fun ListPayeeLocationsScaffold(
   state: ListPayeeLocationsState,
+  lookUpAddresses: Boolean,
   onAction: OnAction<ListPayeeLocationsAction>,
   modifier: Modifier = Modifier,
 ) {
@@ -140,6 +148,7 @@ private fun ListPayeeLocationsScaffold(
       ) {
         ListPayeeLocationsContent(
           state = state,
+          lookUpAddresses = lookUpAddresses,
           onAction = onAction,
           listState = listState,
           padding = hazedTopBarContentPadding(hazeState, innerPadding),
@@ -152,6 +161,7 @@ private fun ListPayeeLocationsScaffold(
 @Composable
 private fun ListPayeeLocationsContent(
   state: ListPayeeLocationsState,
+  lookUpAddresses: Boolean,
   onAction: OnAction<ListPayeeLocationsAction>,
   listState: LazyListState,
   padding: PaddingValues,
@@ -188,6 +198,7 @@ private fun ListPayeeLocationsContent(
     is Success ->
       PayeeLocationsList(
         locations = state.locations,
+        lookUpAddresses = lookUpAddresses,
         listState = listState,
         contentPadding = padding,
         onAction = onAction,
@@ -198,6 +209,7 @@ private fun ListPayeeLocationsContent(
 @Composable
 private fun PayeeLocationsList(
   locations: ImmutableList<PayeeLocationItem>,
+  lookUpAddresses: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: OnAction<ListPayeeLocationsAction>,
@@ -214,6 +226,16 @@ private fun PayeeLocationsList(
   ) {
     item(key = "notice") { NoticeBanner(text = payeeLocationsHeaderText()) }
 
+    item(key = "addresses") {
+      BooleanPreferenceItem(
+        value = lookUpAddresses,
+        onValueChange = { onAction(SetLookUpAddresses(it)) },
+        title = Strings.settingsSecurityLookUpAddresses,
+        subtitle = Strings.settingsSecurityLookUpAddressesDesc,
+        icon = AktualIcons.Globe,
+      )
+    }
+
     items(locations, key = { it.id.value }) { location ->
       SwipeablePayeeLocationRow(
         modifier = Modifier.animateItem(),
@@ -229,7 +251,12 @@ private fun PayeeLocationsList(
         },
         onClick = { onAction(OpenLocation(location.coordinates)) },
         onDelete = { onAction(DeleteLocation(location.id)) },
+        onRequestAddress = { onAction(RequestAddress(it)) },
       )
+    }
+
+    if (lookUpAddresses) {
+      item(key = "attribution") { OpenStreetMapAttribution() }
     }
 
     item(key = "bottom") { BottomSpacing() }
@@ -241,6 +268,7 @@ private fun PayeeLocationsList(
 private class ListPayeeLocationsStateProvider :
   ColorParamsProvider<ListPayeeLocationsState>(
     Success(PayeeLocationsPreview.all),
+    Success(PayeeLocationsPreview.withAddresses),
     Empty,
     Loading,
     Failure("Database connection lost"),
@@ -251,4 +279,11 @@ private class ListPayeeLocationsStateProvider :
 private fun PreviewListPayeeLocationsScaffold(
   @PreviewParameter(ListPayeeLocationsStateProvider::class)
   params: ColorParams<ListPayeeLocationsState>,
-) = PreviewWithColorParams(params) { ListPayeeLocationsScaffold(state = this, onAction = {}) }
+) =
+  PreviewWithColorParams(params) {
+    ListPayeeLocationsScaffold(
+      state = this,
+      lookUpAddresses = this == Success(PayeeLocationsPreview.withAddresses),
+      onAction = {},
+    )
+  }

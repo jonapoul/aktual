@@ -19,6 +19,12 @@ internal value class OpenLocation(val coordinates: Coordinates) :
 internal value class DeleteLocation(val id: PayeeLocationId) :
   ListPayeeLocationsAction, SearchPayeeLocationsAction
 
+@JvmInline
+internal value class RequestAddress(val coordinates: Coordinates) :
+  ListPayeeLocationsAction, SearchPayeeLocationsAction
+
+@JvmInline internal value class SetLookUpAddresses(val enabled: Boolean) : ListPayeeLocationsAction
+
 internal sealed interface SearchPayeeLocationsAction
 
 @JvmInline internal value class SetQuery(val query: String) : SearchPayeeLocationsAction

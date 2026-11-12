@@ -2,6 +2,9 @@ package aktual.budget.payees.vm.locations
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.Address
+import aktual.budget.payees.domain.AddressBook
+import aktual.budget.payees.domain.AddressResult.Found
 import aktual.budget.payees.vm.locations.SearchPayeeLocationsState.Results
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -14,6 +17,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
@@ -48,6 +53,31 @@ class SearchPayeeLocationsViewModelTest {
       assertThat(awaitResults())
         .extracting(PayeeLocationItem::id)
         .containsExactly(PayeeLocationId("cafe"))
+    }
+  }
+
+  @Test
+  fun `Matches addresses`() = runDatabaseTest { scope ->
+    // given
+    insertPayee("tesco", "Tesco")
+    insertLocation("tesco", "tesco")
+    val lookup = FakeAddressLookup()
+    lookup.book.update {
+      AddressBook(
+        persistentMapOf(HERE to Found(Address("10 Oldham Street", null))),
+        isEnabled = true,
+      )
+    }
+    val viewModel = createViewModel(scope, addresses = lookup)
+
+    // when
+    viewModel.setQuery("oldham")
+
+    // then
+    viewModel.state.test {
+      assertThat(awaitResults())
+        .extracting(PayeeLocationItem::id)
+        .containsExactly(PayeeLocationId("tesco"))
     }
   }
 
@@ -97,12 +127,14 @@ class SearchPayeeLocationsViewModelTest {
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     savedState: SavedStateHandle = SavedStateHandle(),
+    addresses: FakeAddressLookup = FakeAddressLookup(),
   ): SearchPayeeLocationsViewModel {
     val sync = TestSyncController()
     return SearchPayeeLocationsViewModel(
       savedState = savedState,
-      loader = loader(scope, sync),
+      loader = loader(scope, sync, addresses),
       deleter = deleter(scope, sync),
+      addressLookup = addresses,
       viewModelContext = scope.viewModelContext,
     )
   }

@@ -25,5 +25,7 @@ internal data object DismissSaveError : EditPayeeAction
 
 @JvmInline internal value class DeleteLocation(val id: PayeeLocationId) : EditPayeeAction
 
+@JvmInline internal value class RequestAddress(val coordinates: Coordinates) : EditPayeeAction
+
 // title is the payee's name as shown, for the transactions screen's top bar
 @JvmInline internal value class OpenTransactions(val title: String) : EditPayeeAction

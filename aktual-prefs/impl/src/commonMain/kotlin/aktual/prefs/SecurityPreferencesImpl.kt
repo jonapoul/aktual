@@ -30,4 +30,9 @@ class SecurityPreferencesImpl(dataStore: DataStore<Preferences>) : SecurityPrefe
     dataStore
       .boolean(key = booleanPreferencesKey("autoSavePayeeLocations"), default = true)
       .required()
+
+  override val lookUpPayeeAddresses: Preference<Boolean> =
+    dataStore
+      .boolean(key = booleanPreferencesKey("lookUpPayeeAddresses"), default = false)
+      .required()
 }

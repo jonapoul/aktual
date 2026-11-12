@@ -1,0 +1,23 @@
+###
+# @name reverse shop
+GET https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=51.5081&lon=-0.1248&zoom=18&addressdetails=1
+User-Agent: Aktual (+https://github.com/jonapoul/aktual)
+Accept-Language: en-GB
+
+<> reverse-shop.200.json
+
+###
+# @name reverse house
+GET https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=53.4794&lon=-2.2453&zoom=18&addressdetails=1
+User-Agent: Aktual (+https://github.com/jonapoul/aktual)
+Accept-Language: en-GB
+
+<> reverse-house.200.json
+
+###
+# @name reverse not found
+GET https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=0&lon=0&zoom=18&addressdetails=1
+User-Agent: Aktual (+https://github.com/jonapoul/aktual)
+Accept-Language: en-GB
+
+<> reverse-not-found.200.json

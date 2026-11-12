@@ -1,0 +1,33 @@
+{
+  "place_id": 281018507,
+  "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+  "osm_type": "node",
+  "osm_id": 3467700467,
+  "lat": "51.5081746",
+  "lon": "-0.1248152",
+  "category": "amenity",
+  "type": "telephone",
+  "place_rank": 30,
+  "importance": 9.307927061870783e-05,
+  "addresstype": "amenity",
+  "name": "",
+  "display_name": "Hungerford Lane, Westminster, Covent Garden, City of Westminster, Greater London, England, WC2N 5HS, United Kingdom",
+  "address": {
+    "road": "Hungerford Lane",
+    "quarter": "Westminster",
+    "suburb": "Covent Garden",
+    "city": "City of Westminster",
+    "ISO3166-2-lvl8": "GB-WSM",
+    "state": "England",
+    "ISO3166-2-lvl4": "GB-ENG",
+    "postcode": "WC2N 5HS",
+    "country": "United Kingdom",
+    "country_code": "gb"
+  },
+  "boundingbox": [
+    "51.5081246",
+    "51.5082246",
+    "-0.1248652",
+    "-0.1247652"
+  ]
+}

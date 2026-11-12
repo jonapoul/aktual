@@ -17,6 +17,7 @@ import aktual.budget.model.PayeeLocationId
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
+import aktual.budget.payees.vm.locations.FakeAddressLookup
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.core.model.Coordinates
@@ -258,6 +259,7 @@ class EditPayeeViewModelTest {
           uuidGenerator = { "location" },
           clock = Clock.System,
         ),
+      addressLookup = FakeAddressLookup(),
       budgetScope = BudgetCoroutineScope(scope),
       timeZones = { TimeZone.UTC },
       learning =

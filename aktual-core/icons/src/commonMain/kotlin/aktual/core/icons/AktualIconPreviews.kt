@@ -48,6 +48,7 @@ private val aktualIcons =
       Equals,
       ExclamationOutline,
       FileDouble,
+      Globe,
       InformationOutline,
       Key,
       LeftArrow2,

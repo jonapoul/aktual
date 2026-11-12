@@ -2,6 +2,10 @@ package aktual.budget.payees.ui.locations
 
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.Address
+import aktual.budget.payees.domain.AddressResult.Found
+import aktual.budget.payees.domain.AddressResult.Loading
+import aktual.budget.payees.domain.AddressResult.NotFound
 import aktual.budget.payees.vm.locations.PayeeLocationItem
 import aktual.core.model.Coordinates
 import kotlinx.collections.immutable.ImmutableList
@@ -46,4 +50,12 @@ internal object PayeeLocationsPreview {
     )
 
   val all: ImmutableList<PayeeLocationItem> = persistentListOf(longName, argos, tesco, noDate)
+
+  val withAddresses: ImmutableList<PayeeLocationItem> =
+    persistentListOf(
+      argos.copy(address = Found(Address("Argos", "Cheapside, City of London"))),
+      tesco.copy(address = Found(Address("Hungerford Lane", "Covent Garden, WC2N 5HS"))),
+      noDate.copy(address = Loading),
+      longName.copy(address = NotFound),
+    )
 }

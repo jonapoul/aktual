@@ -1,0 +1,34 @@
+{
+  "place_id": 278062568,
+  "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+  "osm_type": "relation",
+  "osm_id": 8119089,
+  "lat": "53.4795101",
+  "lon": "-2.2449321",
+  "category": "highway",
+  "type": "pedestrian",
+  "place_rank": 26,
+  "importance": 0.38382602028473783,
+  "addresstype": "pedestrian",
+  "name": "Albert Square",
+  "display_name": "Albert Square, Civic Quarter, City Centre, Manchester, Greater Manchester, England, M60 2WN, United Kingdom",
+  "address": {
+    "road": "Albert Square",
+    "neighbourhood": "Civic Quarter",
+    "suburb": "City Centre",
+    "city": "Manchester",
+    "ISO3166-2-lvl8": "GB-MAN",
+    "state_district": "Greater Manchester",
+    "state": "England",
+    "ISO3166-2-lvl4": "GB-ENG",
+    "postcode": "M60 2WN",
+    "country": "United Kingdom",
+    "country_code": "gb"
+  },
+  "boundingbox": [
+    "53.4789307",
+    "53.4800745",
+    "-2.2457324",
+    "-2.2444603"
+  ]
+}

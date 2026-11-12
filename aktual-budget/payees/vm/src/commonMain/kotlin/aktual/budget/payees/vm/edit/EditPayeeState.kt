@@ -1,6 +1,7 @@
 package aktual.budget.payees.vm.edit
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.AddressResult
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.core.model.Coordinates
 import androidx.compose.runtime.Immutable
@@ -20,4 +21,6 @@ data class SavedLocation(
   val id: PayeeLocationId,
   val coordinates: Coordinates,
   val date: LocalDate?,
+  // Null while address lookups are turned off
+  val address: AddressResult? = null,
 )

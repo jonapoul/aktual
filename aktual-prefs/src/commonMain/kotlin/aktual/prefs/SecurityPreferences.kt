@@ -5,4 +5,5 @@ interface SecurityPreferences {
   val appLockTimeout: Preference<AppLockTimeout>
   val hidePreviewInAppSwitcher: Preference<Boolean>
   val autoSavePayeeLocations: Preference<Boolean>
+  val lookUpPayeeAddresses: Preference<Boolean>
 }

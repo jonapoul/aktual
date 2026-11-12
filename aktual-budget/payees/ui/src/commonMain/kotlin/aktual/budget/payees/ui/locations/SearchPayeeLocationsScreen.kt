@@ -1,6 +1,7 @@
 package aktual.budget.payees.ui.locations
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.ui.OpenStreetMapAttribution
 import aktual.budget.payees.ui.mapUrl
 import aktual.budget.payees.ui.showLocationDeleteFailed
 import aktual.budget.payees.ui.showLocationDeleted
@@ -86,6 +87,7 @@ internal fun SearchPayeeLocationsScreen(
         is SetQuery -> viewModel.setQuery(action.query)
         is OpenLocation -> uriHandler.openUri(action.coordinates.mapUrl())
         is DeleteLocation -> viewModel.delete(action.id)
+        is RequestAddress -> viewModel.requestAddress(action.coordinates)
       }
     },
   )
@@ -177,7 +179,12 @@ private fun ResultsList(
         },
         onClick = { onAction(OpenLocation(location.coordinates)) },
         onDelete = { onAction(DeleteLocation(location.id)) },
+        onRequestAddress = { onAction(RequestAddress(it)) },
       )
+    }
+
+    if (results.locations.any { it.address != null }) {
+      item(key = "attribution") { OpenStreetMapAttribution() }
     }
 
     item(key = "bottom") { BottomSpacing() }

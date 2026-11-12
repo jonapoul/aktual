@@ -4,6 +4,8 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.PayeeLocationDao
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.AddressBook
+import aktual.budget.payees.domain.AddressLookup
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.core.model.Coordinates
 import aktual.di.BudgetCoroutineScope
@@ -12,6 +14,9 @@ import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.TimeZone
 
@@ -25,8 +30,11 @@ internal fun BudgetDatabase.payeeLocations(scope: TestScope, sync: TestSyncContr
     clock = Clock.System,
   )
 
-internal fun BudgetDatabase.loader(scope: TestScope, sync: TestSyncController) =
-  PayeeLocationsLoader(payeeLocations(scope, sync), timeZones = { TimeZone.UTC })
+internal fun BudgetDatabase.loader(
+  scope: TestScope,
+  sync: TestSyncController,
+  addresses: AddressLookup = FakeAddressLookup(),
+) = PayeeLocationsLoader(payeeLocations(scope, sync), addresses, timeZones = { TimeZone.UTC })
 
 internal fun BudgetDatabase.deleter(scope: TestScope, sync: TestSyncController) =
   PayeeLocationDeleter(payeeLocations(scope, sync), BudgetCoroutineScope(scope))
@@ -47,3 +55,18 @@ internal suspend fun BudgetDatabase.insertLocation(
     created_at = createdAt,
     tombstone = false,
   )
+
+internal class FakeAddressLookup : AddressLookup {
+  val enabled = MutableStateFlow(false)
+  val book = MutableStateFlow(AddressBook.Empty)
+  val requests = mutableListOf<Coordinates>()
+
+  override val isEnabled: Flow<Boolean> = enabled
+  override val addresses: Flow<AddressBook> = book
+
+  override suspend fun setEnabled(enabled: Boolean) = this.enabled.update { enabled }
+
+  override fun request(coordinates: Coordinates) {
+    requests += coordinates
+  }
+}

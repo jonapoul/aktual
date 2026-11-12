@@ -5,11 +5,13 @@ import aktual.budget.db.dao.PayeeDao
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.localChange
+import aktual.budget.payees.domain.AddressLookup
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.utils.BudgetSyncController
+import aktual.core.model.Coordinates
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -53,6 +55,7 @@ internal constructor(
   private val payeeDao: PayeeDao,
   private val syncController: BudgetSyncController,
   private val payeeLocations: PayeeLocations,
+  private val addressLookup: AddressLookup,
   private val budgetScope: BudgetCoroutineScope,
   learning: CategoryLearningPref,
   timeZones: TimeZoneProvider,
@@ -91,15 +94,14 @@ internal constructor(
 
   // Where the payee's been saved from the transaction editor, newest first
   val locations: StateFlow<ImmutableList<SavedLocation>> =
-    payeeLocations
-      .observe(payeeId)
-      .map { locations ->
+    combine(payeeLocations.observe(payeeId), addressLookup.addresses) { locations, book ->
         locations
           .map { location ->
             SavedLocation(
               location.id,
               location.coordinates,
               location.createdAt?.toLocalDateTime(timeZones.get())?.date,
+              book[location.coordinates],
             )
           }
           .toImmutableList()
@@ -170,6 +172,8 @@ internal constructor(
   }
 
   // The undo snackbar can outlive this screen, so the restore can't be tied to it
+  fun requestAddress(coordinates: Coordinates) = addressLookup.request(coordinates)
+
   fun restoreLocation(id: PayeeLocationId) {
     budgetScope.launch {
       runCatchingCancellable(

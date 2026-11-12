@@ -1,8 +1,10 @@
 package aktual.budget.payees.vm.locations
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.payees.domain.AddressLookup
 import aktual.budget.payees.vm.locations.ListPayeeLocationsState.Failure
 import aktual.budget.payees.vm.locations.ListPayeeLocationsState.Success
+import aktual.core.model.Coordinates
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @Stable
 @ViewModelKey
@@ -30,11 +33,15 @@ class ListPayeeLocationsViewModel
 internal constructor(
   loader: PayeeLocationsLoader,
   private val deleter: PayeeLocationDeleter,
+  private val addressLookup: AddressLookup,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
   val events: SharedFlow<PayeeLocationsEvent> = deleter.events
+
+  val lookUpAddresses: StateFlow<Boolean> =
+    addressLookup.isEnabled.stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val state: StateFlow<ListPayeeLocationsState> =
     retries
@@ -58,6 +65,12 @@ internal constructor(
   fun delete(id: PayeeLocationId) = deleter.delete(viewModelScope, id)
 
   fun undoDelete(id: PayeeLocationId) = deleter.restore(id)
+
+  fun setLookUpAddresses(enabled: Boolean) {
+    viewModelScope.launch { addressLookup.setEnabled(enabled) }
+  }
+
+  fun requestAddress(coordinates: Coordinates) = addressLookup.request(coordinates)
 
   private fun toState(locations: List<PayeeLocationItem>): ListPayeeLocationsState =
     if (locations.isEmpty()) Empty else Success(locations.toImmutableList())
