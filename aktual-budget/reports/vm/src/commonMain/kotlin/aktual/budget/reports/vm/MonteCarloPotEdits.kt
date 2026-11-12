@@ -7,7 +7,8 @@ import kotlinx.collections.immutable.toImmutableList
 // The pot edits behind upstream's MonteCarloConfiguration.tsx and MonteCarloPotConfiguration.tsx
 
 val ReturnModel.isHistorical: Boolean
-  get() = this == HistoricalBootstrap || this == HistoricalSequence
+  get() =
+    this == HistoricalBootstrap || this == HistoricalBlockBootstrap || this == HistoricalSequence
 
 // Whether unspent money is kept is simply whether a surplus pot exists
 val McConfig.keepsSurplus: Boolean
@@ -39,11 +40,16 @@ fun McConfig.addPot(id: String): McConfig = copy(pots = (pots + McPot(id = id)).
 fun McConfig.updatePot(id: String, transform: (McPot) -> McPot): McConfig =
   copy(pots = pots.map { if (it.id == id) transform(it) else it }.toImmutableList())
 
-// A removed pot takes its contributions with it
+// A removed pot takes its contributions with it, and lump sums drawn from it fall back to the
+// withdrawal order
 fun McConfig.removePot(id: String): McConfig =
   copy(
     pots = pots.filterNot { it.id == id }.toImmutableList(),
     contributions = contributions.filterNot { it.potId == id }.toImmutableList(),
+    lumpSums =
+      lumpSums
+        .map { if (it.sourcePotId == id) it.copy(sourcePotId = null) else it }
+        .toImmutableList(),
   )
 
 // Moves a pot up (negative) or down the list, which is the order pots are drained in

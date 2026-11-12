@@ -122,7 +122,8 @@ internal fun RunDetailView(
     val hasContributions = config.contributions.isNotEmpty() || config.pots.any { it.isSurplus }
     val hasIncome = config.incomeStreams.isNotEmpty()
     val showInflation = rows.any { it.inflation != null }
-    val columns = Columns(hasContributions, hasIncome, showInflation)
+    val hasLumpSums = config.lumpSums.isNotEmpty()
+    val columns = Columns(hasContributions, hasIncome, showInflation, hasLumpSums)
 
     Box(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
       Column {
@@ -172,12 +173,14 @@ private data class Columns(
   val hasContributions: Boolean,
   val hasIncome: Boolean,
   val showInflation: Boolean,
+  val hasLumpSums: Boolean,
 ) {
   val width: Dp
     get() {
       var amounts = BASE_AMOUNT_COLUMNS
       if (hasContributions) amounts++
       if (hasIncome) amounts++
+      if (hasLumpSums) amounts++
       var width = EXPAND_WIDTH + AGE_WIDTH + RATE_WIDTH + AMOUNT_WIDTH * amounts
       var cells = amounts + 3
       if (showInflation) {
@@ -190,8 +193,9 @@ private data class Columns(
 
 @Composable
 private fun totalsText(rows: ImmutableList<McRunDetailRow>): String {
-  val withdrawn = rows.sumOf { it.withdrawal }
-  val tax = rows.sumOf { it.taxPaid }
+  val withdrawn = rows.sumOf { it.withdrawal + it.lumpSumWithdrawal }
+  val tax = rows.sumOf { it.taxPaid + it.lumpSumTax }
+  val lumpSums = rows.sumOf { it.lumpSumWithdrawal }
   val fees = rows.sumOf { it.feesPaid }
   val income = rows.sumOf { it.income }
   val incomeTax = rows.sumOf { it.incomeTax }
@@ -203,14 +207,20 @@ private fun totalsText(rows: ImmutableList<McRunDetailRow>): String {
       fees > 0 -> Strings.monteCarloDetailTotalsFees(withdrawn.money(), fees.money())
       else -> Strings.monteCarloDetailTotals(withdrawn.money())
     }
-  if (income <= 0) return totals
+  val withLumpSums =
+    if (lumpSums > 0) {
+      "$totals ${Strings.monteCarloDetailTotalsLumpSums(lumpSums.money())}"
+    } else {
+      totals
+    }
+  if (income <= 0) return withLumpSums
   val incomeTotals =
     if (incomeTax > 0) {
       Strings.monteCarloDetailIncomeTotalsTax(income.money(), incomeTax.money())
     } else {
       Strings.monteCarloDetailIncomeTotals(income.money())
     }
-  return "$totals $incomeTotals"
+  return "$withLumpSums $incomeTotals"
 }
 
 @Composable
@@ -226,6 +236,7 @@ private fun HeaderRow(columns: Columns) =
     if (columns.hasContributions) AmountHeading(Strings.monteCarloDetailContributions)
     if (columns.hasIncome) AmountHeading(Strings.monteCarloDetailIncome)
     AmountHeading(Strings.monteCarloDetailWithdrawal)
+    if (columns.hasLumpSums) AmountHeading(Strings.monteCarloDetailLumpSum)
     AmountHeading(Strings.monteCarloDetailSpent)
     AmountHeading(Strings.monteCarloDetailGrowth)
     GroupHeading(
@@ -278,6 +289,7 @@ private fun YearRow(
     if (columns.hasContributions) AmountCell((row.contributions + row.surplusSaved).money())
     if (columns.hasIncome) AmountCell((row.income - row.incomeTax).money())
     AmountCell(row.withdrawal.money())
+    if (columns.hasLumpSums) AmountCell(row.lumpSumWithdrawal.money())
     // A year that couldn't be fully paid for stands out
     AmountCell(
       row.spent.money(),
@@ -288,7 +300,10 @@ private fun YearRow(
       if (row.growth >= 0) colors.reportsNumberPositive else colors.reportsNumberNegative
     // No growth on a failure year: the plan stops there
     AmountCell(if (isFailure) "" else row.growth.money(), color = growthColor)
-    val growthBase = row.startBalance + row.contributions + row.surplusSaved - row.withdrawal
+    val growthBase =
+      row.startBalance + row.contributions + row.surplusSaved -
+        row.withdrawal -
+        row.lumpSumWithdrawal
     val growthRate = if (!isFailure && growthBase > 0) row.growth.toDouble() / growthBase else null
     TableCell(
       growthRate?.let(::formatPercent).orEmpty(),
@@ -343,6 +358,7 @@ private fun YearBreakdown(
         rule = config.withdrawalRule,
         surplusPotName = surplusPotName,
         hasSurplusPot = config.pots.any { it.isSurplus },
+        lumpSumNames = config.lumpSums.map { it.name }.toImmutableList(),
       )
     DetailText(story.joinToString(separator = " "), Modifier.widthIn(max = TEXT_MAX_WIDTH))
 
@@ -412,6 +428,7 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
     } else {
       +Strings.monteCarloWorkingWithdrawalUntaxed(row.withdrawal.money())
     }
+    lumpSumWorking(row, config)?.let { +it }
     when {
       row.spent < row.plannedSpending ->
         +Strings.monteCarloWorkingSpentShort(
@@ -440,6 +457,44 @@ private fun workingLines(row: McRunDetailRow, config: McConfig, surplusPotName: 
     row.inaccessibleBalance?.let { +Strings.monteCarloWorkingLocked(it.money()) }
   }
 
+// A year that couldn't take everything asked for says so with the requested total, so the per-item
+// amounts after it read as requests
+@Composable
+private fun lumpSumWorking(row: McRunDetailRow, config: McConfig): String? {
+  val requested = row.lumpSumAmounts.sum()
+  if (requested <= 0) return null
+  val gross = row.lumpSumWithdrawal
+  val tax = row.lumpSumTax
+  val sentence =
+    when {
+      gross - tax >= requested && tax > 0 ->
+        Strings.monteCarloWorkingLumpSumsTaxed(gross.money(), tax.money(), (gross - tax).money())
+      gross - tax >= requested -> Strings.monteCarloWorkingLumpSumsUntaxed(gross.money())
+      gross <= 0 -> Strings.monteCarloWorkingLumpSumsNone(requested.money())
+      tax > 0 ->
+        Strings.monteCarloWorkingLumpSumsPartialTaxed(
+          requested.money(),
+          gross.money(),
+          tax.money(),
+          (gross - tax).money(),
+        )
+      else -> Strings.monteCarloWorkingLumpSumsPartial(requested.money(), gross.money())
+    }
+  if (config.lumpSums.size <= 1) return sentence
+  val lines =
+    row.lumpSumAmounts.mapIndexedNotNull { i, amount ->
+      if (amount > 0) {
+        val name =
+          config.lumpSums.getOrNull(i)?.name?.ifEmpty { null }
+            ?: Strings.monteCarloLumpSumNumbered(i + 1)
+        Strings.monteCarloWorkingLumpSumLine(name, amount.money())
+      } else {
+        null
+      }
+    }
+  return "$sentence (${lines.joinToString("; ")})"
+}
+
 @Composable
 private fun DetailText(text: String, modifier: Modifier = Modifier) =
   Text(
@@ -458,6 +513,7 @@ private fun PotTable(
 ) =
   Column(modifier = modifier) {
     val hasSurplusPot = config.pots.any { it.isSurplus }
+    val hasLumpSums = config.lumpSums.isNotEmpty()
     // Only worth a column when something changes over the plan
     val hasInvestmentPhases = config.pots.any { it.investmentPhases.isNotEmpty() }
     Row(
@@ -485,6 +541,7 @@ private fun PotTable(
         )
       }
       PotHeading(Strings.monteCarloDetailPotWithdrawn)
+      if (hasLumpSums) PotHeading(Strings.monteCarloDetailLumpSum)
       PotHeading(Strings.monteCarloDetailPotTaxable)
       PotHeading(Strings.monteCarloDetailPotTaxPaid, help = Strings.monteCarloDetailHelpTaxPaid)
       PotHeading(Strings.monteCarloDetailPotFees, help = Strings.monteCarloDetailHelpFees)
@@ -522,6 +579,7 @@ private fun PotTable(
           AmountCell((row.potContributions.getOrElse(i) { 0 } + surplus).money())
         }
         AmountCell(row.potWithdrawals.getOrElse(i) { 0 }.money())
+        if (hasLumpSums) AmountCell(row.potLumpSums.getOrElse(i) { 0 }.money())
         AmountCell(row.potTaxables.getOrElse(i) { 0 }.money())
         AmountCell(row.potTaxes.getOrElse(i) { 0 }.money())
         AmountCell(row.potFees.getOrElse(i) { 0 }.money())

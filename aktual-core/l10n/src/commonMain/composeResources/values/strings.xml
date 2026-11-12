@@ -849,7 +849,7 @@
   <string name="monte_carlo_percentile_best">Best run</string>
 
   <!-- Cashflow chart -->
-  <string name="monte_carlo_cashflow_desc">Money flowing in and out each year of this simulated run: withdrawals and income above zero; planned spending, tax, contributions and money saved into the surplus pot below. Tap a year for its breakdown.</string>
+  <string name="monte_carlo_cashflow_desc">Money flowing in and out each year of this simulated run: withdrawals and income above zero; planned spending, tax, contributions, money saved into the surplus pot and any one-off withdrawals below. Tap a year for its breakdown.</string>
   <string name="monte_carlo_cashflow_money_in">Money in</string>
   <string name="monte_carlo_cashflow_money_out">Money out</string>
   <string name="monte_carlo_cashflow_tax">Tax</string>
@@ -1007,6 +1007,7 @@
   <!-- Description -->
   <string name="monte_carlo_how">Each scenario replays your retirement with a different sequence of yearly investment returns. Every year, any income arrives and any contributions are paid in at the start - some of them out of that income; the income then pays for the year’s spending first and the withdrawal covers the rest; anything left unspent is saved into the Surplus cash pot for later years when the plan keeps one, and otherwise leaves the plan; and then each pot grows or shrinks with that year’s return. Pots with an access age stay invested but can’t fund withdrawals until you reach it - if the accessible pots can’t cover what a year’s spending still needs, the plan counts as having run out, even if locked pots still hold money. The shaded bands show the range of outcomes across all scenarios: the darker band covers the middle half, and the lighter band covers four in five of them.</string>
   <string name="monte_carlo_how_normal">Keep in mind this is a simplified model: returns are drawn independently each year from a normal distribution, which ignores sequence-of-returns clustering and fat tails, and fees and taxes are modeled only as accurately as the rates you enter. Treat the results as a rough guide, not a guarantee.</string>
+  <string name="monte_carlo_how_block">Each scenario chains together blocks of consecutive actual US market years (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data). Each year usually carries on to the next real year, and now and then jumps to a different point in history, wrapping around the end of the data. Each year brings its own actual US inflation with it. Crashes keep the years that followed them within a block, but patterns are broken where blocks join, fees and taxes are only as accurate as the rates you enter, and US history may be optimistic for globally diversified portfolios.</string>
   <string name="monte_carlo_how_bootstrap">Returns are actual US market years (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data) drawn in random order for each pot’s allocation mix. Each sampled year brings its own actual US inflation with it, so high-inflation markets stay high-inflation. Real crash years are included, but multi-year momentum is lost by shuffling, fees and taxes are only as accurate as the rates you enter, and US history has been unusually good, so results may be optimistic for globally diversified portfolios.</string>
   <string name="monte_carlo_how_sequence">Each scenario replays actual US market history (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data) starting from a different year, wrapping around the end of the data. Each replayed year brings its own actual US inflation with it. This preserves real crashes and recoveries, but there are only as many scenarios as start years, fees and taxes are only as accurate as the rates you enter, and US history may be optimistic for globally diversified portfolios.</string>
 
@@ -1023,7 +1024,7 @@
   <string name="monte_carlo_desc_pots">The invested accounts your plan draws from - each with its own balance, allocation, and return assumptions. Use the arrows to reorder pots; expand a pot for access, tax and fee settings.</string>
   <string name="monte_carlo_desc_income">Money you receive each year without drawing on your pots, in today’s money - a state pension, an annuity, rental or part-time work. It pays for spending first; the pots fund the rest.</string>
   <string name="monte_carlo_desc_contributions">Money you add to your pots each year, in today’s money - paid from one of your income streams, or from outside the plan.</string>
-  <string name="monte_carlo_desc_spending">How much you take out each year, and optional rules that adjust it as markets move.</string>
+  <string name="monte_carlo_desc_spending">How much you take out each year, optional rules that adjust it as markets move, and any one-off withdrawals on top.</string>
   <string name="monte_carlo_desc_tax">How withdrawals are taxed - your spending is what you keep after tax.</string>
   <string name="monte_carlo_help_income">Each income stream arrives every year in its age window (both ages inclusive), taxed the same way as pot withdrawals: at its own rate under the flat model, or by its taxable portion under the bands model, where it uses up the lower bands before any pot withdrawal is taxed. What is left after tax and any contributions paid from it goes towards the year’s spending; the pots only fund the remainder. Income beyond that is unspent: it is saved into the Surplus cash pot, or leaves the plan if you tick Assume any unspent money is spent under Manage surplus on the Plan details tab. You can also route specific amounts into a pot with a contribution.</string>
   <string name="monte_carlo_help_contributions">Each contribution is paid in at the start of every year in its age window (both ages inclusive), so it earns that year’s return. Leave the ages blank for “now” and “the end of the plan”. Tick Adjust by inflation to keep the amount’s buying power constant; untick it for a fixed amount that shrinks in real terms. A pot can receive any number of contributions - even one that is still locked for withdrawals.\n\nA contribution paid from an income stream is capped at what that stream brings in that year. Tick Before tax for a workplace pension or salary sacrifice, which is deducted before the income’s tax is worked out.</string>
@@ -1044,10 +1045,13 @@
   <string name="monte_carlo_field_target_age">Pot must last until age</string>
   <string name="monte_carlo_group_simulation">Simulation</string>
   <string name="monte_carlo_field_return_model">Return model</string>
-  <string name="monte_carlo_help_return_model">How each simulated year’s investment return is generated.\n\nRandom: drawn from a normal distribution around each pot’s expected return and volatility. All pots experience the same market conditions each year, scaled by their own volatility.\n\nHistorical, shuffled: drawn from actual US market years (1928 onwards) in random order.\n\nHistorical sequences: replays real market history, one scenario per starting year. Pots with a Custom allocation always use their own return and volatility.</string>
+  <string name="monte_carlo_help_return_model">How each simulated year’s investment return is generated.\n\nRandom: drawn from a normal distribution around each pot’s expected return and volatility. All pots experience the same market conditions each year, scaled by their own volatility.\n\nHistorical, shuffled: drawn from actual US market years (1928 onwards) in random order.\n\nHistorical, in blocks: strings together runs of consecutive real years, so a crash keeps the years that followed it, while every scenario is still a different mix of history.\n\nHistorical sequences: replays real market history, one scenario per starting year. Pots with a Custom allocation always use their own return and volatility.</string>
   <string name="monte_carlo_return_model_normal">Random (normal distribution)</string>
   <string name="monte_carlo_return_model_bootstrap">Historical returns, shuffled</string>
   <string name="monte_carlo_return_model_sequence">Historical sequences (replay)</string>
+  <string name="monte_carlo_return_model_block">Historical returns, in blocks</string>
+  <string name="monte_carlo_field_block_length">Block length (years)</string>
+  <string name="monte_carlo_help_block_length">How many consecutive real years are replayed, on average, before the scenario jumps to a different point in history. Longer blocks keep more of history’s multi-year patterns, such as a crash and its recovery. Shorter blocks mix history up more.\n\nAround 10 years is a common choice. 1 behaves like the shuffled model.</string>
   <string name="monte_carlo_field_simulations">Simulations</string>
   <string name="monte_carlo_help_simulations">How many random scenarios to run. More simulations give a steadier result but take slightly longer.</string>
   <string name="monte_carlo_group_inflation">Inflation</string>
@@ -1122,6 +1126,35 @@
   <string name="monte_carlo_field_income_name">Income name</string>
   <string name="monte_carlo_income_remove">Remove income</string>
   <string name="monte_carlo_income_add">Add income</string>
+  <string name="monte_carlo_group_lump_sums">One-off withdrawals</string>
+  <string name="monte_carlo_help_lump_sums">A single withdrawal at an age, on top of that year’s spending - a house deposit, a car, a pension’s tax-free lump sum. The amount is what you receive after tax, in today’s money, and each one has its own tax setting rather than the pot’s.\n\nThe withdrawal rule and the minimum spending never adjust it, but your pots are smaller afterwards, so a rule may react in later years. A lump sum the accessible pots can’t fund fails the plan, like unfunded spending.</string>
+  <string name="monte_carlo_lump_sum_numbered">One-off %1$d</string>
+  <string name="monte_carlo_field_lump_sum_name">One-off withdrawal name</string>
+  <string name="monte_carlo_field_age">Age</string>
+  <string name="monte_carlo_field_amount_after_tax">Amount (after tax)</string>
+  <string name="monte_carlo_field_taken_from">Taken from</string>
+  <string name="monte_carlo_help_taken_from">The pot the money comes out of first. If that pot can’t cover the whole amount, or hasn’t reached its access age yet, the rest follows your withdrawal order. Follow the withdrawal order takes all of it that way.</string>
+  <string name="monte_carlo_source_order">Follow the withdrawal order</string>
+  <string name="monte_carlo_lump_sum_remove">Remove one-off withdrawal</string>
+  <string name="monte_carlo_lump_sum_add">Add one-off withdrawal</string>
+  <string name="monte_carlo_lump_sum_outside_plan">Age %1$d is outside the plan (ages %2$d to %3$d), so this is never taken.</string>
+  <string name="monte_carlo_lump_sum_locked">%1$s can’t be accessed until age %2$d, so at age %3$d this comes from the withdrawal order instead.</string>
+  <string name="monte_carlo_lump_sum_that_pot">That pot</string>
+  <string name="monte_carlo_cashflow_lump_sums">One-off withdrawals</string>
+  <string name="monte_carlo_story_lump_sums_short">The %1$s of one-off withdrawals (%2$s) could not be fully funded.</string>
+  <string name="monte_carlo_story_lump_sum_short_named">The %1$s one-off withdrawal “%2$s” could not be fully funded.</string>
+  <string name="monte_carlo_story_lump_sum_short">The %1$s one-off withdrawal could not be fully funded.</string>
+  <string name="monte_carlo_story_lump_sums_taken">One-off withdrawals of %1$s (%2$s) were taken from the pots.</string>
+  <string name="monte_carlo_story_lump_sum_taken_named">A one-off withdrawal of %1$s, “%2$s”, was taken from the pots.</string>
+  <string name="monte_carlo_story_lump_sum_taken">A one-off withdrawal of %1$s was taken from the pots.</string>
+  <string name="monte_carlo_detail_totals_lump_sums">%1$s of that was one-off withdrawals.</string>
+  <string name="monte_carlo_detail_lump_sum">One-off</string>
+  <string name="monte_carlo_working_lump_sum_line">%1$s: %2$s</string>
+  <string name="monte_carlo_working_lump_sums_taxed">One-off withdrawals: %1$s gross − %2$s tax = %3$s received.</string>
+  <string name="monte_carlo_working_lump_sums_untaxed">One-off withdrawals: %1$s, untaxed.</string>
+  <string name="monte_carlo_working_lump_sums_none">One-off withdrawals: %1$s requested, but nothing could be taken.</string>
+  <string name="monte_carlo_working_lump_sums_partial_taxed">One-off withdrawals: %1$s requested, but only %2$s gross − %3$s tax = %4$s could be taken.</string>
+  <string name="monte_carlo_working_lump_sums_partial">One-off withdrawals: %1$s requested, but only %2$s could be taken.</string>
 
   <!-- Contributions -->
   <string name="monte_carlo_field_contribution_name">Contribution name</string>
@@ -1452,6 +1485,11 @@
   <string name="reports_balance_forecast_granularity">Granularity</string>
   <string name="reports_balance_forecast_daily">Daily</string>
   <string name="reports_balance_forecast_monthly">Monthly</string>
+  <string name="reports_balance_forecast_y_axis">Y axis</string>
+  <string name="reports_balance_forecast_y_axis_auto">Auto</string>
+  <string name="reports_balance_forecast_y_axis_zero">Zero-based</string>
+  <string name="reports_balance_forecast_start_today">Start today</string>
+  <string name="reports_balance_forecast_start_today_note">This range moves forward from today. Monthly points show the balance on the last included day of each month.</string>
   <string name="reports_balance_forecast_ending">Ending balance</string>
   <string name="reports_balance_forecast_low">Low: %1$s</string>
   <string name="reports_balance_forecast_empty">No accounts are included in this report. Adjust the accounts or date range to see a balance projection.</string>

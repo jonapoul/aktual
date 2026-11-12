@@ -14,12 +14,15 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month.AUGUST
 import kotlinx.datetime.Month.FEBRUARY
 import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.MARCH
+import kotlinx.datetime.Month.MAY
 import kotlinx.datetime.YearMonth
 
 class BalanceForecastTest {
@@ -292,6 +295,51 @@ class BalanceForecastTest {
   private fun occurrence(date: LocalDate, amount: Long, account: AccountId? = CHECKING) =
     ForecastOccurrence(SCHEDULE, account, date, amount)
 
+  @Test
+  fun `Starting today keeps the length of the saved range`() {
+    val meta =
+      BalanceForecastReportMeta(
+        timeFrame = TimeFrame(YearMonth(2026, JANUARY), YearMonth(2026, MARCH), Static),
+      )
+
+    assertThat(meta.withStartToday(enabled = true, CURRENT).monthsFromToday).isEqualTo(3)
+    assertThat(BalanceForecastReportMeta().withStartToday(enabled = true, CURRENT).monthsFromToday)
+      .isEqualTo(DEFAULT_FORECAST_MONTHS)
+  }
+
+  @Test
+  fun `Stopping starting today keeps the length from this month`() {
+    val meta = BalanceForecastReportMeta(monthsFromToday = 6)
+
+    assertThat(meta.withStartToday(enabled = false, CURRENT))
+      .isEqualTo(
+        BalanceForecastReportMeta(
+          timeFrame = TimeFrame(CURRENT, YearMonth(2026, AUGUST), Static),
+        ),
+      )
+  }
+
+  @Test
+  fun `Tracking budget forecasts don't start today`() {
+    val meta = BalanceForecastReportMeta(monthsFromToday = 3)
+
+    assertThat(meta.startsTodayMonths(isTracking = true)).isNull()
+    assertThat(meta.withSource(TrackingBudget, CURRENT))
+      .isEqualTo(
+        BalanceForecastReportMeta(
+          source = TrackingBudget,
+          timeFrame = TimeFrame(CURRENT, YearMonth(2026, MAY), Static),
+        ),
+      )
+    assertThat(meta.withSource(Schedules, CURRENT).monthsFromToday).isEqualTo(3)
+  }
+
+  @Test
+  fun `Forecast from today ends the day before the anniversary`() {
+    val days = forecastDaysFromToday(LocalDate(2026, 1, 31), months = 1)
+    assertThat(days.endInclusive).isEqualTo(LocalDate(2026, 2, 27))
+  }
+
   private fun params(
     end: YearMonth,
     today: LocalDate,
@@ -310,5 +358,6 @@ class BalanceForecastTest {
     val CHECKING = AccountId("checking")
     val SAVINGS = AccountId("savings")
     val SAVINGS_PAYEE = PayeeId("savings-payee")
+    val CURRENT = YearMonth(2026, MARCH)
   }
 }

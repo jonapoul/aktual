@@ -48,6 +48,7 @@ internal fun CashflowSeries.label(config: McConfig): String =
     Tax -> Strings.monteCarloCashflowTax
     Contribution -> name.ifEmpty { Strings.monteCarloContributionNumbered(index + 1) }
     Surplus -> Strings.monteCarloCashflowSavedInto(surplusPotLabel(config.pots))
+    LumpSum -> name.ifEmpty { Strings.monteCarloLumpSumNumbered(index + 1) }
   }
 
 @Composable
@@ -58,6 +59,7 @@ internal fun CashflowGroupKind.string(): String =
     Tax -> Strings.monteCarloCashflowTax
     Spending -> Strings.monteCarloCashflowSpending
     Contributions -> Strings.monteCarloCashflowContributions
+    LumpSums -> Strings.monteCarloCashflowLumpSums
     Saved -> Strings.monteCarloCashflowSaved
   }
 
@@ -102,6 +104,7 @@ internal fun ReturnModel.string(): String =
     Normal,
     Unknown -> Strings.monteCarloReturnModelNormal
     HistoricalBootstrap -> Strings.monteCarloReturnModelBootstrap
+    HistoricalBlockBootstrap -> Strings.monteCarloReturnModelBlock
     HistoricalSequence -> Strings.monteCarloReturnModelSequence
   }
 

@@ -1,6 +1,7 @@
 package aktual.budget.reports.vm
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 // MonteCarloRuleExplanation: how the active withdrawal rule arrived at a captured year's amount
 sealed interface McRuleExplanation {
@@ -88,4 +89,14 @@ data class McRunDetailRow(
   val inaccessibleBalance: Long? = null,
   // A synthetic year after the plan ran out, charted by the cashflow view but not the table
   val afterDepletion: Boolean = false,
+  // Gross taken for the year's one-off withdrawals on top of the withdrawal, and its tax. The
+  // balance chain is start + contributions + surplusSaved - withdrawal - lumpSumWithdrawal +
+  // growth - fees = end
+  val lumpSumWithdrawal: Long = 0,
+  val lumpSumTax: Long = 0,
+  // The net each lump sum called for this year, in configured order. On a failure year this is
+  // what was asked for, not what was delivered
+  val lumpSumAmounts: ImmutableList<Long> = persistentListOf(),
+  // How much of the one-off gross each pot funded
+  val potLumpSums: ImmutableList<Long> = persistentListOf(),
 )

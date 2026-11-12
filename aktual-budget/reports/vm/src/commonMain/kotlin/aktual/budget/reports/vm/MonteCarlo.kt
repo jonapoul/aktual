@@ -229,12 +229,13 @@ internal fun runMonteCarlo(
       .toMutableList()
   if (taxBands.isEmpty() || taxBands[0].from > 0) taxBands.add(0, McTaxBand(from = 0.0, rate = 0.0))
   val isBands = taxModel == Bands
-  val hasTax =
-    if (isBands) {
-      taxBands.any { it.rate > 0 } && potTaxableFractions.any { it > 0 }
-    } else {
-      potTaxRates.any { it > 0 }
-    }
+  val hasBandTax = taxBands.any { it.rate > 0 }
+
+  // Whether a group of flows (pots, income streams, lump sums) can owe tax
+  fun hasAnyTax(rates: DoubleArray, taxableFractions: DoubleArray) =
+    if (isBands) hasBandTax && taxableFractions.any { it > 0 } else rates.any { it > 0 }
+
+  val hasTax = hasAnyTax(potTaxRates, potTaxableFractions)
 
   val incomeStreams = config.incomeStreams
   val incomeCount = incomeStreams.size
@@ -244,12 +245,7 @@ internal fun runMonteCarlo(
     }
   val incomeTaxableFractions =
     DoubleArray(incomeCount) { incomeStreams[it].taxableFraction.coerceIn(0.0, 1.0) }
-  val hasIncomeTax =
-    if (isBands) {
-      taxBands.any { it.rate > 0 } && incomeTaxableFractions.any { it > 0 }
-    } else {
-      incomeTaxRates.any { it > 0 }
-    }
+  val hasIncomeTax = hasAnyTax(incomeTaxRates, incomeTaxableFractions)
 
   // Worst-case share of a gross withdrawal lost to tax, to skip the shortfall precheck
   val maxTaxRate =
@@ -266,8 +262,32 @@ internal fun runMonteCarlo(
     return tax
   }
 
-  // Band thresholds are in today's money, so taxable income is deflated before banding. The year's
-  // income has already filled the lower bands, so the takes are taxed as the slice above it
+  // Band tax on a nominal taxable slice on top of taxableBase, the nominal taxable income already
+  // in
+  // the bands this year. Band thresholds are in today's money, so both are deflated before banding
+  fun bandTaxOnSlice(
+    taxableSlice: Double,
+    taxableBase: Double,
+    cumulativeInflation: Double,
+  ): Double {
+    val baseToday = taxableBase / cumulativeInflation
+    return (bandTax(baseToday + taxableSlice / cumulativeInflation) - bandTax(baseToday)) *
+      cumulativeInflation
+  }
+
+  // Solves g = net + tax(g). Tax is piecewise linear with marginal rates < 1, so this converges
+  fun solveGross(net: Double, taxForGross: (Double) -> Double): Double {
+    var gross = net
+    repeat(TAX_ITERATIONS) {
+      val next = net + taxForGross(gross)
+      if (abs(next - gross) <= TAX_CONVERGENCE * max(1.0, next)) return next
+      gross = next
+    }
+    return gross
+  }
+
+  // The year's income has already filled the lower bands, so the takes are taxed as the slice
+  // above it
   fun taxForTakes(cumulativeInflation: Double, taxableIncomeBase: Double): Double {
     if (!hasTax) return 0.0
     if (!isBands) {
@@ -277,9 +297,7 @@ internal fun runMonteCarlo(
     }
     var taxable = 0.0
     for (i in 0 until potCount) taxable += potTakes[i] * potTaxableFractions[i]
-    val baseToday = taxableIncomeBase / cumulativeInflation
-    return (bandTax(baseToday + taxable / cumulativeInflation) - bandTax(baseToday)) *
-      cumulativeInflation
+    return bandTaxOnSlice(taxable, taxableIncomeBase, cumulativeInflation)
   }
 
   // The slice of each pot's take that was assessed for tax, for the captured run
@@ -504,6 +522,98 @@ internal fun runMonteCarlo(
   val yearIncomeGross = DoubleArray(incomeCount)
   val yearIncomeRemaining = DoubleArray(incomeCount)
 
+  // One-off withdrawals are settled each year before the regular withdrawal: the chosen pot first,
+  // then the withdrawal order, grossed up for the lump sum's own tax. The rules, the floor and the
+  // planned spending never see them. Unknown source pots fall back to the order
+  val lumpSums = config.lumpSums
+  val lumpSumCount = lumpSums.size
+  val lumpSumSourcePotIndex =
+    IntArray(lumpSumCount) { i ->
+      lumpSums[i].sourcePotId?.let { id -> pots.indexOfFirst { it.id == id } } ?: -1
+    }
+  val lumpSumTaxRates =
+    DoubleArray(lumpSumCount) { lumpSums[it].taxRate.coerceIn(0.0, MC_MAX_WITHDRAWAL_TAX_RATE) }
+  val lumpSumTaxableFractions =
+    DoubleArray(lumpSumCount) { lumpSums[it].taxableFraction.coerceIn(0.0, 1.0) }
+  val hasLumpSumTax = hasAnyTax(lumpSumTaxRates, lumpSumTaxableFractions)
+  val lumpSumSchedule =
+    scheduleByYear(lumpSumCount) { i ->
+      val lumpSum = lumpSums[i]
+      Triple(lumpSum.age, lumpSum.age, lumpSum.amount to lumpSum.adjustsWithInflation)
+    }
+  val hasLumpSumByYear =
+    BooleanArray(horizonYears + 1) { year ->
+      lumpSumSchedule.flatByYear[year].any { it > 0 } ||
+        lumpSumSchedule.adjustedByYear[year].any { it > 0 }
+    }
+  val hasLumpSums = hasLumpSumByYear.any { it }
+  val yearLumpSumNets = DoubleArray(lumpSumCount)
+  val lumpSumTakes = DoubleArray(potCount)
+
+  // Fills yearLumpSumNets at the year's price level
+  fun settleLumpSumNets(year: Int, cumulativeInflation: Double) {
+    val flat = lumpSumSchedule.flatByYear[year]
+    val adjusted = lumpSumSchedule.adjustedByYear[year]
+    for (i in 0 until lumpSumCount) yearLumpSumNets[i] = flat[i] + adjusted[i] * cumulativeInflation
+  }
+
+  // Tax on a lump sum's gross on top of taxableBase, under its own tax setting
+  fun taxOnLumpSumGross(
+    gross: Double,
+    index: Int,
+    cumulativeInflation: Double,
+    taxableBase: Double,
+  ): Double =
+    when {
+      !hasLumpSumTax -> 0.0
+      !isBands -> gross * lumpSumTaxRates[index]
+      lumpSumTaxableFractions[index] <= 0 -> 0.0
+      else ->
+        bandTaxOnSlice(gross * lumpSumTaxableFractions[index], taxableBase, cumulativeInflation)
+    }
+
+  fun grossUpLumpSum(
+    net: Double,
+    index: Int,
+    cumulativeInflation: Double,
+    taxableBase: Double,
+  ): Double =
+    when {
+      !hasLumpSumTax -> net
+      !isBands -> net / (1 - lumpSumTaxRates[index])
+      else ->
+        solveGross(net) { gross ->
+          taxOnLumpSumGross(gross, index, cumulativeInflation, taxableBase)
+        }
+    }
+
+  // Takes gross out of the pots for a lump sum: the source pot first when it can be drained this
+  // year, the rest by the normal order. Deducts from potBalances and adds to lumpSumTakes.
+  // accessibleRemaining is what every accessible pot holds. Leaves potTakes clobbered
+  fun allocateLumpSumTakes(
+    gross: Double,
+    year: Int,
+    sourcePotIndex: Int,
+    accessibleRemaining: Double,
+  ) {
+    var remaining = gross
+    var remainingAccessible = accessibleRemaining
+    if (sourcePotIndex != -1 && canDrain(sourcePotIndex, year)) {
+      val take = min(potBalances[sourcePotIndex], remaining)
+      potBalances[sourcePotIndex] -= take
+      lumpSumTakes[sourcePotIndex] += take
+      remaining -= take
+      remainingAccessible -= take
+    }
+    if (remaining > 0 && remainingAccessible > 0) {
+      computeTakes(remaining, year, remainingAccessible)
+      for (i in 0 until potCount) {
+        potBalances[i] -= potTakes[i]
+        lumpSumTakes[i] += potTakes[i]
+      }
+    }
+  }
+
   // Settles a year's income and contributions: before-tax contributions come out of their stream's
   // gross, each stream is taxed, after-tax contributions come out of the net, and the rest is
   // spendable. Contributions from outside the plan are paid in full
@@ -593,6 +703,16 @@ internal fun runMonteCarlo(
       config.simulationCount.coerceIn(MC_MIN_SIMULATION_COUNT, MC_MAX_SIMULATION_COUNT)
     }
 
+  // Block bootstrap: with an average block of L years, each year carries on to the next historical
+  // year with probability 1 - 1/L
+  val blockContinueProbability =
+    1 -
+      1.0 /
+        config.historicalBlockLength.coerceIn(
+          MC_MIN_HISTORICAL_BLOCK_LENGTH,
+          MC_MAX_HISTORICAL_BLOCK_LENGTH,
+        )
+
   val random = Mulberry32(seed)
   val balancesByYear = Array(horizonYears + 1) { DoubleArray(simulationCount) }
   val depletionCounts = IntArray(horizonYears + 1)
@@ -631,6 +751,8 @@ internal fun runMonteCarlo(
     var adjustmentFactor = 1.0
     var floorCeilingAnchorRate = 0.0
     var cumulativeInflation = 1.0
+    // Block bootstrap: the historical year the previous simulated year used; -1 before the first
+    var previousHistoryIndex = -1
     var ratchetStreak = 0
     var withdrawnSum = 0.0
     var depleted = false
@@ -675,6 +797,15 @@ internal fun runMonteCarlo(
         val historyIndex =
           when (returnModel) {
             HistoricalBootstrap -> floor(random.next() * historyCount).toInt()
+            // Stationary block bootstrap: carry on to the next historical year (wrapping past the
+            // end), or start a new block at a random year. The first year always starts a block
+            HistoricalBlockBootstrap ->
+              if (previousHistoryIndex >= 0 && random.next() < blockContinueProbability) {
+                  (previousHistoryIndex + 1) % historyCount
+                } else {
+                  floor(random.next() * historyCount).toInt()
+                }
+                .also { previousHistoryIndex = it }
             HistoricalSequence -> (simulationIndex + year - 1) % historyCount
             Normal,
             Unknown -> -1
@@ -813,19 +944,54 @@ internal fun runMonteCarlo(
         val capturedPotStartBalances =
           if (isCapturedRun) preContributionPotBalances ?: potBalances.copyOf() else null
 
-        var accessibleNetCapacity = accessibleTotal
-        if (hasTax && accessibleTotal * minNetFactor <= netRequired) {
-          computeTakes(accessibleTotal, year, accessibleTotal)
+        // One-off withdrawals come out first, in config order. Under the bands model each one's
+        // taxable slice stacks on the income's, and the regular withdrawal is taxed above all of
+        // it. One the accessible pots can't fund takes what's there and fails the year
+        var lumpSumGross = 0.0
+        var lumpSumTax = 0.0
+        var lumpSumTaxableSlice = 0.0
+        var lumpSumShortfall = false
+        var accessibleAfterLumpSums = accessibleTotal
+        val capturedLumpSumNets = if (isCapturedRun) DoubleArray(lumpSumCount) else null
+        val capturedPotLumpSums = if (isCapturedRun) DoubleArray(potCount) else null
+        if (hasLumpSums && hasLumpSumByYear[year]) {
+          lumpSumTakes.fill(0.0)
+          settleLumpSumNets(year, cumulativeInflation)
+          for (i in 0 until lumpSumCount) {
+            val net = yearLumpSumNets[i]
+            capturedLumpSumNets?.set(i, net)
+            if (net <= 0) continue
+            val taxableBase = flows.taxableIncomeBase + lumpSumTaxableSlice
+            var gross = grossUpLumpSum(net, i, cumulativeInflation, taxableBase)
+            if (gross > accessibleAfterLumpSums) {
+              gross = accessibleAfterLumpSums
+              lumpSumShortfall = true
+            }
+            val tax = taxOnLumpSumGross(gross, i, cumulativeInflation, taxableBase)
+            allocateLumpSumTakes(gross, year, lumpSumSourcePotIndex[i], accessibleAfterLumpSums)
+            accessibleAfterLumpSums -= gross
+            lumpSumGross += gross
+            lumpSumTax += tax
+            if (isBands) lumpSumTaxableSlice += gross * lumpSumTaxableFractions[i]
+          }
+          withdrawnSum = toSafeAmount(withdrawnSum + lumpSumGross * startDeflator)
+          capturedPotLumpSums?.let { lumpSumTakes.copyInto(it) }
+        }
+        val taxableBaseForWithdrawal = flows.taxableIncomeBase + lumpSumTaxableSlice
+
+        var accessibleNetCapacity = accessibleAfterLumpSums
+        if (hasTax && accessibleAfterLumpSums * minNetFactor <= netRequired) {
+          computeTakes(accessibleAfterLumpSums, year, accessibleAfterLumpSums)
           accessibleNetCapacity =
-            accessibleTotal - taxForTakes(cumulativeInflation, flows.taxableIncomeBase)
+            accessibleAfterLumpSums - taxForTakes(cumulativeInflation, taxableBaseForWithdrawal)
         }
 
-        if (netRequired > 0 && accessibleNetCapacity < netRequired) {
+        if (lumpSumShortfall || netRequired > 0 && accessibleNetCapacity < netRequired) {
           // The accessible pots can't cover this year's spending, even if locked pots hold money,
           // so they're emptied for whatever net they can deliver
           fundingShortfall = true
-          withdrawnSum = toSafeAmount(withdrawnSum + accessibleTotal * startDeflator)
-          withdrawalTaken = accessibleTotal
+          withdrawnSum = toSafeAmount(withdrawnSum + accessibleAfterLumpSums * startDeflator)
+          withdrawalTaken = accessibleAfterLumpSums
           netDelivered = max(0.0, accessibleNetCapacity)
           if (captured != null) {
             failurePotSnapshot =
@@ -836,7 +1002,7 @@ internal fun runMonteCarlo(
               captured.withdrawals[i] = if (year >= potAccessFromYear[i]) potBalances[i] else 0.0
             }
             // potTakes still holds the everything-accessible split from the capacity check
-            attributeTaxToPots(accessibleTotal - netDelivered, captured.taxes)
+            attributeTaxToPots(accessibleAfterLumpSums - netDelivered, captured.taxes)
             if (hasTax) captureTaxables(captured.taxables)
           }
           potBalances.fill(0.0)
@@ -845,23 +1011,20 @@ internal fun runMonteCarlo(
           simulationDepletionYear = year
           depletionCounts[year]++
         } else {
-          // Solve g = net + tax(takes(g)); tax is piecewise linear with marginal rates < 1, so this
-          // converges
+          // The gross that delivers the net requirement, taxed on the pot split it's taken as
           var grossTotal = netRequired
           if (hasTax) {
-            var iterations = 0
-            var converged = false
-            while (!converged && iterations < TAX_ITERATIONS) {
-              computeTakes(grossTotal, year, accessibleTotal)
-              val next = netRequired + taxForTakes(cumulativeInflation, flows.taxableIncomeBase)
-              converged = abs(next - grossTotal) <= TAX_CONVERGENCE * max(1.0, next)
-              grossTotal = next
-              iterations++
-            }
-            grossTotal = min(grossTotal, accessibleTotal)
+            grossTotal =
+              min(
+                solveGross(netRequired) { gross ->
+                  computeTakes(gross, year, accessibleAfterLumpSums)
+                  taxForTakes(cumulativeInflation, taxableBaseForWithdrawal)
+                },
+                accessibleAfterLumpSums,
+              )
           }
 
-          computeTakes(grossTotal, year, accessibleTotal)
+          computeTakes(grossTotal, year, accessibleAfterLumpSums)
           for (i in 0 until potCount) potBalances[i] -= potTakes[i]
           withdrawnSum = toSafeAmount(withdrawnSum + grossTotal * startDeflator)
           withdrawalTaken = grossTotal
@@ -942,6 +1105,8 @@ internal fun runMonteCarlo(
           val contributionsEmitted = emit(contributionsThisYear, startDeflator)
           val withdrawalEmitted = emit(withdrawalTaken, startDeflator)
           val taxPaid = emit(withdrawalTaken - netDelivered, startDeflator)
+          val lumpSumWithdrawal = emit(lumpSumGross, startDeflator)
+          val lumpSumTaxEmitted = emit(lumpSumTax, startDeflator)
           val income = emit(flows.grossIncome, startDeflator)
           val base =
             McRunDetailRow(
@@ -982,11 +1147,20 @@ internal fun runMonteCarlo(
               potReturns = persistentListOf(),
               ruleExplanation = capturedRuleExplanation,
               minimumApplied = capturedMinimumApplied,
+              lumpSumWithdrawal = lumpSumWithdrawal,
+              lumpSumTax = lumpSumTaxEmitted,
+              // The requested nets reconcile with gross - tax on a funded year. On a failure year
+              // they exceed it, and emitParts rounds each on its own
+              lumpSumAmounts =
+                emitParts(capturedLumpSumNets, startDeflator, lumpSumWithdrawal - lumpSumTaxEmitted)
+                  .toImmutableList(),
+              potLumpSums =
+                emitParts(capturedPotLumpSums, startDeflator, lumpSumWithdrawal).toImmutableList(),
             )
           runDetail +=
             if (fundingShortfall) {
               // Any remaining balance was locked in pots not yet accessible, not lost to markets
-              val locked = emit(yearStartTotal - withdrawalTaken, startDeflator)
+              val locked = emit(yearStartTotal - lumpSumGross - withdrawalTaken, startDeflator)
               base.copy(
                 potFees = List(potCount) { 0L }.toImmutableList(),
                 potBalances =
@@ -1003,7 +1177,8 @@ internal fun runMonteCarlo(
                 growth =
                   roundJs(
                       (total + feesThisYear) * endDeflator -
-                        (yearStartTotal - withdrawalTaken + surplusSavedThisYear) * startDeflator,
+                        (yearStartTotal - withdrawalTaken - lumpSumGross + surplusSavedThisYear) *
+                          startDeflator,
                     )
                     .coerceIn(-MAX_EMITTED_LONG, MAX_EMITTED_LONG),
                 feesPaid = feesPaid,
@@ -1040,6 +1215,14 @@ internal fun runMonteCarlo(
             incomeAmounts = yearIncomeGross,
             potCount = potCount,
             contributionCount = contributionCount,
+            // The one-offs the plan still called for, charted unfunded like the spending
+            lumpSumAmounts =
+              if (hasLumpSums) {
+                settleLumpSumNets(year, cumulativeInflation)
+                yearLumpSumNets
+              } else {
+                DoubleArray(lumpSumCount)
+              },
           )
       }
       // Post-depletion years otherwise stay at zero
@@ -1130,6 +1313,7 @@ private fun unfundedYear(
   incomeAmounts: DoubleArray,
   potCount: Int,
   contributionCount: Int,
+  lumpSumAmounts: DoubleArray,
 ): McRunDetailRow {
   val incomeTowardsSpending = min(flows.spendableIncome, totalPlanned)
   val potFundedPlan = totalPlanned - incomeTowardsSpending
@@ -1166,6 +1350,8 @@ private fun unfundedYear(
     feesPaid = 0,
     potFees = potZeros,
     potReturns = List<Double?>(potCount) { null }.toImmutableList(),
+    lumpSumAmounts = lumpSumAmounts.map { emit(it, frozenDeflator) }.toImmutableList(),
+    potLumpSums = potZeros,
   )
 }
 

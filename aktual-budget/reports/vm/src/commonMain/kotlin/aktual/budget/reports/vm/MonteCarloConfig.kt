@@ -16,6 +16,11 @@ import kotlinx.collections.immutable.toImmutableList
 const val MC_MAX_AMOUNT = 100_000_000_000_000.0
 const val MC_MIN_SIMULATION_COUNT = 1000
 const val MC_MAX_SIMULATION_COUNT = 10000
+// The block bootstrap model's average run of consecutive historical years. 10 gives each year a 90%
+// chance of continuing to the next, and 1 never continues (the shuffled model)
+const val MC_MIN_HISTORICAL_BLOCK_LENGTH = 1
+const val MC_MAX_HISTORICAL_BLOCK_LENGTH = 30
+const val MC_DEFAULT_HISTORICAL_BLOCK_LENGTH = 10
 const val MC_MAX_WITHDRAWAL_TAX_RATE = 0.75
 const val MC_MAX_TAX_BAND_RATE = 0.99
 const val MC_MAX_ANNUAL_FEE_RATE = 0.1
@@ -240,6 +245,21 @@ data class McIncomeStream(
   val taxableFraction: Double = 1.0,
 )
 
+// A single withdrawal at an age on top of that year's spending. The amount is what's received after
+// tax, with its own tax treatment rather than the pot's
+@Immutable
+data class McLumpSum(
+  val id: String,
+  val age: Int,
+  val name: String = "",
+  val amount: Double = 1_000_000.0,
+  val adjustsWithInflation: Boolean = true,
+  // Drawn first when accessible; null follows the withdrawal order
+  val sourcePotId: String? = null,
+  val taxRate: Double = 0.0,
+  val taxableFraction: Double = 0.0,
+)
+
 @Immutable
 data class McTaxBand(val id: String = "band-1", val from: Double = 0.0, val rate: Double = 0.0)
 
@@ -271,6 +291,7 @@ data class McConfig(
   val spendingPhases: ImmutableList<McSpendingPhase> = persistentListOf(McSpendingPhase()),
   val contributions: ImmutableList<McContribution> = persistentListOf(),
   val incomeStreams: ImmutableList<McIncomeStream> = persistentListOf(),
+  val lumpSums: ImmutableList<McLumpSum> = persistentListOf(),
   // null means flat withdrawals
   val inflationMean: Double? = DEFAULT_INFLATION_MEAN,
   val inflationStdDev: Double = 0.02,
@@ -279,9 +300,14 @@ data class McConfig(
   val currentAge: Int = 60,
   val targetAge: Int = 90,
   val simulationCount: Int = 5000,
+  val historicalBlockLength: Int = MC_DEFAULT_HISTORICAL_BLOCK_LENGTH,
 ) {
   val horizonYears: Int
     get() = (targetAge - currentAge).coerceIn(MIN_HORIZON_YEARS, MAX_HORIZON_YEARS)
+
+  // The plan's last simulated year is the one before the target age
+  val lastPlanAge: Int
+    get() = targetAge - 1
 }
 
 // getPotAssetWeights(): null means the pot draws normally from its own mean and volatility
@@ -445,6 +471,9 @@ fun MonteCarloReportMeta.toConfig(): McConfig {
         .orEmpty()
         .mapIndexed { i, stream -> stream.toIncomeStream(i) }
         .toImmutableList(),
+    // A lump sum without an age has no year to land in, so it's dropped rather than guessed
+    lumpSums =
+      lumpSums.orEmpty().mapIndexedNotNull { i, lumpSum -> lumpSum.toLumpSum(i) }.toImmutableList(),
     inflationMean = inflationMean,
     inflationStdDev = inflationStdDev ?: defaults.inflationStdDev,
     taxModel = taxModel?.takeIf { it != Unknown } ?: defaults.taxModel,
@@ -462,6 +491,7 @@ fun MonteCarloReportMeta.toConfig(): McConfig {
     currentAge = currentAge ?: defaults.currentAge,
     targetAge = targetAge ?: defaults.targetAge,
     simulationCount = simulationCount ?: defaults.simulationCount,
+    historicalBlockLength = historicalBlockLength ?: defaults.historicalBlockLength,
   )
 }
 
@@ -564,6 +594,19 @@ private fun IncomeStream.toIncomeStream(index: Int): McIncomeStream {
   )
 }
 
+private fun LumpSum.toLumpSum(index: Int): McLumpSum? {
+  val age = age ?: return null
+  val defaults = McLumpSum(id = id.ifEmpty { "lump-sum-${index + 1}" }, age = age)
+  return defaults.copy(
+    name = name.orEmpty(),
+    amount = amount?.toDouble() ?: defaults.amount,
+    adjustsWithInflation = adjustsWithInflation ?: defaults.adjustsWithInflation,
+    sourcePotId = sourcePotId,
+    taxRate = taxRate ?: defaults.taxRate,
+    taxableFraction = taxableFraction ?: defaults.taxableFraction,
+  )
+}
+
 // Writes the whole config over the stored meta, like upstream's save, keeping fields the config
 // doesn't own (the name)
 fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
@@ -650,6 +693,7 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
           taxableFraction = stream.taxableFraction,
         )
       },
+    lumpSums = lumpSums.map { it.toMeta() },
     inflationMean = inflationMean,
     inflationStdDev = inflationStdDev,
     taxModel = taxModel,
@@ -657,6 +701,19 @@ fun McConfig.toMeta(base: MonteCarloReportMeta): MonteCarloReportMeta =
     currentAge = currentAge,
     targetAge = targetAge,
     simulationCount = simulationCount,
+    historicalBlockLength = historicalBlockLength,
+  )
+
+private fun McLumpSum.toMeta() =
+  LumpSum(
+    id = id,
+    name = name,
+    age = age,
+    amount = amount.toMinor(),
+    adjustsWithInflation = adjustsWithInflation,
+    sourcePotId = sourcePotId,
+    taxRate = taxRate,
+    taxableFraction = taxableFraction,
   )
 
 private fun McInvestmentPhase.toMeta() =

@@ -308,6 +308,8 @@ private fun HowItWorks(
       when (state.config.returnModel) {
         HistoricalBootstrap ->
           Strings.monteCarloHowBootstrap(HISTORICAL_FIRST_YEAR, HISTORICAL_LAST_YEAR)
+        HistoricalBlockBootstrap ->
+          Strings.monteCarloHowBlock(HISTORICAL_FIRST_YEAR, HISTORICAL_LAST_YEAR)
         HistoricalSequence ->
           Strings.monteCarloHowSequence(HISTORICAL_FIRST_YEAR, HISTORICAL_LAST_YEAR)
         Normal,

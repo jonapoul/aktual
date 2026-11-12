@@ -259,8 +259,8 @@ internal fun CashflowBars(
           chart.series.map { series ->
             column(seriesColor(series.colorIndex, theme).copy(alpha = UNFUNDED_ALPHA))
           },
-        // Only spending remains after the plan runs out
-        dimsAfterDepletion = chart.series.map { it.kind == Phase },
+        // Only spending and one-offs remain after the plan runs out
+        dimsAfterDepletion = chart.series.map { it.kind == Phase || it.kind == LumpSum },
         depletedAges = depletedAges,
       )
     }

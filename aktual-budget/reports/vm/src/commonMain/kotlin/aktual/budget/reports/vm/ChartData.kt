@@ -115,6 +115,8 @@ data class BalanceForecastData(
   val scheduledCount: Int,
   // Null for tracking budget forecasts and forecasts without accounts
   val contributors: ForecastContributors? = null,
+  // Otherwise the y axis fits the balances
+  val zeroBased: Boolean = false,
 ) : ChartData
 
 data class MonteCarloData(

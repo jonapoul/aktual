@@ -86,28 +86,11 @@ fun MonteCarloReportScreen(
     modifier = modifier,
     state = state,
     onAction = { action ->
-      when (action) {
-        NavBack ->
-          afterCommit {
-            if (viewModel.hasUnsavedChanges()) showDiscardDialog = true else back()
-          }
-        Save -> afterCommit { viewModel.save() }
-        is Rename -> viewModel.rename(action.name)
-        is Edit -> viewModel.edit(action.transform)
-        AddPot -> viewModel.addPot()
-        is AddInvestmentPhase -> viewModel.addInvestmentPhase(action.potId)
-        AddIncomeStream -> viewModel.addIncomeStream()
-        AddContribution -> viewModel.addContribution()
-        AddSpendingPhase -> viewModel.addSpendingPhase()
-        AddTaxBand -> viewModel.addTaxBand()
-        is SetKeepSurplus -> viewModel.setKeepSurplus(action.keep)
-        is SetShowTodaysMoney -> viewModel.setShowTodaysMoney(action.show)
-        is ToggleSection -> afterCommit { viewModel.toggleSection(action.section) }
-        is SetResultsView -> viewModel.setResultsView(action.view)
-        is SetGraphView -> viewModel.setGraphView(action.view)
-        is SetCashflowPercentile -> viewModel.setCashflowPercentile(action.percentile)
-        is SelectRun -> viewModel.selectRun(action.index)
-      }
+      viewModel.onAction(
+        action = action,
+        afterCommit = afterCommit,
+        onNavBack = { if (viewModel.hasUnsavedChanges()) showDiscardDialog = true else back() },
+      )
     },
   )
 
@@ -284,3 +267,32 @@ private class MonteCarloScaffoldProvider :
     ),
     Loading,
   )
+
+// Saving, leaving and collapsing wait for a field being edited to commit first
+@Suppress("CyclomaticComplexMethod")
+private fun MonteCarloViewModel.onAction(
+  action: MonteCarloAction,
+  afterCommit: (() -> Unit) -> Unit,
+  onNavBack: () -> Unit,
+) {
+  when (action) {
+    NavBack -> afterCommit(onNavBack)
+    Save -> afterCommit { save() }
+    is ToggleSection -> afterCommit { toggleSection(action.section) }
+    is Rename -> rename(action.name)
+    is Edit -> edit(action.transform)
+    AddPot -> addPot()
+    is AddInvestmentPhase -> addInvestmentPhase(action.potId)
+    AddIncomeStream -> addIncomeStream()
+    AddContribution -> addContribution()
+    AddLumpSum -> addLumpSum()
+    AddSpendingPhase -> addSpendingPhase()
+    AddTaxBand -> addTaxBand()
+    is SetKeepSurplus -> setKeepSurplus(action.keep)
+    is SetShowTodaysMoney -> setShowTodaysMoney(action.show)
+    is SetResultsView -> setResultsView(action.view)
+    is SetGraphView -> setGraphView(action.view)
+    is SetCashflowPercentile -> setCashflowPercentile(action.percentile)
+    is SelectRun -> selectRun(action.index)
+  }
+}

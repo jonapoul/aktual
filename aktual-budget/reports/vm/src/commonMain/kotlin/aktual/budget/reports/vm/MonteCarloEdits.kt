@@ -120,3 +120,17 @@ fun McConfig.removeIncomeStream(id: String): McConfig =
         .map { if (it.sourceIncomeStreamId == id) it.withSource(null) else it }
         .toImmutableList(),
   )
+
+// A few years out by default, so it lands inside the plan without sitting on the current year
+fun McConfig.addLumpSum(id: String): McConfig {
+  val age = min(lastPlanAge, currentAge + NEW_LUMP_SUM_YEARS)
+  return copy(lumpSums = (lumpSums + McLumpSum(id = id, age = age)).toImmutableList())
+}
+
+fun McConfig.updateLumpSum(id: String, transform: (McLumpSum) -> McLumpSum): McConfig =
+  copy(lumpSums = lumpSums.map { if (it.id == id) transform(it) else it }.toImmutableList())
+
+fun McConfig.removeLumpSum(id: String): McConfig =
+  copy(lumpSums = lumpSums.filterNot { it.id == id }.toImmutableList())
+
+private const val NEW_LUMP_SUM_YEARS = 5

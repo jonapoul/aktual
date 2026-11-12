@@ -58,6 +58,8 @@ internal fun SpendingTab(config: McConfig, onAction: OnAction<MonteCarloAction>)
   }
 
   WithdrawalRuleFields(config, onAction)
+
+  LumpSumList(config, onAction)
 }
 
 // MonteCarloSpendingPhases.tsx

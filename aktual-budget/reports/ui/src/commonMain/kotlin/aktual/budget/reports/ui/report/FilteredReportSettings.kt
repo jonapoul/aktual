@@ -160,6 +160,7 @@ internal fun FilteredReportSettings(
   onConditions: (List<Condition>, ConditionOp) -> Unit,
   onDismiss: () -> Unit,
   title: String = Strings.reportsChartSettings,
+  showTimeFrame: Boolean = true,
   display: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   var pickTimeFrame by rememberSaveable { mutableStateOf(false) }
@@ -192,7 +193,7 @@ internal fun FilteredReportSettings(
   }
 
   QuerySheet(title = title, onDismiss = onDismiss) {
-    if (editorData != null) {
+    if (editorData != null && showTimeFrame) {
       Column {
         SectionLabel(Strings.reportsFormulaQueryTimeFrame)
         TimeFrameRow(timeFrame = timeFrame, onClick = { pickTimeFrame = true })

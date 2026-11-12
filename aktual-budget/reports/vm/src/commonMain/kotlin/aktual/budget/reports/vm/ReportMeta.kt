@@ -181,8 +181,10 @@ data class BalanceForecastReportMeta(
   @SerialName("conditionsOp") val conditionsOp: ConditionOp? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
   @SerialName("granularity") val granularity: ForecastGranularity? = null,
+  @SerialName("yAxisBase") val yAxisBase: YAxisBase? = null,
   @SerialName("source") val source: ForecastSource? = null,
   @SerialName("series") val series: List<ForecastSeries>? = null,
+  @SerialName("monthsFromToday") val monthsFromToday: Int? = null,
 ) : ReportMeta
 
 @Immutable
@@ -377,6 +379,13 @@ enum class CategorySort {
 enum class ForecastGranularity {
   @SerialName("Daily") Daily,
   @SerialName("Monthly") Monthly,
+  @Fallback Unknown,
+}
+
+@Serializable
+enum class YAxisBase {
+  @SerialName("Zero-Based") ZeroBased,
+  @SerialName("Auto") Auto,
   @Fallback Unknown,
 }
 

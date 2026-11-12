@@ -24,6 +24,8 @@ internal sealed interface MonteCarloAction {
 
   data object AddContribution : MonteCarloAction
 
+  data object AddLumpSum : MonteCarloAction
+
   data object AddSpendingPhase : MonteCarloAction
 
   data object AddTaxBand : MonteCarloAction

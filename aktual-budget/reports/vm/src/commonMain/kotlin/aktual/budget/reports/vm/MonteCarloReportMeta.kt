@@ -20,6 +20,7 @@ data class MonteCarloReportMeta(
   @SerialName("spendingPhases") val spendingPhases: List<SpendingPhase>? = null,
   @SerialName("contributions") val contributions: List<Contribution>? = null,
   @SerialName("incomeStreams") val incomeStreams: List<IncomeStream>? = null,
+  @SerialName("lumpSums") val lumpSums: List<LumpSum>? = null,
   // Upstream's default, so an explicit null can mean inflation is off
   @SerialName("inflationMean") val inflationMean: Double? = DEFAULT_INFLATION_MEAN,
   @SerialName("inflationStdDev") val inflationStdDev: Double? = null,
@@ -28,6 +29,7 @@ data class MonteCarloReportMeta(
   @SerialName("currentAge") val currentAge: Int? = null,
   @SerialName("targetAge") val targetAge: Int? = null,
   @SerialName("simulationCount") val simulationCount: Int? = null,
+  @SerialName("historicalBlockLength") val historicalBlockLength: Int? = null,
   @SerialName("showTransfers") val showTransfers: Boolean? = null,
 ) : ReportMeta
 
@@ -122,6 +124,19 @@ data class IncomeStream(
   @SerialName("taxableFraction") val taxableFraction: Double? = null,
 )
 
+// MonteCarloLumpSumMeta: a single withdrawal at an age on top of that year's spending
+@Serializable
+data class LumpSum(
+  @SerialName("id") val id: String,
+  @SerialName("name") val name: String? = null,
+  @SerialName("age") val age: Int? = null,
+  @SerialName("amount") val amount: Long? = null,
+  @SerialName("adjustsWithInflation") val adjustsWithInflation: Boolean? = null,
+  @SerialName("sourcePotId") val sourcePotId: String? = null,
+  @SerialName("taxRate") val taxRate: Double? = null,
+  @SerialName("taxableFraction") val taxableFraction: Double? = null,
+)
+
 @Serializable
 data class TaxBand(
   @SerialName("id") val id: String,
@@ -163,6 +178,7 @@ enum class WithdrawalStrategy {
 enum class ReturnModel {
   @SerialName("normal") Normal,
   @SerialName("historical-bootstrap") HistoricalBootstrap,
+  @SerialName("historical-block-bootstrap") HistoricalBlockBootstrap,
   @SerialName("historical-sequence") HistoricalSequence,
   @Fallback Unknown,
 }

@@ -47,6 +47,7 @@ import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianLayerRangeProvider
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.compose.cartesian.data.lineModel
 import com.patrykandpatrick.vico.compose.cartesian.decoration.Decoration
@@ -59,6 +60,12 @@ import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.compose.common.DashedShape
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.data.ExtraStore
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
@@ -232,7 +239,10 @@ private fun Chart(
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
-            rangeProvider = remember { ZoomRangeProvider() },
+            rangeProvider =
+              remember(data.zeroBased) {
+                if (data.zeroBased) ZoomRangeProvider() else ZoomRangeProvider(FitBalances)
+              },
             lineProvider =
               LineCartesianLayer.LineProvider.series(
                 LineCartesianLayer.rememberLine(
@@ -360,6 +370,24 @@ private suspend fun CartesianChartModelProducer.populate(data: BalanceForecastDa
       )
     }
   }
+
+// Like upstream's "auto" y axis, the range fits the balances instead of including zero
+private object FitBalances : CartesianLayerRangeProvider {
+  override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+    val step = step(minY, maxY)
+    return floor(minY / step) * step
+  }
+
+  override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+    val step = step(minY, maxY)
+    return maxOf(ceil(maxY / step) * step, getMinY(minY, maxY, extraStore) + step)
+  }
+
+  private fun step(minY: Double, maxY: Double): Double {
+    val span = (maxY - minY).takeIf { it > 0.0 } ?: abs(maxY).coerceAtLeast(1.0)
+    return 10.0.pow(floor(log10(span)) - 1)
+  }
+}
 
 private const val DAILY_LABELS = 6
 
