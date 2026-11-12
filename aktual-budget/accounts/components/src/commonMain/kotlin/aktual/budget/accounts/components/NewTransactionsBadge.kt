@@ -1,4 +1,4 @@
-package aktual.core.ui
+package aktual.budget.accounts.components
 
 import aktual.core.l10n.Plurals
 import aktual.core.ui.AktualTheme.colors

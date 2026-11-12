@@ -1,4 +1,4 @@
-package aktual.core.ui
+package aktual.budget.reports.components
 
 import aktual.test.setPreviewContent
 import androidx.compose.runtime.getValue

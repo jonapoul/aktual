@@ -9,7 +9,6 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.YearMonthPicker
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement

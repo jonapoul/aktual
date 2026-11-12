@@ -1,4 +1,4 @@
-package aktual.core.ui
+package aktual.budget.accounts.components
 
 import aktual.budget.model.AccountSyncState
 import aktual.budget.model.AccountSyncState.Failed

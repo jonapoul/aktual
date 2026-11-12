@@ -1,12 +1,12 @@
 package aktual.budget.reports.ui.report
 
+import aktual.budget.reports.components.YearMonthPicker
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.YearMonthPicker
 import aktual.core.ui.radioButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

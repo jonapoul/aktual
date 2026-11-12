@@ -18,12 +18,12 @@ import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.label
+import aktual.budget.schedules.components.description
 import aktual.core.l10n.Strings
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.description
 import aktual.core.ui.highlighted
 import aktual.core.ui.redacted
 import androidx.compose.runtime.Composable

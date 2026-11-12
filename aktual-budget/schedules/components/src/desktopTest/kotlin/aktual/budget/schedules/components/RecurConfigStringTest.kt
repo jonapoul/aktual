@@ -1,10 +1,11 @@
 @file:Suppress("JUnitMalformedDeclaration")
 
-package aktual.core.ui
+package aktual.budget.schedules.components
 
 import aktual.budget.model.DateFormat.YyyyMmDd
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurPattern
+import aktual.core.ui.formatter
 import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.burst.Burst
 import app.cash.burst.burstValues

@@ -1,5 +1,7 @@
 package aktual.budget.navrail.ui
 
+import aktual.budget.accounts.components.AccountSyncDot
+import aktual.budget.accounts.components.NewTransactionsBadge
 import aktual.budget.model.AccountGroup
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncState
@@ -33,7 +35,6 @@ import aktual.core.nav.BudgetTab
 import aktual.core.nav.ManageAccountsNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.Colors
-import aktual.core.ui.AccountSyncDot
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -43,7 +44,6 @@ import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.NewTransactionsBadge
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
