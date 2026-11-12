@@ -5,6 +5,12 @@ import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.GraphType
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.settings
+import aktual.budget.rules.components.ConditionSheetAt
+import aktual.budget.rules.components.ConditionsList
+import aktual.budget.rules.components.Divider
+import aktual.budget.rules.components.QuerySheet
+import aktual.budget.rules.components.SectionLabel
+import aktual.budget.rules.components.label
 import aktual.core.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.report
 
 import aktual.budget.model.TagId
+import aktual.budget.rules.components.QuerySheet
 import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton

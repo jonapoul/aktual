@@ -10,6 +10,9 @@ import aktual.budget.reports.vm.forecastTimeFrame
 import aktual.budget.reports.vm.startsTodayMonths
 import aktual.budget.reports.vm.withSource
 import aktual.budget.reports.vm.withStartToday
+import aktual.budget.rules.components.QuerySheetPage
+import aktual.budget.rules.components.SectionLabel
+import aktual.budget.rules.components.label
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton

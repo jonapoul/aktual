@@ -11,6 +11,7 @@ kotlin {
     implementation(libs.kotlinx.datetime)
     implementation(libs.vico)
     implementation(project(":aktual-budget:reports:components"))
+    implementation(project(":aktual-budget:rules:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
   }

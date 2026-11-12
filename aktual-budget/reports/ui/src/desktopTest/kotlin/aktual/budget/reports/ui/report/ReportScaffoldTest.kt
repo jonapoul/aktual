@@ -25,9 +25,10 @@ import aktual.budget.reports.vm.SummaryData
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.dashboard.DashboardItem
-import aktual.budget.reports.vm.newQueryCondition
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.summaryType
+import aktual.budget.rules.components.ConditionTags
+import aktual.budget.rules.domain.newFilterCondition
 import aktual.core.ui.Tags as CoreTags
 import aktual.test.setPreviewContent
 import androidx.compose.ui.semantics.SemanticsActions
@@ -155,7 +156,7 @@ class ReportScaffoldTest {
     back().assertExists()
 
     // when
-    onNodeWithTag(Tags.QuerySheetDone).performSemanticsAction(SemanticsActions.OnClick)
+    onNodeWithTag(ConditionTags.QuerySheetDone).performSemanticsAction(SemanticsActions.OnClick)
     waitForIdle()
 
     // then
@@ -173,7 +174,7 @@ class ReportScaffoldTest {
         ReportScaffold(state = state, editorData = PREVIEW_QUERY_DATA, onAction = {})
       }
       onNodeWithTag(ChartTags.ChartSettings).performClick()
-      onNodeWithTag(Tags.ConditionRow).performScrollTo().performClick()
+      onNodeWithTag(ConditionTags.ConditionRow).performScrollTo().performClick()
       onNodeWithText("Edit condition").assertExists()
       onNodeWithText("Nothing").performSemanticsAction(SemanticsActions.OnClick)
       waitForIdle()
@@ -443,7 +444,7 @@ class ReportScaffoldTest {
           ),
       )
 
-    val CATEGORY_CONDITION = newQueryCondition(Category)
+    val CATEGORY_CONDITION = newFilterCondition(Category)
 
     // As the view model makes it, with upstream's defaults filled in
     val ANALYSIS_META =

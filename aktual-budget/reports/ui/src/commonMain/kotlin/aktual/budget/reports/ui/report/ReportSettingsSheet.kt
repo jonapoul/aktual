@@ -17,6 +17,9 @@ import aktual.budget.reports.vm.allTimeDivisor
 import aktual.budget.reports.vm.summaryType
 import aktual.budget.reports.vm.withAllTimeDivisor
 import aktual.budget.reports.vm.withSummaryType
+import aktual.budget.rules.components.Divider
+import aktual.budget.rules.components.QuerySheet
+import aktual.budget.rules.components.SectionLabel
 import aktual.core.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

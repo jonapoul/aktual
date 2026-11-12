@@ -1,10 +1,11 @@
-package aktual.budget.reports.ui.report
+package aktual.budget.rules.components
 
-import aktual.budget.reports.ui.montecarlo.CommitTextField
-import aktual.budget.reports.ui.montecarlo.NumberField
-import aktual.budget.reports.vm.ConditionValueKind
-import aktual.budget.reports.vm.QueryEntity
-import aktual.budget.reports.vm.toDayOrNull
+import aktual.budget.model.Amount
+import aktual.budget.model.evaluateAmountInput
+import aktual.budget.model.toSignedInputText
+import aktual.budget.rules.domain.ConditionEntity
+import aktual.budget.rules.domain.ConditionValueKind
+import aktual.budget.rules.domain.toDayOrNull
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import kotlin.math.roundToLong
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
@@ -66,12 +67,15 @@ internal fun ConditionValue(
         onCommit = { text -> onChange(JsonPrimitive(text)) },
       )
 
+    // Number keyboards don't all offer a minus sign
     Money ->
-      NumberField(
-        value = value.jsonPrimitive.long / CENTS,
-        min = -MAX_AMOUNT,
-        max = MAX_AMOUNT,
-        onCommit = { amount -> onChange(JsonPrimitive(((amount ?: 0.0) * CENTS).roundToLong())) },
+      CommitTextField(
+        modifier = Modifier.width(AMOUNT_WIDTH),
+        text = Amount(value.jsonPrimitive.long).toSignedInputText(),
+        keyboardType = Text,
+        onCommit = { text ->
+          evaluateAmountInput(text)?.let { amount -> onChange(JsonPrimitive(amount.toLong())) }
+        },
       )
 
     Day ->
@@ -154,7 +158,7 @@ private fun EntityListPicker(
 internal fun EntitySheet(
   kind: ConditionValueKind,
   value: JsonElement,
-  entities: ImmutableList<QueryEntity>,
+  entities: ImmutableList<ConditionEntity>,
   onChange: (JsonElement) -> Unit,
   onDismiss: () -> Unit,
 ) {
@@ -182,9 +186,9 @@ internal fun EntitySheet(
 // A list sheet with a search field, since there can be hundreds of payees
 @Composable
 private fun EntitySheet(
-  selected: QueryEntity,
-  options: ImmutableList<QueryEntity>,
-  onSelect: (QueryEntity) -> Unit,
+  selected: ConditionEntity,
+  options: ImmutableList<ConditionEntity>,
+  onSelect: (ConditionEntity) -> Unit,
   onDismiss: () -> Unit,
 ) =
   HostedSheet(onDismiss = onDismiss) {
@@ -207,7 +211,7 @@ private fun EntitySheet(
 
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-      items(filtered, key = QueryEntity::id) { entity ->
+      items(filtered, key = ConditionEntity::id) { entity ->
         BottomSheetListItem(
           label = if (entity == NOTHING) nothing else entity.name,
           isSelected = entity == selected,
@@ -218,10 +222,9 @@ private fun EntitySheet(
   }
 
 @Composable
-internal fun ImmutableMap<String, String>.nameOf(id: String): String =
+fun ImmutableMap<String, String>.nameOf(id: String): String =
   get(id) ?: Strings.reportsFormulaQueryUnknown
 
-private val NOTHING = QueryEntity(id = "", name = "")
+private val NOTHING = ConditionEntity(id = "", name = "")
 private val FLAGS = persistentListOf(true, false)
-private const val CENTS = 100.0
-private const val MAX_AMOUNT = 1_000_000_000.0
+private val AMOUNT_WIDTH = 160.dp

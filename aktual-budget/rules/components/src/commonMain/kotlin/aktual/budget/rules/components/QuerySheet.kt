@@ -1,6 +1,5 @@
-package aktual.budget.reports.ui.report
+package aktual.budget.rules.components
 
-import aktual.budget.reports.ui.Tags
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
@@ -27,7 +26,7 @@ import androidx.compose.ui.unit.dp
 // A sheet that edits part of a query in place, so Done only closes it. Delete is only shown when
 // [onDelete] is set
 @Composable
-internal fun QuerySheet(
+fun QuerySheet(
   title: String,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -45,7 +44,7 @@ internal fun QuerySheet(
   }
 
 @Composable
-internal fun QuerySheetPage(
+fun QuerySheetPage(
   title: String,
   close: (then: () -> Unit) -> Unit,
   modifier: Modifier = Modifier,
@@ -70,7 +69,7 @@ internal fun QuerySheetPage(
     ) {
       if (onDelete != null) {
         BasicTextButton(
-          modifier = Modifier.testTag(Tags.QuerySheetDelete),
+          modifier = Modifier.testTag(ConditionTags.QuerySheetDelete),
           text = Strings.reportsFormulaQueryDeleteConditionConfirm,
           style = typography.buttonTextStyle,
           colors = { pressed -> colors.errorButton(pressed) },
@@ -80,7 +79,7 @@ internal fun QuerySheetPage(
       }
       AktualButton(
         kind = Primary,
-        modifier = Modifier.weight(1f).testTag(Tags.QuerySheetDone),
+        modifier = Modifier.weight(1f).testTag(ConditionTags.QuerySheetDone),
         text = Strings.reportsFormulaEditorDone,
         onClick = { close {} },
       )

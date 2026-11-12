@@ -1,12 +1,11 @@
-package aktual.budget.reports.ui.report
+package aktual.budget.rules.components
 
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
-import aktual.budget.reports.ui.Tags
-import aktual.budget.reports.vm.QUERY_FIELDS
-import aktual.budget.reports.vm.QueryEditorData
-import aktual.budget.reports.vm.newQueryCondition
+import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.FILTER_FIELDS
+import aktual.budget.rules.domain.newFilterCondition
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
@@ -36,13 +35,13 @@ import kotlinx.collections.immutable.ImmutableMap
 
 // Whether to match all or any conditions, and the conditions themselves, each edited in a sheet
 @Composable
-internal fun ConditionsEditor(
+fun ConditionsEditor(
   conditions: ImmutableList<Condition>,
   conditionsOp: ConditionOp,
-  data: QueryEditorData,
+  data: ConditionEntities,
   onChange: (List<Condition>, ConditionOp) -> Unit,
   modifier: Modifier = Modifier,
-  fields: ImmutableList<Field> = QUERY_FIELDS,
+  fields: ImmutableList<Field> = FILTER_FIELDS,
 ) {
   var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
@@ -71,14 +70,14 @@ internal fun ConditionsEditor(
 
 // Opens a condition by its index. Adding one opens it too, before it shows up in [conditions]
 @Composable
-internal fun ConditionsList(
+fun ConditionsList(
   conditions: ImmutableList<Condition>,
   conditionsOp: ConditionOp,
   names: ImmutableMap<String, String>,
   onChange: (List<Condition>, ConditionOp) -> Unit,
   onOpen: (Int) -> Unit,
   modifier: Modifier = Modifier,
-  fields: ImmutableList<Field> = QUERY_FIELDS,
+  fields: ImmutableList<Field> = FILTER_FIELDS,
 ) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(22.dp)) {
     Column {
@@ -112,13 +111,13 @@ internal fun ConditionsList(
       }
       AktualButton(
         kind = Tonal,
-        modifier = Modifier.fillMaxWidth().testTag(Tags.AddCondition),
+        modifier = Modifier.fillMaxWidth().testTag(ConditionTags.AddCondition),
         icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,
         onClick = {
           onOpen(conditions.size)
           val field: Field = if (Payee in fields) Payee else fields.first()
-          onChange(conditions + newQueryCondition(field), conditionsOp)
+          onChange(conditions + newFilterCondition(field), conditionsOp)
         },
       )
     }
@@ -126,14 +125,14 @@ internal fun ConditionsList(
 
 // Shows nothing until the condition exists, e.g. straight after adding it
 @Composable
-internal fun ConditionSheetAt(
+fun ConditionSheetAt(
   index: Int,
   conditions: ImmutableList<Condition>,
   conditionsOp: ConditionOp,
-  data: QueryEditorData,
+  data: ConditionEntities,
   onChange: (List<Condition>, ConditionOp) -> Unit,
   onDismiss: () -> Unit,
-  fields: ImmutableList<Field> = QUERY_FIELDS,
+  fields: ImmutableList<Field> = FILTER_FIELDS,
 ) {
   val condition = conditions.getOrNull(index)
   if (condition != null) {
@@ -156,7 +155,7 @@ private fun ConditionRow(
   names: ImmutableMap<String, String>,
   onClick: () -> Unit,
 ) =
-  SettingRow(modifier = Modifier.testTag(Tags.ConditionRow), onClick = onClick) {
+  SettingRow(modifier = Modifier.testTag(ConditionTags.ConditionRow), onClick = onClick) {
     Text(
       modifier = Modifier.width(FIELD_WIDTH),
       text = condition.field.label().replaceFirstChar { it.titlecase() },

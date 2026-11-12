@@ -1,17 +1,15 @@
 package aktual.budget.reports.ui.report
 
-import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.model.Field
 import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.QueryEditorData
-import aktual.budget.reports.vm.QueryEntity
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
-import aktual.budget.reports.vm.editableKind
+import aktual.budget.rules.components.label
+import aktual.budget.rules.components.valueLabel
+import aktual.budget.rules.domain.ConditionEntity
 import aktual.core.l10n.Strings
-import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
 import androidx.compose.runtime.Composable
 import kotlinx.collections.immutable.ImmutableMap
@@ -21,11 +19,7 @@ import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.long
 import kotlinx.serialization.json.put
 
 @Composable
@@ -42,24 +36,6 @@ private fun Condition.summary(names: ImmutableMap<String, String>): String {
   val field = field.label().replaceFirstChar { it.titlecase() }
   return listOfNotNull(field, operator.label(), valueLabel(names)).joinToString(" ")
 }
-
-@Composable
-internal fun Condition.valueLabel(names: ImmutableMap<String, String>): String? =
-  when (editableKind()) {
-    Entity -> value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
-    EntityList -> (value as JsonArray).map { names.nameOf(it.jsonPrimitive.content) }.joinToString()
-    Text,
-    Day -> value.jsonPrimitive.content
-    Money -> Amount(value.jsonPrimitive.long).formattedString()
-    Flag ->
-      if (value.jsonPrimitive.boolean) {
-        Strings.reportsFormulaQueryTrue
-      } else {
-        Strings.reportsFormulaQueryFalse
-      }
-    NoValue -> null
-    null -> value.toString()
-  }
 
 // A query with no time frame isn't filtered by date, so it shows as all time
 @Composable
@@ -91,7 +67,7 @@ internal val PREVIEW_FORMULA_META =
             conditions =
               listOf(
                 Condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))),
-                Condition(Field.Amount, LessThan, JsonPrimitive(-1000)),
+                Condition(Amount, LessThan, JsonPrimitive(-1000)),
                 Condition(Date, Is, buildJsonObject { put("frequency", "monthly") }),
               ),
             conditionsOp = And,
@@ -109,10 +85,10 @@ internal val PREVIEW_FORMULA_META =
 @Suppress("MagicNumber", "StringLiteralDuplication")
 internal val PREVIEW_QUERY_DATA =
   QueryEditorData(
-    accounts = persistentListOf(QueryEntity("checking", "Checking")),
-    categories = persistentListOf(QueryEntity("food", "Food")),
-    categoryGroups = persistentListOf(QueryEntity("bills", "Bills")),
-    payees = persistentListOf(QueryEntity("employer", "Employer")),
+    accounts = persistentListOf(ConditionEntity("checking", "Checking")),
+    categories = persistentListOf(ConditionEntity("food", "Food")),
+    categoryGroups = persistentListOf(ConditionEntity("bills", "Bills")),
+    payees = persistentListOf(ConditionEntity("employer", "Employer")),
     currentMonth = YearMonth(2025, 6),
     months = YearMonthRange(YearMonth(2024, 1), YearMonth(2025, 6)),
     names =

@@ -8,9 +8,9 @@ kotlin {
   commonMainDependencies {
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:formula"))
+    api(project(":aktual-budget:rules:domain"))
     api(project(":aktual-budget:tags:domain"))
     implementation(project(":aktual-budget:budgeting:domain"))
-    implementation(project(":aktual-budget:rules:domain"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:theme"))
     implementation(project(":aktual-prefs"))
