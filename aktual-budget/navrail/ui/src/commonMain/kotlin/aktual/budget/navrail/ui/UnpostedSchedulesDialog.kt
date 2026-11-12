@@ -6,11 +6,11 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,10 +47,8 @@ private fun UnpostedSchedulesDialogContent(
       }
     },
     buttons = {
-      TextButton(onClick = onDismiss) { Text(text = Strings.schedulesUnpostedLater) }
-      TextButton(onClick = onPost) {
-        Text(text = Strings.schedulesUnpostedPost, color = colors.numberPositive)
-      }
+      DialogTextButton(text = Strings.schedulesUnpostedLater, onClick = onDismiss)
+      DialogTextButton(kind = Primary, text = Strings.schedulesUnpostedPost, onClick = onPost)
     },
   )
 }

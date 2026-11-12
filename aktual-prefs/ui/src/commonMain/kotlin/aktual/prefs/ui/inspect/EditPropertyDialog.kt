@@ -10,8 +10,8 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.disabled
 import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.inspect.parseHexColorOrNull
 import aktual.prefs.vm.inspect.toHexString
@@ -27,7 +27,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -86,14 +85,13 @@ private fun EditPropertyDialogContent(
   AktualAlertDialogContent(
     title = property.name,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.settingsThemeInspectCancel) }
-      TextButton(enabled = isValid, onClick = { onConfirm(color) }) {
-        Text(
-          text = Strings.settingsThemeInspectEditSave,
-          fontWeight = if (isValid) Bold else null,
-          color = if (isValid) colors.numberPositive else colors.buttonNormalDisabledText.disabled,
-        )
-      }
+      DialogTextButton(text = Strings.settingsThemeInspectCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.settingsThemeInspectEditSave,
+        isEnabled = isValid,
+        onClick = { onConfirm(color) },
+      )
     },
     content = {
       Row(

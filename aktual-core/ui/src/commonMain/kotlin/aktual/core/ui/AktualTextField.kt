@@ -17,8 +17,6 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -177,9 +175,16 @@ private fun Modifier.outline(
 
 @Composable
 private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
-  IconButton(modifier = modifier, onClick = onClick) {
-    Icon(imageVector = AktualIcons.Delete, contentDescription = Strings.inputClear, tint = tint)
-  }
+  BasicIconButton(
+    modifier = modifier,
+    imageVector = AktualIcons.Delete,
+    contentDescription = Strings.inputClear,
+    colors =
+      IconButtonColorProvider { theme, isPressed ->
+        theme.bareIconButton(isPressed).copy(contentColor = tint)
+      },
+    onClick = onClick,
+  )
 }
 
 private data class TextInputPreviewParams(

@@ -20,6 +20,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
@@ -41,7 +42,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -121,10 +121,13 @@ private fun DeleteQueryDialog(name: String, onConfirm: () -> Unit, onDismiss: ()
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.reportsFormulaQueryCancel) }
-      TextButton(modifier = Modifier.testTag(Tags.ConfirmDeleteQuery), onClick = onConfirm) {
-        Text(Strings.reportsFormulaQueryDeleteConditionConfirm, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.reportsFormulaQueryCancel, onClick = onDismiss)
+      DialogTextButton(
+        modifier = Modifier.testTag(Tags.ConfirmDeleteQuery),
+        kind = Destructive,
+        text = Strings.reportsFormulaQueryDeleteConditionConfirm,
+        onClick = onConfirm,
+      )
     },
     content = {},
   )

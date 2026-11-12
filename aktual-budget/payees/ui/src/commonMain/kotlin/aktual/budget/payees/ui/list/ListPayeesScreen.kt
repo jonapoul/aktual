@@ -29,6 +29,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -57,7 +58,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -254,10 +254,8 @@ private fun DeletePayeeDialog(name: String, onConfirm: () -> Unit, onCancel: () 
     highlight = colors.errorText,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(Strings.payeesDeleteCancel) }
-      TextButton(onClick = onConfirm) {
-        Text(Strings.payeesDeleteConfirm, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.payeesDeleteCancel, onClick = onCancel)
+      DialogTextButton(kind = Destructive, text = Strings.payeesDeleteConfirm, onClick = onConfirm)
     },
     content = { Text(Strings.payeesDeleteConfirmMessage) },
   )

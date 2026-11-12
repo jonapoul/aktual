@@ -15,9 +15,11 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.NavBackIconButton
@@ -31,10 +33,7 @@ import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -102,14 +101,16 @@ internal fun TransactionsTitleBar(
       }
     },
     actions = {
-      IconButton(
+      AktualIconButton(
+        imageVector = AktualIcons.Add,
+        contentDescription = Strings.transactionsCreate,
         onClick = { onAction(CreateTransaction) },
-        content = { Icon(AktualIcons.Add, Strings.transactionsCreate) },
       )
 
-      IconButton(
+      AktualIconButton(
+        imageVector = AktualIcons.Tuning,
+        contentDescription = Strings.transactionsViewOptions,
         onClick = onOpenViewOptions,
-        content = { Icon(AktualIcons.Tuning, Strings.transactionsViewOptions) },
       )
 
       if (loadedAccount is SpecificAccount) {
@@ -135,9 +136,10 @@ private fun TransactionsMenu(
   var confirmDelete by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
-    IconButton(
+    AktualIconButton(
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.transactionsMenu,
       onClick = { expanded = true },
-      content = { Icon(AktualIcons.DotsHorizontalTriple, Strings.transactionsMenu) },
     )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
@@ -199,10 +201,12 @@ private fun ConfirmDeleteAccountDialog(onConfirm: () -> Unit, onCancel: () -> Un
     highlight = colors.errorText,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(Strings.transactionsDeleteAccountCancel) }
-      TextButton(onClick = onConfirm) {
-        Text(Strings.transactionsDeleteAccountConfirm, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.transactionsDeleteAccountCancel, onClick = onCancel)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.transactionsDeleteAccountConfirm,
+        onClick = onConfirm,
+      )
     },
     content = { Text(Strings.transactionsDeleteAccountMessage) },
   )

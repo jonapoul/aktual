@@ -18,6 +18,7 @@ import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AmountField
 import aktual.core.ui.BottomSheetListItem
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.EditorSheet
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.OnAction
@@ -36,7 +37,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -170,15 +170,15 @@ private fun ConfirmMonthDialog(
     title = action.label(),
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.budgetingEditCancel) }
-      TextButton(
+      DialogTextButton(text = Strings.budgetingEditCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.budgetingMonthApply,
         onClick = {
           onDismiss()
           onAction(ApplyMonthAction(month, action))
         },
-      ) {
-        Text(Strings.budgetingMonthApply)
-      }
+      )
     },
     content = { Text(Strings.budgetingMonthConfirm(month.stringLong())) },
   )

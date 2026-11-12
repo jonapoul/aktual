@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetState
@@ -66,17 +64,20 @@ fun AktualModalBottomSheet(
     dragHandle = {
       Box(modifier = Modifier.fillMaxWidth()) {
         if (onBack != null) {
-          IconButton(
+          AktualIconButton(
             modifier = Modifier.align(CenterStart).testTag(Tags.SheetBack),
+            imageVector = AktualIcons.CheveronLeft,
+            contentDescription = Strings.navBack,
             onClick = onBack,
-          ) {
-            Icon(imageVector = AktualIcons.CheveronLeft, contentDescription = Strings.navBack)
-          }
+          )
         }
         BottomSheetDefaults.DragHandle(modifier = Modifier.align(Center))
-        IconButton(modifier = Modifier.align(CenterEnd), onClick = onDismissRequest) {
-          Icon(imageVector = AktualIcons.Delete, contentDescription = Strings.inputClose)
-        }
+        AktualIconButton(
+          modifier = Modifier.align(CenterEnd),
+          imageVector = AktualIcons.Delete,
+          contentDescription = Strings.inputClose,
+          onClick = onDismissRequest,
+        )
       }
     },
     content = {

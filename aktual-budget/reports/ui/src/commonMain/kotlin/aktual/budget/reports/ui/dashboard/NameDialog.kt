@@ -4,18 +4,16 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -81,14 +79,13 @@ private fun NameDialogContent(
   AktualAlertDialogContent(
     title = title,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardNameCancel) }
-      TextButton(enabled = enabled, onClick = { onConfirm(name) }) {
-        Text(
-          text = confirmText,
-          fontWeight = if (enabled) Bold else null,
-          color = if (enabled) colors.numberPositive else colors.buttonNormalDisabledText.disabled,
-        )
-      }
+      DialogTextButton(text = Strings.reportsDashboardNameCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text = confirmText,
+        isEnabled = enabled,
+        onClick = { onConfirm(name) },
+      )
     },
     content = {
       AktualTextField(

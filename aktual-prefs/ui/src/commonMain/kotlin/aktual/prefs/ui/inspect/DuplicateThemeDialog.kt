@@ -7,15 +7,14 @@ import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -49,14 +48,13 @@ private fun DuplicateThemeDialogContent(
   AktualAlertDialogContent(
     title = Strings.settingsThemeInspectDuplicate,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.settingsThemeInspectCancel) }
-      TextButton(enabled = enabled, onClick = { onConfirm(name) }) {
-        Text(
-          text = Strings.settingsThemeInspectDuplicateConfirm,
-          fontWeight = if (enabled) Bold else null,
-          color = if (enabled) colors.numberPositive else colors.buttonNormalDisabledText.disabled,
-        )
-      }
+      DialogTextButton(text = Strings.settingsThemeInspectCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.settingsThemeInspectDuplicateConfirm,
+        isEnabled = enabled,
+        onClick = { onConfirm(name) },
+      )
     },
     content = {
       AktualTextField(
@@ -87,14 +85,12 @@ private fun DeleteThemeDialogContent(
     title = Strings.settingsThemeInspectDeleteTitle(themeName),
     highlight = colors.errorText,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.settingsThemeInspectCancel) }
-      TextButton(onClick = onConfirm) {
-        Text(
-          text = Strings.settingsThemeInspectDeleteConfirm,
-          fontWeight = Bold,
-          color = colors.errorText,
-        )
-      }
+      DialogTextButton(text = Strings.settingsThemeInspectCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.settingsThemeInspectDeleteConfirm,
+        onClick = onConfirm,
+      )
     },
     content = { Text(Strings.settingsThemeInspectDeleteMessage) },
   )

@@ -47,7 +47,7 @@ fun <F> SortDialog(
     title = Strings.sort,
     onDismissRequest = onDismiss,
     buttons = {
-      AktualButton(
+      DialogTextButton(
         text = Strings.sortApply,
         onClick = { onConfirm(selectedField, selectedDirection) },
       )

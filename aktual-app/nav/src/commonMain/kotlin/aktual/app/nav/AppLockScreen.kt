@@ -13,6 +13,7 @@ import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.WavyBackground
@@ -33,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -167,7 +167,7 @@ private fun AppLockDisabledDialog(onDismiss: () -> Unit) {
 private fun AppLockDisabledDialogContent(onDismiss: () -> Unit) {
   AktualAlertDialogContent(
     title = Strings.appLockDisabledTitle,
-    buttons = { TextButton(onClick = onDismiss) { Text(Strings.appLockDisabledOk) } },
+    buttons = { DialogTextButton(text = Strings.appLockDisabledOk, onClick = onDismiss) },
   ) {
     Text(Strings.appLockDisabledMessage)
   }

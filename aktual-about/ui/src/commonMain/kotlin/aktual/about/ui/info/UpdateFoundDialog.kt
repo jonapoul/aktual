@@ -6,11 +6,11 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -63,18 +63,16 @@ internal fun UpdateFoundDialogContent(
       TextContent(Strings.infoUpdateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
     },
     buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(text = Strings.infoUpdateFoundDismiss, color = colors.noticeText)
-      }
-      TextButton(
+      DialogTextButton(text = Strings.infoUpdateFoundDismiss, onClick = onDismiss)
+      DialogTextButton(
         modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
+        kind = Primary,
+        text = Strings.infoUpdateFoundView,
         onClick = {
           onOpenUrl(latestUrl)
           onDismiss()
         },
-      ) {
-        Text(text = Strings.infoUpdateFoundView, color = colors.noticeText)
-      }
+      )
     },
   )
 }

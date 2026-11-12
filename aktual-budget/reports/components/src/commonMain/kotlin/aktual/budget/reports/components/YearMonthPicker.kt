@@ -10,6 +10,7 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.exposedDropDownMenu
 import aktual.core.ui.stringLong
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -118,16 +118,14 @@ internal fun PickDateDialogContent(
     modifier = modifier,
     title = Strings.yearMonthPickerTitle,
     buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(text = Strings.yearMonthPickerCancel)
-      }
+      DialogTextButton(text = Strings.yearMonthPickerCancel, onClick = onDismiss)
 
-      TextButton(enabled = isWithinRange, onClick = { onValueChange(currentValue) }) {
-        Text(
-          text = Strings.yearMonthPickerSave,
-          color = if (isWithinRange) colors.pageTextPositive else colors.pageTextSubdued,
-        )
-      }
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.yearMonthPickerSave,
+        isEnabled = isWithinRange,
+        onClick = { onValueChange(currentValue) },
+      )
     },
   ) {
     val centredTextStyle = LocalTextStyle.current.copy(textAlign = Center)

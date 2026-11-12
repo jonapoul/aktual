@@ -13,12 +13,14 @@ import aktual.core.model.CrashFile
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
@@ -42,11 +44,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -117,9 +116,11 @@ internal fun CrashReportScaffold(
         },
         actions = {
           if (state is Loaded) {
-            IconButton(onClick = { showDelete = true }) {
-              Icon(imageVector = AktualIcons.Trash, contentDescription = Strings.crashesDelete)
-            }
+            AktualIconButton(
+              imageVector = AktualIcons.Trash,
+              contentDescription = Strings.crashesDelete,
+              onClick = { showDelete = true },
+            )
           }
         },
       )
@@ -267,11 +268,9 @@ private fun ReportIssueDialog(onExport: () -> Unit, onOpen: () -> Unit, onDismis
     onDismissRequest = onDismiss,
     icon = MaterialIcons.OpenInNew,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.crashesCancel) }
-      TextButton(onClick = onExport) { Text(Strings.crashesReportExport) }
-      TextButton(onClick = onOpen) {
-        Text(Strings.crashesReportOpen, color = colors.pageTextPositive)
-      }
+      DialogTextButton(text = Strings.crashesCancel, onClick = onDismiss)
+      DialogTextButton(text = Strings.crashesReportExport, onClick = onExport)
+      DialogTextButton(kind = Primary, text = Strings.crashesReportOpen, onClick = onOpen)
     },
   ) {
     Text(text = Strings.crashesReportMessage)

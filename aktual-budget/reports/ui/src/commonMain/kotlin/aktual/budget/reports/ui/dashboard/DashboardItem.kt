@@ -28,6 +28,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
@@ -41,7 +42,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -295,16 +295,20 @@ private fun DeleteReportDialogContent(
       },
     highlight = colors.errorText,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardDeleteReportCancel) }
+      DialogTextButton(text = Strings.reportsDashboardDeleteReportCancel, onClick = onDismiss)
       if (onDeleteReport == null) {
-        TextButton(onClick = onConfirm) {
-          Text(Strings.reportsDashboardDeleteReportConfirm, color = colors.errorText)
-        }
+        DialogTextButton(
+          kind = Destructive,
+          text = Strings.reportsDashboardDeleteReportConfirm,
+          onClick = onConfirm,
+        )
       } else {
-        TextButton(onClick = onConfirm) { Text(Strings.reportsDashboardDeleteReportRemove) }
-        TextButton(onClick = onDeleteReport) {
-          Text(Strings.reportsDashboardDeleteReportSaved, color = colors.errorText)
-        }
+        DialogTextButton(text = Strings.reportsDashboardDeleteReportRemove, onClick = onConfirm)
+        DialogTextButton(
+          kind = Destructive,
+          text = Strings.reportsDashboardDeleteReportSaved,
+          onClick = onDeleteReport,
+        )
       }
     },
     content = {

@@ -17,12 +17,12 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.MY_PHONE_WIDTH_DP
 import aktual.core.ui.OnAction
 import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.checkbox
-import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -43,7 +43,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -152,20 +151,22 @@ private fun SyncBudgetDialog(
         )
       },
       buttons = {
-        TextButton(onClick = { onAction(Cancel) }, content = { Text(text = Strings.syncCancel) })
+        DialogTextButton(text = Strings.syncCancel, onClick = { onAction(Cancel) })
         when {
           passwordState is Active -> {
-            val enabled = passwordState.input.isNotEmpty()
-            val color =
-              if (enabled) colors.buttonPrimaryText else colors.buttonNormalDisabledText.disabled
-            TextButton(
-              enabled = enabled,
+            DialogTextButton(
+              kind = Primary,
+              text = Strings.syncPasswordConfirm,
+              isEnabled = passwordState.input.isNotEmpty(),
               onClick = { onAction(ConfirmKeyPassword) },
-              content = { Text(text = Strings.syncPasswordConfirm, color = color) },
             )
           }
           overallState == Failed ->
-            TextButton(onClick = { onAction(Retry) }, content = { Text(text = Strings.syncRetry) })
+            DialogTextButton(
+              kind = Primary,
+              text = Strings.syncRetry,
+              onClick = { onAction(Retry) },
+            )
         }
       },
     )

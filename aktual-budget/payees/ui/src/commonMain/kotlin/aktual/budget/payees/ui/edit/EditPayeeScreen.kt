@@ -43,15 +43,18 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
+import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
@@ -60,6 +63,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TextFieldShape
+import aktual.core.ui.bareIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -88,11 +92,9 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -318,13 +320,12 @@ private fun EditPayeeTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {
-        IconButton(onClick = onRequestDiscard) {
-          Icon(
-            imageVector = AktualIcons.Delete,
-            contentDescription = Strings.payeesDiscardConfirm,
-            tint = colors.errorText,
-          )
-        }
+        BasicIconButton(
+          imageVector = AktualIcons.Delete,
+          contentDescription = Strings.payeesDiscardConfirm,
+          colors = DiscardColors,
+          onClick = onRequestDiscard,
+        )
       } else {
         NavBackIconButton(onClick = { onAction(NavigateBack) })
       }
@@ -350,10 +351,8 @@ private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
     highlight = colors.warningText,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(Strings.payeesDiscardCancel) }
-      TextButton(onClick = onDiscard) {
-        Text(Strings.payeesDiscardConfirm, color = colors.warningText)
-      }
+      DialogTextButton(text = Strings.payeesDiscardCancel, onClick = onCancel)
+      DialogTextButton(kind = Destructive, text = Strings.payeesDiscardConfirm, onClick = onDiscard)
     },
     content = { Text(Strings.payeesDiscardMessage) },
   )
@@ -365,7 +364,7 @@ private fun SaveErrorDialog(message: String, onDismiss: () -> Unit) {
     title = Strings.payeesSaveFailureTitle,
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
-    buttons = { TextButton(onClick = onDismiss) { Text(Strings.payeesSaveFailureDismiss) } },
+    buttons = { DialogTextButton(text = Strings.payeesSaveFailureDismiss, onClick = onDismiss) },
     content = { Text(message) },
   )
 }
@@ -699,3 +698,7 @@ private class EditPayeeStateProvider :
     Editing(PayeesPreview.transfer),
     Failure(cause = null),
   )
+
+private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
+  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
+}

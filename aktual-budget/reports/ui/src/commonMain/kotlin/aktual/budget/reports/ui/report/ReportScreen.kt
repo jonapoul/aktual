@@ -43,6 +43,7 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
@@ -64,11 +65,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -193,10 +191,12 @@ internal fun DiscardChangesDialog(message: String, onDiscard: () -> Unit, onCanc
     highlight = colors.warningText,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(Strings.reportsTextDiscardCancel) }
-      TextButton(onClick = onDiscard) {
-        Text(Strings.reportsTextDiscardConfirm, color = colors.warningText)
-      }
+      DialogTextButton(text = Strings.reportsTextDiscardCancel, onClick = onCancel)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.reportsTextDiscardConfirm,
+        onClick = onDiscard,
+      )
     },
     content = { Text(message) },
   )
@@ -285,15 +285,12 @@ private fun ReportTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {
-        IconButton(
+        AktualIconButton(
           modifier = Modifier.testTag(Tags.DiscardReport),
+          imageVector = AktualIcons.Delete,
+          contentDescription = Strings.reportsTextDiscard,
           onClick = { onAction(NavBack) },
-        ) {
-          Icon(
-            imageVector = AktualIcons.Delete,
-            contentDescription = Strings.reportsTextDiscard,
-          )
-        }
+        )
       } else {
         NavBackIconButton(onClick = { onAction(NavBack) })
       }

@@ -7,9 +7,9 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ColorParams
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
@@ -35,18 +35,17 @@ internal fun CategoryLearningDialog(
     highlight = colors.noticeText,
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.payeesCategoryLearningClose) }
-      TextButton(onClick = { onEnabledChange(!isEnabled) }) {
-        Text(
-          color = colors.noticeText,
-          text =
-            if (isEnabled) {
-              Strings.payeesCategoryLearningDisable
-            } else {
-              Strings.payeesCategoryLearningEnable
-            },
-        )
-      }
+      DialogTextButton(text = Strings.payeesCategoryLearningClose, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text =
+          if (isEnabled) {
+            Strings.payeesCategoryLearningDisable
+          } else {
+            Strings.payeesCategoryLearningEnable
+          },
+        onClick = { onEnabledChange(!isEnabled) },
+      )
     },
   ) {
     Text(text = learnMoreText())

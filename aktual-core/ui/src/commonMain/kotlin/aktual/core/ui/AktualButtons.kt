@@ -18,6 +18,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -40,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -86,22 +88,79 @@ fun AktualButton(
     fontSize = fontSize,
     icon = icon,
   ) {
-    // Hide the content with alpha so the button keeps its size while loading
-    Box(contentAlignment = Center) {
-      Row(
-        modifier = Modifier.alpha(if (isLoading) 0f else 1f),
-        verticalAlignment = CenterVertically,
-      ) {
-        DefaultTextButtonContent(text, style, fontSize, icon)
-      }
+    LoadingTextButtonContent(isLoading, colors(false).contentColor) {
+      DefaultTextButtonContent(text, style, fontSize, icon)
+    }
+  }
+}
 
-      if (isLoading) {
-        CircularProgressIndicator(
-          modifier = Modifier.size(LoadingIndicatorSize),
-          color = colors(false).contentColor,
-          strokeWidth = LoadingIndicatorStroke,
-        )
+// For dialog actions: tinted text with no background or border
+@Composable
+fun DialogTextButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  kind: DialogButtonKind = Normal,
+  isEnabled: Boolean = true,
+  isLoading: Boolean = false,
+) {
+  val tint =
+    with(AktualTheme.colors) {
+      when (kind) {
+        Normal -> pageText
+        Primary -> pageTextPositive
+        Destructive -> errorText
       }
+    }
+  val style = typography.buttonTextStyle
+
+  BasicTextButton(
+    text = text,
+    colors = {
+      ButtonColors(
+        containerColor = Transparent,
+        disabledContainerColor = Transparent,
+        contentColor = tint,
+        disabledContentColor = tint.disabled,
+      )
+    },
+    onClick = onClick,
+    modifier = modifier,
+    isEnabled = isEnabled && !isLoading,
+    style = style,
+  ) {
+    LoadingTextButtonContent(isLoading, tint) {
+      DefaultTextButtonContent(text, style, fontSize = Unspecified, icon = null)
+    }
+  }
+}
+
+enum class DialogButtonKind {
+  Normal,
+  Primary,
+  Destructive,
+}
+
+// Hide the content with alpha so the button keeps its size while loading
+@Composable
+private fun LoadingTextButtonContent(
+  isLoading: Boolean,
+  indicatorColor: Color,
+  content: @Composable RowScope.() -> Unit,
+) {
+  Box(contentAlignment = Center) {
+    Row(
+      modifier = Modifier.alpha(if (isLoading) 0f else 1f),
+      verticalAlignment = CenterVertically,
+      content = content,
+    )
+
+    if (isLoading) {
+      CircularProgressIndicator(
+        modifier = Modifier.size(LoadingIndicatorSize),
+        color = indicatorColor,
+        strokeWidth = LoadingIndicatorStroke,
+      )
     }
   }
 }
@@ -306,36 +365,78 @@ private fun DefaultIconButtonContent(
 @Composable
 @Suppress("LambdaParameterEventTrailing")
 fun NavBackIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
-  IconButton(modifier = modifier, onClick = onClick) {
-    Icon(imageVector = AktualIcons.CheveronLeft, contentDescription = Strings.navBack)
-  }
+  AktualIconButton(
+    modifier = modifier,
+    imageVector = AktualIcons.CheveronLeft,
+    contentDescription = Strings.navBack,
+    onClick = onClick,
+  )
 }
 
 // Only shown when a nav drawer is available to open
 @Composable
 fun NavDrawerIconButton(modifier: Modifier = Modifier) {
   val openDrawer = LocalNavDrawerOpener.current ?: return
-  IconButton(modifier = modifier, onClick = openDrawer) {
-    Icon(imageVector = MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu)
-  }
+  AktualIconButton(
+    modifier = modifier,
+    imageVector = MaterialIcons.Menu,
+    contentDescription = Strings.budgetNavMenu,
+    onClick = openDrawer,
+  )
 }
 
 @Preview
 @Composable
-private fun PreviewButtons(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    val isEnabled = this
+private fun PreviewButtons(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       ButtonKind.entries.fastForEach { kind ->
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-          AktualButton(text = kind.name, kind = kind, isEnabled = isEnabled, onClick = {})
-          AktualButton(
-            text = kind.name,
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          for (isEnabled in listOf(true, false)) {
+            for (isLoading in listOf(false, true)) {
+              AktualButton(
+                text = kind.name,
+                kind = kind,
+                isEnabled = isEnabled,
+                isLoading = isLoading,
+                onClick = {},
+              )
+              AktualButton(
+                text = kind.name,
+                kind = kind,
+                icon = AktualIcons.Add,
+                isEnabled = isEnabled,
+                isLoading = isLoading,
+                onClick = {},
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+
+@Preview
+@Composable
+private fun PreviewIconButtons(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      ButtonKind.entries.fastForEach { kind ->
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          for (isEnabled in listOf(true, false)) {
+            AktualIconButton(
+              imageVector = AktualIcons.Check,
+              contentDescription = kind.name,
+              kind = kind,
+              isEnabled = isEnabled,
+              onClick = {},
+            )
+          }
+          AktualIconButton(
+            imageVector = AktualIcons.Check,
+            contentDescription = kind.name,
             kind = kind,
-            icon = AktualIcons.Add,
-            isEnabled = isEnabled,
+            isLoading = true,
             onClick = {},
           )
         }
@@ -345,38 +446,21 @@ private fun PreviewButtons(
 
 @Preview
 @Composable
-private fun PreviewLoading(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    val isLoading = this
+private fun PreviewDialogTextButtons(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      ButtonKind.entries.fastForEach { kind ->
-        AktualButton(text = kind.name, kind = kind, isLoading = isLoading, onClick = {})
-      }
-    }
-  }
-
-@Preview
-@Composable
-private fun PreviewIconButtons(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    val isEnabled = this
-    Row(modifier = Modifier.padding(4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      ButtonKind.entries.fastForEach { kind ->
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          AktualIconButton(
-            imageVector = AktualIcons.Check,
-            contentDescription = kind.name,
-            kind = kind,
-            isEnabled = isEnabled,
-            onClick = {},
-          )
-          AktualIconButton(
-            imageVector = AktualIcons.Check,
-            contentDescription = kind.name,
+      DialogButtonKind.entries.fastForEach { kind ->
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+          for (isEnabled in listOf(true, false)) {
+            DialogTextButton(
+              text = kind.name,
+              kind = kind,
+              isEnabled = isEnabled,
+              onClick = {},
+            )
+          }
+          DialogTextButton(
+            text = kind.name,
             kind = kind,
             isLoading = true,
             onClick = {},

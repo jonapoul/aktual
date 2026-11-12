@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.report
 import aktual.budget.model.TagId
 import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.TagChip
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -34,7 +34,11 @@ internal fun TagSheet(
       style = typography.bodyMedium,
       color = colors.tableHeaderText,
     )
-    TextButton(onClick = { onChange(emptySet()) }) { Text(Strings.reportsCustomEditorSelectNone) }
+    AktualButton(
+      kind = Bare,
+      text = Strings.reportsCustomEditorSelectNone,
+      onClick = { onChange(emptySet()) },
+    )
 
     Column {
       tags.fastForEach { tag ->

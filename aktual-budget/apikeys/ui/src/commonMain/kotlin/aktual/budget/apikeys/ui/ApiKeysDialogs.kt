@@ -14,8 +14,8 @@ import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.disabled
 import aktual.core.ui.disambiguated
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.plainTextClipEntry
@@ -28,13 +28,11 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -82,14 +80,13 @@ private fun CreateKeyDialogContent(
   AktualAlertDialogContent(
     title = Strings.apiKeysCreateTitle,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.apiKeysCancel) }
-      TextButton(enabled = enabled, onClick = { onCreate(name) }) {
-        Text(
-          text = Strings.apiKeysCreate,
-          fontWeight = if (enabled) Bold else null,
-          color = if (enabled) colors.numberPositive else colors.buttonNormalDisabledText.disabled,
-        )
-      }
+      DialogTextButton(text = Strings.apiKeysCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.apiKeysCreate,
+        isEnabled = enabled,
+        onClick = { onCreate(name) },
+      )
     },
     content = {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -123,12 +120,11 @@ private fun CreatedKeyDialog(key: Token, onDismiss: () -> Unit) {
     onDismissRequest = onDismiss,
     properties = DialogProperties(dismissOnClickOutside = false),
     buttons = {
-      TextButton(
+      DialogTextButton(
+        text = Strings.apiKeysCopy,
         onClick = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(key.value)) } },
-      ) {
-        Text(Strings.apiKeysCopy)
-      }
-      TextButton(onClick = onDismiss) { Text(Strings.apiKeysDone) }
+      )
+      DialogTextButton(kind = Primary, text = Strings.apiKeysDone, onClick = onDismiss)
     },
   ) {
     Text(text = Strings.apiKeysCreatedMessage, style = typography.bodyMedium)
@@ -148,10 +144,13 @@ private fun RevokeKeyDialog(dialog: RevokeKey, onConfirm: () -> Unit, onDismiss:
     title = Strings.apiKeysRevokeTitle,
     onDismissRequest = onDismiss,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.apiKeysCancel) }
-      TextButton(enabled = !dialog.isBusy, onClick = onConfirm) {
-        Text(Strings.apiKeysRevoke, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.apiKeysCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.apiKeysRevoke,
+        isEnabled = !dialog.isBusy,
+        onClick = onConfirm,
+      )
     },
   ) {
     Text(Strings.apiKeysRevokeMessage(dialog.key.name))

@@ -71,7 +71,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
@@ -253,17 +252,25 @@ private fun AccountSectionHeader(
         .padding(start = 4.dp, end = 24.dp),
     verticalAlignment = CenterVertically,
   ) {
-    IconButton(onClick = onToggle) {
+    val toggleDescription =
+      if (isExpanded) {
+        Strings.budgetNavAccountsCollapse(title)
+      } else {
+        Strings.budgetNavAccountsExpand(title)
+      }
+    BasicIconButton(
+      imageVector = AktualIcons.CheveronDown,
+      contentDescription = toggleDescription,
+      colors =
+        IconButtonColorProvider { theme, isPressed ->
+          theme.bareIconButton(isPressed).copy(contentColor = color)
+        },
+      onClick = onToggle,
+    ) {
       Icon(
         modifier = Modifier.rotate(rotation),
         imageVector = AktualIcons.CheveronDown,
-        contentDescription =
-          if (isExpanded) {
-            Strings.budgetNavAccountsCollapse(title)
-          } else {
-            Strings.budgetNavAccountsExpand(title)
-          },
-        tint = color,
+        contentDescription = toggleDescription,
       )
     }
 

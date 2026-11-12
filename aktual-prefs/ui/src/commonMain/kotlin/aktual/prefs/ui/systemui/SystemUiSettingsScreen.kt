@@ -19,6 +19,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -38,7 +39,6 @@ import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -136,9 +136,10 @@ private fun TestDialogButton() {
       title = Strings.settingsUiTestDialogTitle,
       onDismissRequest = { showDialog = false },
       buttons = {
-        TextButton(onClick = { showDialog = false }) {
-          Text(Strings.settingsUiTestDialogDismiss)
-        }
+        DialogTextButton(
+          text = Strings.settingsUiTestDialogDismiss,
+          onClick = { showDialog = false },
+        )
       },
     ) {
       Text(Strings.settingsUiTestDialogMessage)

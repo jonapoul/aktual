@@ -29,6 +29,8 @@ Use the `CardColumn` (column) or `CardRow` composable for card containers, passi
 
 Use `AktualButton` and `AktualIconButton` (`AktualButtons.kt`), picking a `ButtonKind` (`Primary`, `Normal`, `Bare`, `Tonal`, `Destructive`) and passing `isLoading` rather than building a spinner yourself. Only drop to `BasicTextButton` / `BasicIconButton` for colours no kind covers.
 
+In `AktualAlertDialog` button slots (and date picker dialog confirm/dismiss slots), use `DialogTextButton` instead: tinted text with no background, picking a `DialogButtonKind` (`Normal` for cancel/dismiss, `Primary` for confirm, `Destructive` for delete/discard).
+
 ## Action handlers
 
 Screens take a single `onAction: OnAction<FooAction>` for their sealed action type. Don't declare a per-screen `fun interface FooActionHandler`.

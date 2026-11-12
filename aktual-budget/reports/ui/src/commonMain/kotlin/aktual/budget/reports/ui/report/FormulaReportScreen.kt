@@ -76,8 +76,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -370,15 +368,12 @@ private fun FormulaReportTopBar(
     navigationIcon = {
       AnimatedContent(targetState = isEditing, transitionSpec = { swap() }) { editing ->
         if (editing) {
-          IconButton(
+          AktualIconButton(
             modifier = Modifier.testTag(Tags.CloseEditor),
+            imageVector = AktualIcons.Delete,
+            contentDescription = Strings.reportsFormulaEditorClose,
             onClick = { onAction(StopEditing) },
-          ) {
-            Icon(
-              imageVector = AktualIcons.Delete,
-              contentDescription = Strings.reportsFormulaEditorClose,
-            )
-          }
+          )
         } else {
           NavBackIconButton(onClick = { onAction(Back) })
         }

@@ -26,6 +26,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
@@ -252,8 +253,8 @@ internal fun DeleteAccountDialog(
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
     buttons = {
-      AktualButton(text = Strings.accountsManageCancel, onClick = onDismiss)
-      AktualButton(
+      DialogTextButton(text = Strings.accountsManageCancel, onClick = onDismiss)
+      DialogTextButton(
         kind = Primary,
         text = Strings.accountsDeleteConfirm,
         isLoading = ready?.isWorking == true,

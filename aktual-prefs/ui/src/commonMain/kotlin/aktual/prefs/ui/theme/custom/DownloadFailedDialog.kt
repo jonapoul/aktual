@@ -8,9 +8,9 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -45,9 +45,7 @@ private fun DownloadFailedDialogContent(
     highlight = colors.errorText,
     content = { Text(failure.reason) },
     buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(text = Strings.settingsThemeDownloadFailedOk, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.settingsThemeDownloadFailedOk, onClick = onDismiss)
     },
   )
 }

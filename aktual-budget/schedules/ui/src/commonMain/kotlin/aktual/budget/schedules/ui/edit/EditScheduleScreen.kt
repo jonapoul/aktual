@@ -37,6 +37,7 @@ import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -84,11 +85,9 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -204,12 +203,11 @@ private fun EditScheduleScaffold(
         navigationIcon = {
           EditModeContent(isEditing = loaded?.isEditing == true) { editing ->
             if (editing) {
-              IconButton(onClick = { onBack() }) {
-                Icon(
-                  imageVector = AktualIcons.Delete,
-                  contentDescription = Strings.editScheduleStopEditing,
-                )
-              }
+              AktualIconButton(
+                imageVector = AktualIcons.Delete,
+                contentDescription = Strings.editScheduleStopEditing,
+                onClick = { onBack() },
+              )
             } else {
               NavBackIconButton(onClick = { onBack() })
             }
@@ -734,8 +732,8 @@ private fun ConfirmDialog(
     highlight = highlight,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(cancel) }
-      TextButton(onClick = onConfirm) { Text(confirm, color = highlight) }
+      DialogTextButton(text = cancel, onClick = onCancel)
+      DialogTextButton(kind = Primary, text = confirm, onClick = onConfirm)
     },
     content = { Text(message) },
   )
@@ -752,7 +750,7 @@ private fun ErrorDialog(error: EditScheduleError, onDismiss: () -> Unit) {
       },
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
-    buttons = { TextButton(onClick = onDismiss) { Text(Strings.editScheduleErrorDismiss) } },
+    buttons = { DialogTextButton(text = Strings.editScheduleErrorDismiss, onClick = onDismiss) },
     content = {
       Text(
         when (error) {

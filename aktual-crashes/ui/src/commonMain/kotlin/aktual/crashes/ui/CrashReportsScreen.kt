@@ -19,6 +19,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
@@ -57,7 +58,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -312,8 +312,8 @@ internal fun CrashDeleteDialog(
     onDismissRequest = onDismiss,
     highlight = colors.errorText,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.crashesCancel) }
-      TextButton(onClick = onConfirm) { Text(Strings.crashesDelete, color = colors.errorText) }
+      DialogTextButton(text = Strings.crashesCancel, onClick = onDismiss)
+      DialogTextButton(kind = Destructive, text = Strings.crashesDelete, onClick = onConfirm)
     },
   ) {
     Text(text = message)

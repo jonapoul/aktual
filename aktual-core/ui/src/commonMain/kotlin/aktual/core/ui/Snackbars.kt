@@ -6,8 +6,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDefaults
@@ -19,7 +18,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SnackbarVisuals
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -144,14 +142,26 @@ fun AktualSnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
     contentColor = content,
     action =
       visuals.actionLabel?.let { label ->
-        { TextButton(onClick = data::performAction) { Text(label, color = content) } }
+        {
+          BasicTextButton(
+            text = label,
+            colors = { ButtonDefaults.textButtonColors(contentColor = content) },
+            onClick = data::performAction,
+          )
+        }
       },
     dismissAction =
       if (visuals.withDismissAction) {
         {
-          IconButton(onClick = data::dismiss) {
-            Icon(AktualIcons.Delete, contentDescription = Strings.inputClose, tint = content)
-          }
+          BasicIconButton(
+            imageVector = AktualIcons.Delete,
+            contentDescription = Strings.inputClose,
+            colors =
+              IconButtonColorProvider { theme, isPressed ->
+                theme.bareIconButton(isPressed).copy(contentColor = content)
+              },
+            onClick = data::dismiss,
+          )
         }
       } else {
         null

@@ -18,10 +18,12 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
@@ -31,9 +33,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,12 +63,11 @@ internal fun DashboardMenu(
   var dialog by remember { mutableStateOf<PageDialog?>(null) }
 
   Box(modifier = modifier) {
-    IconButton(onClick = { expanded = true }) {
-      Icon(
-        imageVector = AktualIcons.DotsHorizontalTriple,
-        contentDescription = Strings.reportsDashboardPageMenu,
-      )
-    }
+    AktualIconButton(
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.reportsDashboardPageMenu,
+      onClick = { expanded = true },
+    )
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       DashboardMenuItems(
@@ -184,10 +183,12 @@ private fun DeletePageDialogContent(
     title = Strings.reportsDashboardDeletePageTitle(page.displayName()),
     highlight = colors.errorText,
     buttons = {
-      TextButton(onClick = onDismiss) { Text(Strings.reportsDashboardDeletePageCancel) }
-      TextButton(onClick = onConfirm) {
-        Text(Strings.reportsDashboardDeletePageConfirm, color = colors.errorText)
-      }
+      DialogTextButton(text = Strings.reportsDashboardDeletePageCancel, onClick = onDismiss)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.reportsDashboardDeletePageConfirm,
+        onClick = onConfirm,
+      )
     },
     content = { Text(Strings.reportsDashboardDeletePageMessage) },
   )

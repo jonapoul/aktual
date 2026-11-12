@@ -38,6 +38,7 @@ import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
@@ -67,7 +68,6 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.material3.rememberDatePickerState
@@ -818,17 +818,18 @@ private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalD
   DatePickerDialog(
     onDismissRequest = onDismiss,
     confirmButton = {
-      TextButton(
-        enabled = state.selectedDateMillis != null,
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.transactionSheetDone,
+        isEnabled = state.selectedDateMillis != null,
         onClick = {
           state.getSelectedDate()?.toKotlinLocalDate()?.let(onSelect)
           onDismiss()
         },
-        content = { Text(Strings.transactionSheetDone) },
       )
     },
     dismissButton = {
-      TextButton(onClick = onDismiss, content = { Text(Strings.transactionSheetCancel) })
+      DialogTextButton(text = Strings.transactionSheetCancel, onClick = onDismiss)
     },
     content = { DatePicker(state = state) },
   )

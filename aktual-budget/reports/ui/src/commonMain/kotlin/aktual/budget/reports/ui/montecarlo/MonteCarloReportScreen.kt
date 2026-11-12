@@ -11,6 +11,7 @@ import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
@@ -19,6 +20,7 @@ import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
@@ -38,7 +40,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -116,18 +117,19 @@ fun MonteCarloReportScreen(
       highlight = colors.warningText,
       onDismissRequest = { showDiscardDialog = false },
       buttons = {
-        TextButton(onClick = { showDiscardDialog = false }) {
-          Text(Strings.monteCarloDiscardCancel)
-        }
-        TextButton(
+        DialogTextButton(
+          text = Strings.monteCarloDiscardCancel,
+          onClick = { showDiscardDialog = false },
+        )
+        DialogTextButton(
+          kind = Destructive,
+          text = Strings.monteCarloDiscardConfirm,
           onClick = {
             showDiscardDialog = false
             viewModel.reset()
             back()
           },
-        ) {
-          Text(Strings.monteCarloDiscardConfirm, color = colors.warningText)
-        }
+        )
       },
       content = { Text(Strings.monteCarloDiscardMessage) },
     )
@@ -163,9 +165,11 @@ internal fun MonteCarloScaffold(
         actions = {
           if (state is Loaded) {
             if (state.hasChanges) {
-              TextButton(onClick = { onAction(Save) }) {
-                Text(Strings.monteCarloSave, color = colors.pageTextPositive)
-              }
+              AktualButton(
+                kind = Primary,
+                text = Strings.monteCarloSave,
+                onClick = { onAction(Save) },
+              )
             }
             MonteCarloMenu(
               title = state.title.orEmpty(),

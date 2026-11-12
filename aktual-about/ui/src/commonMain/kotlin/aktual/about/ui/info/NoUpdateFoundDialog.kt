@@ -6,9 +6,9 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,9 +36,7 @@ internal fun NoUpdateFoundDialogContent(
     title = Strings.infoNoUpdateTitle,
     content = { Text(text = Strings.infoNoUpdateMessage) },
     buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(text = Strings.infoNoUpdateOk, color = colors.pageTextPositive)
-      }
+      DialogTextButton(text = Strings.infoNoUpdateOk, onClick = onDismiss)
     },
   )
 }

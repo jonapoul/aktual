@@ -4,9 +4,9 @@ import aktual.budget.transactions.vm.edit.EditTransactionError
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -156,8 +156,8 @@ private fun ConfirmDialog(
     highlight = highlight,
     onDismissRequest = onCancel,
     buttons = {
-      TextButton(onClick = onCancel) { Text(cancel) }
-      TextButton(onClick = onConfirm) { Text(confirm, color = highlight) }
+      DialogTextButton(text = cancel, onClick = onCancel)
+      DialogTextButton(kind = Primary, text = confirm, onClick = onConfirm)
     },
     content = { Text(message) },
   )
@@ -173,7 +173,7 @@ internal fun EditTransactionErrorDialog(error: EditTransactionError, onDismiss: 
       },
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
-    buttons = { TextButton(onClick = onDismiss) { Text(Strings.transactionErrorDismiss) } },
+    buttons = { DialogTextButton(text = Strings.transactionErrorDismiss, onClick = onDismiss) },
     content = {
       Text(
         when (error) {

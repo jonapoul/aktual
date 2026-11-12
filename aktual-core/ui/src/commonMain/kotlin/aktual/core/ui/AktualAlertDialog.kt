@@ -21,7 +21,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -143,7 +142,11 @@ fun AktualAlertDialogContent(
 
       if (buttons != null) {
         CompositionLocalProvider(LocalContentColor provides colors.pageTextPositive) {
-          Row(modifier = Modifier.align(Alignment.End), content = buttons)
+          Row(
+            modifier = Modifier.align(Alignment.End),
+            horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
+            content = buttons,
+          )
         }
       }
     }
@@ -160,8 +163,8 @@ private fun PreviewExampleContentWithButtons(
       modifier = Modifier.padding(4.dp),
       title = "Hello world",
       buttons = {
-        TextButton(onClick = {}) { Text("Delete", color = colors.errorText) }
-        TextButton(onClick = {}) { Text("Dismiss") }
+        DialogTextButton(kind = Destructive, text = "Delete", onClick = {})
+        DialogTextButton(text = "Dismiss", onClick = {})
       },
       content = {
         Text(
