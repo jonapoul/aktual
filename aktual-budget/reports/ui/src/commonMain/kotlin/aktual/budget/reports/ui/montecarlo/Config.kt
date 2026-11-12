@@ -2,8 +2,10 @@ package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.reports.vm.DEFAULT_INFLATION_MEAN
 import aktual.budget.reports.vm.MC_MAX_AGE
+import aktual.budget.reports.vm.MC_MAX_HISTORICAL_BLOCK_LENGTH
 import aktual.budget.reports.vm.MC_MAX_SIMULATION_COUNT
 import aktual.budget.reports.vm.MC_MIN_AGE
+import aktual.budget.reports.vm.MC_MIN_HISTORICAL_BLOCK_LENGTH
 import aktual.budget.reports.vm.MC_MIN_SIMULATION_COUNT
 import aktual.budget.reports.vm.McConfig
 import aktual.budget.reports.vm.McContribution
@@ -141,6 +143,19 @@ private fun PlanTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
     }
   }
 
+  if (config.returnModel == HistoricalBlockBootstrap) {
+    FieldRow {
+      LabeledField(Strings.monteCarloFieldBlockLength, help = Strings.monteCarloHelpBlockLength) {
+        IntField(
+          value = config.historicalBlockLength,
+          min = MC_MIN_HISTORICAL_BLOCK_LENGTH,
+          max = MC_MAX_HISTORICAL_BLOCK_LENGTH,
+          onCommit = { length -> onAction.edit { it.copy(historicalBlockLength = length) } },
+        )
+      }
+    }
+  }
+
   GroupHeading(Strings.monteCarloGroupInflation)
   if (config.returnModel.isHistorical) {
     // Historical models take each sampled year's actual inflation, so the only real choice is
@@ -194,7 +209,12 @@ private fun PlanTab(config: McConfig, onAction: OnAction<MonteCarloAction>) {
 }
 
 private val RETURN_MODELS =
-  persistentListOf<ReturnModel>(Normal, HistoricalBootstrap, HistoricalSequence)
+  persistentListOf<ReturnModel>(
+    Normal,
+    HistoricalBootstrap,
+    HistoricalBlockBootstrap,
+    HistoricalSequence,
+  )
 
 private const val MAX_INFLATION_MEAN = 100.0
 private const val MAX_INFLATION_STD_DEV = 50.0

@@ -906,13 +906,17 @@ internal class ChartDataLoader(
           latestTransaction = null,
         )
       val isTracking = meta.source == TrackingBudget && BudgetType.from(budgetType) == Tracking
+      val days = meta.startsTodayMonths(isTracking)?.let { forecastDaysFromToday(today, it) }
       val params =
         ForecastParams(
           title = meta.name,
-          start = range.start,
-          end = range.endInclusive,
+          start = days?.start?.yearMonth ?: range.start,
+          end = days?.endInclusive?.yearMonth ?: range.endInclusive,
           granularity = meta.granularity?.takeIf { it != Unknown && !isTracking } ?: Monthly,
           today = today,
+          zeroBased = meta.yAxisBase == ZeroBased,
+          firstDay = days?.start ?: range.start.firstDay,
+          lastDay = days?.endInclusive ?: range.endInclusive.lastDay,
         )
 
       if (isTracking) {
@@ -930,8 +934,8 @@ internal class ChartDataLoader(
     conditions: List<Condition>?,
     op: ConditionOp?,
   ): Flow<ChartData> {
-    val start = params.start.firstDay
-    val end = params.end.lastDay
+    val start = params.firstDay
+    val end = params.lastDay
     val firstForecastDate = if (end < params.today) start else maxOf(start, params.today)
     val filters = ForecastFilters(conditions, op)
 

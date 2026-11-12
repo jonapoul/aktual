@@ -5,17 +5,27 @@ import aktual.budget.reports.vm.BalanceForecastReportMeta
 import aktual.budget.reports.vm.ForecastGranularity
 import aktual.budget.reports.vm.ForecastSource
 import aktual.budget.reports.vm.QueryEditorData
+import aktual.budget.reports.vm.YAxisBase
 import aktual.budget.reports.vm.forecastTimeFrame
+import aktual.budget.reports.vm.startsTodayMonths
+import aktual.budget.reports.vm.withSource
+import aktual.budget.reports.vm.withStartToday
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -46,21 +56,50 @@ internal fun BalanceForecastSettings(
     return
   }
 
-  // The tracking budget forecast doesn't use schedules, so accounts and daily points don't
-  // apply to it
+  // The tracking budget forecast doesn't use schedules, so accounts, daily points and starting
+  // today don't apply to it
   val isTracking = editorData?.isTrackingBudget == true && meta.source == TrackingBudget
+  val monthsFromToday = meta.startsTodayMonths(isTracking)
 
   FilteredReportSettings(
     timeFrame = meta.forecastTimeFrame(),
     conditions = meta.conditions.orEmpty().toImmutableList(),
     conditionsOp = meta.conditionsOp ?: And,
     editorData = editorData,
-    onTimeFrame = { timeFrame -> onEdit { it.copy(timeFrame = timeFrame) } },
+    onTimeFrame = { timeFrame ->
+      onEdit { it.copy(timeFrame = timeFrame, monthsFromToday = null) }
+    },
     onConditions = { conditions, op ->
       onEdit { it.copy(conditions = conditions, conditionsOp = op) }
     },
     onDismiss = onDismiss,
+    showTimeFrame = monthsFromToday == null,
   ) {
+    if (editorData != null && !isTracking) {
+      Section(label = Strings.reportsFormulaQueryTimeFrame) {
+        SwitchRow(Strings.reportsBalanceForecastStartToday, monthsFromToday != null) { enabled ->
+          onEdit { it.withStartToday(enabled, editorData.currentMonth) }
+        }
+      }
+
+      if (monthsFromToday != null) {
+        AktualSlidingToggleButton(
+          modifier = Modifier.fillMaxWidth(),
+          selected = monthsFromToday,
+          options = (FROM_TODAY_MONTHS + monthsFromToday).distinct().sorted().toImmutableList(),
+          onSelect = { months -> onEdit { it.copy(monthsFromToday = months) } },
+          string = { Plurals.reportsBalanceForecastNextMonths(it, it) },
+        )
+
+        Text(
+          modifier = Modifier.padding(horizontal = 4.dp),
+          text = Strings.reportsBalanceForecastStartTodayNote,
+          style = typography.bodySmall,
+          color = colors.pageTextSubdued,
+        )
+      }
+    }
+
     if (editorData?.isTrackingBudget == true) {
       Column {
         SectionLabel(Strings.reportsBalanceForecastSource)
@@ -68,7 +107,7 @@ internal fun BalanceForecastSettings(
           modifier = Modifier.fillMaxWidth(),
           selected = if (isTracking) TrackingBudget else Schedules,
           options = SOURCES,
-          onSelect = { source -> onEdit { it.copy(source = source) } },
+          onSelect = { source -> onEdit { it.withSource(source, editorData.currentMonth) } },
           string = { it.label() },
         )
       }
@@ -85,6 +124,17 @@ internal fun BalanceForecastSettings(
           string = { it.label() },
         )
       }
+    }
+
+    Column {
+      SectionLabel(Strings.reportsBalanceForecastYAxis)
+      AktualSlidingToggleButton(
+        modifier = Modifier.fillMaxWidth(),
+        selected = if (meta.yAxisBase == ZeroBased) ZeroBased else Auto,
+        options = Y_AXIS_BASES,
+        onSelect = { base -> onEdit { it.copy(yAxisBase = base) } },
+        string = { it.label() },
+      )
     }
 
     if (editorData != null && !isTracking) {
@@ -121,6 +171,19 @@ private fun ForecastGranularity.label(): String =
     Unknown -> Strings.reportsBalanceForecastMonthly
   }
 
+@Composable
+private fun YAxisBase.label(): String =
+  when (this) {
+    ZeroBased -> Strings.reportsBalanceForecastYAxisZero
+    Auto,
+    Unknown -> Strings.reportsBalanceForecastYAxisAuto
+  }
+
 private val SOURCES = persistentListOf<ForecastSource>(Schedules, TrackingBudget)
 
 private val GRANULARITIES = persistentListOf<ForecastGranularity>(Monthly, Daily)
+
+private val Y_AXIS_BASES = persistentListOf<YAxisBase>(Auto, ZeroBased)
+
+// Upstream's "from today" presets
+private val FROM_TODAY_MONTHS = listOf(3, 6, 12)

@@ -112,6 +112,10 @@
   </plurals>
 
   <!-- budget-reports -->
+  <plurals name="reports_balance_forecast_next_months">
+    <item quantity="one">Next %1$d month</item>
+    <item quantity="other">Next %1$d months</item>
+  </plurals>
   <plurals name="reports_age_of_money_days">
     <item quantity="one">%1$d day</item>
     <item quantity="other">%1$d days</item>

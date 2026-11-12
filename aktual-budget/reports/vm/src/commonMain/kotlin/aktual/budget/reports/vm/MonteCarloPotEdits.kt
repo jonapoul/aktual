@@ -7,7 +7,8 @@ import kotlinx.collections.immutable.toImmutableList
 // The pot edits behind upstream's MonteCarloConfiguration.tsx and MonteCarloPotConfiguration.tsx
 
 val ReturnModel.isHistorical: Boolean
-  get() = this == HistoricalBootstrap || this == HistoricalSequence
+  get() =
+    this == HistoricalBootstrap || this == HistoricalBlockBootstrap || this == HistoricalSequence
 
 // Whether unspent money is kept is simply whether a surplus pot exists
 val McConfig.keepsSurplus: Boolean

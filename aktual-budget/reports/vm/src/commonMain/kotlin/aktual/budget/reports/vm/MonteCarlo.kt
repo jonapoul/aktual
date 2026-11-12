@@ -593,6 +593,16 @@ internal fun runMonteCarlo(
       config.simulationCount.coerceIn(MC_MIN_SIMULATION_COUNT, MC_MAX_SIMULATION_COUNT)
     }
 
+  // Block bootstrap: with an average block of L years, each year carries on to the next historical
+  // year with probability 1 - 1/L
+  val blockContinueProbability =
+    1 -
+      1.0 /
+        config.historicalBlockLength.coerceIn(
+          MC_MIN_HISTORICAL_BLOCK_LENGTH,
+          MC_MAX_HISTORICAL_BLOCK_LENGTH,
+        )
+
   val random = Mulberry32(seed)
   val balancesByYear = Array(horizonYears + 1) { DoubleArray(simulationCount) }
   val depletionCounts = IntArray(horizonYears + 1)
@@ -631,6 +641,8 @@ internal fun runMonteCarlo(
     var adjustmentFactor = 1.0
     var floorCeilingAnchorRate = 0.0
     var cumulativeInflation = 1.0
+    // Block bootstrap: the historical year the previous simulated year used; -1 before the first
+    var previousHistoryIndex = -1
     var ratchetStreak = 0
     var withdrawnSum = 0.0
     var depleted = false
@@ -675,6 +687,15 @@ internal fun runMonteCarlo(
         val historyIndex =
           when (returnModel) {
             HistoricalBootstrap -> floor(random.next() * historyCount).toInt()
+            // Stationary block bootstrap: carry on to the next historical year (wrapping past the
+            // end), or start a new block at a random year. The first year always starts a block
+            HistoricalBlockBootstrap ->
+              if (previousHistoryIndex >= 0 && random.next() < blockContinueProbability) {
+                  (previousHistoryIndex + 1) % historyCount
+                } else {
+                  floor(random.next() * historyCount).toInt()
+                }
+                .also { previousHistoryIndex = it }
             HistoricalSequence -> (simulationIndex + year - 1) % historyCount
             Normal,
             Unknown -> -1

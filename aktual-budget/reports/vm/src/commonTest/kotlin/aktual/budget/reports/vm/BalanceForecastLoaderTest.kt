@@ -14,6 +14,7 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import assertk.assertions.key
 import assertk.assertions.prop
 import kotlin.test.Test
@@ -61,6 +62,25 @@ class BalanceForecastLoaderTest {
         }
       }
     }
+
+  @Test
+  fun `Starting today replaces the saved range`() = runLoaderTest { loader, sync ->
+    sync.row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
+    val meta =
+      meta(accounts = listOf(AccountId("checking")))
+        .copy(granularity = Daily, monthsFromToday = 2, yAxisBase = ZeroBased)
+
+    loader.balanceForecast(meta).test {
+      assertThat(awaitItem()).isInstanceOf<BalanceForecastData>().all {
+        prop(BalanceForecastData::end).isEqualTo(YearMonth(2026, 6))
+        prop(BalanceForecastData::items).transform { it.keys.first() }.isEqualTo(TODAY)
+        prop(BalanceForecastData::items)
+          .transform { it.keys.last() }
+          .isEqualTo(LocalDate(2026, 6, 30))
+        prop(BalanceForecastData::zeroBased).isTrue()
+      }
+    }
+  }
 
   private fun meta(accounts: List<AccountId>) =
     BalanceForecastReportMeta(

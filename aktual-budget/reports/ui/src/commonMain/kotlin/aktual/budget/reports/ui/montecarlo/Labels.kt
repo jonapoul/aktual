@@ -102,6 +102,7 @@ internal fun ReturnModel.string(): String =
     Normal,
     Unknown -> Strings.monteCarloReturnModelNormal
     HistoricalBootstrap -> Strings.monteCarloReturnModelBootstrap
+    HistoricalBlockBootstrap -> Strings.monteCarloReturnModelBlock
     HistoricalSequence -> Strings.monteCarloReturnModelSequence
   }
 

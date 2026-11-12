@@ -141,6 +141,18 @@ class ReportMetaSerializationTest {
   }
 
   @Test
+  fun `Balance forecast y axis base and months from today decode`() {
+    val meta =
+      decode<BalanceForecastReportMeta>(
+        BalanceForecast,
+        """{"granularity":"Monthly","yAxisBase":"Zero-Based","monthsFromToday":12}""",
+      )
+
+    assertThat(meta.yAxisBase).isEqualTo(ZeroBased)
+    assertThat(meta.monthsFromToday).isEqualTo(12)
+  }
+
+  @Test
   fun `Balance forecast series decode`() {
     val meta =
       decode<BalanceForecastReportMeta>(

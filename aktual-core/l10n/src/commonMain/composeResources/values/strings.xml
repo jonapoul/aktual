@@ -1007,6 +1007,7 @@
   <!-- Description -->
   <string name="monte_carlo_how">Each scenario replays your retirement with a different sequence of yearly investment returns. Every year, any income arrives and any contributions are paid in at the start - some of them out of that income; the income then pays for the year’s spending first and the withdrawal covers the rest; anything left unspent is saved into the Surplus cash pot for later years when the plan keeps one, and otherwise leaves the plan; and then each pot grows or shrinks with that year’s return. Pots with an access age stay invested but can’t fund withdrawals until you reach it - if the accessible pots can’t cover what a year’s spending still needs, the plan counts as having run out, even if locked pots still hold money. The shaded bands show the range of outcomes across all scenarios: the darker band covers the middle half, and the lighter band covers four in five of them.</string>
   <string name="monte_carlo_how_normal">Keep in mind this is a simplified model: returns are drawn independently each year from a normal distribution, which ignores sequence-of-returns clustering and fat tails, and fees and taxes are modeled only as accurately as the rates you enter. Treat the results as a rough guide, not a guarantee.</string>
+  <string name="monte_carlo_how_block">Each scenario chains together blocks of consecutive actual US market years (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data). Each year usually carries on to the next real year, and now and then jumps to a different point in history, wrapping around the end of the data. Each year brings its own actual US inflation with it. Crashes keep the years that followed them within a block, but patterns are broken where blocks join, fees and taxes are only as accurate as the rates you enter, and US history may be optimistic for globally diversified portfolios.</string>
   <string name="monte_carlo_how_bootstrap">Returns are actual US market years (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data) drawn in random order for each pot’s allocation mix. Each sampled year brings its own actual US inflation with it, so high-inflation markets stay high-inflation. Real crash years are included, but multi-year momentum is lost by shuffling, fees and taxes are only as accurate as the rates you enter, and US history has been unusually good, so results may be optimistic for globally diversified portfolios.</string>
   <string name="monte_carlo_how_sequence">Each scenario replays actual US market history (%1$d–%2$d, S&amp;P 500 / 10-year Treasuries / T-bills, Damodaran data) starting from a different year, wrapping around the end of the data. Each replayed year brings its own actual US inflation with it. This preserves real crashes and recoveries, but there are only as many scenarios as start years, fees and taxes are only as accurate as the rates you enter, and US history may be optimistic for globally diversified portfolios.</string>
 
@@ -1044,10 +1045,13 @@
   <string name="monte_carlo_field_target_age">Pot must last until age</string>
   <string name="monte_carlo_group_simulation">Simulation</string>
   <string name="monte_carlo_field_return_model">Return model</string>
-  <string name="monte_carlo_help_return_model">How each simulated year’s investment return is generated.\n\nRandom: drawn from a normal distribution around each pot’s expected return and volatility. All pots experience the same market conditions each year, scaled by their own volatility.\n\nHistorical, shuffled: drawn from actual US market years (1928 onwards) in random order.\n\nHistorical sequences: replays real market history, one scenario per starting year. Pots with a Custom allocation always use their own return and volatility.</string>
+  <string name="monte_carlo_help_return_model">How each simulated year’s investment return is generated.\n\nRandom: drawn from a normal distribution around each pot’s expected return and volatility. All pots experience the same market conditions each year, scaled by their own volatility.\n\nHistorical, shuffled: drawn from actual US market years (1928 onwards) in random order.\n\nHistorical, in blocks: strings together runs of consecutive real years, so a crash keeps the years that followed it, while every scenario is still a different mix of history.\n\nHistorical sequences: replays real market history, one scenario per starting year. Pots with a Custom allocation always use their own return and volatility.</string>
   <string name="monte_carlo_return_model_normal">Random (normal distribution)</string>
   <string name="monte_carlo_return_model_bootstrap">Historical returns, shuffled</string>
   <string name="monte_carlo_return_model_sequence">Historical sequences (replay)</string>
+  <string name="monte_carlo_return_model_block">Historical returns, in blocks</string>
+  <string name="monte_carlo_field_block_length">Block length (years)</string>
+  <string name="monte_carlo_help_block_length">How many consecutive real years are replayed, on average, before the scenario jumps to a different point in history. Longer blocks keep more of history’s multi-year patterns, such as a crash and its recovery. Shorter blocks mix history up more.\n\nAround 10 years is a common choice. 1 behaves like the shuffled model.</string>
   <string name="monte_carlo_field_simulations">Simulations</string>
   <string name="monte_carlo_help_simulations">How many random scenarios to run. More simulations give a steadier result but take slightly longer.</string>
   <string name="monte_carlo_group_inflation">Inflation</string>
@@ -1452,6 +1456,11 @@
   <string name="reports_balance_forecast_granularity">Granularity</string>
   <string name="reports_balance_forecast_daily">Daily</string>
   <string name="reports_balance_forecast_monthly">Monthly</string>
+  <string name="reports_balance_forecast_y_axis">Y axis</string>
+  <string name="reports_balance_forecast_y_axis_auto">Auto</string>
+  <string name="reports_balance_forecast_y_axis_zero">Zero-based</string>
+  <string name="reports_balance_forecast_start_today">Start today</string>
+  <string name="reports_balance_forecast_start_today_note">This range moves forward from today. Monthly points show the balance on the last included day of each month.</string>
   <string name="reports_balance_forecast_ending">Ending balance</string>
   <string name="reports_balance_forecast_low">Low: %1$s</string>
   <string name="reports_balance_forecast_empty">No accounts are included in this report. Adjust the accounts or date range to see a balance projection.</string>

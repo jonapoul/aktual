@@ -10,8 +10,10 @@ import aktual.budget.model.occurrences
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minus
+import kotlinx.datetime.monthsUntil
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
 import kotlinx.serialization.json.Json
@@ -60,6 +62,10 @@ internal data class ForecastParams(
   val end: YearMonth,
   val granularity: ForecastGranularity,
   val today: LocalDate,
+  val zeroBased: Boolean = false,
+  // Narrower than the months when the forecast starts today
+  val firstDay: LocalDate = start.firstDay,
+  val lastDay: LocalDate = end.lastDay,
 )
 
 private val lenientJson = Json { ignoreUnknownKeys = true }
@@ -181,8 +187,8 @@ internal fun calculateBalanceForecast(
   dailyTotals: Map<LocalDate, Long>,
   occurrences: List<ForecastOccurrence>,
 ): BalanceForecastData {
-  val forecastStart = params.start.firstDay
-  val forecastEnd = params.end.lastDay
+  val forecastStart = params.firstDay
+  val forecastEnd = params.lastDay
   val firstForecastDate =
     if (forecastEnd < params.today) forecastStart else maxOf(forecastStart, params.today)
 
@@ -212,6 +218,7 @@ internal fun calculateBalanceForecast(
     items = if (accounts.isEmpty()) persistentMapOf() else daily.byGranularity(params.granularity),
     today = params.today,
     scheduledCount = included.distinctBy { it.date to it.scheduleId }.size,
+    zeroBased = params.zeroBased,
     contributors =
       if (accounts.isEmpty()) {
         null
@@ -250,6 +257,7 @@ internal fun calculateTrackingBudgetForecast(
     items = items.toImmutableMap(),
     today = params.today,
     scheduledCount = 0,
+    zeroBased = params.zeroBased,
   )
 }
 
@@ -276,3 +284,48 @@ fun BalanceForecastReportMeta.forecastTimeFrame(): TimeFrame? {
   val end = endDate?.let(YearMonth.Formats.ISO::parseOrNull) ?: return null
   return TimeFrame(start, end, Static)
 }
+
+// packages/desktop-client/src/components/reports/reports/balanceForecastRange.ts. Only schedule
+// forecasts can start today
+fun BalanceForecastReportMeta.startsTodayMonths(isTracking: Boolean): Int? =
+  monthsFromToday?.takeIf {
+    it > 0 && !isTracking
+  }
+
+// The day range of a forecast starting today, ending the day before the anniversary
+internal fun forecastDaysFromToday(today: LocalDate, months: Int): LocalDateRange =
+  today..today.plus(months, MONTH).minus(1, DAY)
+
+// Starting today keeps the length of the saved range. Stopping goes back to a static range of the
+// same length from this month, like upstream's onToggleStartToday()
+fun BalanceForecastReportMeta.withStartToday(
+  enabled: Boolean,
+  currentMonth: YearMonth,
+): BalanceForecastReportMeta =
+  if (enabled) {
+    val timeFrame = forecastTimeFrame()
+    val months = timeFrame?.let { it.start.monthsUntil(it.end) + 1 } ?: DEFAULT_FORECAST_MONTHS
+    copy(monthsFromToday = months.coerceAtLeast(1))
+  } else {
+    withStaticMonths(currentMonth)
+  }
+
+// Tracking budget forecasts don't start today, so switching to one keeps the length as a static
+// range
+fun BalanceForecastReportMeta.withSource(
+  source: ForecastSource,
+  currentMonth: YearMonth,
+): BalanceForecastReportMeta {
+  val updated = copy(source = source)
+  return if (source == TrackingBudget) updated.withStaticMonths(currentMonth) else updated
+}
+
+private fun BalanceForecastReportMeta.withStaticMonths(currentMonth: YearMonth) =
+  when (val months = monthsFromToday?.takeIf { it > 0 }) {
+    null -> copy(monthsFromToday = null)
+    else ->
+      copy(
+        monthsFromToday = null,
+        timeFrame = TimeFrame(currentMonth, currentMonth.plus(months - 1, MONTH), Static),
+      )
+  }
