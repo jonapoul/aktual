@@ -336,7 +336,8 @@ private fun EditTagContent(
           state = tagState,
           singleLine = true,
           placeholderText = Strings.tagsCreateTagPlaceholder,
-          supportingText = error?.let { { Text(text = it, color = colors.errorText) } },
+          isError = error != null,
+          supportingText = error?.let { { Text(it) } },
         )
       }
 

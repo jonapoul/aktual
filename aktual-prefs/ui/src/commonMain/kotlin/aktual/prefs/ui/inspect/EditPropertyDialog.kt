@@ -128,11 +128,12 @@ private fun EditPropertyDialogContent(
         state = hexState,
         placeholderText = Strings.settingsThemeInspectEditPlaceholder,
         singleLine = true,
+        isError = !isValid,
         supportingText =
           if (isValid) {
             null
           } else {
-            { Text(text = Strings.settingsThemeInspectEditInvalid, color = colors.errorText) }
+            { Text(Strings.settingsThemeInspectEditInvalid) }
           },
       )
     },

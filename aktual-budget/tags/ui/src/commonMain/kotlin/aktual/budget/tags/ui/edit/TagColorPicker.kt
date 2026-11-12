@@ -248,12 +248,12 @@ private fun ColorPickerTextField(
     placeholderText = Strings.tagsCreateColorPlaceholder,
     colors = fieldColors,
     textStyle = LocalTextStyle.current.merge(textAlign = Center),
+    isError = isError,
     supportingText =
       if (isError) {
         {
           Text(
             text = Strings.tagsCreateColorInvalid,
-            color = colors.errorText,
             textAlign = Center,
             modifier = Modifier.fillMaxWidth(),
           )

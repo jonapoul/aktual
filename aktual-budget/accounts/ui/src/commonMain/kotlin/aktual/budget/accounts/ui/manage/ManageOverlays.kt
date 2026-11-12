@@ -220,9 +220,10 @@ private fun GroupNameDialog(
       singleLine = true,
       keyboardOptions = KeyboardOptions(capitalization = Sentences),
       placeholderText = Strings.accountsManageGroupNamePlaceholder,
+      isError = taken,
       supportingText =
         if (taken) {
-          { Text(Strings.accountsManageGroupNameDuplicate, color = colors.errorText) }
+          { Text(Strings.accountsManageGroupNameDuplicate) }
         } else {
           null
         },

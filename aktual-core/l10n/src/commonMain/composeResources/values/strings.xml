@@ -4,6 +4,7 @@
   <string name="nav_back">Navigate back</string>
 
   <string name="input_clear">Clear</string>
+  <string name="input_invalid">Invalid input</string>
   <string name="input_close">Close</string>
   <string name="input_add">Add</string>
   <string name="input_subtract">Subtract</string>
