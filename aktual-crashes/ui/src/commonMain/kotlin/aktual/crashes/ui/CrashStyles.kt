@@ -33,7 +33,7 @@ internal val PREVIEW_REPORT =
     stackTrace =
       """
       java.lang.IllegalStateException: Budget file is missing
-      	at aktual.budget.BudgetFiles.open(BudgetFiles.kt:42)
+      	at aktual.budget.utils.BudgetFiles.open(BudgetFiles.kt:42)
       	at aktual.budget.vm.BudgetViewModel.load(BudgetViewModel.kt:87)
       	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:108)
       """

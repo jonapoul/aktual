@@ -2,7 +2,6 @@ package aktual.budget.sync.domain
 
 import aktual.api.client.BudgetSyncApi
 import aktual.api.client.SyncRejectedException
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.GroupId
@@ -10,6 +9,7 @@ import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
 import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.utils.runCatchingCancellable
 import aktual.log
 import dev.zacsweers.metro.Inject

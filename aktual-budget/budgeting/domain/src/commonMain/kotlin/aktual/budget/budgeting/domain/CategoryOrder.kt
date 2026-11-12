@@ -1,6 +1,5 @@
 package aktual.budget.budgeting.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.BudgetDao
 import aktual.budget.db.dao.DatabaseTables.CATEGORIES
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_GROUPS
@@ -8,6 +7,7 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 

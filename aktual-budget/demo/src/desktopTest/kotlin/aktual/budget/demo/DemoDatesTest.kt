@@ -1,9 +1,9 @@
 package aktual.budget.demo
 
-import aktual.budget.BudgetFiles
 import aktual.budget.db.AndroidxSqlDriverFactory
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.migrateDatabase
+import aktual.budget.utils.BudgetFiles
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.QueryResult

@@ -1,6 +1,5 @@
 package aktual.budget.banksync.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.AccountId
@@ -12,6 +11,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncReimportDeleted
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import dev.zacsweers.metro.Inject
 
 /**

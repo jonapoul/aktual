@@ -1,4 +1,4 @@
-package aktual.budget
+package aktual.budget.utils
 
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadataKey

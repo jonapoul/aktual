@@ -1,11 +1,11 @@
 package aktual.budget.tags.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.untombstone
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 

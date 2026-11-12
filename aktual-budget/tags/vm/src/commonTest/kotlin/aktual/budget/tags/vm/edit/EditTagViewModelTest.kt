@@ -1,6 +1,5 @@
 package aktual.budget.tags.vm.edit
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetTag
 import aktual.budget.db.dao.TagsDao
@@ -9,6 +8,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.prefs.TagPreferences
 import aktual.prefs.TagPreferencesImpl

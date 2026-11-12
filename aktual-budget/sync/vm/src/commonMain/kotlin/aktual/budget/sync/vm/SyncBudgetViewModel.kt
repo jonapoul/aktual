@@ -2,13 +2,13 @@ package aktual.budget.sync.vm
 
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
-import aktual.budget.BudgetFiles
 import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.FileDecrypter
 import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
+import aktual.budget.utils.BudgetFiles
 import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.di.LoggedInScope

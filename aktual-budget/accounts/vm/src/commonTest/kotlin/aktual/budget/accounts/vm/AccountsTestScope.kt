@@ -3,7 +3,6 @@ package aktual.budget.accounts.vm
 import aktual.api.client.BankSyncApi
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.SimpleFinBatchRequest
-import aktual.budget.BudgetSyncController
 import aktual.budget.accounts.domain.AccountWriter
 import aktual.budget.banksync.domain.AccountDeleter
 import aktual.budget.banksync.domain.BankAccountLinker
@@ -30,6 +29,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory

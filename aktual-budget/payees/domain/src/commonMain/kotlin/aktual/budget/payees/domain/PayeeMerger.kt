@@ -1,6 +1,5 @@
 package aktual.budget.payees.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.PayeeDao
@@ -8,6 +7,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.budget.utils.BudgetSyncController
 import dev.zacsweers.metro.Inject
 
 // What a merge changed, so it can be undone. Each repointed payee_mapping row maps to its old

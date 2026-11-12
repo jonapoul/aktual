@@ -1,7 +1,7 @@
 package aktual.test
 
-import aktual.budget.BudgetFiles
 import aktual.budget.demo.DemoBudget
+import aktual.budget.utils.BudgetFiles
 import aktual.core.nav.NavEntryContributor
 import aktual.di.AppGraph
 import aktual.di.RunLevelController

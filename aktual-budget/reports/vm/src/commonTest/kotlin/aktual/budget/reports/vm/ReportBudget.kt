@@ -1,12 +1,12 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
 import aktual.budget.db.dao.DatabaseTables.CATEGORIES
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_GROUPS
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
+import aktual.budget.utils.BudgetSyncController
 
 // Two on-budget accounts with a transfer between them, plus an off-budget account with a transfer
 // into it, across April and May 2026

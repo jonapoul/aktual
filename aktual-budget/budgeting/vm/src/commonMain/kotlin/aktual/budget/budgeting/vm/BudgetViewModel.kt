@@ -1,6 +1,5 @@
 package aktual.budget.budgeting.vm
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.budgeting.domain.BudgetMonth
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.budgeting.domain.BudgetWriter
@@ -20,6 +19,7 @@ import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.DbMetadataKey.Companion.MobileShowSpentColumn
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.sumOf
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.unaryPlus
 import aktual.core.utils.Calendar
 import aktual.core.utils.runCatchingCancellable

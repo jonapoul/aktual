@@ -1,6 +1,5 @@
 package aktual.budget.rules.vm.list
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.model.RuleId
 import aktual.budget.model.tombstone
@@ -10,6 +9,7 @@ import aktual.budget.rules.vm.list.ListRulesState.Empty
 import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
+import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

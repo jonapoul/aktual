@@ -1,11 +1,11 @@
 package aktual.budget.proto
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.encryption.BufferEncrypter
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
 import aktual.budget.model.Message
 import aktual.budget.model.Timestamp
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.KeyId
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding

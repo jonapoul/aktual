@@ -1,6 +1,5 @@
 package aktual.budget.banksync.vm.settings
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.BankSyncSettingsLoader
 import aktual.budget.banksync.domain.BankSyncSettingsWriter
@@ -27,6 +26,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
 import aktual.test.viewModelContext

@@ -10,9 +10,9 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(libs.kotlinx.coroutines.core)
     api(libs.okio)
-    api(project(":aktual-budget"))
     api(project(":aktual-budget:data:encryption"))
     api(project(":aktual-budget:data:proto"))
+    api(project(":aktual-budget:utils"))
     api(project(":aktual-core:utils"))
     implementation(project(":aktual-core:logging"))
   }

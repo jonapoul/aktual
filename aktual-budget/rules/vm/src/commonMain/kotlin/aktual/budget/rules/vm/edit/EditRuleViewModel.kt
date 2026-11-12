@@ -1,6 +1,5 @@
 package aktual.budget.rules.vm.edit
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.DbJson
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
@@ -22,6 +21,7 @@ import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.hasUnknownValues
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope

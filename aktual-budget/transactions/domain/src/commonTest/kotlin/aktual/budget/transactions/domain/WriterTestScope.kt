@@ -1,6 +1,5 @@
 package aktual.budget.transactions.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Categories
 import aktual.budget.db.buildDatabase
@@ -16,6 +15,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestClock
 import kotlin.time.Clock

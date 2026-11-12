@@ -1,10 +1,10 @@
 package aktual.budget.reports.vm.dashboard
 
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DbMetadataKey
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.utils.UuidGenerator
 import aktual.log
 import androidx.compose.runtime.Immutable

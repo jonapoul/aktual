@@ -1,6 +1,5 @@
 package aktual.budget.payees.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.GetForPayee
 import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.PayeeLocationDao
@@ -9,6 +8,7 @@ import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.Coordinates
 import aktual.core.model.Coordinates.Companion.MAX_LONGITUDE
 import aktual.core.model.Distance

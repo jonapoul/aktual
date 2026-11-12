@@ -31,7 +31,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
-    api(project(":aktual-budget"))
+    api(project(":aktual-budget:utils"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(libs.androidx.sqliteBundled)
     implementation(libs.sqldelight.coroutines)

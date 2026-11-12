@@ -2,7 +2,6 @@ package aktual.budget.banksync.domain
 
 import aktual.api.client.BankSyncApi
 import aktual.api.model.banksync.ExternalBankAccount
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.BankSyncDao
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
@@ -13,6 +12,7 @@ import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope

@@ -1,4 +1,4 @@
-package aktual.budget
+package aktual.budget.utils
 
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.Inject

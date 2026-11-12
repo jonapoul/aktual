@@ -1,6 +1,5 @@
 package aktual.budget.tags.vm.list
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
@@ -9,6 +8,7 @@ import aktual.budget.model.TagSort
 import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope

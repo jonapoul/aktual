@@ -1,10 +1,10 @@
 package aktual.api.client
 
 import aktual.api.model.sync.UpdateUserFileNameRequest
-import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncResponse
 import aktual.budget.proto.SyncResponseDecoder
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding

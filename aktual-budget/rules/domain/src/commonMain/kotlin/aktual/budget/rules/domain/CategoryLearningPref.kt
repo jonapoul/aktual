@@ -1,10 +1,10 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSyncController
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

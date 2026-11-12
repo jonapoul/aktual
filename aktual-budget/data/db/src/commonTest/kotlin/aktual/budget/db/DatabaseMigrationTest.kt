@@ -1,6 +1,5 @@
 package aktual.budget.db
 
-import aktual.budget.BudgetFiles
 import aktual.budget.db.test.transactionIndexNames
 import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
@@ -10,6 +9,7 @@ import aktual.budget.model.CustomReportId
 import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
+import aktual.budget.utils.BudgetFiles
 import aktual.test.CoTemporaryFolder
 import aktual.test.contains
 import aktual.test.testBudgetFiles

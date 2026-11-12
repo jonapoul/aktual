@@ -1,6 +1,5 @@
 package aktual.budget.payees.vm.edit
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.model.PayeeId
@@ -10,6 +9,7 @@ import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope

@@ -4,7 +4,7 @@ Everything that works on an open budget: its data, sync, and the screens inside 
 
 ## Modules
 
-- `aktual-budget` (root) - shared budget-level types: `BudgetFiles`, `BudgetLocalPreferences`, `BudgetSyncController`, `SyncStateHolder`.
+- `utils` - shared budget-level types: `BudgetFiles`, `BudgetLocalPreferences`, `BudgetSyncController`, `SyncEvents`, `SyncStateHolder`.
 - `model` - budget model types and ID value classes.
 - `data:db` - SQLDelight schema, DAOs and migrations. See [data/db](data/db/CLAUDE.md).
 - `data:encryption`, `data:proto`, `data:impl` - encryption, sync protobuf encoding, and their implementations.

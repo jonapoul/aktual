@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.CustomReports
 import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
@@ -26,6 +25,7 @@ import aktual.budget.model.ReportDate
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.utils.BudgetSyncController
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts

@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.budget.BudgetFiles
+import aktual.budget.utils.BudgetFiles
 import aktual.core.utils.AppDirectory
 import aktual.di.AppCoroutineScope
 import aktual.di.ViewModelContext

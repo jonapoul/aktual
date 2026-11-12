@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm.edit
 
-import aktual.budget.BudgetSyncController
 import aktual.budget.budgeting.domain.BudgetMonthCalculatorImpl
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Categories
@@ -64,6 +63,7 @@ import aktual.budget.transactions.vm.insertCategory
 import aktual.budget.transactions.vm.insertPayee
 import aktual.budget.transactions.vm.insertTransaction
 import aktual.budget.transactions.vm.transaction
+import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.Coordinates
 import aktual.core.utils.LocationProvider
 import aktual.di.BudgetCoroutineScope
