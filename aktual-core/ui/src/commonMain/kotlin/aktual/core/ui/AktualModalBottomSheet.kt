@@ -19,6 +19,9 @@ import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -38,10 +41,14 @@ fun AktualModalBottomSheet(
   onBack: (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
+  // The sheet only starts animating in once the dialog window has measured it, so follow its
+  // target value rather than composition to keep the blur in step, like the scrim does
   val dialogBlurState = LocalDialogBlurState.current
-  DisposableEffect(blurBackground) {
-    if (blurBackground) dialogBlurState.activeDialogCount++
-    onDispose { if (blurBackground) dialogBlurState.activeDialogCount-- }
+  val isSheetShowing by remember(sheetState) { derivedStateOf { sheetState.targetValue != Hidden } }
+  val blur = blurBackground && isSheetShowing
+  DisposableEffect(blur) {
+    if (blur) dialogBlurState.activeDialogCount++
+    onDispose { if (blur) dialogBlurState.activeDialogCount-- }
   }
 
   val density = LocalDensity.current
