@@ -1,6 +1,7 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.model.AccountId
+import aktual.budget.transactions.vm.AccountChoice
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.ReconcileStart
 import aktual.core.icons.Add
@@ -43,6 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.YearMonth
 
 @Composable
@@ -54,6 +57,7 @@ internal fun TransactionsTitleBar(
   onAction: OnAction<Action>,
   onOpenViewOptions: () -> Unit,
   reconcileStart: ReconcileStart? = null,
+  accountChoices: ImmutableList<AccountChoice> = persistentListOf(),
 ) {
   val title =
     when (loadedAccount) {
@@ -85,7 +89,18 @@ internal fun TransactionsTitleBar(
         NavBackIconButton { onAction(NavBack) }
       }
     },
-    title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
+    title = {
+      if (loadedAccount is SpecificAccount && accountChoices.size > 1) {
+        AccountSwitcher(
+          title = title,
+          selected = loadedAccount.account.id,
+          choices = accountChoices,
+          onAction = onAction,
+        )
+      } else {
+        Text(text = title, maxLines = 1, overflow = Ellipsis)
+      }
+    },
     actions = {
       IconButton(
         onClick = { onAction(CreateTransaction) },

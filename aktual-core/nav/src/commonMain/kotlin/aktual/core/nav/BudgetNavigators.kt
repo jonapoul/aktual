@@ -28,6 +28,15 @@ class DeletedAccountNavigator(private val stack: NavStack<BudgetNavKey>) {
   }
 }
 
+// Shows another account's transactions in place of the current list, so back still leaves to
+// wherever the list was opened from
+@Immutable
+class SwitchAccountNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke(id: AccountId) {
+    stack[stack.lastIndex] = AccountTransactionsNavRoute(id)
+  }
+}
+
 @Immutable
 class BudgetCategoryNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(category: CategoryId, month: YearMonth) =

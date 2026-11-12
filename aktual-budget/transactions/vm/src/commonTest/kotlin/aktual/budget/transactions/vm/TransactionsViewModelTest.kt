@@ -61,6 +61,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -1057,6 +1058,36 @@ class TransactionsViewModelTest {
     // then
     viewModel.accountOptions.test { assertThatNextEmissionIsEqualTo(null) }
     viewModel.showRunningBalance.test { assertThatNextEmissionIsEqualTo(true) }
+  }
+
+  @Test
+  fun `A single account's list offers the open accounts to switch to`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+
+    // then
+    viewModel.accountChoices
+      .dropWhile { it.isEmpty() }
+      .test {
+        assertThatNextEmissionIsEqualTo(
+          persistentListOf(
+            AccountChoice(AccountId("a"), "Amex"),
+            AccountChoice(AccountId("b"), "Barclays"),
+            AccountChoice(AccountId("c"), "Chase"),
+            AccountChoice(LINKED, "Linked"),
+          ),
+        )
+      }
+  }
+
+  @Test
+  fun `Only a single account's list has accounts to switch to`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    advanceUntilIdle()
+
+    // then
+    viewModel.accountChoices.test { assertThatNextEmissionIsEqualTo(persistentListOf()) }
   }
 
   @Test
