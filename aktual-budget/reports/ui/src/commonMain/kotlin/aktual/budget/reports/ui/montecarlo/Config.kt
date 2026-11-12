@@ -19,14 +19,13 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.budget.reports.vm.montecarlo.previewMonteCarloState
 import aktual.budget.reports.vm.surplusPot
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -73,9 +72,9 @@ internal fun MonteCarloConfiguration(
           tab = entry
         }
         if (entry == tab) {
-          PrimaryTextButton(text = entry.string(), onClick = select)
+          AktualButton(kind = Primary, text = entry.string(), onClick = select)
         } else {
-          NormalTextButton(text = entry.string(), onClick = select)
+          AktualButton(text = entry.string(), onClick = select)
         }
       }
     }

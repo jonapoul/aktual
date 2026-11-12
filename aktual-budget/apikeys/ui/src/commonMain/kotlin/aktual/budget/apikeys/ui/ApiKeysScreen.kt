@@ -14,6 +14,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
@@ -26,7 +27,6 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -254,7 +254,7 @@ private fun KeyItem(
       )
     }
 
-    NormalTextButton(text = Strings.apiKeysRevoke, onClick = { onAction(Revoke(key)) })
+    AktualButton(text = Strings.apiKeysRevoke, onClick = { onAction(Revoke(key)) })
   }
 }
 

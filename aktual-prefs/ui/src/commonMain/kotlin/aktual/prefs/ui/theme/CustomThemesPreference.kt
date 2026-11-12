@@ -3,8 +3,8 @@ package aktual.prefs.ui.theme
 import aktual.core.icons.material.Build
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.PrimaryTextButton
 import aktual.prefs.components.BasicPreferenceItem
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,7 +26,8 @@ internal fun CustomThemesPreference(
     enabled = enabled,
     onClick = { onAction(NavCustomThemes) },
     bottomContent = {
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
         text = Strings.settingsThemeCustomButton,
         isEnabled = enabled,

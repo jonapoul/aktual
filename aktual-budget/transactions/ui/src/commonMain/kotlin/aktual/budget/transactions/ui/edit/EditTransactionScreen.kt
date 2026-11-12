@@ -39,6 +39,7 @@ import aktual.core.l10n.transaction_location_save_failed
 import aktual.core.l10n.transaction_location_saved
 import aktual.core.l10n.transaction_location_unavailable
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -57,7 +58,6 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -398,7 +398,8 @@ private fun TopBarActions(
       enter = fadeIn(),
       exit = fadeOut(),
     ) {
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.padding(end = SaveInset),
         text = Strings.transactionSave,
         isEnabled = canSave,

@@ -10,13 +10,12 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.Chip
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.NormalTextButton
-import aktual.core.ui.TonalButton
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -107,7 +106,7 @@ private fun EntityPicker(
   onPick: () -> Unit,
 ) {
   val id = value.jsonPrimitive.contentOrNull
-  NormalTextButton(
+  AktualButton(
     modifier = Modifier.fillMaxWidth(),
     text = if (id == null) Strings.reportsFormulaQueryNothing else names.nameOf(id),
     onClick = onPick,
@@ -141,7 +140,8 @@ private fun EntityListPicker(
       }
     }
 
-    TonalButton(
+    AktualButton(
+      kind = Tonal,
       modifier = Modifier.fillMaxWidth(),
       icon = AktualIcons.Add,
       text = Strings.reportsFormulaQueryChoose,

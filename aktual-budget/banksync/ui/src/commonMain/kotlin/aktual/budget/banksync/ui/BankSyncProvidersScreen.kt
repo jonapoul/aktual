@@ -9,6 +9,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BankSyncProviderSetupNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -20,7 +21,6 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -227,7 +227,7 @@ private fun ProviderItem(
         if (isResetting) {
           SyncingIndicator()
         } else {
-          NormalTextButton(
+          AktualButton(
             text = Strings.bankSyncProvidersReset,
             isEnabled = canReset,
             onClick = { showConfirm = true },
@@ -236,7 +236,7 @@ private fun ProviderItem(
       }
       NotConfigured,
       Failed -> {
-        NormalTextButton(
+        AktualButton(
           text = Strings.bankSyncProvidersSetUp,
           onClick = { onAction(SetUpProvider(item.source)) },
         )

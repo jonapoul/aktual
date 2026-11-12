@@ -4,6 +4,7 @@ package aktual.core.ui
 
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import alakazam.compose.HorizontalSpacer
@@ -28,216 +29,110 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 
-@Composable
-@NonRestartableComposable
-fun PrimaryTextButton(
-  text: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  isEnabled: Boolean = true,
-  contentPadding: PaddingValues = DefaultButtonPadding,
-  shape: Shape = ButtonShape,
-  border: Color = AktualTheme.colors.buttonPrimaryBorder,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = Unspecified,
-  icon: ImageVector? = null,
-  colors: @Composable (Boolean) -> ButtonColors = { pressed ->
-    AktualTheme.colors.primaryButton(pressed)
-  },
-  content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, icon)
-  },
-) {
-  BasicTextButton(
-    text = text,
-    modifier = modifier,
-    border = BorderStroke(Hairline, border),
-    isEnabled = isEnabled,
-    contentPadding = contentPadding,
-    shape = shape,
-    interactionSource = interactionSource,
-    style = style,
-    fontSize = fontSize,
-    icon = icon,
-    onClick = onClick,
-    colors = colors,
-    content = content,
-  )
+enum class ButtonKind {
+  Primary,
+  Normal,
+  Bare,
+  Tonal,
+  Destructive,
 }
 
 @Composable
-@Suppress("ModifierNotUsedAtRoot")
-fun PrimaryTextButtonWithLoading(
+fun AktualButton(
   text: String,
-  isLoading: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  kind: ButtonKind = Normal,
   isEnabled: Boolean = true,
+  isLoading: Boolean = false,
+  icon: ImageVector? = null,
   contentPadding: PaddingValues = DefaultButtonPadding,
   shape: Shape = ButtonShape,
-  border: Color = AktualTheme.colors.buttonPrimaryBorder,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = Unspecified,
-  icon: ImageVector? = null,
-  colors: @Composable (Boolean) -> ButtonColors = { pressed ->
-    AktualTheme.colors.primaryButton(pressed)
-  },
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
+  val themeColors = AktualTheme.colors
   val enabled = isEnabled && !isLoading
-  PrimaryTextButton(
+  val colors: @Composable (Boolean) -> ButtonColors = { pressed ->
+    themeColors.buttonColors(kind, pressed)
+  }
+
+  BasicTextButton(
     text = text,
-    modifier = Modifier.testTag(Tags.PrimaryTextButtonWithLoading),
+    colors = colors,
+    onClick = onClick,
+    modifier = if (kind == Tonal) modifier.heightIn(min = TonalButtonHeight) else modifier,
     isEnabled = enabled,
     contentPadding = contentPadding,
     shape = shape,
-    border = if (enabled) border else border.disabled,
+    border = themeColors.buttonBorder(kind, enabled),
     interactionSource = interactionSource,
     style = style,
     fontSize = fontSize,
     icon = icon,
-    colors = colors,
-    onClick = onClick,
-    content = {
-      // Using opacity here so we don't adjust the size bounds of the containing box
-      Box(modifier = modifier, contentAlignment = Center) {
-        CircularProgressIndicator(
-          modifier = Modifier.alpha(if (isLoading) 1f else 0f).size(20.dp),
-          color = AktualTheme.colors.buttonPrimaryText,
-          strokeWidth = 2.dp,
-        )
-
-        Row(
-          modifier = Modifier.alpha(if (isLoading) 0f else 1f),
-          verticalAlignment = CenterVertically,
-        ) {
-          DefaultTextButtonContent(text, style, fontSize, icon)
-        }
+  ) {
+    // Hide the content with alpha so the button keeps its size while loading
+    Box(contentAlignment = Center) {
+      Row(
+        modifier = Modifier.alpha(if (isLoading) 0f else 1f),
+        verticalAlignment = CenterVertically,
+      ) {
+        DefaultTextButtonContent(text, style, fontSize, icon)
       }
-    },
-  )
+
+      if (isLoading) {
+        CircularProgressIndicator(
+          modifier = Modifier.size(LoadingIndicatorSize),
+          color = colors(false).contentColor,
+          strokeWidth = LoadingIndicatorStroke,
+        )
+      }
+    }
+  }
 }
 
 @Composable
-@NonRestartableComposable
-fun NormalTextButton(
-  text: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  isEnabled: Boolean = true,
-  contentPadding: PaddingValues = DefaultButtonPadding,
-  shape: Shape = ButtonShape,
-  border: Color = AktualTheme.colors.buttonNormalBorder,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = Unspecified,
-  icon: ImageVector? = null,
-  colors: @Composable (Boolean) -> ButtonColors = { pressed ->
-    AktualTheme.colors.normalButton(pressed)
-  },
-  content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, icon)
-  },
-) {
-  BareTextButton(
-    text = text,
-    modifier = modifier,
-    border = BorderStroke(Hairline, border),
-    isEnabled = isEnabled,
-    contentPadding = contentPadding,
-    shape = shape,
-    interactionSource = interactionSource,
-    style = style,
-    fontSize = fontSize,
-    icon = icon,
-    onClick = onClick,
-    colors = colors,
-    content = content,
-  )
-}
+private fun Colors.buttonColors(kind: ButtonKind, isPressed: Boolean): ButtonColors =
+  when (kind) {
+    Primary -> primaryButton(isPressed)
+    Normal -> normalButton(isPressed)
+    Bare -> bareButton(isPressed)
+    Tonal -> tonalButton(isPressed)
+    Destructive -> errorButton(isPressed)
+  }
 
-@Composable
-fun TonalButton(
-  text: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  isEnabled: Boolean = true,
-  icon: ImageVector? = null,
-  contentPadding: PaddingValues = DefaultButtonPadding,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-) {
-  val colors = AktualTheme.colors
-  val border = colors.buttonPrimaryBorder.disabledIf(!isEnabled)
-  BasicTextButton(
-    text = text,
-    modifier = modifier.heightIn(min = TonalButtonHeight),
-    border = BorderStroke(1.dp, border),
-    isEnabled = isEnabled,
-    contentPadding = contentPadding,
-    interactionSource = interactionSource,
-    style = typography.buttonTextStyle,
-    icon = icon,
-    onClick = onClick,
-    colors = { pressed -> colors.tonalButton(pressed) },
-  )
+private fun Colors.buttonBorder(kind: ButtonKind, isEnabled: Boolean): BorderStroke? {
+  val (width, color) =
+    when (kind) {
+      Primary -> Dp.Hairline to buttonPrimaryBorder
+      Normal -> Dp.Hairline to buttonNormalBorder
+      Bare -> return null
+      Tonal -> TonalButtonBorder to buttonPrimaryBorder
+      Destructive -> Dp.Hairline to errorBorder
+    }
+  return BorderStroke(width, color.disabledIf(!isEnabled))
 }
 
 private val TonalButtonHeight = 48.dp
-
-@Composable
-@NonRestartableComposable
-fun BareTextButton(
-  text: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  isEnabled: Boolean = true,
-  contentPadding: PaddingValues = DefaultButtonPadding,
-  shape: Shape = ButtonShape,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = typography.buttonTextStyle,
-  fontSize: TextUnit = Unspecified,
-  icon: ImageVector? = null,
-  colors: @Composable (Boolean) -> ButtonColors = { pressed ->
-    AktualTheme.colors.bareButton(pressed)
-  },
-  border: BorderStroke? = null,
-  content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, icon)
-  },
-) {
-  BasicTextButton(
-    text = text,
-    modifier = modifier,
-    border = border,
-    isEnabled = isEnabled,
-    contentPadding = contentPadding,
-    shape = shape,
-    interactionSource = interactionSource,
-    style = style,
-    fontSize = fontSize,
-    icon = icon,
-    onClick = onClick,
-    colors = colors,
-    content = content,
-  )
-}
+private val TonalButtonBorder = 1.dp
+private val LoadingIndicatorSize = 20.dp
+private val LoadingIndicatorStroke = 2.dp
 
 @Composable
 fun BasicTextButton(
@@ -296,57 +191,19 @@ val Typography.buttonTextStyle: TextStyle
 
 @Preview
 @Composable
-private fun PreviewBare(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    BareTextButton(text = "Bare", isEnabled = this, onClick = {})
-  }
-
-@Preview
-@Composable
-private fun PreviewPrimary(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    PrimaryTextButton(text = "Primary", isEnabled = this, onClick = {})
-  }
-
-@Preview
-@Composable
-private fun PreviewNormal(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    NormalTextButton(text = "Normal", isEnabled = this, onClick = {})
-  }
-
-@Preview
-@Composable
-private fun PreviewNormalWithIcon(
-  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
-) =
-  PreviewWithColorParams(params) {
-    NormalTextButton(
-      text = "Add item",
-      isEnabled = this,
-      icon = AktualIcons.Add,
-      onClick = {},
-    )
-  }
-
-@Preview
-@Composable
-private fun PreviewTonal(
+private fun PreviewButtons(
   @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
   PreviewWithColorParams(params) {
     val isEnabled = this
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      TonalButton(text = "Tonal", isEnabled = isEnabled, onClick = {})
-      TonalButton(
+      ButtonKind.entries.fastForEach { kind ->
+        AktualButton(text = kind.name, kind = kind, isEnabled = isEnabled, onClick = {})
+      }
+      AktualButton(
         modifier = Modifier.fillMaxWidth(),
         text = "Add item",
+        kind = Tonal,
         icon = AktualIcons.Add,
         isEnabled = isEnabled,
         onClick = {},
@@ -356,9 +213,14 @@ private fun PreviewTonal(
 
 @Preview
 @Composable
-private fun PreviewPrimaryWithLoadingNotLoading(
+private fun PreviewLoading(
   @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
 ) =
   PreviewWithColorParams(params) {
-    PrimaryTextButtonWithLoading(text = "OK", isLoading = this, onClick = {})
+    val isLoading = this
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      ButtonKind.entries.fastForEach { kind ->
+        AktualButton(text = kind.name, kind = kind, isLoading = isLoading, onClick = {})
+      }
+    }
   }

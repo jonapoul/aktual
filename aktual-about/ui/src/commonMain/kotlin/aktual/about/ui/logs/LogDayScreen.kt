@@ -18,6 +18,7 @@ import aktual.core.icons.material.Share
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.logging.LogLine
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTextField
@@ -31,7 +32,6 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -392,7 +392,7 @@ private fun LiveBar(live: LiveState, onAction: OnAction<LogsAction>) =
 
 @Composable
 internal fun LiveButton(isFollowing: Boolean, onAction: OnAction<LogsAction>) =
-  NormalTextButton(
+  AktualButton(
     text = if (isFollowing) Strings.logsPause else Strings.logsResume,
     onClick = { onAction(if (isFollowing) Pause else Resume) },
     icon = if (isFollowing) MaterialIcons.Pause else MaterialIcons.PlayArrow,

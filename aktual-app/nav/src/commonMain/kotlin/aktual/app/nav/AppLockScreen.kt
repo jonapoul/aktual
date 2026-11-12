@@ -8,12 +8,12 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithCompositionLocals
@@ -131,7 +131,8 @@ private fun LockedContent(onUnlock: () -> Unit) {
 
     Spacer(Modifier.weight(1f))
 
-    PrimaryTextButton(
+    AktualButton(
+      kind = Primary,
       modifier = Modifier.fillMaxWidth().height(56.dp),
       text = Strings.appLockUnlock,
       shape = RounderCardShape,

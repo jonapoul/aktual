@@ -22,11 +22,11 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.BottomSheetMessage
@@ -280,7 +280,7 @@ private fun PickerContent(
       verticalAlignment = CenterVertically,
     ) {
       SheetTitle(modifier = Modifier.weight(1f), title = Strings.homeReportsChoose, message = null)
-      BareTextButton(text = Strings.homeReportsBack, onClick = onBack)
+      AktualButton(kind = Bare, text = Strings.homeReportsBack, onClick = onBack)
     }
 
     if (available.isEmpty()) BottomSheetMessage(Strings.homeReportsNoneToChoose)

@@ -2,9 +2,9 @@ package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualButton
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParameters
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
@@ -43,7 +43,7 @@ internal fun InfoButtons(onAction: OnAction<InfoAction>, modifier: Modifier = Mo
 
 @Composable
 private fun CheckUpdatesButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  NormalTextButton(
+  AktualButton(
     modifier = modifier.testTag(Tags.CheckUpdatesButton),
     text = Strings.infoCheckUpdates,
     onClick = { onAction(CheckUpdates) },
@@ -51,7 +51,7 @@ private fun CheckUpdatesButton(onAction: OnAction<InfoAction>, modifier: Modifie
 
 @Composable
 private fun ReportButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  NormalTextButton(
+  AktualButton(
     modifier = modifier.testTag(Tags.ReportButton),
     text = Strings.infoReportIssues,
     onClick = { onAction(ReportIssue) },
@@ -59,7 +59,7 @@ private fun ReportButton(onAction: OnAction<InfoAction>, modifier: Modifier = Mo
 
 @Composable
 private fun LicensesButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  NormalTextButton(
+  AktualButton(
     modifier = modifier.testTag(Tags.LicensesButton),
     text = Strings.infoLicenses,
     onClick = { onAction(ViewLicenses) },
@@ -67,7 +67,7 @@ private fun LicensesButton(onAction: OnAction<InfoAction>, modifier: Modifier = 
 
 @Composable
 private fun ManageStorageButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  NormalTextButton(
+  AktualButton(
     modifier = modifier,
     text = Strings.storageToolbar,
     onClick = { onAction(ManageStorage) },
@@ -75,7 +75,7 @@ private fun ManageStorageButton(onAction: OnAction<InfoAction>, modifier: Modifi
 
 @Composable
 private fun LogsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  NormalTextButton(
+  AktualButton(
     modifier = modifier,
     text = Strings.infoLogs,
     onClick = { onAction(AppLogs) },
@@ -83,7 +83,7 @@ private fun LogsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modi
 
 @Composable
 private fun CrashReportsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  NormalTextButton(
+  AktualButton(
     modifier = modifier,
     text = Strings.infoCrashes,
     onClick = { onAction(ViewCrashReports) },

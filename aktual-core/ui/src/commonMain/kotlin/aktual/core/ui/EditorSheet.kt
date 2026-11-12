@@ -58,12 +58,13 @@ fun EditorSheet(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(EditorSheetDS.buttonSpacing),
       ) {
-        NormalTextButton(
+        AktualButton(
           modifier = Modifier.weight(1f),
           text = cancelText,
           onClick = { sheet.close {} },
         )
-        PrimaryTextButton(
+        AktualButton(
+          kind = Primary,
           modifier = Modifier.weight(1f),
           text = confirmText,
           isEnabled = canConfirm,

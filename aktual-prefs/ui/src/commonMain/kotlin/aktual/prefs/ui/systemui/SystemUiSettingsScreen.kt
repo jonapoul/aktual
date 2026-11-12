@@ -17,11 +17,11 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.PrimaryTextButton
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
@@ -124,7 +124,8 @@ private fun SystemUiSettingsScaffold(
 @Composable
 private fun TestDialogButton() {
   var showDialog by remember { mutableStateOf(false) }
-  PrimaryTextButton(
+  AktualButton(
+    kind = Primary,
     modifier = Modifier.fillMaxWidth().padding(Dimens.Large),
     text = Strings.settingsUiTestDialog,
     onClick = { showDialog = true },

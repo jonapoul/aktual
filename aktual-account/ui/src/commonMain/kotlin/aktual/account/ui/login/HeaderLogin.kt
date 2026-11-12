@@ -1,11 +1,11 @@
 package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.RounderCardShape
@@ -55,7 +55,7 @@ internal fun HeaderLogin(
     }
 
     if (hasFailure) {
-      NormalTextButton(
+      AktualButton(
         text = Strings.loginHeaderFallback,
         onClick = { onAction(SelectLoginMethod(Password)) },
       )

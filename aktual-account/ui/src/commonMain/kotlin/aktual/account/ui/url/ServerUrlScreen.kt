@@ -9,6 +9,7 @@ import aktual.core.model.Protocol
 import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.InfoNavigator
 import aktual.core.nav.LoginNavigator
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BasicIconButton
@@ -16,11 +17,9 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ErrorBanner
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.normalIconButton
@@ -173,7 +172,8 @@ private fun ServerUrlContent(
         onAction = onAction,
       )
 
-      PrimaryTextButtonWithLoading(
+      AktualButton(
+        kind = Primary,
         modifier = Modifier.padding(5.dp).fillMaxWidth(),
         text = Strings.serverUrlConfirm,
         isLoading = isLoading,
@@ -181,7 +181,7 @@ private fun ServerUrlContent(
         onClick = { onAction(ConfirmUrl) },
       )
 
-      NormalTextButton(
+      AktualButton(
         modifier = Modifier.padding(5.dp).fillMaxWidth(),
         text = Strings.serverUrlTryDemo,
         isEnabled = !isLoading,

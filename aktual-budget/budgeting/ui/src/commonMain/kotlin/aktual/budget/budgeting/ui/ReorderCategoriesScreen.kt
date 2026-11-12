@@ -16,11 +16,13 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.BasicTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -28,21 +30,21 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.disabled
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -83,7 +85,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -487,22 +488,21 @@ private fun ReorderBottomBar(
       )
 
       val canDiscard = hasChanges && !isSaving
-      val discard = Strings.budgetingReorderDiscard
-      NormalTextButton(
-        text = discard,
+      BasicTextButton(
+        text = Strings.budgetingReorderDiscard,
         onClick = onDiscard,
         isEnabled = canDiscard,
-        border = if (canDiscard) colors.errorText else colors.buttonNormalBorder.disabled,
-        content = {
-          Text(
-            text = discard,
-            style = typography.buttonTextStyle,
-            color = if (canDiscard) colors.errorText else Unspecified,
-          )
-        },
+        style = typography.buttonTextStyle,
+        border =
+          BorderStroke(
+            Hairline,
+            if (canDiscard) colors.errorText else colors.buttonNormalBorder.disabled,
+          ),
+        colors = { pressed -> colors.normalButton(pressed, text = colors.errorText) },
       )
 
-      PrimaryTextButtonWithLoading(
+      AktualButton(
+        kind = Primary,
         text = Strings.budgetingReorderSave,
         isLoading = isSaving,
         isEnabled = hasChanges,

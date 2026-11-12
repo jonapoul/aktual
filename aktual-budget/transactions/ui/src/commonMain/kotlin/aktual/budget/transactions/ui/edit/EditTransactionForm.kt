@@ -15,12 +15,12 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.Location
 import aktual.core.icons.Split
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.OnAction
 import aktual.core.ui.RootOverlayContent
@@ -199,7 +199,8 @@ internal fun EditTransactionForm(
 
         // As upstream's mobile editor, which only splits a transaction that has an amount
         if (draft.amount != Zero) {
-          BareTextButton(
+          AktualButton(
+            kind = Bare,
             modifier = Modifier.align(CenterHorizontally),
             text = Strings.transactionsSplit,
             icon = AktualIcons.Split,

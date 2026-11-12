@@ -3,10 +3,10 @@ package aktual.budget.reports.ui.montecarlo
 import aktual.budget.reports.vm.montecarlo.MonteCarloRun
 import aktual.budget.reports.vm.montecarlo.RunPercentile
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
@@ -131,7 +131,7 @@ internal fun RunsTable(
         options = RunPercentile.entries.toImmutableList<RunPercentile?>(),
         string = { it?.string() ?: Strings.monteCarloRunsJump },
       )
-      NormalTextButton(
+      AktualButton(
         text = Strings.monteCarloRunsPrevious,
         isEnabled = currentPage > 0,
         onClick = {
@@ -139,7 +139,7 @@ internal fun RunsTable(
           highlightedRank = null
         },
       )
-      NormalTextButton(
+      AktualButton(
         text = Strings.monteCarloRunsNext,
         isEnabled = currentPage < pageCount - 1,
         onClick = {

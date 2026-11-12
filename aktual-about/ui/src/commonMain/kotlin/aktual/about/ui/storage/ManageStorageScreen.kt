@@ -14,6 +14,7 @@ import aktual.core.model.percent
 import aktual.core.model.unaryPlus
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -24,15 +25,12 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.isCompactWidth
@@ -270,23 +268,23 @@ private fun ActionButtons(onAction: OnAction<ManageStorageAction>) {
     horizontalAlignment = CenterHorizontally,
     verticalArrangement = spacedBy(Dimens.Medium),
   ) {
-    NormalTextButton(
+    AktualButton(
       text = Strings.storageClearCache,
       onClick = { onAction(RequestClearCache) },
       modifier = Modifier.fillMaxWidth(),
     )
 
-    NormalTextButton(
+    AktualButton(
       text = Strings.storageClearPreferences,
       onClick = { onAction(RequestClearPreferences) },
       modifier = Modifier.fillMaxWidth(),
     )
 
-    PrimaryTextButton(
+    AktualButton(
       text = Strings.storageClearAllFiles,
       onClick = { onAction(RequestClearAllFiles) },
       modifier = Modifier.fillMaxWidth(),
-      colors = { pressed -> colors.errorButton(pressed) },
+      kind = Destructive,
     )
   }
 }

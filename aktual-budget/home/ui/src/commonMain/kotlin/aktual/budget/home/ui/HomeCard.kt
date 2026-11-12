@@ -5,9 +5,9 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.AlertTriangle
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareTextButton
 import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -184,6 +184,6 @@ internal fun CardError(
       style = typography.bodyMedium,
     )
 
-    BareTextButton(text = Strings.homeRetry, onClick = { onAction(Retry) })
+    AktualButton(kind = Bare, text = Strings.homeRetry, onClick = { onAction(Retry) })
   }
 }

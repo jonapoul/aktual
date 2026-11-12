@@ -34,12 +34,12 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.TonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -72,7 +72,8 @@ internal fun PotsTab(
     }
   }
 
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloPotAdd,
     onClick = { onAction(AddPot) },
@@ -363,7 +364,8 @@ private fun InvestmentPhases(
       )
     }
   }
-  TonalButton(
+  AktualButton(
+    kind = Tonal,
     icon = AktualIcons.Add,
     text = Strings.monteCarloInvestmentPhaseAdd,
     isEnabled = pot.canAddInvestmentPhase(config),

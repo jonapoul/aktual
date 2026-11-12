@@ -9,6 +9,7 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaOutput
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -21,7 +22,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -111,7 +111,8 @@ private fun FormulaFieldScaffold(
         navigationIcon = { NavBackIconButton(onClick = onBack) },
         title = { Text(text = field.title()) },
         actions = {
-          PrimaryTextButton(
+          AktualButton(
+            kind = Primary,
             modifier = Modifier.padding(end = 8.dp).testTag(Tags.FormulaDone),
             text = Strings.reportsFormulaEditorDone,
             shape = CircleShape,

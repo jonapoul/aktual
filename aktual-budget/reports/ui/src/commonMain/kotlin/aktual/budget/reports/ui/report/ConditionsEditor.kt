@@ -10,12 +10,12 @@ import aktual.budget.reports.vm.newQueryCondition
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
-import aktual.core.ui.TonalButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -110,7 +110,8 @@ internal fun ConditionsList(
           }
         }
       }
-      TonalButton(
+      AktualButton(
+        kind = Tonal,
         modifier = Modifier.fillMaxWidth().testTag(Tags.AddCondition),
         icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,

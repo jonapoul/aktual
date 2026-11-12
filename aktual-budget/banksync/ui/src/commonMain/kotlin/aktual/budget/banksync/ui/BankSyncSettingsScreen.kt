@@ -20,6 +20,7 @@ import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -34,14 +35,12 @@ import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
-import aktual.core.ui.errorButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -325,11 +324,10 @@ private fun UnlinkButton(
 ) {
   var showConfirm by remember { mutableStateOf(false) }
 
-  NormalTextButton(
+  AktualButton(
     modifier = modifier.fillMaxWidth(),
     text = Strings.bankSyncSettingsUnlink,
-    colors = { pressed -> colors.errorButton(pressed) },
-    border = colors.errorBorder,
+    kind = Destructive,
     contentPadding = UnlinkButtonPadding,
     onClick = { showConfirm = true },
   )

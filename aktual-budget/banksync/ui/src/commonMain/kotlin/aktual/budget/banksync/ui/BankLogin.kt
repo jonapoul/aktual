@@ -6,14 +6,13 @@ import aktual.budget.banksync.vm.link.LoginAccountType
 import aktual.budget.banksync.vm.link.LoginBankItem
 import aktual.budget.model.AccountSyncSource
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.NormalTextButton
 import aktual.core.ui.OnAction
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerLine
 import androidx.compose.foundation.background
@@ -218,12 +217,13 @@ private fun LoginWaiting(
     }
 
     Row(horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing)) {
-      PrimaryTextButton(
+      AktualButton(
+        kind = Primary,
         text = Strings.bankSyncLinkLoginReopen,
         onClick = { onAction(ReopenLogin) },
         isEnabled = status.link != null,
       )
-      NormalTextButton(
+      AktualButton(
         text = Strings.bankSyncLinkLoginCancel,
         onClick = { onAction(CancelLogin) },
       )
