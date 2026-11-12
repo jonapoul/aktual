@@ -5,7 +5,9 @@ import aktual.core.model.LoginMethod
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** https://github.com/actualbudget/actual-server/blob/master/src/app-account.js#L31-L41 */
+/**
+ * https://github.com/actualbudget/actual/blob/master/packages/sync-server/src/app-account.js#L49-L63
+ */
 sealed interface NeedsBootstrapResponse {
   @Serializable data class Success(@SerialName("data") val data: Data) : NeedsBootstrapResponse
 
