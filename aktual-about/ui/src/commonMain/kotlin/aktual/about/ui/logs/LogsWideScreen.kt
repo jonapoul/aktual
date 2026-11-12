@@ -56,7 +56,6 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -178,13 +177,7 @@ private fun WideToolbar(
     PrimaryTextButton(
       text = Strings.logsExport,
       onClick = onExport,
-      prefix = {
-        Icon(
-          modifier = Modifier.size(18.dp),
-          imageVector = MaterialIcons.Share,
-          contentDescription = null,
-        )
-      },
+      icon = MaterialIcons.Share,
     )
   }
 

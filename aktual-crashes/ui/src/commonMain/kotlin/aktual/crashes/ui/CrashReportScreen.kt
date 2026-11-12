@@ -254,7 +254,7 @@ private fun CrashReportBottomBar(onReport: () -> Unit, onExport: () -> Unit) =
         modifier = Modifier.weight(1f),
         text = Strings.crashesExport,
         onClick = onExport,
-        prefix = { Icon(imageVector = MaterialIcons.Share, contentDescription = null) },
+        icon = MaterialIcons.Share,
       )
     }
     BottomSpacing()
