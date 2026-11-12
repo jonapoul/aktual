@@ -37,8 +37,10 @@ import aktual.core.l10n.transaction_location_denied
 import aktual.core.l10n.transaction_location_none_nearby
 import aktual.core.l10n.transaction_location_save_failed
 import aktual.core.l10n.transaction_location_saved
+import aktual.core.l10n.transaction_location_saved_view
 import aktual.core.l10n.transaction_location_unavailable
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.ListPayeeLocationsNavigator
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -86,6 +88,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -115,6 +118,7 @@ internal fun EditTransactionScreen(
   target: EditTransactionTarget,
   back: BackNavigator,
   toBudget: () -> Unit,
+  toLocations: ListPayeeLocationsNavigator,
   modifier: Modifier = Modifier,
   viewModel: EditTransactionViewModel = editTransactionViewModel(target),
 ) {
@@ -134,7 +138,7 @@ internal fun EditTransactionScreen(
         LocationUnavailable,
         LocationSaveFailed,
         is LocationSaved,
-        is LocationAlreadySaved -> snackbars.show { showLocationEvent(event) }
+        is LocationAlreadySaved -> snackbars.show { showLocationEvent(event, toLocations) }
       }
     }
   }
@@ -201,14 +205,24 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
     is SetPartNotes -> setPartNotes(action.id, action.notes)
   }
 
-private suspend fun SnackbarHostState.showLocationEvent(event: EditTransactionEvent) {
+private suspend fun SnackbarHostState.showLocationEvent(
+  event: EditTransactionEvent,
+  toLocations: ListPayeeLocationsNavigator,
+) {
   when (event) {
     NoNearbyPayees -> showSnackbar(getString(Res.string.transaction_location_none_nearby))
     LocationUnavailable ->
       showWarningSnackbar(getString(Res.string.transaction_location_unavailable))
     LocationSaveFailed -> showErrorSnackbar(getString(Res.string.transaction_location_save_failed))
-    is LocationSaved ->
-      showSuccessSnackbar(getString(Res.string.transaction_location_saved, event.payee))
+    is LocationSaved -> {
+      val result =
+        showSuccessSnackbar(
+          message = getString(Res.string.transaction_location_saved, event.payee),
+          actionLabel = getString(Res.string.transaction_location_saved_view),
+          duration = SnackbarDuration.Long,
+        )
+      if (result == ActionPerformed) toLocations()
+    }
     is LocationAlreadySaved ->
       showSnackbar(getString(Res.string.transaction_location_already_saved, event.payee))
     Deleted,

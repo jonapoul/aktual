@@ -74,7 +74,7 @@ fun <F> SortDialog(
 }
 
 @Composable
-private fun <T> ColumnScope.SortSection(
+internal fun <T> ColumnScope.SortSection(
   label: String,
   options: ImmutableList<T>,
   selected: T,
@@ -115,7 +115,7 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
 }
 
 @Composable
-private fun SortDirection.label(): String =
+internal fun SortDirection.label(): String =
   when (this) {
     Ascending -> Strings.sortDirectionAscending
     Descending -> Strings.sortDirectionDescending

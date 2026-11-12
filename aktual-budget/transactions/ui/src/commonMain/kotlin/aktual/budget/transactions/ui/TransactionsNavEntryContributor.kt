@@ -19,6 +19,7 @@ import aktual.core.nav.CreateTransactionNavRoute
 import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.FilteredTransactionsNavRoute
+import aktual.core.nav.ListPayeeLocationsNavigator
 import aktual.core.nav.NavStack
 import aktual.core.nav.ScheduleTransactionsNavRoute
 import aktual.core.nav.TransactionNavRoute
@@ -119,6 +120,7 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
         target = EditTransactionTarget.Existing(route.id),
         back = BackNavigator(stack),
         toBudget = { BudgetNavigator(stack)() },
+        toLocations = ListPayeeLocationsNavigator(stack),
       )
     }
 
@@ -131,6 +133,7 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
           stack.pop()
           BudgetNavigator(stack)()
         },
+        toLocations = ListPayeeLocationsNavigator(stack),
       )
     }
 

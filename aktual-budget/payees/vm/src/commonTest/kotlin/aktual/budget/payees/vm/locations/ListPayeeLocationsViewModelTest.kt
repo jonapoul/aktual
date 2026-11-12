@@ -6,12 +6,16 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.model.PayeeLocationSort
 import aktual.budget.payees.domain.Address
 import aktual.budget.payees.domain.AddressBook
 import aktual.budget.payees.domain.AddressResult.Found
 import aktual.budget.payees.vm.locations.ListPayeeLocationsState.Success
+import aktual.prefs.PayeeLocationPreferences
+import aktual.prefs.PayeeLocationPreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import androidx.lifecycle.viewModelScope
@@ -136,6 +140,63 @@ class ListPayeeLocationsViewModelTest {
     }
   }
 
+  @Test
+  fun `Sorts by date saved, newest first`() = runDatabaseTest { scope ->
+    // given
+    insertPayee("tesco", "Tesco")
+    insertPayee("argos", "Argos")
+    insertLocation("tesco-old", "tesco", Instant.parse("2026-11-01T12:00:00Z"))
+    insertLocation("tesco-new", "tesco")
+    insertLocation("argos", "argos")
+    val preferences = PayeeLocationPreferencesImpl(scope.buildPreferences())
+    preferences.sortField.set(DateSaved)
+    preferences.sortDirection.set(Descending)
+
+    // then
+    createViewModel(scope, preferences = preferences).state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThat(awaitSuccess().map { it.id.value })
+        .containsExactly("argos", "tesco-new", "tesco-old")
+    }
+  }
+
+  @Test
+  fun `Sorts by payee name, descending`() = runDatabaseTest { scope ->
+    // given
+    insertPayee("tesco", "Tesco")
+    insertPayee("argos", "Argos")
+    insertLocation("tesco-old", "tesco", Instant.parse("2026-11-01T12:00:00Z"))
+    insertLocation("tesco-new", "tesco")
+    insertLocation("argos", "argos")
+    val preferences = PayeeLocationPreferencesImpl(scope.buildPreferences())
+    preferences.sortDirection.set(Descending)
+
+    // then
+    createViewModel(scope, preferences = preferences).state.test {
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThat(awaitSuccess().map { it.id.value })
+        .containsExactly("tesco-new", "tesco-old", "argos")
+    }
+  }
+
+  @Test
+  fun `Setting the sort saves it`() = runDatabaseTest { scope ->
+    // given
+    val preferences = PayeeLocationPreferencesImpl(scope.buildPreferences())
+    val viewModel = createViewModel(scope, preferences = preferences)
+
+    viewModel.sort.test {
+      assertThatNextEmissionIsEqualTo(Default)
+
+      // when
+      viewModel.setSort(PayeeLocationSort(DateSaved, Ascending))
+
+      // then
+      assertThatNextEmissionIsEqualTo(PayeeLocationSort(DateSaved, Ascending))
+      assertThat(preferences.sortField.get()).isEqualTo(DateSaved)
+    }
+  }
+
   private suspend fun ReceiveTurbine<ListPayeeLocationsState>.awaitSuccess() =
     (awaitItem() as Success).locations
 
@@ -146,11 +207,13 @@ class ListPayeeLocationsViewModelTest {
     scope: TestScope,
     sync: TestSyncController = TestSyncController(),
     addresses: FakeAddressLookup = FakeAddressLookup(),
+    preferences: PayeeLocationPreferences = PayeeLocationPreferencesImpl(scope.buildPreferences()),
   ) =
     ListPayeeLocationsViewModel(
       loader = loader(scope, sync, addresses),
       deleter = deleter(scope, sync),
       addressLookup = addresses,
+      preferences = preferences,
       viewModelContext = scope.viewModelContext,
     )
 

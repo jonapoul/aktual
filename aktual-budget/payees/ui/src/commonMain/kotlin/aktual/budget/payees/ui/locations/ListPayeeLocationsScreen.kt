@@ -1,6 +1,7 @@
 package aktual.budget.payees.ui.locations
 
 import aktual.budget.model.PayeeLocationId
+import aktual.budget.model.PayeeLocationSort
 import aktual.budget.payees.ui.OpenStreetMapAttribution
 import aktual.budget.payees.ui.mapUrl
 import aktual.budget.payees.ui.showLocationDeleteFailed
@@ -13,12 +14,17 @@ import aktual.budget.payees.vm.locations.ListPayeeLocationsViewModel
 import aktual.budget.payees.vm.locations.PayeeLocationItem
 import aktual.budget.payees.vm.locations.PayeeLocationsEvent.Deleted
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Globe
 import aktual.core.icons.Refresh
 import aktual.core.icons.SearchAlternate
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SearchPayeeLocationsNavigator
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -34,6 +40,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SortSheet
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -76,6 +83,7 @@ internal fun ListPayeeLocationsScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val lookUpAddresses by viewModel.lookUpAddresses.collectAsStateWithLifecycle()
+  val sort by viewModel.sort.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
   val uriHandler = LocalUriHandler.current
 
@@ -93,6 +101,7 @@ internal fun ListPayeeLocationsScreen(
     modifier = modifier,
     state = state,
     lookUpAddresses = lookUpAddresses,
+    sort = sort,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -102,6 +111,7 @@ internal fun ListPayeeLocationsScreen(
         is DeleteLocation -> viewModel.delete(action.id)
         is RequestAddress -> viewModel.requestAddress(action.coordinates)
         is SetLookUpAddresses -> viewModel.setLookUpAddresses(action.enabled)
+        is SetSort -> viewModel.setSort(action.sort)
       }
     },
   )
@@ -111,11 +121,24 @@ internal fun ListPayeeLocationsScreen(
 private fun ListPayeeLocationsScaffold(
   state: ListPayeeLocationsState,
   lookUpAddresses: Boolean,
+  sort: PayeeLocationSort,
   onAction: OnAction<ListPayeeLocationsAction>,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  var showSortSheet by remember { mutableStateOf(false) }
+
+  if (showSortSheet) {
+    SortSheet(
+      fields = PayeeLocationSort.Field.Entries,
+      field = sort.field,
+      direction = sort.direction,
+      fieldLabel = { it.label() },
+      onChange = { field, direction -> onAction(SetSort(PayeeLocationSort(field, direction))) },
+      onDismiss = { showSortSheet = false },
+    )
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -132,6 +155,7 @@ private fun ListPayeeLocationsScaffold(
               contentDescription = Strings.payeesLocationsSearch,
               onClick = { onAction(OpenSearch) },
             )
+            ListPayeeLocationsMenu(onSort = { showSortSheet = true })
           }
         },
       )
@@ -263,6 +287,37 @@ private fun PayeeLocationsList(
   }
 }
 
+@Composable
+private fun ListPayeeLocationsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
+  var expanded by remember { mutableStateOf(false) }
+
+  Box(modifier = modifier) {
+    AktualIconButton(
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.payeesLocationsMenu,
+      onClick = { expanded = true },
+    )
+
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.sort,
+        leadingIcon = MaterialIcons.Sort,
+        onClick = {
+          expanded = false
+          onSort()
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun PayeeLocationSort.Field.label(): String =
+  when (this) {
+    PayeeName -> Strings.payeesLocationsSortPayee
+    DateSaved -> Strings.payeesLocationsSortDateSaved
+  }
+
 @Composable internal expect fun payeeLocationsHeaderText(): String
 
 private class ListPayeeLocationsStateProvider :
@@ -284,6 +339,7 @@ private fun PreviewListPayeeLocationsScaffold(
     ListPayeeLocationsScaffold(
       state = this,
       lookUpAddresses = this == Success(PayeeLocationsPreview.withAddresses),
+      sort = Default,
       onAction = {},
     )
   }
