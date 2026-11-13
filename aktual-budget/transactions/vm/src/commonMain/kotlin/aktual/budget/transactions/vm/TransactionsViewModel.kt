@@ -19,6 +19,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.ShowBalances
 import aktual.budget.model.SyncedPrefKey.PerAccount.ShowExtraBalances
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
+import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
@@ -69,6 +70,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -118,6 +120,7 @@ internal constructor(
   // The bank balance being reconciled against, while reconciling
   private val mutableReconcileTarget = MutableStateFlow<Amount?>(null)
   private val mutableReconcileBusy = MutableStateFlow(false)
+  private val mutableSearch = MutableStateFlow(TransactionSearch())
   private var reconcileJob: Job? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
@@ -232,11 +235,16 @@ internal constructor(
       BankSyncSummary.of(results.filter { it.account == accountId })
     }
 
-  // A filtered list only holds part of each account, so it has no balance to show
-  val showBalance: Boolean = spec.isAccountList && spec.activeSearch == null
+  val search: StateFlow<TransactionSearch> = mutableSearch.asStateFlow()
+
+  // A filtered or searched list only holds part of each account, so it has no balance to show
+  val showBalance: StateFlow<Boolean> =
+    mutableSearch
+      .map { spec.isAccountList && spec.activeSearch(it) == null }
+      .stateIn(viewModelScope, Eagerly, initialValue = spec.isAccountList)
 
   val balance: StateFlow<Amount?> =
-    if (showBalance) {
+    if (spec.isAccountList) {
       observeBalance().map(::Amount).stateIn(viewModelScope, Eagerly, initialValue = null)
     } else {
       MutableStateFlow(null)
@@ -310,6 +318,13 @@ internal constructor(
       hideReconciled.drop(count = 1).collect { currentPagingSource?.invalidate() }
     }
 
+    // So does searching, though not a change to a search that leaves it empty
+    viewModelScope.launch {
+      mutableSearch.map(spec::activeSearch).distinctUntilChanged().drop(count = 1).collect {
+        currentPagingSource?.invalidate()
+      }
+    }
+
     // Invalidate PagingSource when transaction data changes.
     // Ignore the first item from the flow, that'll be the initial table state.
     viewModelScope.launch {
@@ -367,6 +382,10 @@ internal constructor(
         onFailure = { e -> log.w(e) { "Failed setting $key" } },
       )
     }
+  }
+
+  fun setSearch(search: TransactionSearch) {
+    mutableSearch.update { search }
   }
 
   fun toggleSplit(id: TransactionId) {
@@ -456,6 +475,7 @@ internal constructor(
         tagsDao = tagsDao,
         spec = spec,
         hideReconciled = hideReconciled.value,
+        search = spec.activeSearch(mutableSearch.value),
       )
       .also { currentPagingSource = it }
 

@@ -53,7 +53,6 @@ import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
-import assertk.assertions.isFalse
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
@@ -1462,25 +1461,61 @@ class TransactionsViewModelTest {
   }
 
   @Test
-  fun `Searched lists show no balance`() = runTest {
+  fun `Searching narrows the list and hides its balance`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", date = DATE_2)
+      insertTransaction("b", "a", "a", "b", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    viewModel.showBalance.test {
+      assertThatNextEmissionIsEqualTo(true)
+
+      // when
+      viewModel.setSearch(TransactionSearch(text = "argos"))
+      advanceUntilIdle()
+
+      // then
+      assertThatNextEmissionIsEqualTo(false)
+    }
+    assertThat(viewModel.pagingData.asSnapshot().map { it.id.toString() to it.balance })
+      .containsExactly("a" to null)
+
+    // when
+    viewModel.setSearch(TransactionSearch())
+    advanceUntilIdle()
+
+    // then
+    viewModel.showBalance.test { assertThatNextEmissionIsEqualTo(true) }
+    assertThat(viewModel.pagingData.asSnapshot().map { it.id.toString() }).containsExactly("a", "b")
+  }
+
+  @Test
+  fun `Tag lists ignore a search`() = runTest {
     // given
     buildViewModel(AllAccounts)
     advanceUntilIdle()
+    val tagged = factory.create(TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))))
 
     // when
-    val searched = factory.create(TransactionsSpec(search = TransactionSearch(text = "argos")))
+    tagged.setSearch(TransactionSearch(text = "argos"))
 
     // then
-    assertThat(searched.showBalance).isFalse()
-    searched.viewModelScope.cancel()
+    tagged.showBalance.test { assertThatNextEmissionIsEqualTo(false) }
+    tagged.viewModelScope.cancel()
   }
 
-  private fun searchSource(spec: AccountSpec, search: TransactionSearch) =
-    TransactionsPagingSource(
+  private fun searchSource(spec: AccountSpec, search: TransactionSearch): TransactionsPagingSource {
+    val listSpec = TransactionsSpec(accountSpec = spec)
+    return TransactionsPagingSource(
       transactionDao = transactions,
       tagsDao = tags,
-      spec = TransactionsSpec(accountSpec = spec, search = search),
+      spec = listSpec,
+      search = listSpec.activeSearch(search),
     )
+  }
 
   private suspend fun <K : Any> PagingSource<K, Transaction>.refresh() =
     load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
@@ -1499,7 +1534,7 @@ class TransactionsViewModelTest {
     val tagged = factory.create(TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))))
 
     // then
-    assertThat(tagged.showBalance).isFalse()
+    tagged.showBalance.test { assertThatNextEmissionIsEqualTo(false) }
     tagged.balance.test { assertThatNextEmissionIsEqualTo(null) }
     tagged.viewModelScope.cancel()
   }

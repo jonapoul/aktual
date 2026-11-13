@@ -26,6 +26,8 @@ internal class TransactionsPagingSource(
   private val spec: TransactionsSpec,
   // Only applies to a single account's list
   private val hideReconciled: Boolean = false,
+  // An active search, see TransactionsSpec.activeSearch
+  private val search: TransactionSearch? = null,
 ) : PagingSource<PageKey, Transaction>() {
   // A #tag match can't be expressed as a SQL offset query, so for tag-filtered specs we resolve the
   // full ordered id list once and page over it in memory. Cached for this source's lifetime - a new
@@ -38,8 +40,6 @@ internal class TransactionsPagingSource(
 
   // And for a searched account list, matched in memory too
   private var searchIds: FilteredIds? = null
-
-  private val search = spec.activeSearch
 
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
