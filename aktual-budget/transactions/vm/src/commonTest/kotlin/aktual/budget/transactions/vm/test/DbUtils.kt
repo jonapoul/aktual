@@ -1,4 +1,4 @@
-package aktual.budget.transactions.vm
+package aktual.budget.transactions.vm.test
 
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
@@ -11,6 +11,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
+import aktual.budget.transactions.vm.Transaction
 import aktual.core.model.Token
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
@@ -24,6 +25,8 @@ internal val DATE_3 = LocalDate(2025, Month.JUNE, 3)
 internal val TOKEN = Token("abc-123")
 internal val BUDGET_ID = BudgetId("xyz-789")
 internal val METADATA = DbMetadata(cloudFileId = BUDGET_ID)
+
+internal val LINKED = AccountId("linked")
 
 internal suspend fun AccountDao.insertAccount(id: AccountId, name: String) {
   insert(id = id, accountId = id.toString(), name = name, officialName = name)
@@ -103,3 +106,17 @@ internal fun Transaction.asParent(
     children = children.map { it.asChild() }.toImmutableList(),
     totalChildren = totalChildren,
   )
+
+internal val TRANSACTION_A = transaction(id = "a", account = "a", category = "a", payee = "a")
+internal val TRANSACTION_B = transaction(id = "b", account = "b", category = "b", payee = "b")
+internal val TRANSACTION_C = transaction(id = "c", account = "c", category = "c", payee = "c")
+
+internal val DATED_A = TRANSACTION_A.copy(date = DATE_1)
+internal val DATED_B = TRANSACTION_B.copy(date = DATE_1)
+internal val DATED_C = TRANSACTION_C.copy(date = DATE_1)
+internal val DATED_D =
+  transaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+internal val DATED_E =
+  transaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+internal val DATED_F =
+  transaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)

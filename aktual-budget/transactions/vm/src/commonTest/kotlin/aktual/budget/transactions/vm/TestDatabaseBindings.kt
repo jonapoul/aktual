@@ -6,6 +6,8 @@ import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.transactions.vm.test.FakeBankSyncController
+import aktual.budget.transactions.vm.test.FakeNewTransactions
 import aktual.di.Accessor
 import aktual.di.AccessorKey
 import aktual.di.BudgetScope

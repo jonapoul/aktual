@@ -1,4 +1,4 @@
-package aktual.budget.transactions.vm
+package aktual.budget.transactions.vm.test
 
 import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.banksync.domain.NewTransactionsImpl
