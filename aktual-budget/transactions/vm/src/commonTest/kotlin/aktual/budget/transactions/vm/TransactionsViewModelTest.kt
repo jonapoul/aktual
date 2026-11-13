@@ -1312,6 +1312,30 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Search matches a split parent's own notes`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("p", "a", null, "a", notes = "holiday", date = DATE_2, isParent = true)
+      insertTransaction("p1", "a", "a", "a", date = DATE_2, parent = "p")
+      insertTransaction("p2", "a", "b", "a", date = DATE_2, parent = "p")
+      insertTransaction("q", "a", "a", "a", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val result = searchSource(AllAccounts, TransactionSearch(text = "holiday")).refresh()
+
+    // then
+    assertThat(result)
+      .isPage()
+      .withData(
+        transaction("p", "a", null, "a", notes = "holiday", date = DATE_2)
+          .asParent(payee = "Argos", totalChildren = 2),
+      )
+  }
+
+  @Test
   fun `An empty search lists the account as usual`() = runTest {
     // given
     buildViewModel(AllAccounts)

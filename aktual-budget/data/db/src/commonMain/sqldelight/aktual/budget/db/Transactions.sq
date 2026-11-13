@@ -726,8 +726,8 @@ LEFT JOIN payees AS p ON p.id = vt.payee
 WHERE vt.is_parent = 0
 ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
--- Split children and unsplit transactions, with what an account list's search matches, for one
--- account, an account group or every account, in list order
+-- Every live transaction, with what an account list's search matches, for one account, an account
+-- group or every account, in list order
 getSearchRows:
 SELECT
   vt.id,
@@ -758,7 +758,6 @@ LEFT JOIN category_groups AS g ON g.id = c.cat_group
 LEFT JOIN payees AS p ON p.id = vt.payee
 LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
 WHERE
-  vt.is_parent = 0 AND
   (:account IS NULL OR vt.account = :account) AND
   (:closed IS NULL OR (
     a.tombstone = 0 AND

@@ -213,8 +213,7 @@ internal class TransactionsPagingSource(
       is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
     }
 
-  // A split takes one slot, as its parent, where its first matching child would be. Only the
-  // children are matched, since a parent's payee and category come from them
+  // A split takes one slot, as its parent, where it or its first matching child would be
   private suspend fun loadSearchIds(search: TransactionSearch): FilteredIds {
     val matcher = TransactionSearchMatcher(search)
     val rows =
