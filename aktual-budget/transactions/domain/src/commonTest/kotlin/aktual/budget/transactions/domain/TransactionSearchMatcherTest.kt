@@ -1,4 +1,4 @@
-package aktual.budget.rules.domain
+package aktual.budget.transactions.domain
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
@@ -6,6 +6,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.TransactionSearch
+import aktual.budget.rules.domain.FilterRow
 import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue

@@ -1,7 +1,9 @@
-package aktual.budget.rules.domain
+package aktual.budget.transactions.domain
 
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.parseAmountInput
+import aktual.budget.rules.domain.FilterRow
+import aktual.budget.rules.domain.TransactionFilter
 import kotlin.math.abs
 
 /**
