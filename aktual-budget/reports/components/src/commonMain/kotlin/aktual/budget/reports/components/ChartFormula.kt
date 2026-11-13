@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -49,11 +50,11 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun FormulaChart(
   data: FormulaData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier, horizontalAlignment = CenterHorizontally) {
+    val compact = LocalCompactChart.current
     val title = data.title.takeIf { data.showTitle }
     if (compact && includeHeader && title != null) {
       Text(
@@ -181,15 +182,16 @@ private fun PreviewFormulaChart(
   @PreviewParameter(FormulaChartProvider::class) params: ColorParams<FormulaChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    FormulaChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .height(160.dp)
-          .padding(5.dp),
-      data = data,
-      compact = true,
-    )
+    CompositionLocalProvider(LocalCompactChart provides true) {
+      FormulaChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .height(160.dp)
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class FormulaChartParams(val data: FormulaData)

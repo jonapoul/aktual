@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -66,12 +67,12 @@ import kotlinx.datetime.YearMonth
 @Composable
 internal fun CashFlowChart(
   data: CashFlowData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       if (compact) {
         CompactHeader(data)
@@ -87,10 +88,10 @@ internal fun CashFlowChart(
       LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
     }
 
-    val label = axisLabelComponent(compact)
-    val tick = axisTickComponent(compact)
-    val guideline = axisGuidelineComponent(compact)
-    val line = axisLineComponent(compact)
+    val label = axisLabelComponent()
+    val tick = axisTickComponent()
+    val guideline = axisGuidelineComponent()
+    val line = axisLineComponent()
 
     ZoomableChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
@@ -101,7 +102,7 @@ internal fun CashFlowChart(
         modifier = chartModifier,
         modelProducer = modelProducer,
         scrollState = rememberVicoScrollState(scrollEnabled = false),
-        animationSpec = zoom.animationSpec(compact),
+        animationSpec = zoom.animationSpec(),
         chart =
           rememberCashFlowChart(
             showBalance = data.showBalance,
@@ -129,7 +130,7 @@ internal fun CashFlowChart(
               } else {
                 rememberMarker(rememberMarkerFormatter(yearMonthXAxisFormatter()))
               },
-            markerVisibilityListener = rememberMarkerHaptics(compact),
+            markerVisibilityListener = rememberMarkerHaptics(),
             decorations = persistentListOf(rememberChartZoomDecoration(zoom)),
           ),
       )
@@ -321,15 +322,16 @@ private fun PreviewCashFlowChart(
   @PreviewParameter(CashFlowChartProvider::class) params: ColorParams<CashFlowChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
-    CashFlowChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .width(WIDTH.dp)
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CashFlowChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .width(WIDTH.dp)
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class CashFlowChartParams(

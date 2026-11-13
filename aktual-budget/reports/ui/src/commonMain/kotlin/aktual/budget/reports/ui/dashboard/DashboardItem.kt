@@ -1,6 +1,5 @@
 package aktual.budget.reports.ui.dashboard
 
-import aktual.budget.model.CustomReportId
 import aktual.budget.reports.components.ChartHeight
 import aktual.budget.reports.components.ChartPadding
 import aktual.budget.reports.components.PER_TRANSACTION_DATA
@@ -43,6 +42,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,21 +53,17 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun DashboardItem(
   item: DashboardItem,
   isPinned: Boolean,
-  canPin: Boolean,
   observer: DashboardItemObserver,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
-  customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
   isEditing: Boolean = false,
 ) {
   val flow = remember(item) { observer(item) }
@@ -77,12 +73,10 @@ internal fun DashboardItem(
     item = item,
     chartData = chartData,
     isPinned = isPinned,
-    canPin = canPin,
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     onAction = onAction,
     modifier = modifier,
-    customReportNames = customReportNames,
     isEditing = isEditing,
   )
 }
@@ -92,14 +86,13 @@ private fun DashboardItem(
   item: DashboardItem,
   chartData: ChartData?,
   isPinned: Boolean,
-  canPin: Boolean,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
-  customReportNames: ImmutableMap<CustomReportId, String> = persistentMapOf(),
   isEditing: Boolean = false,
 ) {
+  val customReportNames = LocalCustomReportNames.current
   var showRenameDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -113,7 +106,6 @@ private fun DashboardItem(
         item = item,
         chartData = chartData,
         isPinned = isPinned,
-        canPin = canPin,
         isOpen = isOpen,
         onOpenChange = onOpenChange,
         onAction = onAction,
@@ -173,7 +165,6 @@ private fun SwipeableReportCard(
   item: DashboardItem,
   chartData: ChartData?,
   isPinned: Boolean,
-  canPin: Boolean,
   isOpen: Boolean,
   onOpenChange: (Boolean) -> Unit,
   onAction: OnAction<Action>,
@@ -181,6 +172,7 @@ private fun SwipeableReportCard(
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val canPin = LocalCanPinReports.current
   val renameAction =
     SwipeAction(
       text = Strings.reportsDashboardRename,
@@ -322,15 +314,16 @@ private fun PreviewReportDashboardItem(
   @PreviewParameter(ReportDashboardItemProvider::class) params: ColorParams<DashboardItemParams>,
 ) =
   PreviewWithColorParams(params) {
-    DashboardItem(
-      item = item,
-      chartData = chartData,
-      isPinned = false,
-      canPin = true,
-      isOpen = false,
-      onOpenChange = {},
-      onAction = {},
-    )
+    CompositionLocalProvider(LocalCanPinReports provides true) {
+      DashboardItem(
+        item = item,
+        chartData = chartData,
+        isPinned = false,
+        isOpen = false,
+        onOpenChange = {},
+        onAction = {},
+      )
+    }
   }
 
 @Preview

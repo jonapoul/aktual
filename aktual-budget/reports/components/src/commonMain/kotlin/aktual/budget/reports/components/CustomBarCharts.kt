@@ -60,10 +60,10 @@ import kotlinx.coroutines.runBlocking
 internal fun CustomBarChart(
   data: CustomData,
   bars: ImmutableList<CustomBar>,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val metric = data.config.balanceType.metric
   val modelProducer = remember { CartesianChartModelProducer() }
   if (isInPreview()) {
@@ -90,20 +90,19 @@ internal fun CustomBarChart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberColumnCartesianLayer(columnProvider = columnProvider),
-        startAxis = amountAxis(compact),
+        startAxis = amountAxis(),
         bottomAxis =
           labelAxis(
             labels = bars.map { it.name }.toImmutableList(),
-            compact = compact,
             rotationDegrees = BAR_LABEL_ROTATION,
           ),
         marker =
           if (compact) null else rememberMarker(valueFormatter = markerFormatter, lineCount = 2),
-        markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerVisibilityListener = rememberMarkerHaptics(),
         markerController =
           rememberDrilldownController(
             onDrilldown?.let { onTap ->
@@ -120,10 +119,10 @@ internal fun CustomBarChart(
 internal fun CustomStackedBarChart(
   data: CustomData,
   legend: ImmutableList<CustomBar>,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val labels = intervalLabels(data)
   val stacks = remember(data, legend) { customStacks(data, legend) }
 
@@ -153,22 +152,22 @@ internal fun CustomStackedBarChart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberColumnCartesianLayer(
           columnProvider = columnProvider,
           mergeMode = { Stacked },
         ),
-        startAxis = amountAxis(compact),
-        bottomAxis = labelAxis(labels = labels, compact = compact, rotationDegrees = 0f),
+        startAxis = amountAxis(),
+        bottomAxis = labelAxis(labels = labels, rotationDegrees = 0f),
         marker =
           if (compact) {
             null
           } else {
             rememberMarker(valueFormatter = markerFormatter, lineCount = markerLines(legend.size))
           },
-        markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerVisibilityListener = rememberMarkerHaptics(),
         markerController =
           rememberDrilldownController(
             onDrilldown?.let { onTap ->
@@ -363,25 +362,25 @@ internal fun rememberAmountFormatter(): (Amount) -> AnnotatedString {
 }
 
 @Composable
-internal fun amountAxis(compact: Boolean) =
+internal fun amountAxis() =
   VerticalAxis.rememberStart(
-    line = axisLineComponent(compact),
-    guideline = axisGuidelineComponent(compact),
-    label = axisLabelComponent(compact),
-    tick = axisTickComponent(compact),
+    line = axisLineComponent(),
+    guideline = axisGuidelineComponent(),
+    label = axisLabelComponent(),
+    tick = axisTickComponent(),
     valueFormatter = amountYAxisFormatter(),
     itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { AMOUNT_LABELS }) },
   )
 
 // Skips labels when there are too many to fit, the marker still names every bar
 @Composable
-internal fun labelAxis(labels: ImmutableList<String>, compact: Boolean, rotationDegrees: Float) =
+internal fun labelAxis(labels: ImmutableList<String>, rotationDegrees: Float) =
   HorizontalAxis.rememberBottom(
-    line = axisLineComponent(compact),
+    line = axisLineComponent(),
     guideline = null,
-    label = axisLabelComponent(compact),
+    label = axisLabelComponent(),
     labelRotationDegrees = rotationDegrees,
-    tick = axisTickComponent(compact),
+    tick = axisTickComponent(),
     // A group can have an empty name
     valueFormatter =
       remember(labels) {

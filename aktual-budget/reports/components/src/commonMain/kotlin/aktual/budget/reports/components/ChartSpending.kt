@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -64,12 +65,12 @@ import kotlinx.datetime.YearMonth
 @Composable
 internal fun SpendingChart(
   data: SpendingData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       if (compact) {
         CompactHeader(
@@ -85,7 +86,6 @@ internal fun SpendingChart(
     Chart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
-      compact = compact,
       zoom = zoom,
     )
   }
@@ -93,10 +93,10 @@ internal fun SpendingChart(
 @Composable
 private fun Chart(
   data: SpendingData,
-  compact: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   val modelProducer = remember { CartesianChartModelProducer() }
 
   if (isInPreview()) {
@@ -105,10 +105,10 @@ private fun Chart(
     LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
-  val label = axisLabelComponent(compact)
-  val tick = axisTickComponent(compact)
-  val guideline = axisGuidelineComponent(compact)
-  val line = axisLineComponent(compact)
+  val label = axisLabelComponent()
+  val tick = axisTickComponent()
+  val guideline = axisGuidelineComponent()
+  val line = axisLineComponent()
 
   ZoomableChart(modifier = modifier.fillMaxHeight(), state = zoom, enabled = !compact) {
     chartModifier ->
@@ -116,7 +116,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = zoom.animationSpec(compact),
+      animationSpec = zoom.animationSpec(),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -165,7 +165,7 @@ private fun Chart(
               itemPlacer = remember { HorizontalAxis.ItemPlacer.segmented() },
             ),
           marker = if (compact) null else rememberMarker(rememberMarkerFormatter(xAxisFormatter())),
-          markerVisibilityListener = rememberMarkerHaptics(compact),
+          markerVisibilityListener = rememberMarkerHaptics(),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),
     )
@@ -300,15 +300,16 @@ private fun PreviewSpendingChart(
   @PreviewParameter(SpendingChartProvider::class) params: ColorParams<SpendingChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
-    SpendingChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      SpendingChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class SpendingChartParams(

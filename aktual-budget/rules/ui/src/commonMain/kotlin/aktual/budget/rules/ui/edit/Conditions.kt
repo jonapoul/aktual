@@ -3,6 +3,7 @@ package aktual.budget.rules.ui.edit
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
+import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.filteredOperators
@@ -43,10 +44,10 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun Conditions(
   rule: Rule,
-  isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
+  val isEnabled = LocalRuleEditable.current
   CardColumn(
     modifier = modifier.fillMaxWidth(),
     contentPadding = CARD_PADDING,
@@ -96,7 +97,7 @@ internal fun Conditions(
     }
 
     rule.conditions.fastForEachIndexed { index, condition ->
-      Condition(condition, index, isEnabled, onAction)
+      Condition(condition, index, onAction)
     }
   }
 }
@@ -105,10 +106,10 @@ internal fun Conditions(
 private fun Condition(
   condition: Condition,
   index: Int,
-  isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
+  val isEnabled = LocalRuleEditable.current
   Column(
     modifier = modifier.fillMaxWidth().background(colors.pillBackground, CardShape).padding(4.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -151,7 +152,6 @@ private fun Condition(
         field = condition.field,
         value = condition.value,
         index = index,
-        isEnabled = isEnabled,
         onAction = onAction,
       )
     }
@@ -165,5 +165,5 @@ private val VISIBLE_FIELDS = Field.entries.minus(DUPE_FIELDS).toImmutableList()
 @Preview
 @Composable
 private fun PreviewConditions(@PreviewParameter(ColorParameters::class) colors: Colors) {
-  PreviewWithColors(colors) { Conditions(rule = PreviewRule1, isEnabled = true, onAction = {}) }
+  PreviewWithColors(colors) { Conditions(rule = PreviewRule1, onAction = {}) }
 }

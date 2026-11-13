@@ -1,18 +1,27 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionsDensity
+import aktual.budget.tags.domain.TagLabel
+import aktual.core.theme.hasAlternateRowColour
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 internal val LocalLedgerDimens = compositionLocalOf { LedgerDimens(Default) }
+
+internal val LocalTagLabels =
+  staticCompositionLocalOf<ImmutableList<TagLabel>> { persistentListOf() }
 
 @Composable
 internal fun WithLedgerDimens(
@@ -20,23 +29,29 @@ internal fun WithLedgerDimens(
   showBalance: Boolean = true,
   showAccount: Boolean = true,
   isReconciling: Boolean = false,
+  alternateRowColours: Boolean = false,
   content: @Composable () -> Unit,
-) =
+) {
+  // Only themes with their own alternate row colour shade rows, see hasAlternateRowColour
+  val shadeRows = alternateRowColours && colors.hasAlternateRowColour
   CompositionLocalProvider(
     LocalLedgerDimens provides
-      remember(density, showBalance, showAccount, isReconciling) {
+      remember(density, showBalance, showAccount, isReconciling, shadeRows) {
         val dimens = LedgerDimens(density)
         dimens.copy(
           showBalance = showBalance,
           showAccount = dimens.showAccount && showAccount,
           isReconciling = isReconciling,
+          shadeRows = shadeRows,
         )
       },
     content = content,
   )
+}
 
 @Immutable
 internal data class LedgerDimens(
+  val density: TransactionsDensity,
   val rowHeight: Dp,
   val rowVertical: Dp,
   val railWidth: Dp,
@@ -58,12 +73,14 @@ internal data class LedgerDimens(
   val showBalance: Boolean = true,
   // Rows end in a column to clear them, as upstream's do while reconciling
   val isReconciling: Boolean = false,
+  val shadeRows: Boolean = false,
 )
 
 internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
   when (density) {
     Comfortable ->
       LedgerDimens(
+        density = density,
         rowHeight = 60.dp,
         rowVertical = 8.dp,
         railWidth = 60.dp,
@@ -85,6 +102,7 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
 
     Compact ->
       LedgerDimens(
+        density = density,
         rowHeight = 44.dp,
         rowVertical = 4.dp,
         railWidth = 48.dp,
@@ -104,6 +122,7 @@ internal fun LedgerDimens(density: TransactionsDensity): LedgerDimens =
 
     Dense ->
       LedgerDimens(
+        density = density,
         rowHeight = 32.dp,
         rowVertical = 0.dp,
         railWidth = 40.dp,

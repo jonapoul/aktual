@@ -33,10 +33,10 @@ import kotlinx.coroutines.runBlocking
 internal fun CustomDonutChart(
   slices: ImmutableList<CustomBar>,
   metric: CustomMetric,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val modelProducer = remember { PieChartModelProducer() }
   if (isInPreview()) {
     runBlocking { modelProducer.populateSlices(slices, metric) }
@@ -88,7 +88,7 @@ internal fun CustomDonutChart(
   PieChartHost(
     modifier = modifier.then(tapModifier),
     modelProducer = modelProducer,
-    animationSpec = chartAnimationSpec(compact),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberPieChart(
         sliceProvider = sliceProvider,

@@ -23,8 +23,10 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
@@ -69,33 +71,37 @@ import kotlinx.datetime.number
 
 internal fun date(year: Int, month: Month) = YearMonth(year, month)
 
+// True for small chart previews like dashboard cards, which drop axes, markers, animation and
+// interaction
+val LocalCompactChart = staticCompositionLocalOf { false }
+
 @Composable
-fun axisLineComponent(compact: Boolean) =
-  if (compact) {
+fun axisLineComponent() =
+  if (LocalCompactChart.current) {
     null
   } else {
     rememberAxisLineComponent(strokeThickness = Hairline)
   }
 
 @Composable
-fun axisGuidelineComponent(compact: Boolean) =
-  if (compact) {
+fun axisGuidelineComponent() =
+  if (LocalCompactChart.current) {
     null
   } else {
     rememberAxisGuidelineComponent()
   }
 
 @Composable
-fun axisTickComponent(compact: Boolean) =
-  if (compact) {
+fun axisTickComponent() =
+  if (LocalCompactChart.current) {
     rememberAxisTickComponent(fill = Fill(Transparent))
   } else {
     rememberAxisTickComponent()
   }
 
 @Composable
-fun axisLabelComponent(compact: Boolean) =
-  if (compact) {
+fun axisLabelComponent() =
+  if (LocalCompactChart.current) {
     null
   } else {
     rememberAxisLabelComponent(
@@ -113,8 +119,10 @@ internal fun hItemPlacer(lines: Boolean) =
   }
 
 // Compact charts skip animating for smoother list scrolling. 500ms tween mirrors vico's default
-fun chartAnimationSpec(compact: Boolean): AnimationSpec<Float>? =
-  if (compact) null else DiffAnimationSpec
+@Composable
+@ReadOnlyComposable
+fun chartAnimationSpec(): AnimationSpec<Float>? =
+  if (LocalCompactChart.current) null else DiffAnimationSpec
 
 private val DiffAnimationSpec: AnimationSpec<Float> = tween(durationMillis = 500)
 
@@ -252,8 +260,9 @@ private fun CartesianMarker.Target.coloredValues(): List<Pair<Double, Color>> =
   }
 
 @Composable
-fun rememberMarkerHaptics(compact: Boolean): CartesianMarkerVisibilityListener? {
+fun rememberMarkerHaptics(): CartesianMarkerVisibilityListener? {
   val haptics = LocalHapticFeedback.current
+  val compact = LocalCompactChart.current
   return remember(haptics, compact) {
     if (compact) {
       null

@@ -48,6 +48,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -71,12 +72,11 @@ import kotlinx.datetime.onDay
 @Composable
 internal fun CalendarChart(
   data: CalendarData,
-  compact: Boolean,
   onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
-  if (compact) {
+  if (LocalCompactChart.current) {
     CompactCalendarChart(data, onAction, modifier, includeHeader)
   } else {
     RegularCalendarChart(data, onAction, modifier, includeHeader)
@@ -91,7 +91,7 @@ private fun CompactCalendarChart(
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
-      CalendarSummary(modifier = Modifier.padding(10.dp), data = data, compact = true)
+      CalendarSummary(modifier = Modifier.padding(10.dp), data = data)
     }
 
     val listState = rememberLazyListState()
@@ -106,7 +106,6 @@ private fun CompactCalendarChart(
             if (data.months.size == 1) Modifier.fillParentMaxWidth() else Modifier.width(500.dp),
           month = month,
           firstDayOfWeek = data.firstDayOfWeek,
-          compact = true,
           onClickDay = { date -> onAction(ChartAction.ClickCalendarDay(data, date)) },
         )
       }
@@ -125,7 +124,6 @@ private fun RegularCalendarChart(
       CalendarSummary(
         modifier = Modifier.padding(10.dp).fillMaxWidth().wrapContentHeight(),
         data = data,
-        compact = false,
       )
     }
 
@@ -135,7 +133,6 @@ private fun RegularCalendarChart(
           modifier = Modifier.animateItem(),
           month = month,
           firstDayOfWeek = data.firstDayOfWeek,
-          compact = false,
           onClickDay = { date -> onAction(ChartAction.ClickCalendarDay(data, date)) },
         )
       }
@@ -145,7 +142,6 @@ private fun RegularCalendarChart(
 @Composable
 internal fun MonthHeader(
   month: CalendarMonth,
-  compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
   Row(
@@ -153,6 +149,7 @@ internal fun MonthHeader(
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.End,
   ) {
+    val compact = LocalCompactChart.current
     Text(
       modifier = Modifier.weight(1f),
       text = month.month.stringLong(),
@@ -161,19 +158,19 @@ internal fun MonthHeader(
     )
 
     if (compact) {
-      Income(modifier = Modifier.wrapContentWidth(), compact = true, month = month)
+      Income(modifier = Modifier.wrapContentWidth(), month = month)
 
       HorizontalSpacer(4.dp)
 
-      Expenses(modifier = Modifier.wrapContentWidth(), compact = true, month = month)
+      Expenses(modifier = Modifier.wrapContentWidth(), month = month)
     } else {
       Column(
         modifier = Modifier.width(Max),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
       ) {
-        Income(modifier = Modifier.fillMaxWidth(), compact = false, month = month)
-        Expenses(modifier = Modifier.fillMaxWidth(), compact = false, month = month)
+        Income(modifier = Modifier.fillMaxWidth(), month = month)
+        Expenses(modifier = Modifier.fillMaxWidth(), month = month)
       }
     }
   }
@@ -181,10 +178,10 @@ internal fun MonthHeader(
 @Composable
 private fun Income(
   month: CalendarMonth,
-  compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
+    val compact = LocalCompactChart.current
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickUp,
@@ -202,10 +199,10 @@ private fun Income(
 @Composable
 private fun Expenses(
   month: CalendarMonth,
-  compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
   Row(modifier = modifier, verticalAlignment = CenterVertically) {
+    val compact = LocalCompactChart.current
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickDown,
@@ -225,10 +222,10 @@ private fun iconSize(compact: Boolean) = if (compact) 12.dp else 16.dp
 @Composable
 internal fun CalendarSummary(
   data: CalendarData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
 ): Unit =
   Column(modifier = modifier.fillMaxWidth()) {
+    val compact = LocalCompactChart.current
     Row(modifier = Modifier.fillMaxWidth()) {
       Text(
         modifier = Modifier.weight(1f),
@@ -275,10 +272,10 @@ internal fun CalendarSummary(
 internal fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
-  compact: Boolean,
   onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   if (!day.isValid) return
 
   BoxWithConstraints(
@@ -360,11 +357,11 @@ private val CalendarMonthRegularPadding = PaddingValues(all = 10.dp)
 internal fun CalendarMonth(
   month: CalendarMonth,
   firstDayOfWeek: DayOfWeek,
-  compact: Boolean,
   onClickDay: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
   minSize: Dp = 300.dp,
-) =
+) {
+  val compact = LocalCompactChart.current
   Column(
     modifier =
       modifier
@@ -376,7 +373,6 @@ internal fun CalendarMonth(
     MonthHeader(
       modifier = Modifier.fillMaxWidth().wrapContentHeight(),
       month = month,
-      compact = compact,
     )
 
     VerticalSpacer(5.dp)
@@ -408,7 +404,6 @@ internal fun CalendarMonth(
                 modifier = Modifier.size(width = itemWidth, height = itemHeight),
                 day = day,
                 month = month,
-                compact = compact,
                 onClick = onClickDay,
               )
             }
@@ -417,6 +412,7 @@ internal fun CalendarMonth(
       }
     }
   }
+}
 
 private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
   val weeks = mutableListOf<ImmutableList<CalendarDay>>()
@@ -446,16 +442,17 @@ private fun PreviewCalendarChart(
   @PreviewParameter(CalendarChartProvider::class) params: ColorParams<CalendarChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    CalendarChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .height(HEIGHT.dp)
-          .padding(5.dp),
-      compact = compact,
-      data = data,
-      onAction = {},
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CalendarChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .height(HEIGHT.dp)
+            .padding(5.dp),
+        data = data,
+        onAction = {},
+      )
+    }
   }
 
 private data class CalendarChartParams(val data: CalendarData, val compact: Boolean)
@@ -474,7 +471,9 @@ private fun PreviewMonthHeader(
   @PreviewParameter(MonthHeaderProvider::class) params: ColorParams<MonthHeaderParams>,
 ) =
   PreviewWithColorParams(params) {
-    MonthHeader(month = month, compact = compact)
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      MonthHeader(month = month)
+    }
   }
 
 private data class MonthHeaderParams(val month: CalendarMonth, val compact: Boolean)
@@ -491,7 +490,9 @@ private fun PreviewCalendarSummary(
   @PreviewParameter(CalendarSummaryProvider::class) params: ColorParams<CalendarSummaryParams>,
 ) =
   PreviewWithColorParams(params) {
-    CalendarSummary(data = data, compact = compact)
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CalendarSummary(data = data)
+    }
   }
 
 private data class CalendarSummaryParams(val data: CalendarData, val compact: Boolean)
@@ -509,13 +510,14 @@ private fun PreviewDayButton(
   @PreviewParameter(DayButtonProvider::class) params: ColorParams<DayButtonParams>,
 ) =
   PreviewWithColorParams(params) {
-    DayButton(
-      modifier = Modifier.size(size),
-      day = day,
-      month = month,
-      compact = false,
-      onClick = {},
-    )
+    CompositionLocalProvider(LocalCompactChart provides false) {
+      DayButton(
+        modifier = Modifier.size(size),
+        day = day,
+        month = month,
+        onClick = {},
+      )
+    }
   }
 
 private data class DayButtonParams(
@@ -542,7 +544,9 @@ private fun PreviewCalendarMonth(
   @PreviewParameter(CalendarMonthProvider::class) params: ColorParams<CalendarMonthParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
-    CalendarMonth(month = month, firstDayOfWeek = MONDAY, compact = compact, onClickDay = {})
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CalendarMonth(month = month, firstDayOfWeek = MONDAY, onClickDay = {})
+    }
   }
 
 private data class CalendarMonthParams(

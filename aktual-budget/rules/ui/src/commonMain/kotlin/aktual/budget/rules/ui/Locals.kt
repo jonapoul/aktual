@@ -5,6 +5,7 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.EntitySummary
 import aktual.budget.rules.vm.NameFetcher
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -18,6 +19,9 @@ internal val LocalNameFetcher = staticCompositionLocalOf<NameFetcher> { DummyNam
 
 internal val LocalEntityListFetcher =
   staticCompositionLocalOf<EntityListFetcher> { DummyEntityListFetcher }
+
+// False while the rule editor is saving or deleting, so its inputs can't change underneath it
+internal val LocalRuleEditable = compositionLocalOf { true }
 
 @Suppress("StringLiteralDuplication")
 internal object DummyNameFetcher : NameFetcher {

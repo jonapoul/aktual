@@ -50,10 +50,10 @@ import kotlinx.coroutines.runBlocking
 internal fun CustomLineChart(
   data: CustomData,
   legend: ImmutableList<CustomBar>,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val labels = intervalLabels(data)
   val stacks = remember(data, legend) { customStacks(data, legend) }
   val trends = remember(data, legend) { trendSeries(data, legend) }
@@ -83,21 +83,21 @@ internal fun CustomLineChart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberLineCartesianLayer(lineProvider = lineProvider),
         // Left without a model when there are no trends, so Vico skips drawing it
         rememberLineCartesianLayer(lineProvider = trendProvider),
-        startAxis = amountAxis(compact),
-        bottomAxis = labelAxis(labels = labels, compact = compact, rotationDegrees = 0f),
+        startAxis = amountAxis(),
+        bottomAxis = labelAxis(labels = labels, rotationDegrees = 0f),
         marker =
           if (compact) {
             null
           } else {
             rememberMarker(valueFormatter = markerFormatter, lineCount = markerLines(legend.size))
           },
-        markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerVisibilityListener = rememberMarkerHaptics(),
         markerController =
           rememberDrilldownController(
             onDrilldown?.let { onTap ->
@@ -113,10 +113,10 @@ internal fun CustomLineChart(
 @Composable
 internal fun CustomAreaChart(
   data: CustomData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val metric = data.config.balanceType.metric
   val labels = intervalLabels(data)
   val values = remember(data, metric) { data.intervals.map { it.totals[metric].toDouble() } }
@@ -143,7 +143,7 @@ internal fun CustomAreaChart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberLineCartesianLayer(
@@ -163,15 +163,15 @@ internal fun CustomAreaChart(
               ),
             ),
         ),
-        startAxis = amountAxis(compact),
-        bottomAxis = labelAxis(labels = labels, compact = compact, rotationDegrees = 0f),
+        startAxis = amountAxis(),
+        bottomAxis = labelAxis(labels = labels, rotationDegrees = 0f),
         marker =
           if (compact) {
             null
           } else {
             rememberMarker(valueFormatter = markerFormatter, lineCount = rows.size + 1)
           },
-        markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerVisibilityListener = rememberMarkerHaptics(),
         markerController = rememberDrilldownController(onDrilldown?.let(data::intervalTap)),
       ),
   )
@@ -183,10 +183,10 @@ internal fun CustomAreaChart(
 @Composable
 internal fun CustomBarLineChart(
   data: CustomData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val metric = data.config.balanceType.metric
   val labels = intervalLabels(data)
   val theme = colors
@@ -216,7 +216,7 @@ internal fun CustomBarLineChart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberColumnCartesianLayer(columnProvider = columnProvider),
@@ -229,15 +229,15 @@ internal fun CustomBarLineChart(
               ),
             ),
         ),
-        startAxis = amountAxis(compact),
-        bottomAxis = labelAxis(labels = labels, compact = compact, rotationDegrees = 0f),
+        startAxis = amountAxis(),
+        bottomAxis = labelAxis(labels = labels, rotationDegrees = 0f),
         marker =
           if (compact) {
             null
           } else {
             rememberMarker(valueFormatter = markerFormatter, lineCount = rows.size + 1)
           },
-        markerVisibilityListener = rememberMarkerHaptics(compact),
+        markerVisibilityListener = rememberMarkerHaptics(),
         markerController = rememberDrilldownController(onDrilldown?.let(data::intervalTap)),
       ),
   )

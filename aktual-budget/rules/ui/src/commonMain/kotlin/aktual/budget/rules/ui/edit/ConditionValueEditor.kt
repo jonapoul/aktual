@@ -1,6 +1,7 @@
 package aktual.budget.rules.ui.edit
 
 import aktual.budget.model.Field
+import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.budget.rules.ui.edit.pickers.AmountTextField
 import aktual.budget.rules.ui.edit.pickers.DateTextField
 import aktual.budget.rules.ui.edit.pickers.EntityIdPicker
@@ -26,10 +27,10 @@ internal fun ConditionValueEditor(
   field: Field,
   value: JsonElement,
   index: Int,
-  isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
+  val isEnabled = LocalRuleEditable.current
   val emit: (JsonElement) -> Unit = { newValue -> onAction(SetConditionValue(newValue, index)) }
 
   when (field) {
@@ -39,7 +40,6 @@ internal fun ConditionValueEditor(
         modifier = modifier,
         field = field,
         value = value,
-        isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.payees() },
         searchPlaceholder = Strings.searchPayees,
@@ -51,7 +51,6 @@ internal fun ConditionValueEditor(
         modifier = modifier,
         field = field,
         value = value,
-        isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.accounts() },
         searchPlaceholder = Strings.searchAccounts,
@@ -62,7 +61,6 @@ internal fun ConditionValueEditor(
         modifier = modifier,
         field = field,
         value = value,
-        isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.categories() },
         searchPlaceholder = Strings.searchCategories,
@@ -73,7 +71,6 @@ internal fun ConditionValueEditor(
         modifier = modifier,
         field = field,
         value = value,
-        isEnabled = isEnabled,
         onValueChange = emit,
         fetchEntities = { it.categoryGroups() },
         searchPlaceholder = Strings.searchCategoryGroups,
@@ -83,12 +80,10 @@ internal fun ConditionValueEditor(
       AmountTextField(
         modifier = modifier,
         value = value,
-        isEnabled = isEnabled,
         onValueChange = emit,
       )
 
-    Date ->
-      DateTextField(modifier = modifier, value = value, isEnabled = isEnabled, onValueChange = emit)
+    Date -> DateTextField(modifier = modifier, value = value, onValueChange = emit)
 
     Notes,
     PayeeName,

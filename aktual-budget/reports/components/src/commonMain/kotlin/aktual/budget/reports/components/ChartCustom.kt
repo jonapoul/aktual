@@ -45,6 +45,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -67,12 +68,12 @@ import kotlinx.datetime.yearMonth
 @Composable
 internal fun CustomChart(
   data: CustomData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   onDrilldown: OnDrilldown? = null,
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       if (compact) {
         CompactHeader(modifier = Modifier.padding(4.dp).fillMaxWidth(), data = data)
@@ -94,20 +95,19 @@ internal fun CustomChart(
       bars.isEmpty() || data.intervals.isEmpty() ->
         Message(Strings.reportsCustomEmpty, colors.pageTextSubdued, chartModifier)
 
-      graphType == BarGraph -> CustomBarChart(data, bars, compact, chartModifier, drilldown)
+      graphType == BarGraph -> CustomBarChart(data, bars, chartModifier, drilldown)
 
-      graphType == StackedBarGraph ->
-        CustomStackedBarChart(data, bars, compact, chartModifier, drilldown)
+      graphType == StackedBarGraph -> CustomStackedBarChart(data, bars, chartModifier, drilldown)
 
-      graphType == LineGraph -> CustomLineChart(data, bars, compact, chartModifier, drilldown)
+      graphType == LineGraph -> CustomLineChart(data, bars, chartModifier, drilldown)
 
-      graphType == AreaGraph -> CustomAreaChart(data, compact, chartModifier, drilldown)
+      graphType == AreaGraph -> CustomAreaChart(data, chartModifier, drilldown)
 
-      graphType == TableGraph -> CustomTable(data, compact, chartModifier, drilldown)
+      graphType == TableGraph -> CustomTable(data, chartModifier, drilldown)
 
-      graphType == DonutGraph -> CustomDonutChart(bars, metric, compact, chartModifier, drilldown)
+      graphType == DonutGraph -> CustomDonutChart(bars, metric, chartModifier, drilldown)
 
-      else -> CustomBarLineChart(data, compact, chartModifier, drilldown)
+      else -> CustomBarLineChart(data, chartModifier, drilldown)
     }
 
     if (!compact && data.config.hasLegend() && bars.isNotEmpty()) {
@@ -227,15 +227,16 @@ private fun PreviewCustomChart(
   @PreviewParameter(CustomChartProvider::class) params: ColorParams<CustomChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.isPrivacyEnabled) {
-    CustomChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .height(if (compact) 300.dp else 500.dp)
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CustomChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .height(if (compact) 300.dp else 500.dp)
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class CustomChartParams(

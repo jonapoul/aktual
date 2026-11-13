@@ -58,6 +58,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -228,18 +229,21 @@ internal fun ReportsDashboardScaffold(
   ) { innerPadding ->
     Box {
       PageBackground()
-      ReportsDashboardContent(
-        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-        items = items,
-        pinnedIds = pinnedIds,
-        canPin = canPin,
-        customReportNames = customReportNames,
-        observer = observer,
-        listState = listState,
-        reorder = reorder,
-        onAction = onAction,
-      )
+      CompositionLocalProvider(
+        LocalCanPinReports provides canPin,
+        LocalCustomReportNames provides customReportNames,
+      ) {
+        ReportsDashboardContent(
+          modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+          contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
+          items = items,
+          pinnedIds = pinnedIds,
+          observer = observer,
+          listState = listState,
+          reorder = reorder,
+          onAction = onAction,
+        )
+      }
     }
   }
 
@@ -321,8 +325,6 @@ private val PageListStatesSaver: Saver<MutableMap<String, LazyListState>, Any> =
 private fun ReportsDashboardContent(
   items: ImmutableList<DashboardItem>?,
   pinnedIds: ImmutableSet<WidgetId>,
-  canPin: Boolean,
-  customReportNames: ImmutableMap<CustomReportId, String>,
   observer: DashboardItemObserver,
   listState: LazyListState,
   reorder: DashboardReorderState,
@@ -337,8 +339,6 @@ private fun ReportsDashboardContent(
       ContentList(
         items = items,
         pinnedIds = pinnedIds,
-        canPin = canPin,
-        customReportNames = customReportNames,
         observer = observer,
         listState = listState,
         reorder = reorder,
@@ -380,8 +380,6 @@ private fun ContentEmpty(onAction: OnAction<Action>, modifier: Modifier = Modifi
 private fun ContentList(
   items: ImmutableList<DashboardItem>,
   pinnedIds: ImmutableSet<WidgetId>,
-  canPin: Boolean,
-  customReportNames: ImmutableMap<CustomReportId, String>,
   observer: DashboardItemObserver,
   listState: LazyListState,
   reorder: DashboardReorderState,
@@ -429,8 +427,6 @@ private fun ContentList(
             ),
         item = item,
         isPinned = item.id in pinnedIds,
-        canPin = canPin,
-        customReportNames = customReportNames,
         observer = observer,
         isOpen = openItemId == item.id,
         onOpenChange = { open ->

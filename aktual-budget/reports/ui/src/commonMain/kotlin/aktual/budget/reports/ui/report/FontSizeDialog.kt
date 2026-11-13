@@ -161,7 +161,6 @@ private fun FontSizeDialogContent(
       ) {
         FormulaChart(
           data = preview.copy(fontSizeMode = mode, staticFontSize = size),
-          compact = false,
         )
       }
     }

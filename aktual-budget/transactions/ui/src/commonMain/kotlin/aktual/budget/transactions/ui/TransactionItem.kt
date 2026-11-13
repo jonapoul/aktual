@@ -4,7 +4,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
-import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.ui.edit.TaggedNotes
 import aktual.budget.transactions.vm.SpecialCategory
 import aktual.budget.transactions.vm.Transaction
@@ -70,8 +69,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
@@ -81,7 +78,6 @@ internal fun LedgerRow(
   transaction: Transaction,
   showDate: Boolean,
   modifier: Modifier = Modifier,
-  tags: ImmutableList<TagLabel> = persistentListOf(),
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
@@ -112,7 +108,7 @@ internal fun LedgerRow(
       if (dimens.showNotes && !notes.isNullOrBlank()) {
         TaggedNotes(
           notes = notes,
-          tags = tags,
+          tags = LocalTagLabels.current,
           fontSize = dimens.secondLineSize,
           color = colors.pageTextLight,
           onTagClick = onTagClick,
@@ -447,12 +443,11 @@ internal fun LedgerTableRow(
 @Composable
 internal fun SplitChildren(
   parent: Transaction,
-  density: TransactionsDensity,
   modifier: Modifier = Modifier,
   onOpen: (TransactionId) -> Unit = {},
 ) {
   val dimens = LocalLedgerDimens.current
-  when (density) {
+  when (dimens.density) {
     // The inset runs from the payee column to the screen edge, so amounts line up with the parent's
     Comfortable,
     Compact -> {
@@ -624,12 +619,11 @@ private fun LocalDate.dayAndMonth(): String {
 @Suppress("LongMethod")
 internal fun LedgerShimmerRow(
   index: Int,
-  density: TransactionsDensity,
   modifier: Modifier = Modifier,
 ) {
   val dimens = LocalLedgerDimens.current
   val widths = ShimmerWidths[index % ShimmerWidths.size]
-  when (density) {
+  when (dimens.density) {
     Comfortable,
     Compact -> {
       Row(
@@ -798,7 +792,7 @@ private fun PreviewLedgerRow(
           Compact -> LedgerRow(transaction, showDate = showDate, parts = parts)
           Dense -> LedgerTableRow(transaction, parts = parts)
         }
-        if (parts != Collapsed) SplitChildren(transaction, density)
+        if (parts != Collapsed) SplitChildren(transaction)
       }
     }
   }
@@ -809,7 +803,7 @@ private fun PreviewLedgerShimmerRow(
   @PreviewParameter(DensityProvider::class) params: ColorParams<TransactionsDensity>,
 ) =
   PreviewWithColorParams(params) {
-    WithLedgerDimens(this) { LedgerShimmerRow(index = 0, density = this) }
+    WithLedgerDimens(this) { LedgerShimmerRow(index = 0) }
   }
 
 private data class LedgerRowParams(

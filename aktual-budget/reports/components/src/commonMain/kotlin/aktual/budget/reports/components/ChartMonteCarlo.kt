@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
@@ -63,18 +64,18 @@ import kotlinx.coroutines.runBlocking
 @Composable
 internal fun MonteCarloChart(
   data: MonteCarloData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
 
     val chartModifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f)
-    Chart(modifier = chartModifier, data = data, compact = compact, zoom = zoom)
+    Chart(modifier = chartModifier, data = data, zoom = zoom)
 
     if (!compact) {
       MonteCarloSummary(data, Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp))
@@ -155,10 +156,10 @@ fun successColor(successRate: Percent): Color {
 @Composable
 private fun Chart(
   data: MonteCarloData,
-  compact: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   val modelProducer = remember { CartesianChartModelProducer() }
 
   if (isInPreview()) {
@@ -167,10 +168,10 @@ private fun Chart(
     LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
-  val label = axisLabelComponent(compact)
-  val tick = axisTickComponent(compact)
-  val guideline = axisGuidelineComponent(compact)
-  val line = axisLineComponent(compact)
+  val label = axisLabelComponent()
+  val tick = axisTickComponent()
+  val guideline = axisGuidelineComponent()
+  val line = axisLineComponent()
   val fill = colors.reportsChartFill
   val edge = Fill(fill.copy(alpha = EDGE_ALPHA))
   val ageFormatter = remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } }
@@ -180,7 +181,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = zoom.animationSpec(compact),
+      animationSpec = zoom.animationSpec(),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -228,7 +229,7 @@ private fun Chart(
                 rememberAgeMarkerFormatter(data.bands.map { it.age }.toImmutableList()),
               )
             },
-          markerVisibilityListener = rememberMarkerHaptics(compact),
+          markerVisibilityListener = rememberMarkerHaptics(),
           decorations =
             remember(data, fill) {
               listOf(
@@ -347,15 +348,16 @@ private fun PreviewMonteCarloChart(
   @PreviewParameter(MonteCarloChartProvider::class) params: ColorParams<MonteCarloChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    MonteCarloChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m.height(600.dp) }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      MonteCarloChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m.height(600.dp) }
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class MonteCarloChartParams(val data: MonteCarloData, val compact: Boolean)
