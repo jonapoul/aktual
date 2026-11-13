@@ -1,7 +1,9 @@
 @file:Suppress("NullableToStringCall")
 
-package aktual.budget.transactions.vm
+package aktual.budget.transactions.vm.test
 
+import aktual.budget.transactions.vm.PageKey
+import aktual.budget.transactions.vm.Transaction
 import androidx.paging.PagingSource.LoadResult
 import androidx.paging.PagingSource.LoadResult.Error
 import androidx.paging.PagingSource.LoadResult.Invalid
@@ -41,3 +43,5 @@ internal fun <V : Any> Assert<Page<PageKey, V>>.withNextOffset(expected: Int?) =
   }
   page
 }
+
+internal fun <K : Any> LoadResult<K, Transaction>.asPage() = this as Page<K, Transaction>
