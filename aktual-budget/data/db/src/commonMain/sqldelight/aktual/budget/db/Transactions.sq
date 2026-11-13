@@ -752,15 +752,14 @@ SELECT
   t.parent_id
 FROM v_transactions_internal_alive AS vt
 INNER JOIN transactions AS t ON t.id = vt.id
-LEFT JOIN accounts AS a ON a.id = vt.account
-LEFT JOIN categories AS c ON c.id = vt.category
-LEFT JOIN category_groups AS g ON g.id = c.cat_group
-LEFT JOIN payees AS p ON p.id = vt.payee
+LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+LEFT JOIN category_groups AS g ON (g.id = c.cat_group AND g.tombstone = 0)
+LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
 LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
 WHERE
   (:account IS NULL OR vt.account = :account) AND
   (:closed IS NULL OR (
-    a.tombstone = 0 AND
     a.closed = :closed AND
     (:offBudget IS NULL OR a.offbudget = :offBudget)
   ))

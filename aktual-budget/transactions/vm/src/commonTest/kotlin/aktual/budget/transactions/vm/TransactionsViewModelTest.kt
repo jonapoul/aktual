@@ -1336,6 +1336,27 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Search skips deleted categories and payees`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "b", "a", date = DATE_2)
+      insertTransaction("b", "a", "a", "b", date = DATE_1)
+    }
+    sync.sendMessages(
+      listOf(
+        localChange("categories", row = "b", "tombstone", true),
+        localChange("payees", row = "b", "tombstone", true),
+      ),
+    )
+    advanceUntilIdle()
+
+    // then
+    assertThat(searchedIds(AllAccounts, TransactionSearch(text = "building"))).isEmpty()
+    assertThat(searchedIds(AllAccounts, TransactionSearch(text = "b&q"))).isEmpty()
+  }
+
+  @Test
   fun `An empty search lists the account as usual`() = runTest {
     // given
     buildViewModel(AllAccounts)
