@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -119,6 +120,7 @@ internal fun hItemPlacer(lines: Boolean) =
 
 // Compact charts skip animating for smoother list scrolling. 500ms tween mirrors vico's default
 @Composable
+@ReadOnlyComposable
 fun chartAnimationSpec(): AnimationSpec<Float>? =
   if (LocalCompactChart.current) null else DiffAnimationSpec
 

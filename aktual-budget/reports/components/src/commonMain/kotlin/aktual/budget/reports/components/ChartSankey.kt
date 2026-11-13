@@ -175,12 +175,8 @@ private fun Chart(data: SankeyData, modifier: Modifier = Modifier) =
       }
     val labelled = selection?.hit?.labelledNodes(data).orEmpty()
     val visibleLabels = nodeLabels.mapIndexed { i, label -> label?.takeIf { i in labelled } }
-    val tapModifier =
-      if (compact) {
-        Modifier
-      } else {
-        Modifier.onTap(layout, visibleLabels.map { it?.bounds }) { onSelect(it) }
-      }
+    val bounds = visibleLabels.map { it?.bounds }
+    val tapModifier = if (compact) Modifier else Modifier.onTap(layout, bounds) { onSelect(it) }
 
     Box(
       modifier =
