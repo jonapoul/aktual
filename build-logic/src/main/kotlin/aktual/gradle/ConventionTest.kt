@@ -66,6 +66,11 @@ class ConventionTest : ProjectPlugin {
       // interception
       t.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
 
+      // Robolectric's native runtime calls System.load, and some test deps still use
+      // sun.misc.Unsafe. Both print JDK warnings otherwise
+      t.jvmArgs("--enable-native-access=ALL-UNNAMED")
+      t.jvmArgs("--sun-misc-unsafe-memory-access=allow")
+
       // Robolectric downloads android-all jars at runtime, outside the Gradle cache. Maven Central
       // rate-limits CI with 429s, so use Google's mirror of it (#2247)
       t.systemProperty(
