@@ -12,11 +12,11 @@ import kotlin.math.abs
  * matched. The conditions must match too.
  */
 class TransactionSearchMatcher(search: TransactionSearch) {
-  private val text = search.text.trim()
+  val text = search.text.trim()
   private val filter = TransactionFilter.compile(search.conditions.conditions, search.conditions.op)
 
-  // In cents, unsigned
-  private val amount: Long? =
+  // The amount the text reads as, in cents, unsigned
+  val amount: Long? =
     text.takeIf { AMOUNT.matches(it) }?.let { parseAmountInput(it.trimStart('+', '-')) }?.toLong()
 
   fun matches(row: FilterRow): Boolean = matchesText(row) && filter.matches(row)

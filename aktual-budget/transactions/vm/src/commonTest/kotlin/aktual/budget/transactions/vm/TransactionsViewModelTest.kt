@@ -1415,6 +1415,39 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Search reads LIKE wildcards literally`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", notes = "50% off", date = DATE_3)
+      insertTransaction("b", "a", "a", "a", notes = "500 off", date = DATE_2)
+      insertTransaction("c", "a", "a", "a", notes = "a_b", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // then
+    assertThat(searchedIds(AllAccounts, TransactionSearch(text = "50%"))).containsExactly("a")
+    assertThat(searchedIds(AllAccounts, TransactionSearch(text = "_"))).containsExactly("c")
+  }
+
+  @Test
+  fun `Search ignores the case of non-ASCII text`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", notes = "Café", date = DATE_2)
+      insertTransaction("b", "a", "a", "a", notes = "Cafe", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val ids = searchedIds(AllAccounts, TransactionSearch(text = "CAFÉ"))
+
+    // then
+    assertThat(ids).containsExactly("a")
+  }
+
+  @Test
   fun `An empty search lists the account as usual`() = runTest {
     // given
     buildViewModel(AllAccounts)

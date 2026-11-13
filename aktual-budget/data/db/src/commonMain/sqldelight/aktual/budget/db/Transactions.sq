@@ -699,43 +699,85 @@ SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
 -- Every live transaction, with what a report's conditions or an account list's search can match, for
 -- one account, an account group or every account, in list order. Reports keep deleted categories,
 -- payees and accounts, as customReportTransactions does, so they pass :skipDeleted = 0
+--
+-- A search narrows it with :pattern, a LIKE pattern for the names, and :cents and :whole, the
+-- amounts its text reads as. The rows that match, plus the parents of any matching split children,
+-- are a superset of what TransactionSearchMatcher matches, which has the final say
 getFilterRows:
+WITH scoped AS (
+  SELECT
+    vt.id,
+    vt.date,
+    vt.amount,
+    vt.account,
+    a.name AS account_name,
+    a.offbudget AS off_budget,
+    p.id AS payee,
+    p.name AS payee_name,
+    ta.name AS transfer_account_name,
+    vt.imported_payee,
+    c.id AS category,
+    c.name AS category_name,
+    g.id AS category_group,
+    g.name AS category_group_name,
+    vt.notes,
+    vt.cleared,
+    vt.reconciled,
+    vt.transfer_id,
+    vt.is_parent,
+    vt.is_child,
+    t.parent_id,
+    vt.starting_balance_flag,
+    vt.sort_order,
+    (
+      :pattern IS NULL OR
+      p.name LIKE :pattern ESCAPE '\' OR
+      ta.name LIKE :pattern ESCAPE '\' OR
+      vt.notes LIKE :pattern ESCAPE '\' OR
+      c.name LIKE :pattern ESCAPE '\' OR
+      a.name LIKE :pattern ESCAPE '\' OR
+      (:cents IS NOT NULL AND ABS(vt.amount) = :cents) OR
+      (:whole IS NOT NULL AND ABS(vt.amount) / 100 = :whole)
+    ) AS text_match
+  FROM v_transactions_internal_alive AS vt
+  INNER JOIN transactions AS t ON t.id = vt.id
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND (:skipDeleted = 0 OR a.tombstone = 0))
+  LEFT JOIN categories AS c ON (c.id = vt.category AND (:skipDeleted = 0 OR c.tombstone = 0))
+  LEFT JOIN category_groups AS g ON (g.id = c.cat_group AND (:skipDeleted = 0 OR g.tombstone = 0))
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND (:skipDeleted = 0 OR p.tombstone = 0))
+  LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
+  WHERE
+    (:account IS NULL OR vt.account = :account) AND
+    (:closed IS NULL OR (
+      a.closed = :closed AND
+      (:offBudget IS NULL OR a.offbudget = :offBudget)
+    ))
+)
 SELECT
-  vt.id,
-  vt.date,
-  vt.amount,
-  vt.account,
-  a.name AS account_name,
-  a.offbudget AS off_budget,
-  p.id AS payee,
-  p.name AS payee_name,
-  ta.name AS transfer_account_name,
-  vt.imported_payee,
-  c.id AS category,
-  c.name AS category_name,
-  g.id AS category_group,
-  g.name AS category_group_name,
-  vt.notes,
-  vt.cleared,
-  vt.reconciled,
-  vt.transfer_id,
-  vt.is_parent,
-  vt.is_child,
-  t.parent_id
-FROM v_transactions_internal_alive AS vt
-INNER JOIN transactions AS t ON t.id = vt.id
-LEFT JOIN accounts AS a ON (a.id = vt.account AND (:skipDeleted = 0 OR a.tombstone = 0))
-LEFT JOIN categories AS c ON (c.id = vt.category AND (:skipDeleted = 0 OR c.tombstone = 0))
-LEFT JOIN category_groups AS g ON (g.id = c.cat_group AND (:skipDeleted = 0 OR g.tombstone = 0))
-LEFT JOIN payees AS p ON (p.id = vt.payee AND (:skipDeleted = 0 OR p.tombstone = 0))
-LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
-WHERE
-  (:account IS NULL OR vt.account = :account) AND
-  (:closed IS NULL OR (
-    a.closed = :closed AND
-    (:offBudget IS NULL OR a.offbudget = :offBudget)
-  ))
-ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
+  id,
+  date,
+  amount,
+  account,
+  account_name,
+  off_budget,
+  payee,
+  payee_name,
+  transfer_account_name,
+  imported_payee,
+  category,
+  category_name,
+  category_group,
+  category_group_name,
+  notes,
+  cleared,
+  reconciled,
+  transfer_id,
+  is_parent,
+  is_child,
+  parent_id
+FROM scoped
+WHERE text_match OR id IN (SELECT parent_id FROM scoped WHERE text_match AND is_child = 1)
+ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
 
 -- Every live transaction linked to a schedule, in list order
 getIdsBySchedule:

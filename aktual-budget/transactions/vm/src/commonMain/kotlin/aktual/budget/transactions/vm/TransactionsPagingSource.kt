@@ -218,11 +218,15 @@ internal class TransactionsPagingSource(
   // A split takes one slot, as its parent, if the parent or any of its children match
   private suspend fun loadSearchIds(search: TransactionSearch): FilteredIds {
     val matcher = TransactionSearchMatcher(search)
+    val text = matcher.text
+    val cents = matcher.amount
     val rows =
       when (val accountSpec = spec.accountSpec) {
-        AllAccounts -> transactionDao.getFilterRows()
-        is SpecificAccount -> transactionDao.getFilterRows(account = accountSpec.id)
-        is Group -> transactionDao.getFilterRows(group = accountSpec.group)
+        AllAccounts -> transactionDao.getFilterRows(text = text, cents = cents)
+        is SpecificAccount ->
+          transactionDao.getFilterRows(account = accountSpec.id, text = text, cents = cents)
+        is Group ->
+          transactionDao.getFilterRows(group = accountSpec.group, text = text, cents = cents)
       }
     val matching = rows.filter { row ->
       !(hideReconciled && row.reconciled == true) && matcher.matches(row.toFilterRow())
