@@ -1,6 +1,7 @@
 package aktual.budget.transactions.vm
 
 import aktual.budget.db.GetFilterRows
+import aktual.budget.db.GetSearchRows
 import aktual.budget.db.dao.KnownBalance
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
@@ -10,10 +11,12 @@ import aktual.budget.model.Amount
 import aktual.budget.model.FilteredSpec
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
+import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
 import aktual.budget.rules.domain.ConditionsMatcher
 import aktual.budget.rules.domain.FilterRow
+import aktual.budget.rules.domain.TransactionSearchMatcher
 import aktual.core.utils.runCatchingCancellable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -33,6 +36,14 @@ internal class TransactionsPagingSource(
   // The same for a report's drilled down list, whose conditions are matched in memory, and a
   // schedule's linked transactions
   private var filterIds: List<TransactionId>? = null
+
+  // And for a searched account list, matched in memory too
+  private var searchIds: FilteredIds? = null
+
+  private val search =
+    spec.search?.takeIf {
+      !it.isEmpty && spec.tagSpec == AllTags && spec.categorySpec == AllCategories
+    }
 
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
@@ -61,6 +72,20 @@ internal class TransactionsPagingSource(
               val ids = filterIds ?: loadFilterIds(filtered).also { filterIds = it }
               transactionDao.getByIds(ids.page(offset, limit)).map {
                 it.toTransaction(balance = null)
+              }
+            }
+
+            // As tag lists, a search has no balance and shows splits with their matching parts
+            search != null -> {
+              val found = searchIds ?: loadSearchIds(search).also { searchIds = it }
+              val rows = transactionDao.getByIds(found.ids.page(offset, limit))
+              val children = childrenOf(rows)
+              rows.map { row ->
+                row.toTransaction(
+                  balance = null,
+                  children = children[row.id].orEmpty(),
+                  shownChildren = found.children,
+                )
               }
             }
 
@@ -188,6 +213,33 @@ internal class TransactionsPagingSource(
       is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
     }
 
+  // A split takes one slot, as its parent, where its first matching child would be. Only the
+  // children are matched, since a parent's payee and category come from them
+  private suspend fun loadSearchIds(search: TransactionSearch): FilteredIds {
+    val matcher = TransactionSearchMatcher(search)
+    val rows =
+      when (val accountSpec = spec.accountSpec) {
+        AllAccounts -> transactionDao.getSearchRows(account = null, group = null)
+        is SpecificAccount -> transactionDao.getSearchRows(accountSpec.id, group = null)
+        is Group -> transactionDao.getSearchRows(account = null, accountSpec.group)
+      }
+    val ids = linkedSetOf<TransactionId>()
+    val children = mutableSetOf<TransactionId>()
+    val matching = rows.filter { row ->
+      !(hideReconciled && row.reconciled == true) && matcher.matches(row.toFilterRow())
+    }
+    for (row in matching) {
+      val parent = row.parent_id.takeIf { row.is_child == true }
+      if (parent == null) {
+        ids += row.id
+      } else {
+        ids += parent
+        children += row.id
+      }
+    }
+    return FilteredIds(ids = ids.toList(), children = children)
+  }
+
   private fun List<TransactionId>.page(offset: Long, limit: Long): List<TransactionId> {
     val from = offset.toInt().coerceIn(0, size)
     val to = (from + limit.toInt()).coerceAtMost(size)
@@ -244,4 +296,25 @@ private fun GetFilterRows.toFilterRow() =
     reconciled = reconciled == true,
     isTransfer = transfer_id != null,
     isParent = is_parent == true,
+  )
+
+private fun GetSearchRows.toFilterRow() =
+  FilterRow(
+    date = date,
+    amount = Amount(amount),
+    account = account,
+    accountName = account_name,
+    offBudget = off_budget == true,
+    payee = payee,
+    payeeName = payee_name,
+    transferAccountName = transfer_account_name,
+    importedPayee = imported_payee?.value,
+    category = category,
+    categoryName = category_name,
+    categoryGroup = category_group,
+    categoryGroupName = category_group_name,
+    notes = notes,
+    cleared = cleared == true,
+    reconciled = reconciled == true,
+    isTransfer = transfer_id != null,
   )

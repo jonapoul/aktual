@@ -12,6 +12,9 @@ data class TransactionsSpec(
   val categorySpec: CategorySpec = AllCategories,
   // Overrides the other specs when set
   val filtered: FilteredSpec? = null,
+  // Narrows an account list, a group's or every account's. Ignored by tag, category and filtered
+  // lists
+  val search: TransactionSearch? = null,
 )
 
 // A list narrowed to some transactions, under its own title

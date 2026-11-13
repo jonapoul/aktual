@@ -18,10 +18,13 @@ import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.CategorySpec
+import aktual.budget.model.Condition
+import aktual.budget.model.ConditionSet
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
+import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.localChange
 import aktual.budget.tags.domain.TagLabel
@@ -76,6 +79,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okio.FileSystem
@@ -1186,6 +1190,167 @@ class TransactionsViewModelTest {
         assertThatNextEmissionIsEqualTo(Amount(100.0))
       }
   }
+
+  @Test
+  fun `Search matches names across every account`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", date = DATE_3)
+      insertTransaction("b", "b", "b", "b", date = DATE_2)
+      insertTransaction("c", "c", "c", "c", notes = "argos refund", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val ids = searchedIds(AllAccounts, TransactionSearch(text = "ARGOS"))
+
+    // then
+    assertThat(ids).containsExactly("a", "c")
+  }
+
+  @Test
+  fun `Search stays within the account`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", date = DATE_2)
+      insertTransaction("b", "b", "a", "a", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val ids = searchedIds(SpecificAccount(AccountId("b")), TransactionSearch(text = "argos"))
+
+    // then
+    assertThat(ids).containsExactly("b")
+  }
+
+  @Test
+  fun `Search matches a transfer by its other account`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("out", "a", null, "t", amount = -50.0, date = DATE_2)
+      insertTransaction("other", "a", "a", "a", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val ids = searchedIds(AllAccounts, TransactionSearch(text = "barclays"))
+
+    // then
+    assertThat(ids).containsExactly("out")
+  }
+
+  @Test
+  fun `Search matches amounts and their whole part`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", amount = -12.34, date = DATE_3)
+      insertTransaction("b", "a", "a", "a", amount = 12.99, date = DATE_2)
+      insertTransaction("c", "a", "a", "a", amount = 13.0, date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // then
+    assertThat(searchedIds(AllAccounts, TransactionSearch(text = "12.34"))).containsExactly("a")
+    assertThat(searchedIds(AllAccounts, TransactionSearch(text = "12"))).containsExactly("a", "b")
+  }
+
+  @Test
+  fun `Search combines text and conditions`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("a", "a", "a", "a", date = DATE_3)
+      insertTransaction("b", "a", "b", "a", date = DATE_2)
+      insertTransaction("c", "a", "a", "b", date = DATE_1)
+    }
+    advanceUntilIdle()
+    val building = Condition(Category, Is, JsonPrimitive("b"))
+
+    // when
+    val search = TransactionSearch(text = "argos", conditions = ConditionSet(listOf(building)))
+
+    // then
+    assertThat(searchedIds(AllAccounts, search)).containsExactly("b")
+  }
+
+  @Test
+  fun `Search shows a split as its parent with the matching children`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("p", "a", null, "a", date = DATE_2, isParent = true)
+      insertTransaction("p1", "a", "a", "a", notes = "lunch", date = DATE_2, parent = "p")
+      insertTransaction("p2", "a", "b", "a", date = DATE_2, parent = "p")
+      insertTransaction("p3", "a", "c", "a", notes = "lunch", date = DATE_2, parent = "p")
+      insertTransaction("q", "a", "a", "a", notes = "lunch", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val result = searchSource(AllAccounts, TransactionSearch(text = "lunch")).refresh()
+
+    // then
+    assertThat(result)
+      .isPage()
+      .withData(
+        transaction("p", "a", null, "a", date = DATE_2)
+          .asParent(
+            payee = "Argos",
+            transaction("p1", "a", "a", "a", notes = "lunch", date = DATE_2),
+            transaction("p3", "a", "c", "a", notes = "lunch", date = DATE_2),
+            totalChildren = 3,
+          ),
+        transaction("q", "a", "a", "a", notes = "lunch", date = DATE_1),
+      )
+      .withPrevOffset(null)
+      .withNextOffset(null)
+  }
+
+  @Test
+  fun `An empty search lists the account as usual`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    transactions.insertTransaction("a", "a", "a", "a")
+    advanceUntilIdle()
+
+    // when
+    val result = searchSource(AllAccounts, TransactionSearch(text = " ")).refresh()
+
+    // then
+    assertThat(result).isPage().withData(TRANSACTION_A.withBalance(123.45))
+  }
+
+  @Test
+  fun `Searched lists show no balance`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    advanceUntilIdle()
+
+    // when
+    val searched = factory.create(TransactionsSpec(search = TransactionSearch(text = "argos")))
+
+    // then
+    assertThat(searched.showBalance).isFalse()
+    searched.viewModelScope.cancel()
+  }
+
+  private fun searchSource(spec: AccountSpec, search: TransactionSearch) =
+    TransactionsPagingSource(
+      transactionDao = transactions,
+      tagsDao = tags,
+      spec = TransactionsSpec(accountSpec = spec, search = search),
+    )
+
+  private suspend fun <K : Any> PagingSource<K, Transaction>.refresh() =
+    load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+
+  private suspend fun searchedIds(spec: AccountSpec, search: TransactionSearch): List<String> =
+    searchSource(spec, search).refresh().asPage().data.map { it.id.toString() }
 
   @Test
   fun `Tag-filtered lists show no balance`() = runTest {
