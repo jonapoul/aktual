@@ -316,4 +316,5 @@ private fun GetSearchRows.toFilterRow() =
     cleared = cleared == true,
     reconciled = reconciled == true,
     isTransfer = transfer_id != null,
+    isParent = is_parent == true,
   )

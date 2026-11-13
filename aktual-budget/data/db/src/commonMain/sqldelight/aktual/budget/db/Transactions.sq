@@ -748,6 +748,7 @@ SELECT
   vt.cleared,
   vt.reconciled,
   vt.transfer_id,
+  vt.is_parent,
   vt.is_child,
   t.parent_id
 FROM v_transactions_internal_alive AS vt

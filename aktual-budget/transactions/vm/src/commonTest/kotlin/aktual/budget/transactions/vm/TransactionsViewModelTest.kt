@@ -20,6 +20,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.CategorySpec
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionSet
+import aktual.budget.model.Field
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
@@ -1354,6 +1355,27 @@ class TransactionsViewModelTest {
     // then
     assertThat(searchedIds(AllAccounts, TransactionSearch(text = "building"))).isEmpty()
     assertThat(searchedIds(AllAccounts, TransactionSearch(text = "b&q"))).isEmpty()
+  }
+
+  @Test
+  fun `Search conditions match a split's parent`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("p", "a", null, "a", amount = 100.0, date = DATE_2, isParent = true)
+      insertTransaction("p1", "a", "a", "a", amount = 60.0, date = DATE_2, parent = "p")
+      insertTransaction("p2", "a", "b", "a", amount = 40.0, date = DATE_2, parent = "p")
+      insertTransaction("q", "a", "a", "a", amount = 100.0, date = DATE_1)
+    }
+    advanceUntilIdle()
+    val total = Condition(Field.Amount, Is, JsonPrimitive(10_000))
+    val parent = Condition(Parent, Is, JsonPrimitive(true))
+
+    // then
+    val byTotal = TransactionSearch(conditions = ConditionSet(listOf(total)))
+    assertThat(searchedIds(AllAccounts, byTotal)).containsExactly("p", "q")
+    val byParent = TransactionSearch(conditions = ConditionSet(listOf(parent)))
+    assertThat(searchedIds(AllAccounts, byParent)).containsExactly("p")
   }
 
   @Test
