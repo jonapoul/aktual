@@ -60,10 +60,10 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun CustomTable(
   data: CustomData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   onDrilldown: OnDrilldown? = null,
 ) {
+  val compact = LocalCompactChart.current
   val headers = customTableHeaders(data)
   val names = buildMap {
     data.groups.forEach { put(it.group, it.group.label()) }

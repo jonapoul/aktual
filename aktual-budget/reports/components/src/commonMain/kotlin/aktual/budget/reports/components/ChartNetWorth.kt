@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -69,12 +70,12 @@ import kotlinx.serialization.json.JsonPrimitive
 @Composable
 internal fun NetWorthChart(
   data: NetWorthData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data, zoom = zoom)
     }
@@ -85,7 +86,6 @@ internal fun NetWorthChart(
     Chart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
-      compact = compact,
       zoom = zoom,
       highlighted = highlighted,
       onSelectPeriod = { selected = it },
@@ -155,12 +155,12 @@ private fun Header(
 @Composable
 private fun Chart(
   data: NetWorthData,
-  compact: Boolean,
   zoom: ChartZoomState,
   highlighted: AccountId?,
   onSelectPeriod: (LocalDate?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   val modelProducer = remember { CartesianChartModelProducer() }
 
   if (isInPreview()) {
@@ -169,10 +169,10 @@ private fun Chart(
     LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
-  val label = axisLabelComponent(compact)
-  val tick = axisTickComponent(compact)
-  val guideline = axisGuidelineComponent(compact)
-  val line = axisLineComponent(compact)
+  val label = axisLabelComponent()
+  val tick = axisTickComponent()
+  val guideline = axisGuidelineComponent()
+  val line = axisLineComponent()
   val stacked = data.isStacked()
   val trendLines =
     LineCartesianLayer.LineProvider.series(
@@ -186,7 +186,7 @@ private fun Chart(
       ),
     )
   val highlightedIndex = data.accounts.indexOfFirst { it.id == highlighted }.takeIf { it >= 0 }
-  val stackedLines = rememberStackedLineProvider(data, compact, highlightedIndex)
+  val stackedLines = rememberStackedLineProvider(data, highlightedIndex)
   val stackedMarker = rememberStackedMarkerFormatter(data)
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
@@ -194,7 +194,7 @@ private fun Chart(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = zoom.animationSpec(compact),
+      animationSpec = zoom.animationSpec(),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -232,7 +232,7 @@ private fun Chart(
                 )
               else -> rememberMarker(rememberMarkerFormatter(netWorthXAxisFormatter(data)))
             },
-          markerVisibilityListener = rememberPeriodSelection(data, compact, onSelectPeriod),
+          markerVisibilityListener = rememberPeriodSelection(data, onSelectPeriod),
           decorations = listOf(rememberChartZoomDecoration(zoom)),
         ),
     )
@@ -262,15 +262,16 @@ private fun PreviewNetWorthChart(
   @PreviewParameter(NetWorthChartProvider::class) params: ColorParams<NetWorthChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
-    NetWorthChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      NetWorthChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class NetWorthChartParams(

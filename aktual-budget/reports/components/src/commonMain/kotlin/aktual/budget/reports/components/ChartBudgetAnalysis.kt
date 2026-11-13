@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
@@ -63,12 +64,12 @@ import kotlinx.datetime.YearMonth
 @Composable
 internal fun BudgetAnalysisChart(
   data: BudgetAnalysisData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       if (compact) {
         CompactHeader(data)
@@ -80,7 +81,6 @@ internal fun BudgetAnalysisChart(
     Chart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
-      compact = compact,
       zoom = zoom,
     )
   }
@@ -200,10 +200,10 @@ private fun layers(data: BudgetAnalysisData): Layers {
 @Composable
 private fun Chart(
   data: BudgetAnalysisData,
-  compact: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   val layers = remember(data) { layers(data) }
   val modelProducer = remember { CartesianChartModelProducer() }
   if (isInPreview()) {
@@ -212,25 +212,26 @@ private fun Chart(
     LaunchedEffect(data, layers, zoom.range) { modelProducer.populate(data, layers, zoom.range) }
   }
 
-  val chart = rememberChart(layers, compact, zoom)
+  val chart = rememberChart(layers, zoom)
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
     CartesianChartHost(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = zoom.animationSpec(compact),
+      animationSpec = zoom.animationSpec(),
       chart = chart,
     )
   }
 }
 
 @Composable
-private fun rememberChart(layers: Layers, compact: Boolean, zoom: ChartZoomState): CartesianChart {
-  val label = axisLabelComponent(compact)
-  val tick = axisTickComponent(compact)
-  val guideline = axisGuidelineComponent(compact)
-  val line = axisLineComponent(compact)
+private fun rememberChart(layers: Layers, zoom: ChartZoomState): CartesianChart {
+  val compact = LocalCompactChart.current
+  val label = axisLabelComponent()
+  val tick = axisTickComponent()
+  val guideline = axisGuidelineComponent()
+  val line = axisLineComponent()
 
   val columnLayer =
     if (layers.columns.isEmpty()) {
@@ -284,7 +285,7 @@ private fun rememberChart(layers: Layers, compact: Boolean, zoom: ChartZoomState
     )
   val marker =
     if (compact) null else rememberMarker(rememberMarkerFormatter(yearMonthXAxisFormatter()))
-  val markerListener = rememberMarkerHaptics(compact)
+  val markerListener = rememberMarkerHaptics()
   val decorations = listOf(rememberChartZoomDecoration(zoom))
 
   // Vico takes layers as varargs, and there's always at least one of them
@@ -354,15 +355,16 @@ private fun PreviewBudgetAnalysisChart(
   params: ColorParams<BudgetAnalysisChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    BudgetAnalysisChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      BudgetAnalysisChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class BudgetAnalysisChartParams(val data: BudgetAnalysisData, val compact: Boolean)

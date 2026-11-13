@@ -5,6 +5,7 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.LocalEntityListFetcher
 import aktual.budget.rules.ui.LocalNameFetcher
+import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState
@@ -310,21 +311,23 @@ private fun LoadedContent(
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
-    LazyColumn(
-      modifier = Modifier.padding(Dimens.ScreenPadding).scrollbar(listState),
-      state = listState,
-      contentPadding = contentPadding,
-      verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
-    ) {
-      if (rule.hasUnknownValues) {
-        item { WarningBanner(text = Strings.editRuleUnknownValues) }
+    CompositionLocalProvider(LocalRuleEditable provides isEnabled) {
+      LazyColumn(
+        modifier = Modifier.padding(Dimens.ScreenPadding).scrollbar(listState),
+        state = listState,
+        contentPadding = contentPadding,
+        verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
+      ) {
+        if (rule.hasUnknownValues) {
+          item { WarningBanner(text = Strings.editRuleUnknownValues) }
+        }
+
+        item { RuleStage(rule, onAction) }
+
+        item { Conditions(rule, onAction) }
+
+        item { BottomSpacing() }
       }
-
-      item { RuleStage(rule, isEnabled, onAction) }
-
-      item { Conditions(rule, isEnabled, onAction) }
-
-      item { BottomSpacing() }
     }
 
     Column {
@@ -338,10 +341,10 @@ private fun LoadedContent(
 @Composable
 private fun RuleStage(
   rule: Rule,
-  isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
+  val isEnabled = LocalRuleEditable.current
   CardColumn(
     modifier = modifier.fillMaxWidth(),
     contentPadding = CARD_PADDING,

@@ -70,8 +70,9 @@ class ChartZoomState {
     updateRange(null)
   }
 
-  internal fun animationSpec(compact: Boolean): AnimationSpec<Float>? =
-    if (hasZoomed) null else chartAnimationSpec(compact)
+  @Composable
+  internal fun animationSpec(): AnimationSpec<Float>? =
+    if (hasZoomed) null else chartAnimationSpec()
 
   private fun updateRange(range: XRange?) {
     hasZoomed = true

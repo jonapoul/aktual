@@ -132,14 +132,14 @@ internal fun FanChart(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact = false),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberLineCartesianLayer(lineProvider = LineCartesianLayer.LineProvider.series(lines)),
         startAxis = amountAxis(),
         bottomAxis = ageAxis(bands.size),
         marker = rememberMarker(rememberAgeMarkerFormatter(bands.map { it.age }.toImmutableList())),
-        markerVisibilityListener = rememberMarkerHaptics(compact = false),
+        markerVisibilityListener = rememberMarkerHaptics(),
         decorations = decorations,
       ),
   )
@@ -199,7 +199,7 @@ internal fun DepletionHistogram(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact = false),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberColumnCartesianLayer(
@@ -210,10 +210,10 @@ internal fun DepletionHistogram(
         ),
         startAxis =
           VerticalAxis.rememberStart(
-            line = axisLineComponent(compact = false),
-            guideline = axisGuidelineComponent(compact = false),
-            label = axisLabelComponent(compact = false),
-            tick = axisTickComponent(compact = false),
+            line = axisLineComponent(),
+            guideline = axisGuidelineComponent(),
+            label = axisLabelComponent(),
+            tick = axisTickComponent(),
             valueFormatter =
               remember { CartesianValueFormatter { _, value, _ -> "${value.roundToInt()}" } },
             itemPlacer = remember { VerticalAxis.ItemPlacer.step(step = { WHOLE_STEP }) },
@@ -271,7 +271,7 @@ internal fun CashflowBars(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact = false),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberColumnCartesianLayer(
@@ -326,7 +326,7 @@ internal fun PotBalancesAreas(
     modifier = modifier,
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
-    animationSpec = chartAnimationSpec(compact = false),
+    animationSpec = chartAnimationSpec(),
     chart =
       rememberCartesianChart(
         rememberLineCartesianLayer(lineProvider = lineProvider),
@@ -406,10 +406,10 @@ private class CashflowColumns(
 @Composable
 private fun amountAxis() =
   VerticalAxis.rememberStart(
-    line = axisLineComponent(compact = false),
-    guideline = axisGuidelineComponent(compact = false),
-    label = axisLabelComponent(compact = false),
-    tick = axisTickComponent(compact = false),
+    line = axisLineComponent(),
+    guideline = axisGuidelineComponent(),
+    label = axisLabelComponent(),
+    tick = axisTickComponent(),
     valueFormatter = amountYAxisFormatter(),
     itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { AMOUNT_LABELS }) },
   )
@@ -417,10 +417,10 @@ private fun amountAxis() =
 @Composable
 private fun ageAxis(ageCount: Int) =
   HorizontalAxis.rememberBottom(
-    line = axisLineComponent(compact = false),
+    line = axisLineComponent(),
     guideline = null,
-    label = axisLabelComponent(compact = false),
-    tick = axisTickComponent(compact = false),
+    label = axisLabelComponent(),
+    tick = axisTickComponent(),
     valueFormatter = ageFormatter(),
     itemPlacer = ageItemPlacer(ageCount),
   )

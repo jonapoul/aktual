@@ -3,6 +3,7 @@ package aktual.budget.rules.ui.edit.pickers
 import aktual.budget.model.Field
 import aktual.budget.rules.ui.LocalEntityListFetcher
 import aktual.budget.rules.ui.LocalNameFetcher
+import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.EntitySummary
 import aktual.core.icons.AktualIcons
@@ -42,11 +43,11 @@ import kotlinx.serialization.json.JsonPrimitive
 internal fun EntityIdPicker(
   field: Field,
   value: JsonElement,
-  isEnabled: Boolean,
   onValueChange: (JsonElement) -> Unit,
   fetchEntities: suspend (EntityListFetcher) -> ImmutableList<EntitySummary>,
   searchPlaceholder: String,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = LocalRuleEditable.current,
 ) {
   val nameFetcher = LocalNameFetcher.current
   val entityListFetcher = LocalEntityListFetcher.current

@@ -6,6 +6,7 @@ import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
+import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
@@ -59,9 +60,9 @@ import kotlinx.serialization.json.JsonPrimitive
 @Composable
 internal fun AmountTextField(
   value: JsonElement,
-  isEnabled: Boolean,
   onValueChange: (JsonElement) -> Unit,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = LocalRuleEditable.current,
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,

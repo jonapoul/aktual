@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -52,12 +53,12 @@ import kotlinx.datetime.YearMonth
 @Composable
 internal fun CrossoverChart(
   data: CrossoverData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
@@ -65,7 +66,6 @@ internal fun CrossoverChart(
     Chart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
-      compact = compact,
       zoom = zoom,
     )
   }
@@ -113,10 +113,10 @@ private fun Header(
 @Composable
 private fun Chart(
   data: CrossoverData,
-  compact: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   val modelProducer = remember { CartesianChartModelProducer() }
 
   if (isInPreview()) {
@@ -125,10 +125,10 @@ private fun Chart(
     LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
-  val label = axisLabelComponent(compact)
-  val tick = axisTickComponent(compact)
-  val guideline = axisGuidelineComponent(compact)
-  val line = axisLineComponent(compact)
+  val label = axisLabelComponent()
+  val tick = axisTickComponent()
+  val guideline = axisGuidelineComponent()
+  val line = axisLineComponent()
   val crossoverLine = rememberCrossoverLine(data)
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
@@ -181,7 +181,7 @@ private fun Chart(
             } else {
               rememberMarker(rememberMarkerFormatter(yearMonthXAxisFormatter()))
             },
-          markerVisibilityListener = rememberMarkerHaptics(compact),
+          markerVisibilityListener = rememberMarkerHaptics(),
           decorations = listOfNotNull(crossoverLine, rememberChartZoomDecoration(zoom)),
         ),
     )
@@ -224,15 +224,16 @@ private fun PreviewCrossoverChart(
   @PreviewParameter(CrossoverChartProvider::class) params: ColorParams<CrossoverChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    CrossoverChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CrossoverChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class CrossoverChartParams(val data: CrossoverData, val compact: Boolean)

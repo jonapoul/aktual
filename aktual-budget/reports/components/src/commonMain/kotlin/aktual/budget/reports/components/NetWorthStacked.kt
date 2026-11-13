@@ -43,9 +43,9 @@ internal fun NetWorthData.isStacked(): Boolean = mode == Stacked && accounts.isN
 @Composable
 internal fun rememberStackedLineProvider(
   data: NetWorthData,
-  compact: Boolean,
   highlighted: Int?,
 ): LineProvider {
+  val compact = LocalCompactChart.current
   val colors = colors
   return remember(data.accounts.size, colors, compact, highlighted) {
     // Shared by every band, holding the area under the line drawn before it
@@ -105,10 +105,9 @@ internal fun rememberStackedMarkerFormatter(
 @Composable
 internal fun rememberPeriodSelection(
   data: NetWorthData,
-  compact: Boolean,
   onSelect: (LocalDate?) -> Unit,
 ): CartesianMarkerVisibilityListener? {
-  val haptics = rememberMarkerHaptics(compact) ?: return null
+  val haptics = rememberMarkerHaptics() ?: return null
   val currentOnSelect by rememberUpdatedState(onSelect)
   return remember(haptics, data) {
     object : CartesianMarkerVisibilityListener {

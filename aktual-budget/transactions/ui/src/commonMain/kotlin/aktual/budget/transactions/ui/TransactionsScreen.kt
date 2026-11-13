@@ -51,6 +51,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -271,55 +272,55 @@ internal fun TransactionsScaffold(
     showBalance = showBalance && showRunningBalance,
     showAccount = loadedAccount !is SpecificAccount,
     isReconciling = reconciling != null,
+    alternateRowColours = alternateRowColours,
   ) {
-    Scaffold(
-      topBar = {
-        Column(modifier = Modifier.onSizeChanged { topBarHeight = it.height }) {
-          TransactionsTitleBar(
-            hazeState = hazeState,
-            listState = listState,
-            loadedAccount = loadedAccount,
-            isRoot = isRoot,
-            reconcileStart = reconcileStart,
-            accountChoices = accountChoices,
-            onAction = onAction,
-            onOpenViewOptions = { showViewOptions = true },
-          )
+    CompositionLocalProvider(LocalTagLabels provides tags) {
+      Scaffold(
+        topBar = {
+          Column(modifier = Modifier.onSizeChanged { topBarHeight = it.height }) {
+            TransactionsTitleBar(
+              hazeState = hazeState,
+              listState = listState,
+              loadedAccount = loadedAccount,
+              isRoot = isRoot,
+              reconcileStart = reconcileStart,
+              accountChoices = accountChoices,
+              onAction = onAction,
+              onOpenViewOptions = { showViewOptions = true },
+            )
 
-          // Dense rows have their own balance column, so the strip only shows for the totals
-          if (showBalance && (density != Dense || clearedBalances != null)) {
-            BalanceStrip(balance, clearedBalances = clearedBalances)
+            // Dense rows have their own balance column, so the strip only shows for the totals
+            if (showBalance && (density != Dense || clearedBalances != null)) {
+              BalanceStrip(balance, clearedBalances = clearedBalances)
+            }
+            reconciling?.let { ReconcilingBanner(it, onAction) }
+            if (density == Dense) LedgerHeader()
+            year?.let { YearDivider(it) }
           }
-          reconciling?.let { ReconcilingBanner(it, onAction) }
-          if (density == Dense) LedgerHeader()
-          year?.let { YearDivider(it) }
-        }
-      },
-    ) { innerPadding ->
-      Box {
-        PageBackground()
+        },
+      ) { innerPadding ->
+        Box {
+          PageBackground()
 
-        // Pulling down downloads the account's transactions from its bank
-        HazedPullToRefreshBox(
-          hazeState = hazeState,
-          innerPadding = innerPadding,
-          isRefreshing = isBankSyncing,
-          onRefresh = { onAction(BankSync) },
-          enabled = canBankSync,
-        ) {
-          Transactions(
-            contentPadding = hazedTopBarContentPadding(hazeState, innerPadding = Zero),
-            listState = listState,
-            pagingItems = pagingItems,
-            density = density,
+          // Pulling down downloads the account's transactions from its bank
+          HazedPullToRefreshBox(
+            hazeState = hazeState,
             innerPadding = innerPadding,
-            toggledSplits = toggledSplits,
-            expandSplits = expandSplits,
-            splitsPinnedOpen = splitsPinnedOpen,
-            alternateRowColours = alternateRowColours,
-            tags = tags,
-            onAction = onAction,
-          )
+            isRefreshing = isBankSyncing,
+            onRefresh = { onAction(BankSync) },
+            enabled = canBankSync,
+          ) {
+            Transactions(
+              contentPadding = hazedTopBarContentPadding(hazeState, innerPadding = Zero),
+              listState = listState,
+              pagingItems = pagingItems,
+              innerPadding = innerPadding,
+              toggledSplits = toggledSplits,
+              expandSplits = expandSplits,
+              splitsPinnedOpen = splitsPinnedOpen,
+              onAction = onAction,
+            )
+          }
         }
       }
     }

@@ -19,6 +19,7 @@ import aktual.budget.reports.vm.TextData
 import aktual.budget.reports.vm.UnsupportedData
 import aktual.core.ui.OnAction
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 
 /** When [compact], keep in sync with [ShimmerChart] */
@@ -31,21 +32,22 @@ fun ReportChart(
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
 ) =
-  when (data) {
-    is AgeOfMoneyData -> AgeOfMoneyChart(data, compact, modifier, includeHeader, zoom)
-    is BalanceForecastData ->
-      BalanceForecastChart(data, compact, modifier, includeHeader, zoom, onAction)
-    is BudgetAnalysisData -> BudgetAnalysisChart(data, compact, modifier, includeHeader, zoom)
-    is CashFlowData -> CashFlowChart(data, compact, modifier, includeHeader, zoom)
-    is CrossoverData -> CrossoverChart(data, compact, modifier, includeHeader, zoom)
-    is MonteCarloData -> MonteCarloChart(data, compact, modifier, includeHeader, zoom)
-    is NetWorthData -> NetWorthChart(data, compact, modifier, includeHeader, zoom)
-    is SankeyData -> SankeyChart(data, compact, modifier, includeHeader)
-    is SummaryData -> SummaryChart(data, compact, onAction, modifier, includeHeader)
-    is CalendarData -> CalendarChart(data, compact, onAction, modifier, includeHeader)
-    is SpendingData -> SpendingChart(data, compact, modifier, includeHeader, zoom)
-    is FormulaData -> FormulaChart(data, compact, modifier, includeHeader)
-    is TextData -> TextChart(data, compact, onAction, modifier)
-    is CustomData -> CustomChart(data, compact, modifier, includeHeader) { onAction(DrillDown(it)) }
-    is UnsupportedData -> UnsupportedChart(data, modifier)
+  CompositionLocalProvider(LocalCompactChart provides compact) {
+    when (data) {
+      is AgeOfMoneyData -> AgeOfMoneyChart(data, modifier, includeHeader, zoom)
+      is BalanceForecastData -> BalanceForecastChart(data, modifier, includeHeader, zoom, onAction)
+      is BudgetAnalysisData -> BudgetAnalysisChart(data, modifier, includeHeader, zoom)
+      is CashFlowData -> CashFlowChart(data, modifier, includeHeader, zoom)
+      is CrossoverData -> CrossoverChart(data, modifier, includeHeader, zoom)
+      is MonteCarloData -> MonteCarloChart(data, modifier, includeHeader, zoom)
+      is NetWorthData -> NetWorthChart(data, modifier, includeHeader, zoom)
+      is SankeyData -> SankeyChart(data, modifier, includeHeader)
+      is SummaryData -> SummaryChart(data, onAction, modifier, includeHeader)
+      is CalendarData -> CalendarChart(data, onAction, modifier, includeHeader)
+      is SpendingData -> SpendingChart(data, modifier, includeHeader, zoom)
+      is FormulaData -> FormulaChart(data, modifier, includeHeader)
+      is TextData -> TextChart(data, onAction, modifier)
+      is CustomData -> CustomChart(data, modifier, includeHeader) { onAction(DrillDown(it)) }
+      is UnsupportedData -> UnsupportedChart(data, modifier)
+    }
   }

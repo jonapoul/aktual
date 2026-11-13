@@ -452,7 +452,7 @@ private fun ResultCard(preview: FormulaData?, isEditing: Boolean) {
     if (preview == null) {
       CircularProgressIndicator(modifier = Modifier.align(Center), color = colors.pageText)
     } else {
-      FormulaChart(modifier = Modifier.fillMaxSize(), data = preview, compact = false)
+      FormulaChart(modifier = Modifier.fillMaxSize(), data = preview)
     }
     AnimatedVisibility(visible = isEditing, enter = fadeIn(), exit = fadeOut()) {
       Text(

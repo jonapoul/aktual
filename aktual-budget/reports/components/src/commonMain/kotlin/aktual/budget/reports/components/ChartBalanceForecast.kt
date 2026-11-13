@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,13 +81,13 @@ import kotlinx.datetime.yearMonth
 @Composable
 internal fun BalanceForecastChart(
   data: BalanceForecastData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
   zoom: ChartZoomState = rememberChartZoomState(data),
   onAction: OnAction<ChartAction> = OnAction<ChartAction> {},
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data, zoom = zoom)
     }
@@ -95,7 +96,7 @@ internal fun BalanceForecastChart(
     if (data.items.isEmpty()) {
       Empty(modifier = chartModifier)
     } else {
-      Chart(modifier = chartModifier, data = data, compact = compact, zoom = zoom)
+      Chart(modifier = chartModifier, data = data, zoom = zoom)
     }
 
     if (!compact && data.items.isNotEmpty()) {
@@ -213,10 +214,10 @@ private fun BalanceForecastData.summary(): String =
 @Composable
 private fun Chart(
   data: BalanceForecastData,
-  compact: Boolean,
   zoom: ChartZoomState,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   val modelProducer = remember { CartesianChartModelProducer() }
 
   if (isInPreview()) {
@@ -225,17 +226,17 @@ private fun Chart(
     LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
   }
 
-  val label = axisLabelComponent(compact)
-  val tick = axisTickComponent(compact)
-  val guideline = axisGuidelineComponent(compact)
-  val line = axisLineComponent(compact)
+  val label = axisLabelComponent()
+  val tick = axisTickComponent()
+  val guideline = axisGuidelineComponent()
+  val line = axisLineComponent()
 
   ZoomableChart(modifier = modifier, state = zoom, enabled = !compact) { chartModifier ->
     CartesianChartHost(
       modifier = chartModifier,
       modelProducer = modelProducer,
       scrollState = rememberVicoScrollState(scrollEnabled = false),
-      animationSpec = zoom.animationSpec(compact),
+      animationSpec = zoom.animationSpec(),
       chart =
         rememberCartesianChart(
           rememberLineCartesianLayer(
@@ -285,7 +286,7 @@ private fun Chart(
             } else {
               rememberMarker(rememberMarkerFormatter(forecastXAxisFormatter(data)))
             },
-          markerVisibilityListener = rememberMarkerHaptics(compact),
+          markerVisibilityListener = rememberMarkerHaptics(),
           decorations =
             listOfNotNull(
               rememberTodayLine(data),
@@ -403,15 +404,16 @@ private fun PreviewBalanceForecastChart(
   params: ColorParams<BalanceForecastChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    BalanceForecastChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      BalanceForecastChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class BalanceForecastChartParams(val data: BalanceForecastData, val compact: Boolean)

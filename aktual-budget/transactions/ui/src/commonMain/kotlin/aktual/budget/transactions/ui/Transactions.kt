@@ -2,12 +2,10 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
-import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
-import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
@@ -41,9 +39,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 
@@ -51,7 +47,6 @@ import kotlinx.coroutines.flow.Flow
 internal fun Transactions(
   listState: LazyListState,
   pagingItems: LazyPagingItems<Transaction>,
-  density: TransactionsDensity,
   innerPadding: PaddingValues,
   contentPadding: PaddingValues,
   toggledSplits: ImmutableSet<TransactionId>,
@@ -59,8 +54,6 @@ internal fun Transactions(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   expandSplits: Boolean = false,
-  alternateRowColours: Boolean = false,
-  tags: ImmutableList<TagLabel> = persistentListOf(),
 ) {
   val refresh = pagingItems.loadState.refresh
   when {
@@ -68,13 +61,10 @@ internal fun Transactions(
       TransactionsFilled(
         listState = listState,
         pagingItems = pagingItems,
-        density = density,
         modifier = modifier,
         contentPadding = contentPadding,
         innerPadding = innerPadding,
         splits = SplitsState(toggledSplits, expandSplits, splitsPinnedOpen),
-        alternateRowColours = alternateRowColours,
-        tags = tags,
         onAction = onAction,
       )
     }
@@ -93,19 +83,15 @@ internal fun Transactions(
       )
     }
 
-    refresh is Loading ->
-      TransactionsLoading(density, innerPadding, modifier.padding(contentPadding))
+    refresh is Loading -> TransactionsLoading(innerPadding, modifier.padding(contentPadding))
 
     else -> TransactionsEmpty(innerPadding, modifier.padding(contentPadding))
   }
 }
 
 @Composable
-private fun TransactionsLoading(
-  density: TransactionsDensity,
-  innerPadding: PaddingValues,
-  modifier: Modifier = Modifier,
-) {
+private fun TransactionsLoading(innerPadding: PaddingValues, modifier: Modifier = Modifier) {
+  val density = LocalLedgerDimens.current.density
   Column(modifier = modifier.fillMaxSize()) {
     VerticalSpacer(innerPadding.calculateTopPadding())
 
@@ -115,7 +101,7 @@ private fun TransactionsLoading(
     Column(modifier = Modifier.fillMaxWidth().background(colors.tableBackground)) {
       repeat(times = NUM_SHIMMER_ROWS) { index ->
         if (index > 0 && (shimmerShowsDate(index) || density == Dense)) HorizontalDivider()
-        LedgerShimmerRow(index, density)
+        LedgerShimmerRow(index)
       }
     }
 
@@ -147,17 +133,14 @@ private fun TransactionsEmpty(innerPadding: PaddingValues, modifier: Modifier = 
 private fun TransactionsFilled(
   listState: LazyListState,
   pagingItems: LazyPagingItems<Transaction>,
-  density: TransactionsDensity,
   innerPadding: PaddingValues,
   contentPadding: PaddingValues,
   splits: SplitsState,
-  alternateRowColours: Boolean,
-  tags: ImmutableList<TagLabel>,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
-  // Only themes with their own alternate row colour shade rows, see hasAlternateRowColour
-  val shadeRows = alternateRowColours && colors.hasAlternateRowColour
+  val dimens = LocalLedgerDimens.current
+  val density = dimens.density
 
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
@@ -174,7 +157,7 @@ private fun TransactionsFilled(
         val showYear = previous != null && previous.date.year != transaction.date.year
 
         val background =
-          if (shadeRows && index % 2 == 1) {
+          if (dimens.shadeRows && index % 2 == 1) {
             colors.tableRowBackgroundAlternate
           } else {
             colors.tableBackground
@@ -204,7 +187,6 @@ private fun TransactionsFilled(
               LedgerRow(
                 transaction = transaction,
                 showDate = showDate,
-                tags = tags,
                 parts = parts,
                 onToggleSplit = onToggleSplit,
                 onOpen = onOpen,
@@ -225,7 +207,6 @@ private fun TransactionsFilled(
             AnimatedVisibility(visible = parts != Collapsed) {
               SplitChildren(
                 parent = transaction,
-                density = density,
                 onOpen = { id -> onAction(Action.OpenTransaction(id)) },
               )
             }
@@ -263,7 +244,6 @@ private fun PreviewTransactions(
       Transactions(
         listState = rememberLazyListState(),
         pagingItems = pagingData.collectAsLazyPagingItems(),
-        density = density,
         contentPadding = Zero,
         innerPadding = Zero,
         toggledSplits = persistentSetOf(TRANSACTION_SPLIT.id),

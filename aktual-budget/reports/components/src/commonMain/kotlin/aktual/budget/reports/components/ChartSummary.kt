@@ -50,6 +50,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
@@ -72,12 +73,12 @@ import kotlinx.datetime.yearMonth
 @Composable
 internal fun SummaryChart(
   data: SummaryData,
-  compact: Boolean,
   onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier, horizontalAlignment = CenterHorizontally) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
@@ -600,16 +601,17 @@ private fun PreviewSummaryChart(
   @PreviewParameter(SummaryChartProvider::class) params: ColorParams<SummaryChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
-    SummaryChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-      onAction = {},
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      SummaryChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+        onAction = {},
+      )
+    }
   }
 
 private data class SummaryChartParams(

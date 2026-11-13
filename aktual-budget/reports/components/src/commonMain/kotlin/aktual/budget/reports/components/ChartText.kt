@@ -33,6 +33,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,10 +59,10 @@ import org.intellij.lang.annotations.Language
 @Composable
 internal fun TextChart(
   data: TextData,
-  compact: Boolean,
   onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) {
+  val compact = LocalCompactChart.current
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
     var isEditing by rememberSaveable { mutableStateOf(false) }
     val editState =
@@ -90,7 +91,7 @@ internal fun TextChart(
       when {
         isEditing && editorMode == Rendered -> RenderedEditorText(editState, editAlign)
         isEditing -> TextEditor(editState)
-        data.content.isBlank() -> EmptyText(compact)
+        data.content.isBlank() -> EmptyText()
         compact -> CompactMarkdown(data)
         else -> FullMarkdown(data)
       }
@@ -141,12 +142,13 @@ private fun TextEditor(state: TextFieldState, modifier: Modifier = Modifier) =
 @Composable
 private fun RenderedEditorText(state: TextFieldState, align: TextAlign) {
   val content = state.text.toString()
-  if (content.isBlank()) EmptyText(compact = false) else FullMarkdown(TextData(content, align))
+  if (content.isBlank()) EmptyText() else FullMarkdown(TextData(content, align))
 }
 
 @Composable
-private fun EmptyText(compact: Boolean, modifier: Modifier = Modifier) =
+private fun EmptyText(modifier: Modifier = Modifier) =
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
+    val compact = LocalCompactChart.current
     Text(
       text = if (compact) Strings.reportsTextEmptyCompact else Strings.reportsTextEmpty,
       color = colors.tableTextSubdued,
@@ -282,16 +284,17 @@ private fun PreviewTextChart(
   @PreviewParameter(TextChartProvider::class) params: ColorParams<TextChartParams>,
 ) =
   PreviewWithColorParams(params, isPrivacyEnabled = params.data.private) {
-    TextChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .let { m -> if (compact) m.height(300.dp) else m }
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-      onAction = {},
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      TextChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .let { m -> if (compact) m.height(300.dp) else m }
+            .padding(5.dp),
+        data = data,
+        onAction = {},
+      )
+    }
   }
 
 private data class TextChartParams(val data: TextData, val compact: Boolean, val private: Boolean)

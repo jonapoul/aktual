@@ -1,6 +1,7 @@
 package aktual.budget.rules.ui.edit.pickers
 
 import aktual.budget.model.RecurConfig
+import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Delete
@@ -43,9 +44,9 @@ import kotlinx.serialization.json.JsonObject
 @Composable
 internal fun DateTextField(
   value: JsonElement,
-  isEnabled: Boolean,
   onValueChange: (JsonElement) -> Unit,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = LocalRuleEditable.current,
 ) {
   require(value is JsonNull || value is JsonObject) { "Need object or null, got $value" }
 

@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,11 +80,11 @@ private const val GROUPED_ALPHA = 0.7f
 @Composable
 internal fun SankeyChart(
   data: SankeyData,
-  compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier) {
+    val compact = LocalCompactChart.current
     if (includeHeader) {
       Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
@@ -102,7 +103,7 @@ internal fun SankeyChart(
         val maxNodes =
           if (constraints.hasBoundedHeight) (maxHeight / HEIGHT_PER_NODE).toInt() else Int.MAX_VALUE
         val limited = remember(data, maxNodes) { data.limitTo(maxNodes) }
-        Chart(data = limited, compact = compact)
+        Chart(data = limited)
       }
     }
   }
@@ -122,8 +123,9 @@ private fun Header(data: SankeyData, modifier: Modifier = Modifier) =
   }
 
 @Composable
-private fun Chart(data: SankeyData, compact: Boolean, modifier: Modifier = Modifier) =
+private fun Chart(data: SankeyData, modifier: Modifier = Modifier) =
   BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    val compact = LocalCompactChart.current
     val textMeasurer = rememberTextMeasurer()
     val theme = colors
     val nameStyle = TextStyle(color = theme.pageText, fontSize = textSizes.small, fontWeight = Bold)
@@ -474,15 +476,16 @@ private fun PreviewSankeyChart(
   @PreviewParameter(SankeyChartProvider::class) params: ColorParams<SankeyChartParams>,
 ) =
   PreviewWithColorParams(params) {
-    SankeyChart(
-      modifier =
-        Modifier.background(colors.tableBackground, CardShape)
-          .width(WIDTH.dp)
-          .height(if (compact) 300.dp else 500.dp)
-          .padding(5.dp),
-      data = data,
-      compact = compact,
-    )
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      SankeyChart(
+        modifier =
+          Modifier.background(colors.tableBackground, CardShape)
+            .width(WIDTH.dp)
+            .height(if (compact) 300.dp else 500.dp)
+            .padding(5.dp),
+        data = data,
+      )
+    }
   }
 
 private data class SankeyChartParams(val data: SankeyData, val compact: Boolean)
