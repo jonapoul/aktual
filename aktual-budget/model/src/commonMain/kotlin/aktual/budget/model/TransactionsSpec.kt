@@ -12,7 +12,17 @@ data class TransactionsSpec(
   val categorySpec: CategorySpec = AllCategories,
   // Overrides the other specs when set
   val filtered: FilteredSpec? = null,
-)
+) {
+  // Every transaction of an account, a group or every account, not some of them
+  val isAccountList: Boolean
+    get() = tagSpec == AllTags && categorySpec == AllCategories && filtered == null
+
+  // The search that narrows this list, if it's an account list and the search isn't empty. Tag,
+  // category and filtered lists ignore it
+  fun activeSearch(search: TransactionSearch): TransactionSearch? = search.takeIf {
+    isAccountList && !it.isEmpty
+  }
+}
 
 // A list narrowed to some transactions, under its own title
 sealed interface FilteredSpec {

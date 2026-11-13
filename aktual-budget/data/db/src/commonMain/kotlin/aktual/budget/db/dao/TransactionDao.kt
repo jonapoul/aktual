@@ -253,8 +253,25 @@ class TransactionDao(database: BudgetDatabase) {
       getUncategorisedIdsAndNotes(account, ::transactionNotes).awaitAsList()
     }
 
-  suspend fun getFilterRows(): List<GetFilterRows> = queries.withResult {
-    getFilterRows().awaitAsList()
+  // A null account and group cover every account. Reports keep deleted names, as their totals do.
+  // text and cents narrow the rows to those a search could match, see the query
+  suspend fun getFilterRows(
+    account: AccountId? = null,
+    group: AccountGroup? = null,
+    skipDeleted: Boolean = true,
+    text: String? = null,
+    cents: Long? = null,
+  ): List<GetFilterRows> = queries.withResult {
+    getFilterRows(
+        pattern = text?.likePattern(),
+        cents = cents,
+        whole = cents?.takeIf { it % CENTS == 0L }?.div(CENTS),
+        skipDeleted = skipDeleted.toLong(),
+        account = account,
+        closed = group?.let { it == Closed },
+        offBudget = group?.offBudget,
+      )
+      .awaitAsList()
   }
 
   suspend fun getIdsBySchedule(schedule: ScheduleId): List<TransactionId> = queries.withResult {
@@ -555,3 +572,13 @@ private fun transactionNotes(
 
 // Under SQLite's limit on bound parameters in one statement
 private const val MAX_BIND_ARGS = 900
+
+private const val CENTS = 100L
+private const val ASCII_LIMIT = 128
+private val LIKE_SPECIAL = Regex("""[\\%_]""")
+
+// SQLite's LIKE only ignores case for ASCII, so other text isn't narrowed in SQL at all
+private fun String.likePattern(): String? {
+  if (isEmpty() || any { it.code >= ASCII_LIMIT }) return null
+  return "%" + replace(LIKE_SPECIAL) { "\\" + it.value } + "%"
+}

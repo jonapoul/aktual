@@ -25,6 +25,8 @@ data class FilterRow(
   val offBudget: Boolean = false,
   val payee: PayeeId? = null,
   val payeeName: String? = null,
+  // The other side of a transfer, whose payee has no name of its own
+  val transferAccountName: String? = null,
   val importedPayee: String? = null,
   val category: CategoryId? = null,
   val categoryName: String? = null,

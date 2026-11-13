@@ -83,7 +83,7 @@ style:
   CascadingCallWrapping:
     active: false
   DataClassContainsFunctions:
-    allowOperators: true
+    active: false
   DestructuringDeclarationWithTooManyEntries:
     maxDestructuringEntries: 5
   ForbiddenComment:

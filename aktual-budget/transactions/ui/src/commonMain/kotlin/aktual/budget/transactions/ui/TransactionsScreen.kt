@@ -89,6 +89,7 @@ fun TransactionsScreen(
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val density by viewModel.density.collectAsStateWithLifecycle()
   val balance by viewModel.balance.collectAsStateWithLifecycle()
+  val showBalance by viewModel.showBalance.collectAsStateWithLifecycle()
   val canBankSync by viewModel.canBankSync.collectAsStateWithLifecycle()
   val isBankSyncing by viewModel.isBankSyncing.collectAsStateWithLifecycle()
   val toggledSplits by viewModel.toggledSplits.collectAsStateWithLifecycle()
@@ -128,7 +129,7 @@ fun TransactionsScreen(
     loadedAccount = loadedAccount,
     density = density,
     balance = balance,
-    showBalance = viewModel.showBalance,
+    showBalance = showBalance,
     showRunningBalance = showRunningBalance,
     clearedBalances = clearedBalances,
     isRoot = isRoot,
