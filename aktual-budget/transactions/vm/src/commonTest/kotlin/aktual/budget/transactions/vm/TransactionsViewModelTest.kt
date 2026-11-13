@@ -1379,6 +1379,42 @@ class TransactionsViewModelTest {
   }
 
   @Test
+  fun `Search keeps a split where its parent sits in the list`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("z", "a", null, "a", date = DATE_1, isParent = true)
+      insertTransaction("a", "a", "a", "a", notes = "lunch", date = DATE_1, parent = "z")
+      insertTransaction("q", "a", "a", "a", notes = "lunch", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val ids = searchedIds(AllAccounts, TransactionSearch(text = "lunch"))
+
+    // then
+    assertThat(ids).containsExactly("q", "z")
+  }
+
+  @Test
+  fun `Search skips a split whose parent isn't in the list`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("p", "a", null, "a", date = DATE_2, isParent = true)
+      insertTransaction("p1", "b", "a", "a", notes = "lunch", date = DATE_2, parent = "p")
+      insertTransaction("q", "b", "a", "a", notes = "lunch", date = DATE_1)
+    }
+    advanceUntilIdle()
+
+    // when
+    val ids = searchedIds(SpecificAccount(AccountId("b")), TransactionSearch(text = "lunch"))
+
+    // then
+    assertThat(ids).containsExactly("q")
+  }
+
+  @Test
   fun `An empty search lists the account as usual`() = runTest {
     // given
     buildViewModel(AllAccounts)

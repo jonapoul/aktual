@@ -213,7 +213,7 @@ internal class TransactionsPagingSource(
       is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
     }
 
-  // A split takes one slot, as its parent, where it or its first matching child would be
+  // A split takes one slot, as its parent, if the parent or any of its children match
   private suspend fun loadSearchIds(search: TransactionSearch): FilteredIds {
     val matcher = TransactionSearchMatcher(search)
     val rows =
@@ -222,21 +222,16 @@ internal class TransactionsPagingSource(
         is SpecificAccount -> transactionDao.getSearchRows(accountSpec.id, group = null)
         is Group -> transactionDao.getSearchRows(account = null, accountSpec.group)
       }
-    val ids = linkedSetOf<TransactionId>()
-    val children = mutableSetOf<TransactionId>()
     val matching = rows.filter { row ->
       !(hideReconciled && row.reconciled == true) && matcher.matches(row.toFilterRow())
     }
-    for (row in matching) {
-      val parent = row.parent_id.takeIf { row.is_child == true }
-      if (parent == null) {
-        ids += row.id
-      } else {
-        ids += parent
-        children += row.id
-      }
-    }
-    return FilteredIds(ids = ids.toList(), children = children)
+    val (children, topLevel) = matching.partition { it.is_child == true }
+    val ids = topLevel.mapTo(mutableSetOf()) { it.id }
+    children.mapNotNullTo(ids) { it.parent_id }
+    return FilteredIds(
+      ids = rows.filter { it.is_child != true && it.id in ids }.map { it.id },
+      children = children.mapTo(mutableSetOf()) { it.id },
+    )
   }
 
   private fun List<TransactionId>.page(offset: Long, limit: Long): List<TransactionId> {
