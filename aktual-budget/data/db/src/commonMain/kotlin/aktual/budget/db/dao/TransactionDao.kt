@@ -2,7 +2,6 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetFilterRows
-import aktual.budget.db.GetSearchRows
 import aktual.budget.db.NotesContainingHash
 import aktual.budget.db.Transactions
 import aktual.budget.db.withResult
@@ -254,20 +253,20 @@ class TransactionDao(database: BudgetDatabase) {
       getUncategorisedIdsAndNotes(account, ::transactionNotes).awaitAsList()
     }
 
-  suspend fun getFilterRows(): List<GetFilterRows> = queries.withResult {
-    getFilterRows().awaitAsList()
+  // A null account and group cover every account. Reports keep deleted names, as their totals do
+  suspend fun getFilterRows(
+    account: AccountId? = null,
+    group: AccountGroup? = null,
+    skipDeleted: Boolean = true,
+  ): List<GetFilterRows> = queries.withResult {
+    getFilterRows(
+        skipDeleted = if (skipDeleted) 1L else 0L,
+        account = account,
+        closed = group?.let { it == Closed },
+        offBudget = group?.offBudget,
+      )
+      .awaitAsList()
   }
-
-  // A null account and group cover every account
-  suspend fun getSearchRows(account: AccountId?, group: AccountGroup?): List<GetSearchRows> =
-    queries.withResult {
-      getSearchRows(
-          account = account,
-          closed = group?.let { it == Closed },
-          offBudget = group?.offBudget,
-        )
-        .awaitAsList()
-    }
 
   suspend fun getIdsBySchedule(schedule: ScheduleId): List<TransactionId> = queries.withResult {
     getIdsBySchedule(schedule).awaitAsList()

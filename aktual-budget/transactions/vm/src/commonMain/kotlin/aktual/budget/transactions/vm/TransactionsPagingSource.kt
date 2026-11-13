@@ -1,7 +1,6 @@
 package aktual.budget.transactions.vm
 
 import aktual.budget.db.GetFilterRows
-import aktual.budget.db.GetSearchRows
 import aktual.budget.db.dao.KnownBalance
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
@@ -208,7 +207,10 @@ internal class TransactionsPagingSource(
     when (filtered) {
       is Conditions -> {
         val matcher = ConditionsMatcher(filtered.filter)
-        transactionDao.getFilterRows().filter { matcher.matches(it.toFilterRow()) }.map { it.id }
+        transactionDao
+          .getFilterRows(skipDeleted = false)
+          .filter { it.is_parent == false && matcher.matches(it.toFilterRow()) }
+          .map { it.id }
       }
       is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
     }
@@ -218,9 +220,9 @@ internal class TransactionsPagingSource(
     val matcher = TransactionSearchMatcher(search)
     val rows =
       when (val accountSpec = spec.accountSpec) {
-        AllAccounts -> transactionDao.getSearchRows(account = null, group = null)
-        is SpecificAccount -> transactionDao.getSearchRows(accountSpec.id, group = null)
-        is Group -> transactionDao.getSearchRows(account = null, accountSpec.group)
+        AllAccounts -> transactionDao.getFilterRows()
+        is SpecificAccount -> transactionDao.getFilterRows(account = accountSpec.id)
+        is Group -> transactionDao.getFilterRows(group = accountSpec.group)
       }
     val matching = rows.filter { row ->
       !(hideReconciled && row.reconciled == true) && matcher.matches(row.toFilterRow())
@@ -272,27 +274,6 @@ internal class TransactionsPagingSource(
 internal data class PageKey(val offset: Int, val balance: KnownBalance? = null)
 
 private fun GetFilterRows.toFilterRow() =
-  FilterRow(
-    date = date,
-    amount = Amount(amount),
-    account = account,
-    accountName = account_name,
-    offBudget = off_budget == true,
-    payee = payee,
-    payeeName = payee_name,
-    importedPayee = imported_payee?.value,
-    category = category,
-    categoryName = category_name,
-    categoryGroup = category_group,
-    categoryGroupName = category_group_name,
-    notes = notes,
-    cleared = cleared == true,
-    reconciled = reconciled == true,
-    isTransfer = transfer_id != null,
-    isParent = is_parent == true,
-  )
-
-private fun GetSearchRows.toFilterRow() =
   FilterRow(
     date = date,
     amount = Amount(amount),
