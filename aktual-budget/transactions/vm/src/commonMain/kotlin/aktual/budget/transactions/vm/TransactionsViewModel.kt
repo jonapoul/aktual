@@ -233,11 +233,7 @@ internal constructor(
     }
 
   // A filtered list only holds part of each account, so it has no balance to show
-  val showBalance: Boolean =
-    spec.tagSpec is AllTags &&
-      spec.categorySpec == AllCategories &&
-      spec.filtered == null &&
-      spec.search?.isEmpty != false
+  val showBalance: Boolean = spec.isAccountList && spec.activeSearch == null
 
   val balance: StateFlow<Amount?> =
     if (showBalance) {

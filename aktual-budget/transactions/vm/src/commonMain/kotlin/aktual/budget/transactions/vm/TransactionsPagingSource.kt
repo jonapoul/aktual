@@ -39,10 +39,7 @@ internal class TransactionsPagingSource(
   // And for a searched account list, matched in memory too
   private var searchIds: FilteredIds? = null
 
-  private val search =
-    spec.search?.takeIf {
-      !it.isEmpty && spec.tagSpec == AllTags && spec.categorySpec == AllCategories
-    }
+  private val search = spec.activeSearch
 
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
