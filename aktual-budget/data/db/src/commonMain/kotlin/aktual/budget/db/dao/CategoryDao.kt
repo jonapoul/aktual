@@ -9,7 +9,10 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.CategoryId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import app.cash.sqldelight.coroutines.asFlow
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Inject
 class CategoryDao(database: BudgetDatabase) {
@@ -51,6 +54,9 @@ class CategoryDao(database: BudgetDatabase) {
   suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
     getAllActive().awaitAsList()
   }
+
+  // Emits whenever the table behind getAllActive() is written to
+  fun observeChanges(): Flow<Unit> = queries.getAllActive().asFlow().map {}
 
   suspend fun getAllGrouped(): List<GetAllGrouped> = queries.withResult {
     getAllGrouped().awaitAsList()

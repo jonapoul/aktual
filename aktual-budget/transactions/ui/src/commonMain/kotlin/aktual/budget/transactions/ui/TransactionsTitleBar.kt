@@ -21,7 +21,6 @@ import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BackHandler
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
@@ -35,6 +34,13 @@ import aktual.core.ui.hazedTopBar
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringLong
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
@@ -49,7 +55,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -73,65 +78,74 @@ internal fun TransactionsTitleBar(
   reconcileStart: ReconcileStart? = null,
   accountChoices: ImmutableList<AccountChoice> = persistentListOf(),
   canSearch: Boolean = false,
+  isSearching: Boolean = false,
   query: String = "",
+  onSearch: () -> Unit = {},
+  onCloseSearch: () -> Unit = {},
 ) {
-  // Filters outlive the screen, so a list opened with a query already set shows its field
-  var isSearching by rememberSaveable { mutableStateOf(query.isNotEmpty()) }
-  val closeSearch = {
-    isSearching = false
-    onAction(Action.SetQuery(""))
-  }
-  BackHandler(enabled = isSearching, onBack = closeSearch)
-
   val title = loadedAccount.title()
 
-  TopAppBar(
+  // Two whole bars faded into each other, so neither side is measured against the other mid-way
+  AnimatedContent(
     modifier = Modifier.hazedTopBar(hazeState, listState),
-    colors = colors.transparentTopAppBarColors(),
-    navigationIcon = {
-      if (isRoot && LocalNavDrawerOpener.current != null) {
-        NavDrawerIconButton()
-      } else {
-        NavBackIconButton { onAction(NavBack) }
-      }
-    },
-    title = {
-      if (isSearching) {
-        TransactionsSearchField(
-          initialQuery = query,
-          onQueryChange = { onAction(Action.SetQuery(it)) },
-        )
-      } else if (loadedAccount is SpecificAccount && accountChoices.size > 1) {
-        AccountSwitcher(
-          title = title,
-          selected = loadedAccount.account.id,
-          choices = accountChoices,
-          onAction = onAction,
-        )
-      } else {
-        Text(text = title, maxLines = 1, overflow = Ellipsis)
-      }
-    },
-    actions = {
-      if (isSearching) {
-        AktualIconButton(
-          imageVector = AktualIcons.Delete,
-          contentDescription = Strings.transactionsSearchClose,
-          onClick = closeSearch,
-        )
-      } else {
-        TransactionsActions(
-          loadedAccount = loadedAccount,
-          canSearch = canSearch,
-          reconcileStart = reconcileStart,
-          onSearch = { isSearching = true },
-          onOpenViewOptions = onOpenViewOptions,
-          onAction = onAction,
-        )
-      }
-    },
-  )
+    targetState = isSearching,
+    transitionSpec = { fadeIn(tween(SEARCH_ANIM_MS)) togetherWith fadeOut(tween(SEARCH_ANIM_MS)) },
+  ) { searching ->
+    TopAppBar(
+      colors = colors.transparentTopAppBarColors(),
+      navigationIcon = {
+        if (isRoot && LocalNavDrawerOpener.current != null) {
+          NavDrawerIconButton()
+        } else {
+          NavBackIconButton { onAction(NavBack) }
+        }
+      },
+      title = {
+        if (searching) {
+          TransactionsSearchField(
+            modifier =
+              Modifier.animateEnterExit(
+                enter = slideInHorizontally(tween(SEARCH_ANIM_MS)) { it / SEARCH_SLIDE_FRACTION },
+                exit = slideOutHorizontally(tween(SEARCH_ANIM_MS)) { it / SEARCH_SLIDE_FRACTION },
+              ),
+            initialQuery = query,
+            onQueryChange = { onAction(Action.SetQuery(it)) },
+          )
+        } else if (loadedAccount is SpecificAccount && accountChoices.size > 1) {
+          AccountSwitcher(
+            title = title,
+            selected = loadedAccount.account.id,
+            choices = accountChoices,
+            onAction = onAction,
+          )
+        } else {
+          Text(text = title, maxLines = 1, overflow = Ellipsis)
+        }
+      },
+      actions = {
+        if (searching) {
+          AktualIconButton(
+            imageVector = AktualIcons.Delete,
+            contentDescription = Strings.transactionsSearchClose,
+            onClick = onCloseSearch,
+          )
+        } else {
+          TransactionsActions(
+            loadedAccount = loadedAccount,
+            canSearch = canSearch,
+            reconcileStart = reconcileStart,
+            onSearch = onSearch,
+            onOpenViewOptions = onOpenViewOptions,
+            onAction = onAction,
+          )
+        }
+      },
+    )
+  }
 }
+
+private const val SEARCH_ANIM_MS = 200
+private const val SEARCH_SLIDE_FRACTION = 8
 
 @Composable
 private fun LoadedAccount.title(): String =
@@ -340,6 +354,7 @@ private fun PreviewTransactionsTitleBarSearching(
       onAction = {},
       onOpenViewOptions = {},
       canSearch = true,
+      isSearching = true,
       query = this,
     )
   }

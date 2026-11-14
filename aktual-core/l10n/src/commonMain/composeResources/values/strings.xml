@@ -2136,6 +2136,10 @@
   <string name="transactions_search_placeholder">Search transactions</string>
   <string name="transactions_search_close">Close search</string>
   <string name="transactions_no_matches">No matching transactions</string>
+  <string name="transactions_filter_add">Add filter</string>
+  <string name="transactions_filter_remove">Remove filter %1$s</string>
+  <string name="transactions_filter_match_all">Match all</string>
+  <string name="transactions_filter_match_any">Match any</string>
   <string name="transactions_edit_account">Edit account</string>
   <string name="transactions_delete_account">Delete account</string>
   <string name="transactions_delete_account_title">Delete account?</string>

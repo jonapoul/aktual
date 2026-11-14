@@ -2,13 +2,11 @@ package aktual.budget.reports.vm
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
-import aktual.budget.db.dao.CategoryDao
-import aktual.budget.db.dao.CategoryGroupDao
-import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.BudgetType
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.core.utils.Calendar
 import androidx.compose.runtime.Immutable
@@ -19,7 +17,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.YearMonth
@@ -47,13 +44,11 @@ data class QueryEditorData(
 @Inject
 internal class QueryEditorDataLoader(
   database: BudgetDatabase,
+  private val entityLoader: ConditionEntitiesLoader,
   private val reports: ReportsDao,
   private val calendar: Calendar,
 ) {
   private val accounts = AccountDao(database)
-  private val categories = CategoryDao(database)
-  private val categoryGroups = CategoryGroupDao(database)
-  private val payees = PayeeDao(database)
   private val budgets = database.budgetsQueries
   private val preferences = database.preferencesQueries
 
@@ -63,14 +58,15 @@ internal class QueryEditorDataLoader(
       val current = calendar.today().yearMonth
       val latest = maxOf(bounds.latest?.yearMonth ?: current, current)
       val earliest = minOf(bounds.earliest?.yearMonth ?: current, latest.minus(MIN_MONTHS, MONTH))
+      val lists = entityLoader.load()
       QueryEditorData(
-        accounts = accounts.getAllActive().entities({ it.id.toString() }, { it.name }),
-        categories = categories.getAllActive().entities({ it.id.toString() }, { it.name }),
-        categoryGroups = categoryGroups.getAllActive().entities({ it.id.toString() }, { it.name }),
-        payees = payees.getAllActive().entities({ it.id.toString() }, { it.name }),
+        accounts = lists.accounts,
+        categories = lists.categories,
+        categoryGroups = lists.categoryGroups,
+        payees = lists.payees,
         currentMonth = current,
         months = YearMonthRange(earliest, latest),
-        names = names(),
+        names = lists.names,
         categoryChoices =
           categoryGroupChoices(
             groups = budgets.budgetCategoryGroups().awaitAsList(),
@@ -83,14 +79,6 @@ internal class QueryEditorDataLoader(
 
   private suspend fun budgetType(): String? =
     preferences.getValue(SyncedPrefKey.Global.BudgetType).awaitAsOneOrNull()?.value_
-
-  private suspend fun names(): ImmutableMap<String, String> = buildMap {
-    accounts.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }
-    categories.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }
-    categoryGroups.nameMap().forEach { (id, name) -> name?.let { put(id.toString(), it) } }
-    payees.getAllActive().forEach { row -> row.name?.let { put(row.id.toString(), it) } }
-  }
-    .toImmutableMap()
 
   private inline fun <T> List<T>.entities(
     id: (T) -> String,

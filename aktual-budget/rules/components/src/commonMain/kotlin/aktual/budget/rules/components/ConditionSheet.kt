@@ -28,7 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 
-// Edits one condition of a query in place. Conditions the editor can't show can only be deleted
+/**
+ * Edits one condition of a query in place. Conditions the editor can't show can only be deleted.
+ *
+ * With [onAdd] set, the condition is a new one that isn't saved yet: there's no delete, and Done
+ * closes the whole sheet before calling [onAdd].
+ */
 @Composable
 fun ConditionSheet(
   condition: Condition,
@@ -37,6 +42,7 @@ fun ConditionSheet(
   onDelete: () -> Unit,
   onDismiss: () -> Unit,
   fields: ImmutableList<Field> = FILTER_FIELDS,
+  onAdd: (() -> Unit)? = null,
 ) =
   HostedSheet(onDismiss = onDismiss) {
     var pickingEntity by rememberSaveable { mutableStateOf(false) }
@@ -51,9 +57,24 @@ fun ConditionSheet(
       )
     } else {
       QuerySheetPage(
-        title = Strings.reportsFormulaQueryEditCondition,
-        close = ::close,
-        onDelete = onDelete,
+        title =
+          if (onAdd == null) {
+            Strings.reportsFormulaQueryEditCondition
+          } else {
+            Strings.reportsFormulaQueryAddCondition
+          },
+        close =
+          if (onAdd == null) {
+            ::close
+          } else {
+            { then ->
+              dismiss {
+                then()
+                onAdd()
+              }
+            }
+          },
+        onDelete = onDelete.takeIf { onAdd == null },
       ) {
         ConditionContent(
           condition = condition,

@@ -23,6 +23,7 @@ import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.toConfig
 import aktual.budget.reports.vm.withMode
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.core.utils.Calendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.viewModelContext
@@ -124,7 +125,13 @@ class NewCustomReportViewModelTest {
           budgetDao = BudgetDao(this, contexts),
           tagsDao = TagsDao(this, contexts),
           chartDataLoader = chartDataLoader(contexts, calendar),
-          queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
+          queryEditorDataLoader =
+            QueryEditorDataLoader(
+              database = this,
+              entityLoader = ConditionEntitiesLoader(this),
+              reports = ReportsDao(this, contexts),
+              calendar = calendar,
+            ),
           viewModelContext = scope.viewModelContext,
         )
       Harness(this, viewModel, customReports, dashboard, scope).action()
