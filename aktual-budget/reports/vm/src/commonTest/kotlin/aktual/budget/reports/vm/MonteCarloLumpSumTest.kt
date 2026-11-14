@@ -5,6 +5,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import assertk.assertions.isZero
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
@@ -14,7 +15,7 @@ class MonteCarloLumpSumTest {
   @Test
   fun `Grosses a lump sum up for its own tax in its year`() {
     val rows = run(lumpSum = McLumpSum(id = "l", age = 61, amount = 1_000_000.0, taxRate = 0.2))
-    assertThat(rows[0].lumpSumWithdrawal).isEqualTo(0)
+    assertThat(rows[0].lumpSumWithdrawal).isZero()
     assertThat(rows[1]).all {
       prop(McRunDetailRow::lumpSumWithdrawal).isEqualTo(1_250_000)
       prop(McRunDetailRow::lumpSumTax).isEqualTo(250_000)
@@ -55,7 +56,7 @@ class MonteCarloLumpSumTest {
     assertThat(result.runDetail.orEmpty()[2]).all {
       prop(McRunDetailRow::lumpSumWithdrawal).isEqualTo(1_000_000)
       prop(McRunDetailRow::lumpSumAmounts).containsExactly(2_000_000L)
-      prop(McRunDetailRow::withdrawal).isEqualTo(0)
+      prop(McRunDetailRow::withdrawal).isZero()
     }
   }
 

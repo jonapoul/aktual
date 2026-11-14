@@ -46,7 +46,9 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -275,7 +277,8 @@ class ReportScaffoldTest {
     assertThat(actions.edited(ANALYSIS))
       .isInstanceOf<BudgetAnalysisReportMeta>()
       .prop(BudgetAnalysisReportMeta::showBalance)
-      .isEqualTo(false)
+      .isNotNull()
+      .isFalse()
   }
 
   @Test
@@ -292,7 +295,8 @@ class ReportScaffoldTest {
     assertThat(actions.edited(CASH_FLOW))
       .isInstanceOf<CashFlowReportMeta>()
       .prop(CashFlowReportMeta::showBalance)
-      .isEqualTo(false)
+      .isNotNull()
+      .isFalse()
   }
 
   @Test

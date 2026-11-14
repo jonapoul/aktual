@@ -3,8 +3,10 @@ package aktual.budget.transactions.vm
 import aktual.budget.db.dao.TransactionRow
 import aktual.budget.model.TransactionId
 import assertk.assertThat
-import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
 
@@ -12,13 +14,15 @@ class TransactionMappingTest {
   @Test
   fun `A recurring schedule's transaction is marked as recurring`() {
     assertThat(row(scheduleRecurring = true).toTransaction(balance = null).scheduleRecurring)
-      .isEqualTo(true)
+      .isNotNull()
+      .isTrue()
   }
 
   @Test
   fun `A one-off schedule's transaction isn't marked as recurring`() {
     assertThat(row(scheduleRecurring = false).toTransaction(balance = null).scheduleRecurring)
-      .isEqualTo(false)
+      .isNotNull()
+      .isFalse()
   }
 
   @Test

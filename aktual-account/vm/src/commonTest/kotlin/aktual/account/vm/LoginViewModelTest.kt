@@ -61,13 +61,13 @@ internal class LoginViewModelTest {
   @Test
   fun `Enter password`() = runLoginTest {
     viewModel.enteredPassword.test {
-      assertThatNextEmission().transform { it.value }.isEqualTo("")
+      assertThatNextEmission().transform { it.value }.isEmpty()
 
       viewModel.onEnterPassword(password = "hello world")
       assertThat(awaitItem().value).isEqualTo("hello world")
 
       viewModel.clearState()
-      assertThat(awaitItem().value).isEqualTo("")
+      assertThat(awaitItem().value).isEmpty()
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()

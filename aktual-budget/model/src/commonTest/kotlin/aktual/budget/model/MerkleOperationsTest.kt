@@ -10,6 +10,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isZero
 import kotlin.test.Test
 import kotlin.time.Instant
 
@@ -104,7 +105,7 @@ class MerkleOperationsTest {
     // Verified against murmurhash npm package v2.0.1, murmurhash.v3("hello") => 613153351
     assertThat(murmurhash3("hello")).isEqualTo(613153351)
     // murmurhash.v3("") => 0
-    assertThat(murmurhash3("")).isEqualTo(0)
+    assertThat(murmurhash3("")).isZero()
     // murmurhash.v3("test") => 3127628307 (as signed: -1167339989 -- but we compare unsigned)
     assertThat(murmurhash3("test").toUInt()).isEqualTo(3127628307u)
   }

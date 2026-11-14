@@ -7,7 +7,6 @@ import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import assertk.assertThat
 import assertk.assertions.hasSize
-import assertk.assertions.isEqualTo
 import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -30,7 +29,7 @@ class GenerateDistinctColorsTest {
   fun `all colors are unique`(colors: Colors = burstValues(LightColors, DarkColors)) {
     for (count in 2..20) {
       val colors = generateDistinctColors(colors, count = count)
-      assertThat(colors.distinct().size).isEqualTo(count)
+      assertThat(colors.distinct()).hasSize(count)
     }
   }
 

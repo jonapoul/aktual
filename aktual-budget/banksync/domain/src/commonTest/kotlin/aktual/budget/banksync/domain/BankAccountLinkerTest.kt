@@ -110,7 +110,7 @@ internal class BankAccountLinkerTest {
 
     assertThat(account(created)).all {
       prop(Accounts::name).isEqualTo("Checking")
-      prop(Accounts::offbudget).isEqualTo(false)
+      prop(Accounts::offbudget).isNotNull().isFalse()
       prop(Accounts::sort_order).isEqualTo(SORT_INCREMENT.toDouble())
       prop(Accounts::account_id).isEqualTo("ACT-1")
       prop(Accounts::account_sync_source).isEqualTo(SimpleFin)
@@ -138,7 +138,7 @@ internal class BankAccountLinkerTest {
 
     assertThat(account(onBudget).sort_order).isEqualTo(36384.0)
     assertThat(account(offBudget)).all {
-      prop(Accounts::offbudget).isEqualTo(true)
+      prop(Accounts::offbudget).isNotNull().isTrue()
       prop(Accounts::sort_order).isEqualTo(SORT_INCREMENT.toDouble())
     }
   }

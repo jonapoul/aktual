@@ -9,7 +9,9 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.containsOnly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -84,7 +86,7 @@ class DbMetadataTest {
     val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
     assertThat(decoded[DbMetadataKey.serializableKey<TransactionsDensity>("feature.density")])
       .isEqualTo(Dense)
-    assertThat(decoded[DbMetadataKey.boolKey("feature.flag")]).isEqualTo(true)
+    assertThat(decoded[DbMetadataKey.boolKey("feature.flag")]).isNotNull().isTrue()
   }
 
   @Test

@@ -31,6 +31,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
@@ -92,7 +93,7 @@ class ReportsDashboardViewModelTest {
         assertThatNextEmissionIsEqualTo(DashboardContent(PAGE, persistentListOf()))
       }
       val report = customReportsQueries.withResult { getById(REPORT).awaitAsOneOrNull() }
-      assertThat(report?.tombstone).isEqualTo(true)
+      assertThat(report?.tombstone).isNotNull().isTrue()
     }
 
   @Test

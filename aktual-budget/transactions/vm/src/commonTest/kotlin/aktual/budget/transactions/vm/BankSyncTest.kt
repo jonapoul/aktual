@@ -21,6 +21,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlin.uuid.Uuid
@@ -157,12 +158,12 @@ internal class BankSyncTest : TransactionsViewModelTestBase() {
       assertThat(awaitItem()).isEqualTo(AccountDeleted)
     }
     assertThat(accounts[BANKED]).isNotNull().all {
-      prop(Accounts::tombstone).isEqualTo(true)
+      prop(Accounts::tombstone).isNotNull().isTrue()
       prop(Accounts::bank).isNull()
       prop(Accounts::account_id).isNull()
       prop(Accounts::account_sync_source).isNull()
     }
-    assertThat(transactions.row(TransactionId("x"))?.tombstone).isEqualTo(true)
+    assertThat(transactions.row(TransactionId("x"))?.tombstone).isNotNull().isTrue()
   }
 
   private companion object {

@@ -29,9 +29,11 @@ import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -60,7 +62,7 @@ internal class BankSyncImporterTest {
       prop(Transactions::date).isEqualTo(LocalDate(2026, 9, 30))
       prop(Transactions::financial_id).isEqualTo("t1")
       prop(Transactions::imported_description).isNotNull().prop(PayeeId::value).isEqualTo("Tesco")
-      prop(Transactions::cleared).isEqualTo(true)
+      prop(Transactions::cleared).isNotNull().isTrue()
       prop(Transactions::sort_order).isEqualTo(NOW.toEpochMilliseconds().toDouble())
     }
     assertThat(row.description?.let { payeeDao.name(it) }).isEqualTo("Tesco")
@@ -138,7 +140,7 @@ internal class BankSyncImporterTest {
   fun `A booked transaction matches the pending one it replaces`() = runBankSyncTest {
     val pending = import(bankTx("-12.34", booked = false, internalTransactionId = "i1")).added
     assertThat(row(pending.single())).all {
-      prop(Transactions::cleared).isEqualTo(false)
+      prop(Transactions::cleared).isNotNull().isFalse()
       prop(Transactions::financial_id).isNull()
     }
 
@@ -147,7 +149,7 @@ internal class BankSyncImporterTest {
     assertThat(result.added).isEmpty()
     assertThat(result.updated).isEqualTo(pending)
     assertThat(row(pending.single())).all {
-      prop(Transactions::cleared).isEqualTo(true)
+      prop(Transactions::cleared).isNotNull().isTrue()
       prop(Transactions::financial_id).isEqualTo("t1")
       // Dates aren't updated by default
       prop(Transactions::date).isEqualTo(LocalDate(2026, 9, 30))
@@ -258,7 +260,7 @@ internal class BankSyncImporterTest {
     for (id in listOf(parent, child, CHILD_2)) {
       assertThat(row(id)).all {
         prop(Transactions::date).isEqualTo(date)
-        prop(Transactions::cleared).isEqualTo(true)
+        prop(Transactions::cleared).isNotNull().isTrue()
       }
     }
   }
@@ -372,7 +374,7 @@ internal class BankSyncImporterTest {
 
     assertThat(result.added).hasSize(3)
     assertThat(row(result.added.first())).all {
-      prop(Transactions::starting_balance_flag).isEqualTo(true)
+      prop(Transactions::starting_balance_flag).isNotNull().isTrue()
       prop(Transactions::amount).isEqualTo(Amount(10_734))
       prop(Transactions::date).isEqualTo(LocalDate(2026, 9, 28))
     }

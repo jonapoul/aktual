@@ -11,6 +11,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isZero
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -51,7 +52,7 @@ class ForecastContributorsTest {
           contributor(RENT, "Rent", -60_000, count = 2),
           contributor(BILL, "Bill", -1_000, count = 1),
         )
-      prop(ForecastContributors::internalTransferCount).isEqualTo(0)
+      prop(ForecastContributors::internalTransferCount).isZero()
     }
     assertThat(data.items.values.last()).isEqualTo(Amount(144_000L))
   }
@@ -98,7 +99,7 @@ class ForecastContributorsTest {
     assertThat(contributors(setOf(CHECKING))).isNotNull().all {
       prop(ForecastContributors::outflows)
         .containsExactly(contributor(TRANSFER, "Savings", -500, count = 1, isTransfer = true))
-      prop(ForecastContributors::internalTransferCount).isEqualTo(0)
+      prop(ForecastContributors::internalTransferCount).isZero()
     }
   }
 

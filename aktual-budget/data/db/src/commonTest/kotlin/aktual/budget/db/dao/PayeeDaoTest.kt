@@ -21,6 +21,7 @@ import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.extracting
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -187,7 +188,7 @@ internal class PayeeDaoTest {
     // then
     assertThat(payees[PayeeId("a")]).isNotNull().all {
       prop(Payees::name).isEqualTo("Argos Extra")
-      prop(Payees::favorite).isEqualTo(true)
+      prop(Payees::favorite).isNotNull().isTrue()
       prop(Payees::learn_categories).isEqualTo(0L)
     }
   }

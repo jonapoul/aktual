@@ -1189,7 +1189,7 @@ class EditTransactionViewModelTest {
 
     viewModel.events.test {
       viewModel.state.test {
-        assertThat(awaitLoaded().saved?.hasReconciledTransfer).isEqualTo(false)
+        assertThat(awaitLoaded().saved?.hasReconciledTransfer).isNotNull().isFalse()
         cancelAndIgnoreRemainingEvents()
       }
       viewModel.delete()
@@ -1640,7 +1640,7 @@ class EditTransactionViewModelTest {
         )
       cancelAndIgnoreRemainingEvents()
     }
-    assertThat(prefs.value[BudgetShowHiddenCategories]).isEqualTo(true)
+    assertThat(prefs.value[BudgetShowHiddenCategories]).isNotNull().isTrue()
   }
 
   @Test

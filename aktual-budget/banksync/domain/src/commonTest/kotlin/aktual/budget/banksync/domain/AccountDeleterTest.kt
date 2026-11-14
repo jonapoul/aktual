@@ -5,7 +5,6 @@ import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
-import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
@@ -22,7 +21,7 @@ internal class AccountDeleterTest {
     val removed = deleter().delete(LINKED)
 
     assertThat(removed).isTrue()
-    assertThat(account(LINKED).tombstone).isEqualTo(true)
+    assertThat(account(LINKED).tombstone).isNotNull().isTrue()
     assertThat(account(LINKED).bank).isNull()
     assertThat(api.removedRequisitions).containsExactly("requisition-1")
   }
@@ -35,7 +34,7 @@ internal class AccountDeleterTest {
     val removed = deleter().delete(LINKED)
 
     assertThat(removed).isFalse()
-    assertThat(account(LINKED).tombstone).isEqualTo(true)
+    assertThat(account(LINKED).tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -47,7 +46,7 @@ internal class AccountDeleterTest {
     val removed = deleter().delete(LINKED)
 
     assertThat(removed).isFalse()
-    assertThat(account(LINKED).tombstone).isEqualTo(true)
+    assertThat(account(LINKED).tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -57,7 +56,7 @@ internal class AccountDeleterTest {
 
     assertFailure { deleter().delete(LINKED) }
 
-    assertThat(account(LINKED).tombstone).isEqualTo(false)
+    assertThat(account(LINKED).tombstone).isNotNull().isFalse()
     assertThat(account(LINKED).bank).isNotNull()
     assertThat(api.removedRequisitions).isEmpty()
   }

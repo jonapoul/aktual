@@ -1,7 +1,7 @@
 package aktual.core.theme
 
 import assertk.assertThat
-import assertk.assertions.isEqualTo
+import assertk.assertions.hasSize
 import kotlin.test.Test
 
 class ColorAttributesTest {
@@ -10,6 +10,6 @@ class ColorAttributesTest {
     // Color is a value class over Long, so its getters compile to methods returning long
     val colorGetters =
       Colors::class.java.methods.count { it.returnType == Long::class.javaPrimitiveType }
-    assertThat(LightColors.attributes().size).isEqualTo(colorGetters)
+    assertThat(LightColors.attributes()).hasSize(colorGetters)
   }
 }

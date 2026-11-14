@@ -10,6 +10,7 @@ import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -88,7 +89,7 @@ class EditAccountViewModelTest {
     scope.advanceUntilIdle()
     assertThat(accountDao[id]?.name).isEqualTo("Current")
     assertThat(accountDao[id]?.account_group_id).isNull()
-    assertThat(writer.notes(id)).isEqualTo("")
+    assertThat(writer.notes(id)).isEmpty()
   }
 
   @Test

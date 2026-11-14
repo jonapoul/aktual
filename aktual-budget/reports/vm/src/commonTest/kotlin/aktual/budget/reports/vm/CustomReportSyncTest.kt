@@ -18,6 +18,7 @@ import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
@@ -108,7 +109,7 @@ class CustomReportSyncTest {
 
     sync.update(ID, Default, Default)
 
-    assertThat(controller.changes).isEqualTo(emptyList())
+    assertThat(controller.changes).isEmpty()
   }
 
   @Test

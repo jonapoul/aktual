@@ -2,13 +2,14 @@ package aktual.budget.reports.vm
 
 import aktual.budget.reports.vm.NumberInput.Valid
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 
 class MonteCarloNumberInputTest {
   @Test
   fun `Values show without trailing zeros`() {
-    assertThat(numberInputText(null)).isEqualTo("")
+    assertThat(numberInputText(null)).isEmpty()
     assertThat(numberInputText(60.0)).isEqualTo("60")
     assertThat(numberInputText(0.065, scale = 100)).isEqualTo("6.5")
     assertThat(numberInputText(0.07, scale = 100)).isEqualTo("7")

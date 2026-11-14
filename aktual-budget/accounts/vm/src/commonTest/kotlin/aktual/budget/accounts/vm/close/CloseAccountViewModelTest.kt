@@ -116,11 +116,11 @@ class CloseAccountViewModelTest {
       prop(CloseAccountEvent.Closed::deleted).isFalse()
       prop(CloseAccountEvent.Closed::unlinkFailed).isFalse()
     }
-    assertThat(accountDao[closing]?.closed).isEqualTo(true)
+    assertThat(accountDao[closing]?.closed).isNotNull().isTrue()
     assertThat(accountDao.properties(target).balance).isEqualTo(Amount(1_234))
 
     writer.undo(event.undo)
-    assertThat(accountDao[closing]?.closed).isEqualTo(false)
+    assertThat(accountDao[closing]?.closed).isNotNull().isFalse()
     assertThat(accountDao.properties(target).balance).isEqualTo(Amount(0))
   }
 
@@ -137,10 +137,10 @@ class CloseAccountViewModelTest {
     }
 
     assertThat(event.deleted).isTrue()
-    assertThat(accountDao[id]?.tombstone).isEqualTo(true)
+    assertThat(accountDao[id]?.tombstone).isNotNull().isTrue()
 
     writer.undo(event.undo)
-    assertThat(accountDao[id]?.tombstone).isEqualTo(false)
+    assertThat(accountDao[id]?.tombstone).isNotNull().isFalse()
   }
 
   @Test
@@ -156,7 +156,7 @@ class CloseAccountViewModelTest {
     }
 
     assertThat(accountDao[id]).isNotNull().all {
-      prop(Accounts::closed).isEqualTo(true)
+      prop(Accounts::closed).isNotNull().isTrue()
       prop(Accounts::account_id).isNull()
     }
   }
@@ -174,7 +174,7 @@ class CloseAccountViewModelTest {
       assertThat(awaitItem()).isEqualTo(CloseAccountEvent.Deleted("Deleting", unlinkFailed = false))
     }
 
-    assertThat(accountDao[id]?.tombstone).isEqualTo(true)
+    assertThat(accountDao[id]?.tombstone).isNotNull().isTrue()
     assertThat(accountDao.properties(other).transactionCount).isEqualTo(2L)
   }
 

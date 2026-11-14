@@ -10,6 +10,7 @@ import aktual.core.theme.Colors
 import androidx.compose.ui.text.AnnotatedString
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -29,7 +30,7 @@ class CustomLineChartsTest {
 
     val series = trendSeries(data, legend)
 
-    assertThat(series.size).isEqualTo(data.groups.size)
+    assertThat(series).hasSize(data.groups.size)
     assertThat(series[0]).containsExactly(0.0, 10.0, 20.0, 30.0, 40.0, 50.0)
     assertThat(series[1]).isEqualTo(List(6) { 0.0 })
   }
@@ -47,7 +48,7 @@ class CustomLineChartsTest {
     val data = previewCustomData(BarLineGraph, Category, Net)
     val bars = intervalBars(data, List(data.intervals.size) { "$it" }, theme)
 
-    assertThat(bars.size).isEqualTo(6)
+    assertThat(bars).hasSize(6)
     assertThat(bars[0].amount).isEqualTo(Amount(1360.0))
     assertThat(bars[5].color).isEqualTo(theme.reportsNumberNegative)
   }

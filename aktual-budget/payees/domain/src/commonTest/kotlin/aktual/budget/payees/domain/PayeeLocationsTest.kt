@@ -15,6 +15,7 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
@@ -94,7 +95,7 @@ class PayeeLocationsTest {
     insertLocation("cafe", CAFE, HERE.north(meters = 10))
     insertLocation("bakery", BAKERY, HERE.north(meters = 10), tombstone = true)
 
-    assertThat(locations().nearby(HERE)).isEqualTo(emptyList())
+    assertThat(locations().nearby(HERE)).isEmpty()
   }
 
   @Test

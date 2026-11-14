@@ -15,8 +15,10 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.flow.first
@@ -58,7 +60,7 @@ internal class ReconcileTest : TransactionsViewModelTestBase() {
 
     // then
     viewModel.reconciling.test { assertThatNextEmissionIsEqualTo(null) }
-    assertThat(transactions.row(TransactionId("a"))?.reconciled).isEqualTo(true)
+    assertThat(transactions.row(TransactionId("a"))?.reconciled).isNotNull().isTrue()
     assertThat(transactions.row(TransactionId("b"))?.reconciled).isNotEqualTo(true)
     assertThat(transactions.row(TransactionId("c"))?.reconciled).isNotEqualTo(true)
     assertThat(accounts[AccountId("a")]?.last_reconciled).isNotNull()
@@ -123,7 +125,7 @@ internal class ReconcileTest : TransactionsViewModelTestBase() {
 
     // then
     for (id in listOf("p", "p1", "p2")) {
-      assertThat(transactions.row(TransactionId(id))?.cleared).isEqualTo(false)
+      assertThat(transactions.row(TransactionId(id))?.cleared).isNotNull().isFalse()
     }
   }
 
@@ -148,8 +150,8 @@ internal class ReconcileTest : TransactionsViewModelTestBase() {
     awaitUntil { transactions.row(TransactionId("p1"))?.reconciled == false }
 
     // then
-    assertThat(transactions.row(TransactionId("p"))?.reconciled).isEqualTo(false)
-    assertThat(transactions.row(TransactionId("p1"))?.reconciled).isEqualTo(false)
+    assertThat(transactions.row(TransactionId("p"))?.reconciled).isNotNull().isFalse()
+    assertThat(transactions.row(TransactionId("p1"))?.reconciled).isNotNull().isFalse()
   }
 
   @Test

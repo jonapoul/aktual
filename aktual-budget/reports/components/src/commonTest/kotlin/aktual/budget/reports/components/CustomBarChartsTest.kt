@@ -7,6 +7,7 @@ import androidx.compose.ui.text.AnnotatedString
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
@@ -70,7 +71,7 @@ class CustomBarChartsTest {
     val legend = customBars(data, data.names(), theme)
     val stacks = customStacks(data, legend)
 
-    assertThat(stacks.size).isEqualTo(6)
+    assertThat(stacks).hasSize(6)
     val march = stacks[2]
     assertThat(march.map { it.name }).isEqualTo(legend.map { it.name })
     assertThat(march.map { it.color }).isEqualTo(legend.map { it.color })
@@ -108,7 +109,7 @@ class CustomBarChartsTest {
     val stack = (1..MAX_MARKER_ROWS + 2).map { bar("G$it", it) }
     val lines = markerText(stack).lines()
 
-    assertThat(lines.size).isEqualTo(MAX_MARKER_ROWS + 3)
+    assertThat(lines).hasSize(MAX_MARKER_ROWS + 3)
     assertThat(lines[MAX_MARKER_ROWS]).isEqualTo("G$MAX_MARKER_ROWS: $MAX_MARKER_ROWS.00")
     assertThat(lines[MAX_MARKER_ROWS + 1]).isEqualTo("…")
     assertThat(lines.last()).isEqualTo("Total: 78.00")

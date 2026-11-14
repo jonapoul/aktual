@@ -26,8 +26,12 @@ import aktual.test.inMemoryDriverFactory
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import kotlin.test.Test
@@ -43,7 +47,7 @@ internal class AccountWriterTest {
 
     assertThat(writer.close(id).result).isEqualTo(Deleted)
 
-    assertThat(accountDao[id]?.tombstone).isEqualTo(true)
+    assertThat(accountDao[id]?.tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -54,7 +58,7 @@ internal class AccountWriterTest {
 
     assertThat(writer.close(id).result).isEqualTo(Closed)
 
-    assertThat(accountDao[id]?.closed).isEqualTo(true)
+    assertThat(accountDao[id]?.closed).isNotNull().isTrue()
     assertThat(accountDao.properties(id).transactionCount).isEqualTo(2L)
   }
 
@@ -66,7 +70,7 @@ internal class AccountWriterTest {
 
     assertThat(writer.close(closing, transferTo = target).result).isEqualTo(Closed)
 
-    assertThat(accountDao[closing]?.closed).isEqualTo(true)
+    assertThat(accountDao[closing]?.closed).isNotNull().isTrue()
     assertThat(accountDao.properties(closing).balance).isEqualTo(Zero)
     assertThat(accountDao.properties(target).balance).isEqualTo(Amount(1_234))
   }
@@ -77,7 +81,7 @@ internal class AccountWriterTest {
     addTransaction(id, Amount(100))
 
     assertFailure { writer.close(id) }.isInstanceOf<IllegalArgumentException>()
-    assertThat(accountDao[id]?.closed).isEqualTo(false)
+    assertThat(accountDao[id]?.closed).isNotNull().isFalse()
   }
 
   @Test
@@ -96,7 +100,7 @@ internal class AccountWriterTest {
     val calls = syncCalls.size
 
     assertThat(writer.close(id).result).isEqualTo(Unchanged)
-    assertThat(syncCalls.size).isEqualTo(calls)
+    assertThat(syncCalls).hasSize(calls)
   }
 
   @Test
@@ -109,7 +113,7 @@ internal class AccountWriterTest {
       val outcome = writer.close(closing, transferTo = target)
       writer.undo(outcome.undo)
 
-      assertThat(accountDao[closing]?.closed).isEqualTo(false)
+      assertThat(accountDao[closing]?.closed).isNotNull().isFalse()
       assertThat(accountDao.properties(closing)).isEqualTo(AccountProperties(Amount(1_234), 1L))
       assertThat(accountDao.properties(target)).isEqualTo(AccountProperties(Zero, 0L))
     }
@@ -120,7 +124,7 @@ internal class AccountWriterTest {
 
     writer.undo(writer.close(id).undo)
 
-    assertThat(accountDao[id]?.tombstone).isEqualTo(false)
+    assertThat(accountDao[id]?.tombstone).isNotNull().isFalse()
   }
 
   @Test
@@ -131,7 +135,7 @@ internal class AccountWriterTest {
 
     writer.reopen(id)
 
-    assertThat(accountDao[id]?.closed).isEqualTo(false)
+    assertThat(accountDao[id]?.closed).isNotNull().isFalse()
   }
 
   @Test
@@ -142,7 +146,7 @@ internal class AccountWriterTest {
 
     writer.undo(writer.reopen(id))
 
-    assertThat(accountDao[id]?.closed).isEqualTo(true)
+    assertThat(accountDao[id]?.closed).isNotNull().isTrue()
   }
 
   @Test
@@ -172,7 +176,7 @@ internal class AccountWriterTest {
 
     val undo = writer.edit(id, name = To("Joint"), notes = To("Shared"), group = To(group))
 
-    assertThat(syncCalls.size).isEqualTo(calls + 1)
+    assertThat(syncCalls).hasSize(calls + 1)
     assertThat(accountDao[id]?.name).isEqualTo("Joint")
     assertThat(accountDao[id]?.account_group_id).isEqualTo(group)
     assertThat(writer.notes(id)).isEqualTo("Shared")
@@ -191,7 +195,7 @@ internal class AccountWriterTest {
 
     writer.undo(writer.edit(id))
 
-    assertThat(syncCalls.size).isEqualTo(calls)
+    assertThat(syncCalls).hasSize(calls)
   }
 
   @Test
@@ -309,7 +313,7 @@ internal class AccountWriterTest {
 
     writer.deleteGroup(group)
 
-    assertThat(groupDao.getAllActive()).isEqualTo(emptyList())
+    assertThat(groupDao.getAllActive()).isEmpty()
     assertThat(accountDao[a]?.account_group_id).isNull()
     assertThat(accountDao[b]?.account_group_id).isNull()
   }
@@ -357,7 +361,7 @@ internal class AccountWriterTest {
 
     writer.createGroup("Everyday")
 
-    assertThat(syncCalls.size).isEqualTo(calls + 1)
+    assertThat(syncCalls).hasSize(calls + 1)
     assertThat(syncCalls.last().all { it.dataset == "account_groups" }).isTrue()
   }
 

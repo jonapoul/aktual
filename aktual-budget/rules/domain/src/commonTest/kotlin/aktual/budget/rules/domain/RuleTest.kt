@@ -11,6 +11,7 @@ import aktual.budget.model.ScheduleId
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
@@ -244,7 +245,7 @@ class RuleTest {
   @Test
   fun `A transaction's tags come from its notes`() {
     assertThat(tx(notes = "Dinner #Food ##escaped #travel").tags).isEqualTo(setOf("food", "travel"))
-    assertThat(tx(notes = null).tags).isEqualTo(emptySet())
+    assertThat(tx(notes = null).tags).isEmpty()
   }
 
   @Test
@@ -281,6 +282,6 @@ class RuleTest {
       rule("r", listOf(cond(Field.Amount, Is, 1)), listOf(set(Notes, "n", splitIndex = 0)))
         .exec(tx(amount = 1))
     assertThat(result.isParent).isFalse()
-    assertThat(result.subtransactions).isEqualTo(emptyList())
+    assertThat(result.subtransactions).isEmpty()
   }
 }

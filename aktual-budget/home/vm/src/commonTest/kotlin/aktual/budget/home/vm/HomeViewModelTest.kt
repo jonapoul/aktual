@@ -29,7 +29,9 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
+import assertk.assertions.isZero
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -182,7 +184,7 @@ class HomeViewModelTest {
     val viewModel = createHomeViewModel(scope, CALENDAR)
 
     viewModel.state.test {
-      assertThat(awaitLoaded().recent).isEqualTo(null)
+      assertThat(awaitLoaded().recent).isNull()
     }
   }
 
@@ -215,7 +217,7 @@ class HomeViewModelTest {
       assertThat(awaitUpcomingLoaded()).all {
         hasNames("Missed", "Due", "Upcoming")
         prop(UpcomingCardState.Loaded::today).isEqualTo(TODAY)
-        prop(UpcomingCardState.Loaded::hiddenCount).isEqualTo(0)
+        prop(UpcomingCardState.Loaded::hiddenCount).isZero()
         prop(UpcomingCardState.Loaded::total).isEqualTo(Amount(-3_000L))
       }
     }

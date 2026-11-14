@@ -151,7 +151,7 @@ class CreateAccountViewModelTest {
     val viewModel = createViewModel()
 
     viewModel.state.test {
-      assertThat(awaitItem().groups).isEqualTo(persistentListOf())
+      assertThat(awaitItem().groups).isEmpty()
       assertThat(awaitItem().groups)
         .isEqualTo(persistentListOf(AccountGroupItem(everyday, "Everyday")))
 

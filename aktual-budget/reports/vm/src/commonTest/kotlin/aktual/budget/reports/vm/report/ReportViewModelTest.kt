@@ -150,7 +150,7 @@ class ReportViewModelTest {
             prop(BudgetAnalysisReportMeta::timeFrame)
               .isEqualTo(TimeFrame(YearMonth(2025, 8), YearMonth(2026, 1), SlidingWindow))
             prop(BudgetAnalysisReportMeta::graphType).isEqualTo(Bar)
-            prop(BudgetAnalysisReportMeta::showBalance).isEqualTo(true)
+            prop(BudgetAnalysisReportMeta::showBalance).isNotNull().isTrue()
           }
         }
       }
