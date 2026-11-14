@@ -3,6 +3,7 @@ package aktual.budget.rules.domain
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Categories
 import aktual.budget.db.DbJson
+import aktual.budget.db.RuleJson
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryLearningDao
@@ -244,8 +245,9 @@ class CategoryLearnerTest {
           fun json(column: String) =
             (changes.firstOrNull { it.column == column }?.value as? MessageValue.String)?.value
           SentRule(
-            conditions = json("conditions")?.let { DbJson.decodeFromString(it) },
-            actions = json("actions")?.let { DbJson.decodeFromString(it) },
+            conditions =
+              json("conditions")?.let { DbJson.decodeFromString(RuleJson.conditions, it) },
+            actions = json("actions")?.let { DbJson.decodeFromString(RuleJson.actions, it) },
           )
         }
 

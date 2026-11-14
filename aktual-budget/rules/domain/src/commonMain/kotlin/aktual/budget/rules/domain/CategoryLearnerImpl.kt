@@ -1,6 +1,7 @@
 package aktual.budget.rules.domain
 
 import aktual.budget.db.DbJson
+import aktual.budget.db.RuleJson
 import aktual.budget.db.dao.CategoryLearningDao
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.LearningTransaction
@@ -85,7 +86,12 @@ internal constructor(
           .filter { it.actions.single().value?.contentOrNull != category.value }
           .map { rule ->
             val action = rule.actions.single().copy(value = JsonPrimitive(category.value))
-            localChange(RULES, rule.id.value, "actions", DbJson.encodeToString(listOf(action)))
+            localChange(
+              RULES,
+              rule.id.value,
+              "actions",
+              DbJson.encodeToString(RuleJson.actions, listOf(action)),
+            )
           }
       rules.any { it.isOneOfSetter(payee, category) } -> emptyList()
       else -> newRule(payee, category)
@@ -111,8 +117,13 @@ internal constructor(
     return listOf(
       localChange(RULES, row, "id", row),
       localChange(RULES, row, "stage", null as String?),
-      localChange(RULES, row, "conditions", DbJson.encodeToString(listOf(condition))),
-      localChange(RULES, row, "actions", DbJson.encodeToString(listOf(action))),
+      localChange(
+        RULES,
+        row,
+        "conditions",
+        DbJson.encodeToString(RuleJson.conditions, listOf(condition)),
+      ),
+      localChange(RULES, row, "actions", DbJson.encodeToString(RuleJson.actions, listOf(action))),
       localChange(RULES, row, "tombstone", false),
       localChange(RULES, row, "conditions_op", ConditionOp.And),
     )
