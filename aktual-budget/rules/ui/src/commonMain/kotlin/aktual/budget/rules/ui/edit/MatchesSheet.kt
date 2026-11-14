@@ -7,8 +7,6 @@ import aktual.budget.rules.components.label
 import aktual.budget.rules.vm.edit.MatchChange
 import aktual.budget.rules.vm.edit.MatchRow
 import aktual.budget.rules.vm.edit.RuleMatchesState
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.ViewShow
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -16,6 +14,7 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
+import aktual.core.ui.Chip
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
@@ -25,15 +24,18 @@ import aktual.core.ui.checkbox
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,59 +53,92 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDate
 
-internal fun LazyListScope.matchesNode(
+// The header shows while the sheet is collapsed, so measure it with [headerModifier] for the peek
+@Composable
+internal fun MatchesSheetContent(
   state: RuleMatchesState,
   isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
-) {
-  item(key = "matches") {
-    TimelineRow(
-      modifier = Modifier.animateItem(),
-      hasRail = false,
-      node = { IconNode(AktualIcons.ViewShow, colors.pillBackground, colors.pillText) },
-    ) {
-      NodeHeading(Strings.editRuleMatches) {
-        Spacer(Modifier.weight(1f))
-        if (state is Loaded && state.changing > 0) {
-          AktualButton(
-            text =
-              if (state.selected.size == state.changing) {
-                Strings.editRuleMatchesSelectNone
-              } else {
-                Strings.editRuleMatchesSelectAll
-              },
-            kind = Normal,
-            isEnabled = isEnabled,
-            onClick = { onAction(ToggleAllMatches) },
-          )
-          AktualButton(
-            text = Strings.editRuleMatchesApply(state.selected.size),
-            kind = Tonal,
-            isEnabled = isEnabled && state.selected.isNotEmpty(),
-            isLoading = state.isApplying,
-            onClick = { onAction(ApplyActions) },
+  modifier: Modifier = Modifier,
+  headerModifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier.fillMaxWidth().navigationBarsPadding()) {
+    Column(modifier = headerModifier.fillMaxWidth()) {
+      BottomSheetDefaults.DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+      MatchesHeader(state, isEnabled, onAction)
+    }
+    if (state is Loaded) {
+      LazyColumn(
+        contentPadding =
+          PaddingValues(start = Dimens.Huge, end = Dimens.Huge, bottom = Dimens.Huge),
+        verticalArrangement = Arrangement.spacedBy(Dimens.Large),
+      ) {
+        items(items = state.rows, key = { row -> row.id.value }) { row ->
+          MatchCard(
+            modifier = Modifier.animateItem(),
+            row = row,
+            isSelected = row.id in state.selected,
+            onToggle = { onAction(ToggleMatch(row.id)) }.takeIf { isEnabled && row.isChanged },
           )
         }
       }
-      MatchesSummary(state)
     }
   }
 
-  if (state is Loaded) {
-    items(items = state.rows, key = { row -> "match-${row.id.value}" }) { row ->
-      TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
-        MatchCard(
-          row = row,
-          isSelected = row.id in state.selected,
-          onToggle = { onAction(ToggleMatch(row.id)) }.takeIf { isEnabled && row.isChanged },
+@Composable
+private fun MatchesHeader(
+  state: RuleMatchesState,
+  isEnabled: Boolean,
+  onAction: OnAction<EditRuleAction>,
+  modifier: Modifier = Modifier,
+) =
+  Column(
+    modifier =
+      modifier.fillMaxWidth().padding(start = Dimens.Huge, end = Dimens.Huge, bottom = Dimens.Huge),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Box(modifier = Modifier.weight(1f)) { MatchesTitle(state) }
+      if (state is Loaded && state.changing > 0) {
+        AktualButton(
+          text = Strings.editRuleMatchesApply(state.selected.size),
+          kind = Tonal,
+          isEnabled = isEnabled && state.selected.isNotEmpty(),
+          isLoading = state.isApplying,
+          onClick = { onAction(ApplyActions) },
+        )
+      }
+    }
+
+    if (state is Loaded && state.changing > 0) {
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        SubduedText(
+          modifier = Modifier.weight(1f),
+          text = Plurals.editRuleMatchesChanging(state.changing, state.changing),
+        )
+        Chip(
+          text =
+            if (state.selected.size == state.changing) {
+              Strings.editRuleMatchesSelectNone
+            } else {
+              Strings.editRuleMatchesSelectAll
+            },
+          size = Small,
+          textStyle = typography.bodySmall,
+          onClick = { onAction(ToggleAllMatches) }.takeIf { isEnabled },
         )
       }
     }
   }
-}
 
 @Composable
-private fun MatchesSummary(state: RuleMatchesState) =
+private fun MatchesTitle(state: RuleMatchesState) =
   when (state) {
     Loading -> {
       val shimmer = rememberShimmer(View)
@@ -115,17 +150,11 @@ private fun MatchesSummary(state: RuleMatchesState) =
       if (state.total == 0) {
         SubduedText(Strings.editRuleMatchesNone)
       } else {
-        Column(verticalArrangement = Arrangement.spacedBy(Dimens.Small)) {
-          Text(
-            text = Plurals.editRuleMatchesCount(state.total, state.total),
-            style = typography.bodyLarge,
-            color = colors.pageText,
-          )
-          SubduedText(
-            modifier = Modifier.weight(1f),
-            text = Plurals.editRuleMatchesChanging(state.changing, state.changing),
-          )
-        }
+        Text(
+          text = Plurals.editRuleMatchesCount(state.total, state.total),
+          style = typography.titleMedium,
+          color = colors.pageText,
+        )
       }
   }
 
@@ -217,48 +246,48 @@ private const val LOADING_WIDTH = 0.5f
 
 @Preview
 @Composable
-private fun PreviewMatchesNode(@PreviewParameter(ColorParameters::class) colors: Colors) =
+private fun PreviewMatchesSheet(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    LazyColumn {
-      matchesNode(
-        state =
-          RuleMatchesState.Loaded(
-            total = 14,
-            changing = 9,
-            selected = persistentSetOf(TransactionId("a")),
-            rows =
-              persistentListOf(
-                MatchRow(
-                  id = TransactionId("a"),
-                  date = LocalDate(2026, 3, 4),
-                  amount = Amount(-2199),
-                  payee = "Amazon",
-                  changes =
-                    persistentListOf(
-                      MatchChange.Named(Category, null, "Shopping"),
-                      MatchChange.Named(Notes, null, "online order"),
-                    ),
-                ),
-                MatchRow(
-                  id = TransactionId("b"),
-                  date = LocalDate(2026, 3, 1),
-                  amount = Amount(-849),
-                  payee = "Amazon",
-                  changes = persistentListOf(),
-                ),
+    MatchesSheetContent(
+      state =
+        RuleMatchesState.Loaded(
+          total = 14,
+          changing = 9,
+          selected = persistentSetOf(TransactionId("a")),
+          rows =
+            persistentListOf(
+              MatchRow(
+                id = TransactionId("a"),
+                date = LocalDate(2026, 3, 4),
+                amount = Amount(-2199),
+                payee = "Amazon",
+                changes =
+                  persistentListOf(
+                    MatchChange.Named(Category, null, "Shopping"),
+                    MatchChange.Named(Notes, null, "online order"),
+                  ),
               ),
-          ),
-        isEnabled = true,
-        onAction = {},
-      )
-    }
+              MatchRow(
+                id = TransactionId("b"),
+                date = LocalDate(2026, 3, 1),
+                amount = Amount(-849),
+                payee = "Amazon",
+                changes = persistentListOf(),
+              ),
+            ),
+        ),
+      isEnabled = true,
+      onAction = {},
+    )
   }
 
 @Preview
 @Composable
-private fun PreviewEmptyMatchesNode(@PreviewParameter(ColorParameters::class) colors: Colors) =
+private fun PreviewEmptyMatchesSheet(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    LazyColumn {
-      matchesNode(state = RuleMatchesState.Loaded(0, 0, persistentListOf()), isEnabled = true) {}
-    }
+    MatchesSheetContent(
+      state = RuleMatchesState.Loaded(0, 0, persistentListOf()),
+      isEnabled = true,
+      onAction = {},
+    )
   }
