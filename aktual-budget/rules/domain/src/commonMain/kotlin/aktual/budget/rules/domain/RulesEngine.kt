@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
@@ -56,14 +57,7 @@ class RulesEngine(
     // would otherwise match. See CompiledRule.isCandidate
     val rules = compiled.filter { it.isCandidate(transaction) }
 
-    var subject =
-      RuleSubject(
-        transaction = transaction,
-        payeeName = transaction.payee?.let(context::payeeName),
-        categoryGroup = transaction.category?.let(context::categoryGroup),
-        // Looked up once: a rule changing the account doesn't change what onBudget sees
-        account = context.account(transaction.account),
-      )
+    var subject = transaction.toSubject(context)
     var lastCategory = transaction.category
 
     // A transaction from a schedule always runs that schedule's rule, and never other schedules'
@@ -259,6 +253,37 @@ internal class CompiledRule(
       )
   }
 }
+
+/**
+ * A draft rule's actions, run without checking its conditions, as upstream's `applyActions` does
+ * for the rule editor's "Apply actions"
+ */
+class RuleActions private constructor(private val rule: CompiledRule) {
+  fun run(transaction: RuleTransaction, context: RuleContext): RuleTransaction =
+    rule.execActions(transaction.toSubject(context), context).resolvePayee(context).transaction
+
+  companion object {
+    // Null if any action is invalid, since upstream won't apply any of them then
+    fun compile(id: RuleId, actions: List<RuleAction>): RuleActions? =
+      try {
+        RuleActions(
+          CompiledRule.compile(TransactionRule(id, emptyList(), actions), idMappings = emptyMap()),
+        )
+      } catch (e: RuleValidationException) {
+        log.w(e) { "Can't run the actions of $id" }
+        null
+      }
+  }
+}
+
+private fun RuleTransaction.toSubject(context: RuleContext) =
+  RuleSubject(
+    transaction = this,
+    payeeName = payee?.let(context::payeeName),
+    categoryGroup = category?.let(context::categoryGroup),
+    // Looked up once: a rule changing the account doesn't change what onBudget sees
+    account = context.account(account),
+  )
 
 // resolvePayeeNameForRules in packages/loot-core/src/server/transactions/transaction-rules.ts
 internal fun RuleSubject.resolvePayee(context: RuleContext): RuleSubject {

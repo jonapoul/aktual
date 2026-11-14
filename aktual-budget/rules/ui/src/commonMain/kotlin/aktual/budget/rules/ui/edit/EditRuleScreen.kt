@@ -14,13 +14,18 @@ import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
+import aktual.budget.rules.vm.edit.RuleMatchesState
 import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.ViewShow
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.edit_rule_matches_applied
+import aktual.core.l10n.edit_rule_matches_apply_failed
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
@@ -34,6 +39,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HostedSheet
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
@@ -47,6 +53,7 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
+import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
@@ -62,6 +69,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -84,7 +93,11 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.JsonPrimitive
+import org.jetbrains.compose.resources.getPluralString
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun EditRuleScreen(
@@ -96,11 +109,18 @@ internal fun EditRuleScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         DeletedRule -> back()
+        is AppliedActions ->
+          snackbarHostState.showSnackbar(
+            getPluralString(Res.plurals.edit_rule_matches_applied, event.count, event.count),
+          )
+        ApplyFailed ->
+          snackbarHostState.showErrorSnackbar(getString(Res.string.edit_rule_matches_apply_failed))
       }
     }
   }
@@ -111,24 +131,33 @@ internal fun EditRuleScreen(
       mode = if (id == null) Create else Edit,
       state = state,
       conditionEntities = conditionEntities,
+      matches = viewModel.matches,
+      snackbarHostState = snackbarHostState,
       onAction = { action ->
-        when (action) {
-          NavBack -> back()
-          Delete -> viewModel.delete()
-          Save -> viewModel.save()
-          is SetStage -> viewModel.setStage(action.value)
-          is SetConditionsOp -> viewModel.setConditionsOp(action.value)
-          is SetCondition -> viewModel.setCondition(action.index, action.condition)
-          AddCondition -> viewModel.addCondition()
-          is RemoveCondition -> viewModel.removeCondition(action.index)
-          is SetAction -> viewModel.setAction(action.index, action.action)
-          is AddAction -> viewModel.addAction(action.splitIndex)
-          is RemoveAction -> viewModel.removeAction(action.index)
-          AddSplit -> viewModel.addSplit()
-          is RemoveSplit -> viewModel.removeSplit(action.splitIndex)
-        }
+        if (action == NavBack) back() else viewModel.handle(action)
       },
     )
+  }
+}
+
+private fun EditRuleViewModel.handle(action: EditRuleAction) {
+  when (action) {
+    NavBack -> Unit
+    Delete -> delete()
+    Save -> save()
+    is SetStage -> setStage(action.value)
+    is SetConditionsOp -> setConditionsOp(action.value)
+    is SetCondition -> setCondition(action.index, action.condition)
+    AddCondition -> addCondition()
+    is RemoveCondition -> removeCondition(action.index)
+    is SetAction -> setAction(action.index, action.action)
+    is AddAction -> addAction(action.splitIndex)
+    is RemoveAction -> removeAction(action.index)
+    AddSplit -> addSplit()
+    is RemoveSplit -> removeSplit(action.splitIndex)
+    ApplyActions -> applyActions()
+    is ToggleMatch -> toggleMatch(action.id)
+    ToggleAllMatches -> toggleAllMatches()
   }
 }
 
@@ -148,14 +177,18 @@ private fun EditRuleScaffold(
   state: EditRuleState,
   mode: Mode,
   conditionEntities: ConditionEntities?,
+  matches: StateFlow<RuleMatchesState>,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
+  var showMatches by rememberSaveable { mutableStateOf(false) }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
+    snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
@@ -165,9 +198,12 @@ private fun EditRuleScaffold(
           Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
         },
         actions = {
-          if (mode == Edit) {
-            MoreMenu(isEnabled = state is Success && !state.isWorking, onAction = onAction)
-          }
+          MoreMenu(
+            mode = mode,
+            isEnabled = state is Success && !state.isWorking,
+            onShowMatches = { showMatches = true },
+            onAction = onAction,
+          )
         },
       )
     },
@@ -227,10 +263,23 @@ private fun EditRuleScaffold(
       }
     }
   }
+
+  if (showMatches && state is Success) {
+    HostedSheet(onDismiss = { showMatches = false }) {
+      // Collected only while shown, so the matches aren't searched for while the sheet is closed
+      val matchesState by matches.collectAsStateWithLifecycle()
+      MatchesSheetContent(state = matchesState, isEnabled = !state.isWorking, onAction = onAction)
+    }
+  }
 }
 
 @Composable
-private fun MoreMenu(isEnabled: Boolean, onAction: OnAction<EditRuleAction>) = Box {
+private fun MoreMenu(
+  mode: Mode,
+  isEnabled: Boolean,
+  onShowMatches: () -> Unit,
+  onAction: OnAction<EditRuleAction>,
+) = Box {
   var showMenu by remember { mutableStateOf(false) }
 
   AktualIconButton(
@@ -241,18 +290,30 @@ private fun MoreMenu(isEnabled: Boolean, onAction: OnAction<EditRuleAction>) = B
   )
 
   AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-    val string = Strings.editRuleActionDelete
-    val red = colors.errorText
+    val matches = Strings.editRuleMatchesShow
     AktualDropdownMenuItem(
-      text = { Text(string, color = red) },
+      text = { Text(matches) },
       onClick = {
         showMenu = false
-        onAction(Delete)
+        onShowMatches()
       },
-      leadingIcon = {
-        Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
-      },
+      leadingIcon = { Icon(imageVector = AktualIcons.ViewShow, contentDescription = matches) },
     )
+
+    if (mode == Edit) {
+      val string = Strings.editRuleActionDelete
+      val red = colors.errorText
+      AktualDropdownMenuItem(
+        text = { Text(string, color = red) },
+        onClick = {
+          showMenu = false
+          onAction(Delete)
+        },
+        leadingIcon = {
+          Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
+        },
+      )
+    }
   }
 }
 
@@ -397,6 +458,7 @@ private fun PreviewEditRuleScaffold(
       state = state,
       mode = mode,
       conditionEntities = PREVIEW_ENTITIES,
+      matches = MutableStateFlow(RuleMatchesState.Loaded(0, 0, persistentListOf())),
       onAction = {},
     )
   }

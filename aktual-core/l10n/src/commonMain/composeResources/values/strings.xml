@@ -1913,6 +1913,20 @@
   <string name="edit_rule_split_remainder">Remainder</string>
   <string name="edit_rule_split_formula">Formula</string>
   <string name="edit_rule_split_read_only">This split amount can't be edited in Aktual yet</string>
+  <string name="edit_rule_matches_show">Show Matches</string>
+  <string name="edit_rule_matches_none">No transactions match these conditions</string>
+  <string name="edit_rule_matches_invalid">Fix the actions to see what they would change</string>
+  <string name="edit_rule_matches_failed">Couldn't load the matching transactions</string>
+  <string name="edit_rule_matches_apply">Apply to %1$d</string>
+  <string name="edit_rule_matches_select_all">Tick all</string>
+  <string name="edit_rule_matches_select_none">Untick all</string>
+  <string name="edit_rule_matches_apply_failed">Couldn't apply the actions</string>
+  <string name="edit_rule_matches_no_changes">No changes</string>
+  <string name="edit_rule_matches_change">%1$s: %2$s to %3$s</string>
+  <string name="edit_rule_matches_empty_value">None</string>
+  <string name="edit_rule_matches_deleted">Deleted</string>
+  <string name="edit_rule_matches_cleared">Marked cleared</string>
+  <string name="edit_rule_matches_uncleared">Marked uncleared</string>
 
 
   <!-- budget-schedules -->

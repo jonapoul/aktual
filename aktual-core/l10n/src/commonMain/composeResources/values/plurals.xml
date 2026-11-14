@@ -110,6 +110,22 @@
     <item quantity="one">%1$d rule</item>
     <item quantity="other">%1$d rules</item>
   </plurals>
+  <plurals name="edit_rule_matches_count">
+    <item quantity="one">Matches %1$d transaction</item>
+    <item quantity="other">Matches %1$d transactions</item>
+  </plurals>
+  <plurals name="edit_rule_matches_changing">
+    <item quantity="one">%1$d will change</item>
+    <item quantity="other">%1$d will change</item>
+  </plurals>
+  <plurals name="edit_rule_matches_split">
+    <item quantity="one">Split into %1$d part</item>
+    <item quantity="other">Split into %1$d parts</item>
+  </plurals>
+  <plurals name="edit_rule_matches_applied">
+    <item quantity="one">Updated %1$d transaction</item>
+    <item quantity="other">Updated %1$d transactions</item>
+  </plurals>
 
   <!-- budget-reports -->
   <plurals name="reports_balance_forecast_next_months">

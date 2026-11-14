@@ -2,8 +2,13 @@ package aktual.budget.rules.vm.edit
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.Rules
+import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.RULES
+import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType
 import aktual.budget.model.Field
@@ -13,6 +18,7 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.rules.domain.ACTION_OPS
 import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.rules.domain.withField
 import aktual.budget.rules.domain.withOp
 import aktual.budget.rules.domain.withSplitMethod
@@ -20,6 +26,8 @@ import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
+import aktual.budget.transactions.domain.RuleMatcher
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -36,6 +44,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
+import kotlin.time.Clock
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -356,6 +365,28 @@ class EditRuleViewModelTest {
     assertThat(sync.changes.filter { it.dataset == RULES }).isNotEmpty()
   }
 
+  @Test
+  fun `Matches load once the conditions settle`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope)
+
+    viewModel.matches.test {
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loading)
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loaded(0, 0, persistentListOf()))
+    }
+  }
+
+  @Test
+  fun `Matches can't show invalid actions`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope)
+
+    viewModel.matches.test {
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loading)
+      skipItems(1)
+      viewModel.setAction(0, CATEGORY.copy(field = Account, value = JsonPrimitive("")))
+      assertThat(awaitItem()).isEqualTo(Invalid)
+    }
+  }
+
   private suspend fun ReceiveTurbine<EditRuleState>.awaitLoaded(): EditRuleState {
     var state = awaitItem()
     while (state == Loading) state = awaitItem()
@@ -391,6 +422,27 @@ class EditRuleViewModelTest {
       uuidGenerator = { "id-${nextId++}" },
       rulesDao = RulesDao(this),
       syncController = sync,
+      ruleMatcher =
+        RuleMatcher(
+          transactionDao = TransactionDao(this),
+          accountDao = AccountDao(this),
+          categoryDao = CategoryDao(this),
+          payeeDao = PayeeDao(this),
+          rulesLoader =
+            TransactionRulesLoader(RulesDao(this), RuleContextDao(this)) { "id-${nextId++}" },
+          writer =
+            TransactionWriter(
+              syncController = sync,
+              accountDao = AccountDao(this),
+              categoryDao = CategoryDao(this),
+              payeeDao = PayeeDao(this),
+              transactionDao = TransactionDao(this),
+              categoryLearner = {},
+              uuidGenerator = { "id-${nextId++}" },
+              clock = Clock.System,
+            ),
+          uuidGenerator = { "id-${nextId++}" },
+        ),
       nameFetcher = FakeNameFetcher,
       conditionEntitiesLoader = ConditionEntitiesLoader(this),
       viewModelContext = scope.viewModelContext,
