@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,17 +57,22 @@ internal fun RuleSplitSheet(
   onAction: OnAction<EditRuleAction>,
   onDismiss: () -> Unit,
 ) {
+  // A focused field commits as the sheet goes, which would land on whatever moved into its index
+  var isRemoved by remember { mutableStateOf(false) }
   val amount =
     remember(actions, splitIndex) { actions.splits().getOrNull(splitIndex)?.amount } ?: return
   HostedSheet(onDismiss = onDismiss) {
     QuerySheetPage(
       title = Strings.editRuleSplit(splitIndex),
       close = ::close,
-      onDelete = { onAction(RemoveSplit(splitIndex)) },
+      onDelete = {
+        isRemoved = true
+        onAction(RemoveSplit(splitIndex))
+      },
     ) {
       SplitContent(
         action = amount.value,
-        onChange = { onAction(SetAction(amount.index, it)) },
+        onChange = { if (!isRemoved) onAction(SetAction(amount.index, it)) },
       )
     }
   }

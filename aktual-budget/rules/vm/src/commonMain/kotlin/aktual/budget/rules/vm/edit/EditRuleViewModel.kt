@@ -200,7 +200,9 @@ internal constructor(
 
   fun setConditionsOp(op: ConditionOp) = updateRule { r -> r.copy(conditionsOp = op) }
 
+  // Late edits from a closing sheet can name an index that's since been removed
   fun setCondition(index: Int, condition: Condition) = updateRule { r ->
+    if (index !in r.conditions.indices) return@updateRule r
     r.copy(conditions = r.conditions.toPersistentList().replacingAt(index, condition))
   }
 
@@ -226,6 +228,7 @@ internal constructor(
   }
 
   fun setAction(index: Int, action: RuleAction) = updateRule { r ->
+    if (index !in r.actions.indices) return@updateRule r
     r.copy(actions = r.actions.toPersistentList().replacingAt(index, action))
   }
 

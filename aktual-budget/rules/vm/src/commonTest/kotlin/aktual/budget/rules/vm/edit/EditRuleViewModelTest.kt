@@ -281,6 +281,20 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Edits to a removed action or condition are dropped`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+
+      viewModel.setAction(1, CATEGORY)
+      viewModel.setCondition(1, NOTES)
+      expectNoEvents()
+    }
+  }
+
+  @Test
   fun `A new rule sets a category`() = runDatabaseTest { scope ->
     val viewModel = createViewModel(scope)
 
