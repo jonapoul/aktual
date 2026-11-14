@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isLessThan
 import assertk.assertions.isTrue
+import assertk.assertions.isZero
 import kotlin.test.Test
 
 class IdsTest {
@@ -17,7 +18,7 @@ class IdsTest {
   fun `compareTo delegates to the raw value`() {
     assertThat(AccountId("a").compareTo(AccountId("b"))).isLessThan(0)
     assertThat(AccountId("b").compareTo(AccountId("a"))).isGreaterThan(0)
-    assertThat(AccountId("a").compareTo(AccountId("a"))).isEqualTo(0)
+    assertThat(AccountId("a").compareTo(AccountId("a"))).isZero()
   }
 
   @Test

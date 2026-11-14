@@ -5,7 +5,9 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.WidgetType
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.datetime.Month.JULY
 import kotlinx.datetime.Month.OCTOBER
@@ -124,7 +126,7 @@ class ReportMetaSerializationTest {
     assertThat(meta.mode).isEqualTo(Spent)
     assertThat(meta.topNCategories).isEqualTo(5)
     assertThat(meta.categorySort).isEqualTo(BudgetOrder)
-    assertThat(meta.showTransfers).isEqualTo(true)
+    assertThat(meta.showTransfers).isNotNull().isTrue()
   }
 
   @Test

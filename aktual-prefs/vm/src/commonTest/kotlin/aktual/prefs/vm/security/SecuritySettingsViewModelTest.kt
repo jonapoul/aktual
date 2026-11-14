@@ -15,6 +15,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import assertk.assertions.isZero
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
@@ -89,7 +90,7 @@ class SecuritySettingsViewModelTest {
     viewModel.state.test {
       awaitItem().appLockEnabled.onChange(false)
       assertThat(awaitItem().appLockEnabled.value).isFalse()
-      assertThat(authenticator.calls).isEqualTo(0)
+      assertThat(authenticator.calls).isZero()
       cancelAndIgnoreRemainingEvents()
     }
   }

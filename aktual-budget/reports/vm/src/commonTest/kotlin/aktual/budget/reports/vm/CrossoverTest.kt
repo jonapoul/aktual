@@ -2,6 +2,7 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.Amount
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
@@ -27,7 +28,7 @@ class CrossoverTest {
       )
 
     assertThat(data.crossover).isEqualTo(YearMonth(2024, APRIL))
-    assertThat(data.items.size).isEqualTo(4)
+    assertThat(data.items).hasSize(4)
     assertThat(data.items[MAR])
       .isNotNull()
       .prop(CrossoverDatum::investmentIncome)
@@ -81,7 +82,7 @@ class CrossoverTest {
 
     assertThat(data.crossover).isNull()
     assertThat(data.yearsToRetire).isNull()
-    assertThat(data.items.size).isEqualTo(601)
+    assertThat(data.items).hasSize(601)
   }
 
   @Test

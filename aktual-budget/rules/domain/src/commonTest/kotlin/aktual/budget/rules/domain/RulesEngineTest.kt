@@ -6,7 +6,10 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import kotlin.test.Test
 
@@ -104,7 +107,7 @@ class RulesEngineTest {
       )
     assertThat(engine.run(tx(category = "electric", notes = ""), context).notes)
       .isEqualTo("bills-matched")
-    assertThat(engine.run(tx(category = "movies", notes = ""), context).notes).isEqualTo("")
+    assertThat(engine.run(tx(category = "movies", notes = ""), context).notes).isNotNull().isEmpty()
   }
 
   @Test
@@ -243,7 +246,7 @@ class RulesEngineTest {
     val result = engine.run(fromSchedule, context())
     assertThat(result.category).isEqualTo(CategoryId("rent"))
     assertThat(result.notes).isNull()
-    assertThat(result.cleared).isEqualTo(false)
+    assertThat(result.cleared).isFalse()
 
     // Without a schedule, every rule runs on its conditions
     val plain = engine.run(tx(amount = 100), context())
@@ -271,7 +274,7 @@ class RulesEngineTest {
     val plain = engine.run(tx(amount = 100), context())
     assertThat(plain.schedule).isNull()
     assertThat(plain.notes).isNull()
-    assertThat(plain.cleared).isEqualTo(false)
+    assertThat(plain.cleared).isFalse()
 
     val linked = engine.run(tx(amount = 100).copy(schedule = ScheduleId("schedule-1")), context())
     assertThat(linked.notes).isEqualTo("completed")

@@ -7,7 +7,9 @@ import aktual.test.respondJson
 import aktual.test.testHttpClient
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import io.ktor.client.engine.mock.MockEngine
@@ -57,7 +59,7 @@ class NominatimApiTest {
     val place = api.reverse(Coordinates(latitude = 51.5081, longitude = -0.1248), "en")
 
     assertThat(place).all {
-      prop(Place::name).isEqualTo("")
+      prop(Place::name).isNotNull().isEmpty()
       prop(Place::error).isNull()
       prop(Place::address)
         .isEqualTo(

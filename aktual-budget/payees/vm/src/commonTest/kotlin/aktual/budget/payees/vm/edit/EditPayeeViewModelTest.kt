@@ -33,12 +33,13 @@ import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
@@ -160,7 +161,7 @@ class EditPayeeViewModelTest {
       // then
       assertThat(payees[TESCO.id]).isNotNull().all {
         prop(Payees::name).isEqualTo("Tesco Extra")
-        prop(Payees::favorite).isEqualTo(true)
+        prop(Payees::favorite).isNotNull().isTrue()
         prop(Payees::learn_categories).isEqualTo(0L)
       }
       assertThat(sync.changes.map { it.column to it.value })
@@ -180,7 +181,7 @@ class EditPayeeViewModelTest {
 
     // then
     createViewModel(scope, TESCO.id).locations.test {
-      assertThat(awaitItem()).isEqualTo(persistentListOf())
+      assertThat(awaitItem()).isEmpty()
       assertThat(awaitItem())
         .containsExactly(
           SavedLocation(PayeeLocationId("loc"), HERE, LocalDate(2026, 11, 7)),

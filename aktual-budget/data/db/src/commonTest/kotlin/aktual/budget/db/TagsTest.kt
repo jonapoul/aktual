@@ -10,7 +10,8 @@ import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
-import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
@@ -76,7 +77,7 @@ internal class TagsTest {
 
     // still tombstoned, so it stays out of getTags
     assertThat(db.tagsQueries.getTags().awaitAsList()).isEmpty()
-    assertThat(db.tagsQueries.getHidden(ID).awaitAsOneOrNull()?.hidden).isEqualTo(false)
+    assertThat(db.tagsQueries.getHidden(ID).awaitAsOneOrNull()?.hidden).isNotNull().isFalse()
   }
 
   // The hidden/tombstone columns have no insert query, so these tests drop down to the driver to

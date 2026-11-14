@@ -35,6 +35,7 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -151,7 +152,7 @@ class BankSyncSettingsViewModelTest {
     }
 
     assertThat(preferences[SyncUpdateDates(ACCOUNT)]).isEqualTo("true")
-    assertThat(syncCalls.size).isEqualTo(1)
+    assertThat(syncCalls).hasSize(1)
   }
 
   @Test

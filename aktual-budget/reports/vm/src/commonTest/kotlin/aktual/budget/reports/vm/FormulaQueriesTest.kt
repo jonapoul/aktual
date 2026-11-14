@@ -22,7 +22,9 @@ import aktual.budget.utils.BudgetSyncController
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -119,13 +121,13 @@ class FormulaQueriesTest {
           ),
       )
     assertThat(queries.queryCategories("and")).isEqualTo(listOf("food", "fuel"))
-    assertThat(queries.queryCategories("none")).isEqualTo(emptyList())
+    assertThat(queries.queryCategories("none")).isNotNull().isEmpty()
   }
 
   @Test
   fun `Operators other than text and id ones match no categories`() = runQueriesTest {
     val queries = queries("tags" to query(condition(Category, HasTags, text("#x"))))
-    assertThat(queries.queryCategories("tags")).isEqualTo(emptyList())
+    assertThat(queries.queryCategories("tags")).isNotNull().isEmpty()
   }
 
   @Test

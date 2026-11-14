@@ -15,6 +15,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import assertk.assertions.isZero
 import assertk.assertions.key
 import assertk.assertions.prop
 import kotlin.test.Test
@@ -58,7 +59,7 @@ class BalanceForecastLoaderTest {
       loader.balanceForecast(meta(accounts = listOf(AccountId("savings")))).test {
         assertThat(awaitItem()).isInstanceOf<BalanceForecastData>().all {
           prop(BalanceForecastData::items).key(MAY.firstDay).isEqualTo(Amount(1000L))
-          prop(BalanceForecastData::scheduledCount).isEqualTo(0)
+          prop(BalanceForecastData::scheduledCount).isZero()
         }
       }
     }

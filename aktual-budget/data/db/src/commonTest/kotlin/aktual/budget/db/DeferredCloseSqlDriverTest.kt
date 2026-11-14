@@ -13,6 +13,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
+import assertk.assertions.isZero
 import kotlin.test.Test
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
@@ -42,7 +43,7 @@ class DeferredCloseSqlDriverTest {
     runCurrent()
 
     driver.close()
-    assertThat(delegate.closeCount).isEqualTo(0)
+    assertThat(delegate.closeCount).isZero()
 
     delegate.gate.complete(Unit)
     assertThat(call.await()).isEqualTo(1L)
@@ -55,7 +56,7 @@ class DeferredCloseSqlDriverTest {
     runCurrent()
 
     driver.close()
-    assertThat(delegate.closeCount).isEqualTo(0)
+    assertThat(delegate.closeCount).isZero()
 
     delegate.gate.complete(Unit)
     transaction.await()

@@ -23,6 +23,7 @@ import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.containsOnly
+import assertk.assertions.doesNotContain
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
@@ -79,12 +80,12 @@ internal class TransactionWriterTest {
         .prop(PayeeId::value)
         .isEqualTo("TESCO STORES 1234")
       prop(Transactions::sort_order).isEqualTo(NOW.toEpochMilliseconds().toDouble())
-      prop(Transactions::cleared).isEqualTo(false)
-      prop(Transactions::reconciled).isEqualTo(false)
-      prop(Transactions::isParent).isEqualTo(false)
-      prop(Transactions::isChild).isEqualTo(false)
-      prop(Transactions::starting_balance_flag).isEqualTo(false)
-      prop(Transactions::tombstone).isEqualTo(false)
+      prop(Transactions::cleared).isNotNull().isFalse()
+      prop(Transactions::reconciled).isNotNull().isFalse()
+      prop(Transactions::isParent).isNotNull().isFalse()
+      prop(Transactions::isChild).isNotNull().isFalse()
+      prop(Transactions::starting_balance_flag).isNotNull().isFalse()
+      prop(Transactions::tombstone).isNotNull().isFalse()
       prop(Transactions::raw_synced_data).isEqualTo("""{"id":"bank-123"}""")
     }
 
@@ -156,15 +157,15 @@ internal class TransactionWriterTest {
 
     // Parents never have a category
     assertThat(transactionDao.row(parent)).isNotNull().all {
-      prop(Transactions::isParent).isEqualTo(true)
-      prop(Transactions::isChild).isEqualTo(false)
+      prop(Transactions::isParent).isNotNull().isTrue()
+      prop(Transactions::isChild).isNotNull().isFalse()
       prop(Transactions::category).isNull()
       prop(Transactions::parent_id).isNull()
     }
     for (child in children) {
       assertThat(transactionDao.row(child)).isNotNull().all {
-        prop(Transactions::isParent).isEqualTo(false)
-        prop(Transactions::isChild).isEqualTo(true)
+        prop(Transactions::isParent).isNotNull().isFalse()
+        prop(Transactions::isChild).isNotNull().isTrue()
         prop(Transactions::parent_id).isEqualTo(parent)
       }
     }
@@ -173,8 +174,8 @@ internal class TransactionWriterTest {
       .containsExactlyInAnyOrder(*children.toTypedArray())
 
     val parentMessages = messages().filter { it.row == parent.value }.map { it.column }
-    assertThat(parentMessages.contains("category")).isFalse()
-    assertThat(parentMessages.contains("isParent")).isTrue()
+    assertThat(parentMessages).doesNotContain("category")
+    assertThat(parentMessages).contains("isParent")
   }
 
   @Test
@@ -230,7 +231,7 @@ internal class TransactionWriterTest {
       prop(Transactions::category).isNull()
       prop(Transactions::notes).isEqualTo("New notes")
       prop(Transactions::financial_id).isEqualTo("bank-456")
-      prop(Transactions::reconciled).isEqualTo(true)
+      prop(Transactions::reconciled).isNotNull().isTrue()
       prop(Transactions::date).isEqualTo(DATE)
       prop(Transactions::acct).isEqualTo(ACCOUNT)
     }
@@ -290,7 +291,7 @@ internal class TransactionWriterTest {
     writer.write { update(TransactionUpdate(id = id, isParent = true)) }
 
     assertThat(transactionDao.row(id)).isNotNull().all {
-      prop(Transactions::isParent).isEqualTo(true)
+      prop(Transactions::isParent).isNotNull().isTrue()
       prop(Transactions::category).isNull()
     }
   }
@@ -312,9 +313,9 @@ internal class TransactionWriterTest {
         Change(TRANSACTIONS, parent.value, "tombstone", number(1)),
         Change(TRANSACTIONS, child.value, "tombstone", number(1)),
       )
-    assertThat(transactionDao.row(parent)?.tombstone).isEqualTo(true)
-    assertThat(transactionDao.row(child)?.tombstone).isEqualTo(true)
-    assertThat(transactionDao.row(other)?.tombstone).isEqualTo(false)
+    assertThat(transactionDao.row(parent)?.tombstone).isNotNull().isTrue()
+    assertThat(transactionDao.row(child)?.tombstone).isNotNull().isTrue()
+    assertThat(transactionDao.row(other)?.tombstone).isNotNull().isFalse()
     assertThat(database.transactionsQueries.getIds().awaitAsList()).containsOnly(other)
   }
 
@@ -330,7 +331,7 @@ internal class TransactionWriterTest {
       child
     }
 
-    assertThat(transactionDao.row(child)?.tombstone).isEqualTo(true)
+    assertThat(transactionDao.row(child)?.tombstone).isNotNull().isTrue()
     assertThat(messages().count { it.row == child.value && it.column == "tombstone" }).isEqualTo(1)
     assertThat(database.transactionsQueries.getIds().awaitAsList()).isEmpty()
   }
@@ -350,8 +351,8 @@ internal class TransactionWriterTest {
       delete(parent)
     }
 
-    assertThat(transactionDao.row(parent)?.tombstone).isEqualTo(true)
-    assertThat(transactionDao.row(child)?.tombstone).isEqualTo(true)
+    assertThat(transactionDao.row(parent)?.tombstone).isNotNull().isTrue()
+    assertThat(transactionDao.row(child)?.tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -376,10 +377,10 @@ internal class TransactionWriterTest {
         detached to moved
       }
 
-    assertThat(transactionDao.row(parent)?.tombstone).isEqualTo(true)
-    assertThat(transactionDao.row(stored)?.tombstone).isEqualTo(false)
-    assertThat(transactionDao.row(detached)?.tombstone).isEqualTo(false)
-    assertThat(transactionDao.row(moved)?.tombstone).isEqualTo(false)
+    assertThat(transactionDao.row(parent)?.tombstone).isNotNull().isTrue()
+    assertThat(transactionDao.row(stored)?.tombstone).isNotNull().isFalse()
+    assertThat(transactionDao.row(detached)?.tombstone).isNotNull().isFalse()
+    assertThat(transactionDao.row(moved)?.tombstone).isNotNull().isFalse()
   }
 
   @Test
@@ -394,14 +395,14 @@ internal class TransactionWriterTest {
 
     writer.write { update(TransactionUpdate(id = child, parentId = Patch.To(parent))) }
     assertThat(transactionDao.row(child)).isNotNull().all {
-      prop(Transactions::isChild).isEqualTo(true)
+      prop(Transactions::isChild).isNotNull().isTrue()
       prop(Transactions::parent_id).isEqualTo(parent)
     }
     assertThat(transactionDao.childIds(listOf(parent))).containsOnly(child)
 
     writer.write { update(TransactionUpdate(id = child, parentId = Patch.To(null))) }
     assertThat(transactionDao.row(child)).isNotNull().all {
-      prop(Transactions::isChild).isEqualTo(false)
+      prop(Transactions::isChild).isNotNull().isFalse()
       prop(Transactions::parent_id).isNull()
     }
   }
@@ -419,7 +420,7 @@ internal class TransactionWriterTest {
 
     writer.write { delete(others + parent) }
 
-    assertThat(transactionDao.row(child)?.tombstone).isEqualTo(true)
+    assertThat(transactionDao.row(child)?.tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -446,7 +447,7 @@ internal class TransactionWriterTest {
 
     assertThat(payeeDao[id]).isNotNull().all {
       prop(Payees::name).isEqualTo("Tesco")
-      prop(Payees::tombstone).isEqualTo(false)
+      prop(Payees::tombstone).isNotNull().isFalse()
     }
     assertThat(database.payeeMappingQueries.getIdsByTargetId(id).awaitAsList()).containsOnly(id)
     assertThat(lastSync())
@@ -500,11 +501,11 @@ internal class TransactionWriterTest {
     assertThat(payee.category).isEqualTo(STARTING_BALANCES)
     assertThat(payeeDao[payee.id]?.name).isEqualTo("Starting Balance")
     assertThat(transactionDao.row(id)).isNotNull().all {
-      prop(Transactions::starting_balance_flag).isEqualTo(true)
+      prop(Transactions::starting_balance_flag).isNotNull().isTrue()
       prop(Transactions::description).isEqualTo(payee.id)
       prop(Transactions::category).isEqualTo(STARTING_BALANCES)
       prop(Transactions::amount).isEqualTo(Amount(10_000))
-      prop(Transactions::cleared).isEqualTo(true)
+      prop(Transactions::cleared).isNotNull().isTrue()
       prop(Transactions::date).isEqualTo(DATE)
     }
   }
@@ -535,18 +536,18 @@ internal class TransactionWriterTest {
     assertThat(syncCalls).hasSize(1)
     assertThat(accountDao[id]).isNotNull().all {
       prop(Accounts::name).isEqualTo("Savings")
-      prop(Accounts::offbudget).isEqualTo(false)
-      prop(Accounts::closed).isEqualTo(false)
+      prop(Accounts::offbudget).isNotNull().isFalse()
+      prop(Accounts::closed).isNotNull().isFalse()
       prop(Accounts::sort_order).isEqualTo(SORT_INCREMENT.toDouble())
     }
     val payee = checkNotNull(payeeDao.transferPayee(id))
-    assertThat(payeeDao[payee]?.name).isEqualTo("")
+    assertThat(payeeDao[payee]?.name).isNotNull().isEmpty()
     val mappings = lastSync().filter { it.dataset == PAYEE_MAPPING }.map { it.row to it.value }
     assertThat(mappings).contains(payee.value to string(payee.value))
     val transaction = TransactionId(lastSync().first { it.dataset == TRANSACTIONS }.row)
     assertThat(transactionDao.row(transaction)).isNotNull().all {
       prop(Transactions::acct).isEqualTo(id)
-      prop(Transactions::starting_balance_flag).isEqualTo(true)
+      prop(Transactions::starting_balance_flag).isNotNull().isTrue()
       prop(Transactions::category).isEqualTo(STARTING_BALANCES)
       prop(Transactions::amount).isEqualTo(Amount(10_000))
       prop(Transactions::date).isEqualTo(DATE)
@@ -666,8 +667,8 @@ internal class TransactionWriterTest {
       updateAccount(AccountUpdate(id = ACCOUNT, bankSyncStatus = Patch.To(Ok)))
     }
 
-    assertThat(syncCalls.size).isEqualTo(1)
-    assertThat(syncCalls.single().size).isEqualTo(messages().size)
+    assertThat(syncCalls).hasSize(1)
+    assertThat(syncCalls.single()).hasSize(messages().size)
   }
 
   @Test
@@ -711,7 +712,7 @@ internal class TransactionWriterTest {
       prop(Transactions::error).isEqualTo(error)
       prop(Transactions::transferred_id).isEqualTo(transfer)
       prop(Transactions::sort_order).isEqualTo(42.0)
-      prop(Transactions::reconciled).isEqualTo(true)
+      prop(Transactions::reconciled).isNotNull().isTrue()
     }
   }
 

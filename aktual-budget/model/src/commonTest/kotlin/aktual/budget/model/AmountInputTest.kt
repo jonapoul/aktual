@@ -1,6 +1,7 @@
 package aktual.budget.model
 
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
@@ -40,7 +41,7 @@ class AmountInputTest {
   @Test
   fun `Input text round-trips`() {
     assertThat(Amount(120_050L).toInputText()).isEqualTo("1200.50")
-    assertThat(Amount(0L).toInputText()).isEqualTo("")
+    assertThat(Amount(0L).toInputText()).isEmpty()
   }
 
   @Test

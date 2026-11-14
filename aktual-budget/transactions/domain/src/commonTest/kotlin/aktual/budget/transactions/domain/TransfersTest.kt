@@ -38,7 +38,7 @@ internal class TransfersTest {
       prop(Transactions::date).isEqualTo(DATE)
       prop(Transactions::notes).isNull()
       prop(Transactions::category).isNull()
-      prop(Transactions::cleared).isEqualTo(false)
+      prop(Transactions::cleared).isNotNull().isFalse()
       prop(Transactions::transferred_id).isEqualTo(id)
     }
 
@@ -60,7 +60,7 @@ internal class TransfersTest {
     val notTransferred = writer.write { insertPayee("Not transferred anymore") }
     update(TransactionUpdate(id, payee = Patch.To(notTransferred)))
     assertThat(row(id).transferred_id).isNull()
-    assertThat(row(other).tombstone).isEqualTo(true)
+    assertThat(row(other).tombstone).isNotNull().isTrue()
 
     // Re-transfer it
     update(TransactionUpdate(id, payee = Patch.To(payees.two)))
@@ -70,12 +70,12 @@ internal class TransfersTest {
       prop(Transactions::acct).isEqualTo(TWO)
       prop(Transactions::notes).isEqualTo("This is a note")
       prop(Transactions::date).isEqualTo(LocalDate(2017, 1, 5))
-      prop(Transactions::tombstone).isEqualTo(false)
+      prop(Transactions::tombstone).isNotNull().isFalse()
     }
 
     writer.write(runTransfers = true) { delete(id) }
-    assertThat(row(id).tombstone).isEqualTo(true)
-    assertThat(row(second).tombstone).isEqualTo(true)
+    assertThat(row(id).tombstone).isNotNull().isTrue()
+    assertThat(row(second).tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -115,7 +115,7 @@ internal class TransfersTest {
     // A split parent drops its transfer
     update(TransactionUpdate(parent, isParent = true))
     assertThat(row(parent).transferred_id).isNull()
-    assertThat(row(parentOther).tombstone).isEqualTo(true)
+    assertThat(row(parentOther).tombstone).isNotNull().isTrue()
 
     val part =
       NewTransaction(
@@ -208,9 +208,9 @@ internal class TransfersTest {
 
     writer.write(runTransfers = true) { delete(other) }
 
-    assertThat(row(other).tombstone).isEqualTo(true)
+    assertThat(row(other).tombstone).isNotNull().isTrue()
     assertThat(row(child)).all {
-      prop(Transactions::tombstone).isEqualTo(false)
+      prop(Transactions::tombstone).isNotNull().isFalse()
       prop(Transactions::transferred_id).isNull()
       prop(Transactions::description).isNull()
       prop(Transactions::parent_id).isEqualTo(parent)
@@ -227,8 +227,8 @@ internal class TransfersTest {
 
     writer.write(runTransfers = true) { delete(parent) }
 
-    assertThat(row(child).tombstone).isEqualTo(true)
-    assertThat(row(other).tombstone).isEqualTo(true)
+    assertThat(row(child).tombstone).isNotNull().isTrue()
+    assertThat(row(other).tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -240,8 +240,8 @@ internal class TransfersTest {
 
     writer.write(runTransfers = true) { delete(listOf(id, other)) }
 
-    assertThat(row(id).tombstone).isEqualTo(true)
-    assertThat(row(other).tombstone).isEqualTo(true)
+    assertThat(row(id).tombstone).isNotNull().isTrue()
+    assertThat(row(other).tombstone).isNotNull().isTrue()
   }
 
   @Test
@@ -300,16 +300,16 @@ internal class TransfersTest {
 
     writer.write { deleteAccount(ONE) }
 
-    for (id in listOf(transfer, parent, child)) assertThat(row(id).tombstone).isEqualTo(true)
+    for (id in listOf(transfer, parent, child)) assertThat(row(id).tombstone).isNotNull().isTrue()
     assertThat(row(other)).all {
-      prop(Transactions::tombstone).isEqualTo(false)
+      prop(Transactions::tombstone).isNotNull().isFalse()
       prop(Transactions::transferred_id).isNull()
       prop(Transactions::description).isNull()
     }
-    assertThat(row(elsewhere).tombstone).isEqualTo(false)
-    assertThat(accountDao[ONE]?.tombstone).isEqualTo(true)
-    assertThat(payeeDao[payees.one]?.tombstone).isEqualTo(true)
-    assertThat(payeeDao[payees.two]?.tombstone).isEqualTo(false)
+    assertThat(row(elsewhere).tombstone).isNotNull().isFalse()
+    assertThat(accountDao[ONE]?.tombstone).isNotNull().isTrue()
+    assertThat(payeeDao[payees.one]?.tombstone).isNotNull().isTrue()
+    assertThat(payeeDao[payees.two]?.tombstone).isNotNull().isFalse()
   }
 
   private data class TransferPayees(val one: PayeeId, val two: PayeeId, val three: PayeeId)

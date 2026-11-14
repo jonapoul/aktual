@@ -30,6 +30,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
@@ -126,7 +127,7 @@ class BudgetViewModelTest {
 
       viewModel.toggleSpent()
       assertThat(awaitLoaded().showSpent).isTrue()
-      assertThat(prefs.value[MobileShowSpentColumn]).isEqualTo(true)
+      assertThat(prefs.value[MobileShowSpentColumn]).isNotNull().isTrue()
 
       viewModel.toggleSpent()
       assertThat(awaitLoaded().showSpent).isFalse()
@@ -145,7 +146,7 @@ class BudgetViewModelTest {
 
       viewModel.toggleCollapsed(CategoryGroupId("usual"))
       assertThat(awaitLoaded().shown.groups.single().isCollapsed).isFalse()
-      assertThat(prefs.value[BudgetCollapsed]).isEqualTo(emptyList())
+      assertThat(prefs.value[BudgetCollapsed]).isNotNull().isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
   }

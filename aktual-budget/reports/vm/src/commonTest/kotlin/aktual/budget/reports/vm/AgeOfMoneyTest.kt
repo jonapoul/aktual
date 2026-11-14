@@ -3,6 +3,7 @@ package aktual.budget.reports.vm
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -147,7 +148,7 @@ class AgeOfMoneyTest {
       )
 
     // Dec 15 to Dec 31 plus Jan 1
-    assertThat(data.size).isEqualTo(18)
+    assertThat(data).hasSize(18)
     assertThat(data.keys.last()).isEqualTo(LocalDate.parse("2017-01-01"))
   }
 

@@ -23,6 +23,7 @@ import aktual.budget.reports.vm.CustomGroup.UncategorizedAndOffBudget
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
@@ -234,7 +235,7 @@ class CustomSpreadsheetTest {
               ),
           ),
       )
-    assertThat(sheet.groups.size).isEqualTo(CATEGORIES.size + 2)
+    assertThat(sheet.groups).hasSize(CATEGORIES.size + 2)
   }
 
   @Test

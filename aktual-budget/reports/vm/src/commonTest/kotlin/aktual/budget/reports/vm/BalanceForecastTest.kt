@@ -12,6 +12,7 @@ import aktual.budget.model.WeekendSolveMode
 import aktual.budget.model.occurrences
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
@@ -198,7 +199,7 @@ class BalanceForecastTest {
         occurrences = listOf(occurrence(LocalDate(2026, 2, 3), amount = -40, account = null)),
       )
 
-    assertThat(data.items.size).isEqualTo(59)
+    assertThat(data.items).hasSize(59)
     assertThat(data.items[LocalDate(2026, 2, 2)]).isEqualTo(Amount(100L))
     assertThat(data.items[LocalDate(2026, 2, 3)]).isEqualTo(Amount(60L))
   }

@@ -6,6 +6,7 @@ import aktual.api.model.banksync.BankSyncTransactionsResponse
 import aktual.core.model.AktualJson
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
@@ -55,7 +56,7 @@ class BankSyncTransactionsResponseTest {
           ),
         )
       transform { it.transactions.all.single().amount }.isEqualTo("-12.5")
-      transform { it.transactions.booked }.isEqualTo(emptyList())
+      transform { it.transactions.booked }.isEmpty()
     }
   }
 }

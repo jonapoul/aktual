@@ -52,6 +52,7 @@ import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isTrue
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
 import kotlin.uuid.Uuid
@@ -213,7 +214,7 @@ class LinkBankAccountViewModelTest {
     assertThat(created.name).isEqualTo("Checking")
     assertThat(created.account_id).isEqualTo("ACT-1")
     assertThat(created.account_sync_source).isEqualTo(PluggyAi)
-    assertThat(AccountDao(database)[created.id]?.offbudget).isEqualTo(true)
+    assertThat(AccountDao(database)[created.id]?.offbudget).isNotNull().isTrue()
     assertThat(controller.synced).containsExactly(setOf(created.id))
   }
 
