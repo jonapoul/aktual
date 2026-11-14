@@ -9,4 +9,8 @@ kotlin {
     implementation(libs.metrox.viewmodel)
     implementation(project(":aktual-budget:banksync:domain"))
   }
+
+  commonTestDependencies {
+    implementation(project(":aktual-budget:transactions:domain"))
+  }
 }

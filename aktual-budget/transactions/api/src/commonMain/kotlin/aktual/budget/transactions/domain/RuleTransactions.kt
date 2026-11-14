@@ -39,7 +39,7 @@ fun RuleTransaction.toNewTransactions(
 }
 
 // The rows to insert for the children a rule split this into
-internal fun RuleTransaction.newChildren(
+fun RuleTransaction.newChildren(
   parent: TransactionId,
   newId: () -> TransactionId,
 ): List<NewTransaction> = subtransactions.mapIndexed { index, child ->
@@ -59,7 +59,7 @@ internal fun RuleTransaction.newChildren(
 }
 
 // Null unless a rule split this and the children don't add up to it
-internal fun RuleTransaction.splitError(): JsonObject? {
+fun RuleTransaction.splitError(): JsonObject? {
   if (subtransactions.isEmpty()) return null
   val difference = amount.toLong() - subtransactions.sumOf { it.amount.toLong() }
   return if (difference == 0L) null else splitError(difference)

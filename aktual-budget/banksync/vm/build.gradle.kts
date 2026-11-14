@@ -4,4 +4,8 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:banksync:domain"))
   }
+
+  commonTestDependencies {
+    implementation(project(":aktual-budget:transactions:domain"))
+  }
 }

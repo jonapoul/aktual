@@ -12,7 +12,7 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRule
-import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -134,7 +134,9 @@ internal class RuleMatcherTest {
       categoryDao = categoryDao,
       payeeDao = payeeDao,
       rulesLoader =
-        TransactionRulesLoader(RulesDao(database), RuleContextDao(database)) { "new-${nextId++}" },
+        TransactionRulesLoaderImpl(RulesDao(database), RuleContextDao(database)) {
+          "new-${nextId++}"
+        },
       writer = writer,
       uuidGenerator = { "split-${nextId++}" },
     )

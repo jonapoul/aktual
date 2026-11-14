@@ -14,7 +14,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.localChange
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.test.TestCalendar
 import aktual.test.TestSyncController
@@ -211,7 +211,7 @@ class CreateAccountViewModelTest {
     var nextId = 1
     return CreateAccountViewModel(
       writer =
-        TransactionWriter(
+        TransactionWriterImpl(
           syncController = sync,
           accountDao = accountDao,
           categoryDao = CategoryDao(this),

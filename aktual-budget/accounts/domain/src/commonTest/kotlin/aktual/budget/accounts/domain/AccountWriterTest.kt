@@ -20,7 +20,7 @@ import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.Patch.To
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.test.inMemoryDriverFactory
 import assertk.assertFailure
@@ -373,7 +373,7 @@ internal class AccountWriterTest {
     private var nextId = 1
 
     val transactions =
-      TransactionWriter(
+      TransactionWriterImpl(
         syncController = this,
         accountDao = accountDao,
         categoryDao = CategoryDao(database),

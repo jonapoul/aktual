@@ -28,7 +28,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestCalendar
@@ -58,7 +58,7 @@ internal class AccountsTestScope(
   private val viewModels = mutableListOf<ViewModel>()
 
   val transactions =
-    TransactionWriter(
+    TransactionWriterImpl(
       syncController = this,
       accountDao = accountDao,
       categoryDao = categoryDao,

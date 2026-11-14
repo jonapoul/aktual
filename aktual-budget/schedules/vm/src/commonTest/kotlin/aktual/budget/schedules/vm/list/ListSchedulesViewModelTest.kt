@@ -20,12 +20,12 @@ import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
-import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
@@ -450,7 +450,7 @@ class ListSchedulesViewModelTest {
       ScheduleTransactionPoster(
         scheduleDao = ScheduleDao(this),
         transactionWriter =
-          TransactionWriter(
+          TransactionWriterImpl(
             syncController = sync,
             accountDao = AccountDao(this),
             categoryDao = CategoryDao(this),
@@ -461,7 +461,7 @@ class ListSchedulesViewModelTest {
             clock = TestClock(NOW),
           ),
         rulesLoader =
-          TransactionRulesLoader(
+          TransactionRulesLoaderImpl(
             rulesDao = RulesDao(this),
             contextDao = RuleContextDao(this),
             uuidGenerator = uuidGenerator,

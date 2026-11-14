@@ -18,7 +18,7 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.rules.domain.ACTION_OPS
 import aktual.budget.rules.domain.ConditionEntitiesLoader
-import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.rules.domain.withField
 import aktual.budget.rules.domain.withOp
 import aktual.budget.rules.domain.withSplitMethod
@@ -27,7 +27,7 @@ import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.transactions.domain.RuleMatcher
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -429,9 +429,9 @@ class EditRuleViewModelTest {
           categoryDao = CategoryDao(this),
           payeeDao = PayeeDao(this),
           rulesLoader =
-            TransactionRulesLoader(RulesDao(this), RuleContextDao(this)) { "id-${nextId++}" },
+            TransactionRulesLoaderImpl(RulesDao(this), RuleContextDao(this)) { "id-${nextId++}" },
           writer =
-            TransactionWriter(
+            TransactionWriterImpl(
               syncController = sync,
               accountDao = AccountDao(this),
               categoryDao = CategoryDao(this),

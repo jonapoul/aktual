@@ -42,7 +42,7 @@ import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.rules.domain.CategoryLearner
-import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.tags.domain.TagCreator
@@ -52,7 +52,7 @@ import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionDraft
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.domain.TransactionLoader
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.transactions.vm.edit.EditTransactionState.Loaded
 import aktual.budget.transactions.vm.edit.TransactionEditMode.Edit
 import aktual.budget.transactions.vm.test.DATE_1
@@ -1933,7 +1933,7 @@ class EditTransactionViewModelTest {
       savedState = savedState,
       loader = TransactionLoader(transactionDao),
       writer =
-        TransactionWriter(
+        TransactionWriterImpl(
           syncController = sync,
           accountDao = accountDao,
           categoryDao = categoryDao,
@@ -1944,7 +1944,7 @@ class EditTransactionViewModelTest {
           clock = Clock.System,
         ),
       rulesLoader =
-        TransactionRulesLoader(
+        TransactionRulesLoaderImpl(
           rulesDao = RulesDao(this),
           contextDao = RuleContextDao(this),
           uuidGenerator = { "uuid" },

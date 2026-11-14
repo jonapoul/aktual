@@ -7,6 +7,8 @@ kotlin {
   }
 
   commonTestDependencies {
+    implementation(project(":aktual-budget:rules:domain"))
+    implementation(project(":aktual-budget:transactions:domain"))
     implementation(project(":aktual-prefs:impl"))
   }
 }

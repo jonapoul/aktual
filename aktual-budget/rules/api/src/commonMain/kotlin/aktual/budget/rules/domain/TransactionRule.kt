@@ -1,6 +1,5 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.db.Rules
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleAction
@@ -15,12 +14,3 @@ data class TransactionRule(
   val stage: RuleStage? = null,
   val conditionsOp: ConditionOp = And,
 )
-
-fun Rules.toTransactionRule(): TransactionRule =
-  TransactionRule(
-    id = id,
-    conditions = conditions.orEmpty(),
-    actions = actions.orEmpty(),
-    stage = stage,
-    conditionsOp = conditions_op ?: And,
-  )
