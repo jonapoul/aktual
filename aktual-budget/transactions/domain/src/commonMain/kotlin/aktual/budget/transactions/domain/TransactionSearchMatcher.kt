@@ -2,6 +2,7 @@ package aktual.budget.transactions.domain
 
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.parseAmountInput
+import aktual.budget.rules.domain.FilterBounds
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.rules.domain.TransactionFilter
 import kotlin.math.abs
@@ -20,6 +21,10 @@ class TransactionSearchMatcher(search: TransactionSearch) {
   // The amount the text reads as, in cents, unsigned
   val amount: Long? =
     text.takeIf { AMOUNT.matches(it) }?.let { parseAmountInput(it.trimStart('+', '-')) }?.toLong()
+
+  // What the conditions allow, to narrow the query by
+  val bounds: FilterBounds
+    get() = filter.bounds
 
   fun matches(row: FilterRow): Boolean = matchesText(row) && filter.matches(row)
 

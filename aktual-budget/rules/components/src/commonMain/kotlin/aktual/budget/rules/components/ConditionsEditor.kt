@@ -4,8 +4,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.rules.domain.ConditionEntities
-import aktual.budget.rules.domain.FILTER_FIELDS
-import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.ConditionSchema
+import aktual.budget.rules.domain.newCondition
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Strings
@@ -41,7 +41,9 @@ fun ConditionsEditor(
   data: ConditionEntities,
   onChange: (List<Condition>, ConditionOp) -> Unit,
   modifier: Modifier = Modifier,
-  fields: ImmutableList<Field> = FILTER_FIELDS,
+  schema: ConditionSchema = FilterConditions,
+  fields: ImmutableList<Field> = schema.fields,
+  isEnabled: Boolean = true,
 ) {
   var conditionIndex by rememberSaveable { mutableStateOf<Int?>(null) }
 
@@ -52,7 +54,9 @@ fun ConditionsEditor(
     onChange = onChange,
     onOpen = { conditionIndex = it },
     modifier = modifier,
+    schema = schema,
     fields = fields,
+    isEnabled = isEnabled,
   )
 
   conditionIndex?.let { index ->
@@ -63,6 +67,7 @@ fun ConditionsEditor(
       data = data,
       onChange = onChange,
       onDismiss = { conditionIndex = null },
+      schema = schema,
       fields = fields,
     )
   }
@@ -77,7 +82,9 @@ fun ConditionsList(
   onChange: (List<Condition>, ConditionOp) -> Unit,
   onOpen: (Int) -> Unit,
   modifier: Modifier = Modifier,
-  fields: ImmutableList<Field> = FILTER_FIELDS,
+  schema: ConditionSchema = FilterConditions,
+  fields: ImmutableList<Field> = schema.fields,
+  isEnabled: Boolean = true,
 ) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(22.dp)) {
     Column {
@@ -87,6 +94,7 @@ fun ConditionsList(
         selected = if (conditionsOp == Or) Or else And,
         options = ConditionOp.known,
         onSelect = { op -> onChange(conditions, op) },
+        isEnabled = isEnabled,
         string = { op ->
           if (op == Or) Strings.reportsFormulaQueryMatchAny else Strings.reportsFormulaQueryMatchAll
         },
@@ -103,7 +111,8 @@ fun ConditionsList(
               ConditionRow(
                 condition = condition,
                 names = names,
-                onClick = { onOpen(index) },
+                schema = schema,
+                onClick = { onOpen(index) }.takeIf { isEnabled },
               )
             }
           }
@@ -114,10 +123,11 @@ fun ConditionsList(
         modifier = Modifier.fillMaxWidth().testTag(ConditionTags.AddCondition),
         icon = AktualIcons.Add,
         text = Strings.reportsFormulaQueryAddCondition,
+        isEnabled = isEnabled,
         onClick = {
           onOpen(conditions.size)
           val field: Field = if (Payee in fields) Payee else fields.first()
-          onChange(conditions + newFilterCondition(field), conditionsOp)
+          onChange(conditions + newCondition(field, schema), conditionsOp)
         },
       )
     }
@@ -132,13 +142,15 @@ fun ConditionSheetAt(
   data: ConditionEntities,
   onChange: (List<Condition>, ConditionOp) -> Unit,
   onDismiss: () -> Unit,
-  fields: ImmutableList<Field> = FILTER_FIELDS,
+  schema: ConditionSchema = FilterConditions,
+  fields: ImmutableList<Field> = schema.fields,
 ) {
   val condition = conditions.getOrNull(index)
   if (condition != null) {
     ConditionSheet(
       condition = condition,
       data = data,
+      schema = schema,
       fields = fields,
       onChange = { changed ->
         onChange(conditions.toMutableList().apply { set(index, changed) }, conditionsOp)
@@ -153,7 +165,8 @@ fun ConditionSheetAt(
 private fun ConditionRow(
   condition: Condition,
   names: ImmutableMap<String, String>,
-  onClick: () -> Unit,
+  schema: ConditionSchema,
+  onClick: (() -> Unit)?,
 ) =
   SettingRow(modifier = Modifier.testTag(ConditionTags.ConditionRow), onClick = onClick) {
     Text(
@@ -169,7 +182,7 @@ private fun ConditionRow(
     )
     Text(
       modifier = Modifier.weight(1f),
-      text = condition.valueLabel(names).orEmpty(),
+      text = condition.valueLabel(names, schema).orEmpty(),
       style = typography.bodyMedium,
       color = colors.tableText,
       maxLines = 1,

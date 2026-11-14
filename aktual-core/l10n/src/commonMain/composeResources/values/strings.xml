@@ -17,8 +17,6 @@
 
   <string name="search_payees">Search payees</string>
   <string name="search_accounts">Search accounts</string>
-  <string name="search_categories">Search categories</string>
-  <string name="search_category_groups">Search category groups</string>
   <string name="search_no_results">No results</string>
 
   <string name="sort">Sort</string>
@@ -1888,24 +1886,10 @@
   <string name="edit_rule_failed_other">Unexpected failure: %1$s</string>
   <string name="edit_rule_stage_desc">The stage of a rule allows you to force a specific order. Pre rules always run first, and post rules always run last. Within each stage rules are automatically ordered from least to most specific.</string>
   <string name="edit_rule_stage">Rule stage</string>
-  <string name="edit_rule_conditions">Conditions</string>
-  <string name="edit_rule_conditions_desc_prefix">If</string>
-  <string name="edit_rule_conditions_desc_suffix">of these conditions match:</string>
   <string name="edit_rule_save">Save</string>
   <string name="edit_rule_create">Create</string>
-  <string name="edit_rule_and">all</string>
-  <string name="edit_rule_or">any</string>
-  <string name="edit_rule_unknown">unknown</string>
   <string name="edit_rule_unknown_values">This rule uses values that this version of the app doesn't recognize. Change them before saving.</string>
-  <string name="edit_rule_condition_delete">Delete</string>
-  <string name="edit_rule_condition_nothing">nothing</string>
-  <string name="edit_rule_amount_clear">Clear</string>
-  <string name="edit_rule_amount_sign_positive">Make negative</string>
-  <string name="edit_rule_amount_sign_negative">Make positive</string>
 
-  <string name="edit_rule_date_clear">Clear</string>
-  <string name="edit_rule_date_picker_ok">OK</string>
-  <string name="edit_rule_date_picker_cancel">Cancel</string>
 
   <!-- budget-schedules -->
   <string name="list_schedules_title">Schedules</string>
@@ -2140,6 +2124,21 @@
   <string name="transactions_filter_remove">Remove filter %1$s</string>
   <string name="transactions_filter_match_all">Match all</string>
   <string name="transactions_filter_match_any">Match any</string>
+  <string name="transactions_filter_saved">Saved filters</string>
+  <string name="transactions_filter_unsaved">Unsaved filter</string>
+  <string name="transactions_filter_modified">%1$s (modified)</string>
+  <string name="transactions_filter_save_new">Save new filter</string>
+  <string name="transactions_filter_update">Update filter</string>
+  <string name="transactions_filter_rename">Rename filter</string>
+  <string name="transactions_filter_delete">Delete filter</string>
+  <string name="transactions_filter_revert">Revert changes</string>
+  <string name="transactions_filter_clear">Clear filter</string>
+  <string name="transactions_filter_name_placeholder">Filter name</string>
+  <string name="transactions_filter_name_cancel">Cancel</string>
+  <string name="transactions_filter_name_confirm">Save</string>
+  <string name="transactions_filter_name_taken">There is already a filter named %1$s</string>
+  <string name="transactions_filter_conditions_taken">These conditions are already saved as %1$s</string>
+  <string name="transactions_filter_save_failed">Couldn't save the filter</string>
   <string name="transactions_edit_account">Edit account</string>
   <string name="transactions_delete_account">Delete account</string>
   <string name="transactions_delete_account_title">Delete account?</string>

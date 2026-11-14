@@ -15,10 +15,10 @@ import kotlinx.serialization.json.JsonPrimitive
 class ConditionEditingTest {
   @Test
   fun `New conditions start empty with the first operator`() {
-    assertThat(newFilterCondition(Payee)).isEqualTo(Condition(Payee, Is, JsonNull, type = Id))
-    assertThat(newFilterCondition(Amount))
+    assertThat(newCondition(Payee)).isEqualTo(Condition(Payee, Is, JsonNull, type = Id))
+    assertThat(newCondition(Amount))
       .isEqualTo(Condition(Amount, Is, JsonPrimitive(0), type = ConditionType.Number))
-    assertThat(newFilterCondition(Cleared))
+    assertThat(newCondition(Cleared))
       .isEqualTo(Condition(Cleared, Is, JsonPrimitive(true), type = ConditionType.Boolean))
   }
 
@@ -62,5 +62,7 @@ class ConditionEditingTest {
     assertThat(Condition(Amount, GreaterThan, JsonPrimitive(-500)).editableKind()).isEqualTo(Money)
     assertThat(Condition(Payee, NotOneOf, JsonArray(listOf(JsonPrimitive("a")))).editableKind())
       .isEqualTo(EntityList)
+    assertThat(Condition(Notes, HasTags, JsonPrimitive("#a")).editableKind(RuleConditions))
+      .isEqualTo(Text)
   }
 }

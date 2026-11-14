@@ -21,10 +21,14 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.ReconcileStart
 import aktual.budget.transactions.vm.Reconciling
+import aktual.budget.transactions.vm.SavedFiltersState
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsEvent
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.transactions_filter_conditions_taken
+import aktual.core.l10n.transactions_filter_name_taken
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.DeletedAccountNavigator
 import aktual.core.nav.EditTransactionNavigator
@@ -85,6 +89,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun TransactionsScreen(
@@ -115,6 +120,7 @@ fun TransactionsScreen(
   val reconcileStart by viewModel.reconcileStart.collectAsStateWithLifecycle()
   val search by viewModel.search.collectAsStateWithLifecycle()
   val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
+  val savedFilters by viewModel.savedFiltersState.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   BankSyncSnackbars(viewModel.bankSyncFinished, snackbars)
@@ -152,6 +158,7 @@ fun TransactionsScreen(
     reconcileStart = reconcileStart,
     search = search.takeIf { viewModel.canSearch },
     conditionEntities = conditionEntities,
+    savedFilters = savedFilters,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -216,6 +223,12 @@ private fun TransactionsViewModel.handle(action: ViewModelAction) {
     is Action.RemoveCondition -> removeCondition(action.index)
     is Action.SetConditionsOp -> setConditionsOp(action.op)
     Action.ClearFilters -> clearFilters()
+    Action.ClearConditions -> clearConditions()
+    is Action.ApplySavedFilter -> applySavedFilter(action.filter)
+    is Action.SaveFilter -> saveFilter(action.name)
+    Action.UpdateSavedFilter -> updateSavedFilter()
+    is Action.RenameSavedFilter -> renameSavedFilter(action.name)
+    Action.DeleteSavedFilter -> deleteSavedFilter()
   }
 }
 
@@ -229,6 +242,7 @@ private fun TransactionsEvents(
   val deleted = Strings.transactionsDeleteAccountDone
   val deleteFailed = Strings.transactionsDeleteAccountFailed
   val reconcileFailed = Strings.transactionsReconcileFailed
+  val saveFilterFailed = Strings.transactionsFilterSaveFailed
   val currentOnAccountDelete by rememberUpdatedState(onAccountDelete)
   val currentOnBankLoginKeep by rememberUpdatedState(onBankLoginKeep)
   LaunchedEffect(events) {
@@ -238,6 +252,17 @@ private fun TransactionsEvents(
         AccountDeletedBankLoginKept -> currentOnBankLoginKeep()
         DeleteAccountFailed -> snackbars.show { showErrorSnackbar(deleteFailed) }
         ReconcileFailed -> snackbars.show { showErrorSnackbar(reconcileFailed) }
+        SaveFilterFailed -> snackbars.show { showErrorSnackbar(saveFilterFailed) }
+        is FilterNameTaken ->
+          snackbars.show {
+            showErrorSnackbar(getString(Res.string.transactions_filter_name_taken, event.name))
+          }
+        is FilterConditionsTaken ->
+          snackbars.show {
+            showErrorSnackbar(
+              getString(Res.string.transactions_filter_conditions_taken, event.name),
+            )
+          }
       }
     }
   }
@@ -299,6 +324,7 @@ internal fun TransactionsScaffold(
   // Null for a list that can't be searched
   search: TransactionSearch? = null,
   conditionEntities: ConditionEntities? = null,
+  savedFilters: SavedFiltersState = SavedFiltersState(),
 ) {
   // Filters outlive the screen, so a list opened with a query already set shows its field
   var isSearching by rememberSaveable { mutableStateOf(search?.text.orEmpty().isNotEmpty()) }
@@ -343,11 +369,14 @@ internal fun TransactionsScaffold(
 
             if (search != null) {
               AnimatedVisibility(
-                visible = isSearching || search.conditions.conditions.isNotEmpty(),
+                visible =
+                  isSearching ||
+                    search.conditions.conditions.isNotEmpty() ||
+                    savedFilters.filters.isNotEmpty(),
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut(),
               ) {
-                TransactionFilterChips(search.conditions, conditionEntities, onAction)
+                TransactionFilterChips(search.conditions, conditionEntities, savedFilters, onAction)
               }
             }
 

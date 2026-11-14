@@ -3,7 +3,9 @@ package aktual.budget.rules.ui.edit
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.budget.rules.ui.LocalEntityListFetcher
+import aktual.budget.rules.components.ConditionsEditor
+import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.ConditionEntityLists
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.LocalRuleEditable
 import aktual.budget.rules.ui.PreviewRule1
@@ -77,6 +79,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 
 @Composable
 internal fun EditRuleScreen(
@@ -87,6 +91,7 @@ internal fun EditRuleScreen(
   viewModel: EditRuleViewModel = metroViewModel(id, payee),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
@@ -96,26 +101,19 @@ internal fun EditRuleScreen(
     }
   }
 
-  CompositionLocalProvider(
-    LocalNameFetcher provides viewModel.nameFetcher,
-    LocalEntityListFetcher provides viewModel.entityListFetcher,
-  ) {
+  CompositionLocalProvider(LocalNameFetcher provides viewModel.nameFetcher) {
     EditRuleScaffold(
       modifier = modifier,
       mode = if (id == null) Create else Edit,
       state = state,
+      conditionEntities = conditionEntities,
       onAction = { action ->
         when (action) {
           NavBack -> back()
           Delete -> viewModel.delete()
           Save -> viewModel.save()
-          AppendCondition -> viewModel.appendCondition()
           is SetStage -> viewModel.setStage(action.value)
-          is SetConditionOp -> viewModel.setConditionOp(action.value)
-          is SetConditionField -> viewModel.setConditionField(action.value, action.index)
-          is SetConditionOperator -> viewModel.setConditionOperator(action.value, action.index)
-          is SetConditionValue -> viewModel.setConditionValue(action.value, action.index)
-          is DeleteCondition -> viewModel.deleteCondition(action.index)
+          is SetConditions -> viewModel.setConditions(action.conditions, action.op)
         }
       },
     )
@@ -132,6 +130,7 @@ private fun metroViewModel(id: RuleId?, payee: PayeeId?) =
 private fun EditRuleScaffold(
   state: EditRuleState,
   mode: Mode,
+  conditionEntities: ConditionEntities?,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
@@ -157,6 +156,7 @@ private fun EditRuleScaffold(
         modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
         contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         state = state,
+        conditionEntities = conditionEntities,
         listState = listState,
         onAction = onAction,
       )
@@ -249,6 +249,7 @@ private fun MoreMenu(
 @Composable
 private fun EditRuleContent(
   state: EditRuleState,
+  conditionEntities: ConditionEntities?,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: OnAction<EditRuleAction>,
@@ -271,6 +272,7 @@ private fun EditRuleContent(
       LoadedContent(
         modifier = modifier,
         rule = state.rule,
+        conditionEntities = conditionEntities,
         isEnabled = !state.isWorking,
         listState = listState,
         contentPadding = contentPadding,
@@ -304,6 +306,7 @@ private fun LoadingContent(
 @Composable
 private fun LoadedContent(
   rule: Rule,
+  conditionEntities: ConditionEntities?,
   isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
   contentPadding: PaddingValues,
@@ -324,7 +327,18 @@ private fun LoadedContent(
 
         item { RuleStage(rule, onAction) }
 
-        item { Conditions(rule, onAction) }
+        if (conditionEntities != null) {
+          item {
+            ConditionsEditor(
+              conditions = rule.conditions,
+              conditionsOp = rule.conditionsOp,
+              data = conditionEntities,
+              onChange = { conditions, op -> onAction(SetConditions(conditions, op)) },
+              schema = RuleConditions,
+              isEnabled = isEnabled,
+            )
+          }
+        }
 
         item { BottomSpacing() }
       }
@@ -381,7 +395,14 @@ private fun RuleStage(
 private fun PreviewEditRuleScaffold(
   @PreviewParameter(EditRuleStateProvider::class) params: ColorParams<EditRuleStateParams>,
 ) {
-  PreviewWithColorParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
+  PreviewWithColorParams(params) {
+    EditRuleScaffold(
+      state = state,
+      mode = mode,
+      conditionEntities = PREVIEW_ENTITIES,
+      onAction = {},
+    )
+  }
 }
 
 private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode = Edit)
@@ -392,4 +413,13 @@ private class EditRuleStateProvider :
     EditRuleStateParams(Success(PreviewRule1, isWorking = true)),
     EditRuleStateParams(Loading),
     EditRuleStateParams(EditRuleState.OtherFailure("Something broke")),
+  )
+
+private val PREVIEW_ENTITIES =
+  ConditionEntityLists(
+    accounts = persistentListOf(),
+    categories = persistentListOf(),
+    categoryGroups = persistentListOf(),
+    payees = persistentListOf(),
+    names = persistentMapOf(),
   )

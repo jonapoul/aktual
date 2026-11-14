@@ -1,12 +1,22 @@
-import aktual.budget.model.Operator;
+import aktual.budget.model.Condition;
+import aktual.budget.model.ConditionOp;
 import aktual.budget.model.TransactionFilterId;
 import kotlin.Boolean;
-import kotlinx.serialization.json.JsonArray;
+import kotlin.collections.List;
 
 CREATE TABLE IF NOT EXISTS transaction_filters(
   id TEXT AS TransactionFilterId PRIMARY KEY,
   name TEXT,
-  conditions TEXT AS JsonArray,
-  conditions_op TEXT AS Operator DEFAULT 'and',
+  conditions TEXT AS List<Condition>,
+  conditions_op TEXT AS ConditionOp DEFAULT 'and',
   tombstone INTEGER AS Boolean DEFAULT 0
 );
+
+-- Saved filters by name, as upstream's useTransactionFilters sorts them
+getAllActive:
+SELECT * FROM transaction_filters WHERE tombstone = 0 ORDER BY name COLLATE NOCASE, id;
+
+insert:
+  INSERT OR REPLACE
+    INTO transaction_filters(id, name, conditions, conditions_op, tombstone)
+    VALUES (?,?,?,?,?);

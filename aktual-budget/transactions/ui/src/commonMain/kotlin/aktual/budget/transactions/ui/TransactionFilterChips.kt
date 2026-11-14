@@ -10,7 +10,8 @@ import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionEntityLists
 import aktual.budget.rules.domain.FILTER_FIELDS
-import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.newCondition
+import aktual.budget.transactions.vm.SavedFiltersState
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
@@ -62,11 +63,15 @@ import kotlinx.serialization.json.JsonPrimitive
 internal fun TransactionFilterChips(
   conditions: ConditionSet,
   entities: ConditionEntities?,
+  saved: SavedFiltersState,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
   var editing by rememberSaveable { mutableStateOf<Int?>(null) }
   var adding by rememberSaveable { mutableStateOf(false) }
+  var showSaved by rememberSaveable { mutableStateOf(false) }
+  var naming by rememberSaveable { mutableStateOf<FilterNaming?>(null) }
+  val hasConditions = conditions.conditions.isNotEmpty()
   val names = entities?.names ?: persistentMapOf()
 
   CardColumn(
@@ -79,6 +84,10 @@ internal fun TransactionFilterChips(
       horizontalArrangement = Arrangement.spacedBy(2.dp),
       verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
+      if (hasConditions || saved.filters.isNotEmpty()) {
+        SavedFilterChip(saved, hasConditions, onClick = { showSaved = true })
+      }
+
       if (conditions.conditions.size > 1) {
         val isAny = conditions.op == Or
         Chip(
@@ -108,6 +117,27 @@ internal fun TransactionFilterChips(
         role = Button,
       )
     }
+  }
+
+  if (showSaved) {
+    SavedFilterSheet(
+      saved = saved,
+      hasConditions = hasConditions,
+      onAction = onAction,
+      onName = { naming = it },
+      onDismiss = { showSaved = false },
+    )
+  }
+
+  naming?.let { mode ->
+    FilterNameDialog(
+      initialName = if (mode == Rename) saved.applied?.name.orEmpty() else "",
+      onConfirm = { name ->
+        naming = null
+        onAction(if (mode == Rename) Action.RenameSavedFilter(name) else Action.SaveFilter(name))
+      },
+      onDismiss = { naming = null },
+    )
   }
 
   if (entities == null) return
@@ -149,7 +179,7 @@ private fun AddFilterSheet(
     val condition = draft
     if (condition == null) {
       HostedSheet(onDismiss = host.dismiss) {
-        FieldList(onSelect = { field -> draft = newFilterCondition(field) })
+        FieldList(onSelect = { field -> draft = newCondition(field) })
       }
     } else {
       ConditionSheet(
@@ -217,7 +247,12 @@ private fun PreviewTransactionFilterChips(
   @PreviewParameter(FilterChipsProvider::class) params: ColorParams<ConditionSet>,
 ) =
   PreviewWithColorParams(params) {
-    TransactionFilterChips(conditions = this, entities = PREVIEW_ENTITIES, onAction = {})
+    TransactionFilterChips(
+      conditions = this,
+      entities = PREVIEW_ENTITIES,
+      saved = SavedFiltersState(),
+      onAction = {},
+    )
   }
 
 private class FilterChipsProvider :

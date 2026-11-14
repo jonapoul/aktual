@@ -28,7 +28,7 @@ import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.report.ReportState
 import aktual.budget.reports.vm.summaryType
 import aktual.budget.rules.components.ConditionTags
-import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.newCondition
 import aktual.core.ui.Tags as CoreTags
 import aktual.test.setPreviewContent
 import androidx.compose.ui.semantics.SemanticsActions
@@ -444,7 +444,7 @@ class ReportScaffoldTest {
           ),
       )
 
-    val CATEGORY_CONDITION = newFilterCondition(Category)
+    val CATEGORY_CONDITION = newCondition(Category)
 
     // As the view model makes it, with upstream's defaults filled in
     val ANALYSIS_META =

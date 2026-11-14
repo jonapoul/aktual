@@ -12,4 +12,11 @@ sealed interface TransactionsEvent {
   data object DeleteAccountFailed : TransactionsEvent
 
   data object ReconcileFailed : TransactionsEvent
+
+  @JvmInline value class FilterNameTaken(val name: String) : TransactionsEvent
+
+  // Another saved filter, named [name], already has the same conditions
+  @JvmInline value class FilterConditionsTaken(val name: String) : TransactionsEvent
+
+  data object SaveFilterFailed : TransactionsEvent
 }

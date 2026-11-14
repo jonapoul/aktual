@@ -2,18 +2,23 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.GetFilterRows
 import aktual.budget.db.dao.KnownBalance
+import aktual.budget.db.dao.RowBounds
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionNotes
 import aktual.budget.db.dao.TransactionRow
+import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.CategoryId
 import aktual.budget.model.FilteredSpec
+import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
 import aktual.budget.rules.domain.ConditionsMatcher
+import aktual.budget.rules.domain.FilterBounds
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.transactions.domain.TransactionSearchMatcher
 import aktual.core.utils.runCatchingCancellable
@@ -217,13 +222,24 @@ internal class TransactionsPagingSource(
     val matcher = TransactionSearchMatcher(search)
     val text = matcher.text
     val cents = matcher.amount
+    val bounds = matcher.bounds.toRowBounds()
     val rows =
       when (val accountSpec = spec.accountSpec) {
-        AllAccounts -> transactionDao.getFilterRows(text = text, cents = cents)
+        AllAccounts -> transactionDao.getFilterRows(text = text, cents = cents, bounds = bounds)
         is SpecificAccount ->
-          transactionDao.getFilterRows(account = accountSpec.id, text = text, cents = cents)
+          transactionDao.getFilterRows(
+            account = accountSpec.id,
+            text = text,
+            cents = cents,
+            bounds = bounds,
+          )
         is Group ->
-          transactionDao.getFilterRows(group = accountSpec.group, text = text, cents = cents)
+          transactionDao.getFilterRows(
+            group = accountSpec.group,
+            text = text,
+            cents = cents,
+            bounds = bounds,
+          )
       }
     val matching = rows.filter { row ->
       !(hideReconciled && row.reconciled == true) && matcher.matches(row.toFilterRow())
@@ -273,6 +289,15 @@ internal class TransactionsPagingSource(
 
 // The row offset a page starts at, or a prepend's ends at, with the balance its neighbour knows
 internal data class PageKey(val offset: Int, val balance: KnownBalance? = null)
+
+private fun FilterBounds.toRowBounds() =
+  RowBounds(
+    from = from,
+    to = to,
+    accounts = accounts?.mapTo(mutableSetOf(), ::AccountId),
+    categories = categories?.mapTo(mutableSetOf(), ::CategoryId),
+    payees = payees?.mapTo(mutableSetOf(), ::PayeeId),
+  )
 
 private fun GetFilterRows.toFilterRow() =
   FilterRow(

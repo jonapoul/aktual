@@ -20,7 +20,6 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
-import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.ReportDate
@@ -51,11 +50,9 @@ import kotlinx.datetime.number
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 private fun <T : Any> longAdapter(
@@ -102,7 +99,6 @@ private inline fun <reified T : JsonElement> jsonElement(crossinline getter: Jso
 
 private val jsonElement = jsonElement<JsonElement> { this }
 private val jsonObject = jsonElement<JsonObject> { jsonObject }
-private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>) =
   object : ColumnAdapter<T, String> {
@@ -164,7 +160,6 @@ private val categoryId = stringAdapter(::CategoryId)
 private val cleanupGroupsId = stringAdapter(::CleanupGroupId)
 private val customReportsId = stringAdapter(::CustomReportId)
 private val dashboardPageId = stringAdapter(::DashboardPageId)
-private val operator = stringAdapter(decode = Operator::parse, encode = Operator::string)
 private val payeeId = stringAdapter(::PayeeId)
 private val payeeLocationId = stringAdapter(::PayeeLocationId)
 private val reportDate = stringAdapter(ReportDate::parse)
@@ -336,8 +331,8 @@ internal val TagsAdapter = Tags.Adapter(idAdapter = tagId)
 internal val TransactionFiltersAdapter =
   Transaction_filters.Adapter(
     idAdapter = transactionFilterId,
-    conditionsAdapter = jsonArray,
-    conditions_opAdapter = operator,
+    conditionsAdapter = conditions,
+    conditions_opAdapter = conditionsOp,
   )
 
 internal val ZeroBudgetMonthsAdapter =

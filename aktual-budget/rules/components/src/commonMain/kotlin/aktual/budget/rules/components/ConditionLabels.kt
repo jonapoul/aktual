@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
+import aktual.budget.rules.domain.ConditionSchema
 import aktual.budget.rules.domain.editableKind
 import aktual.core.l10n.Strings
 import aktual.core.ui.formattedString
@@ -61,8 +62,11 @@ fun Operator.label(): String =
   }
 
 @Composable
-fun Condition.valueLabel(names: ImmutableMap<String, String>): String? =
-  when (editableKind()) {
+fun Condition.valueLabel(
+  names: ImmutableMap<String, String>,
+  schema: ConditionSchema = FilterConditions,
+): String? =
+  when (editableKind(schema)) {
     Entity ->
       value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
         ?: Strings.reportsFormulaQueryNothing
