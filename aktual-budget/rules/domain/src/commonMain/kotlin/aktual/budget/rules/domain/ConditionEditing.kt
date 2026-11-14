@@ -1,11 +1,26 @@
 package aktual.budget.rules.domain
 
+import aktual.budget.model.AccountOperator
+import aktual.budget.model.AmountOperator
+import aktual.budget.model.CategoryGroupOperator
+import aktual.budget.model.CategoryOperator
+import aktual.budget.model.ClearedOperator
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType
+import aktual.budget.model.DateOperator
 import aktual.budget.model.Field
+import aktual.budget.model.ImportedPayeeOperator
+import aktual.budget.model.NotesOperator
 import aktual.budget.model.Operator
+import aktual.budget.model.ParentOperator
+import aktual.budget.model.PayeeNameOperator
+import aktual.budget.model.PayeeOperator
+import aktual.budget.model.ReconciledOperator
+import aktual.budget.model.SavedOperator
+import aktual.budget.model.TransferOperator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -29,6 +44,31 @@ val FILTER_FIELDS =
     Reconciled,
     Transfer,
   )
+
+// Rules can use every field except the ones that duplicate another, like acct for account
+val RULE_FIELDS: ImmutableList<Field> =
+  Field.entries
+    .filter { it !in setOf<Field>(Acct, Description, ImportedDescription, Unknown) }
+    .toImmutableList()
+
+/** Which conditions an editor offers: a filter's, as upstream's filters show them, or a rule's */
+enum class ConditionSchema {
+  FilterConditions,
+  RuleConditions;
+
+  val fields: ImmutableList<Field>
+    get() =
+      when (this) {
+        FilterConditions -> FILTER_FIELDS
+        RuleConditions -> RULE_FIELDS
+      }
+
+  fun operators(field: Field): ImmutableList<Operator> =
+    when (this) {
+      FilterConditions -> filterOperators(field)
+      RuleConditions -> ruleOperators(field)
+    }
+}
 
 private val ID_OPERATORS =
   persistentListOf<Operator>(Is, IsNot, OneOf, NotOneOf, Contains, DoesNotContain, Matches)
@@ -71,6 +111,52 @@ fun filterOperators(field: Field): ImmutableList<Operator> =
     Parent,
     Unknown -> persistentListOf()
   }
+
+private val ALL_OPERATORS =
+  persistentListOf<Operator>(
+    Contains,
+    DoesNotContain,
+    GreaterThan,
+    GreaterThanOrEquals,
+    HasAnyTag,
+    HasTags,
+    Is,
+    IsApprox,
+    IsBetween,
+    IsNot,
+    LessThan,
+    LessThanOrEquals,
+    Matches,
+    NotOneOf,
+    OffBudget,
+    OnBudget,
+    OneOf,
+  )
+
+fun ruleOperators(field: Field): ImmutableList<Operator> =
+  when (field) {
+    Account -> operators<AccountOperator>()
+    Amount -> operators<AmountOperator>()
+    Category -> operators<CategoryOperator>()
+    CategoryGroup -> operators<CategoryGroupOperator>()
+    Date -> operators<DateOperator>()
+    Notes -> operators<NotesOperator>()
+    Payee -> operators<PayeeOperator>()
+    PayeeName -> operators<PayeeNameOperator>()
+    ImportedPayee -> operators<ImportedPayeeOperator>()
+    Saved -> operators<SavedOperator>()
+    Transfer -> operators<TransferOperator>()
+    Parent -> operators<ParentOperator>()
+    Cleared -> operators<ClearedOperator>()
+    Reconciled -> operators<ReconciledOperator>()
+    Acct,
+    ImportedDescription,
+    Description,
+    Unknown -> persistentListOf()
+  }
+
+private inline fun <reified O : Operator> operators(): ImmutableList<Operator> =
+  ALL_OPERATORS.filterIsInstance<O>().toImmutableList()
 
 fun conditionValueKind(field: Field, op: Operator): ConditionValueKind =
   when (field) {
@@ -117,9 +203,9 @@ private fun idValueKind(op: Operator): ConditionValueKind =
 
 // Null when the editor can't show the condition, like a recurring date or an amount range. Those
 // are kept as they are, and can only be deleted
-fun Condition.editableKind(): ConditionValueKind? {
+fun Condition.editableKind(schema: ConditionSchema = FilterConditions): ConditionValueKind? {
   val flows = options?.inflow == true || options?.outflow == true
-  if (customName != null || flows || operator !in filterOperators(field)) return null
+  if (customName != null || flows || operator !in schema.operators(field)) return null
   val kind = conditionValueKind(field, operator)
   return kind.takeIf { value.fits(it) }
 }
@@ -135,8 +221,8 @@ private fun JsonElement.fits(kind: ConditionValueKind): Boolean =
     NoValue -> true
   }
 
-fun newFilterCondition(field: Field): Condition {
-  val op = filterOperators(field).first()
+fun newCondition(field: Field, schema: ConditionSchema = FilterConditions): Condition {
+  val op = schema.operators(field).first()
   return Condition(
     field = field,
     operator = op,
@@ -146,9 +232,9 @@ fun newFilterCondition(field: Field): Condition {
 }
 
 // Keeps the value when the new operator takes the same kind
-fun Condition.withOperator(op: Operator): Condition {
+fun Condition.withOperator(op: Operator, schema: ConditionSchema = FilterConditions): Condition {
   val kind = conditionValueKind(field, op)
-  val value = if (editableKind() == kind) value else defaultValue(kind)
+  val value = if (editableKind(schema) == kind) value else defaultValue(kind)
   return copy(operator = op, value = value)
 }
 

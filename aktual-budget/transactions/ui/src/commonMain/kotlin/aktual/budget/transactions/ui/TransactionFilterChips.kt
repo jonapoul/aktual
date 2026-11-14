@@ -10,7 +10,7 @@ import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionEntityLists
 import aktual.budget.rules.domain.FILTER_FIELDS
-import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.newCondition
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
@@ -149,7 +149,7 @@ private fun AddFilterSheet(
     val condition = draft
     if (condition == null) {
       HostedSheet(onDismiss = host.dismiss) {
-        FieldList(onSelect = { field -> draft = newFilterCondition(field) })
+        FieldList(onSelect = { field -> draft = newCondition(field) })
       }
     } else {
       ConditionSheet(

@@ -6,9 +6,7 @@ import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
-import aktual.budget.model.Field
 import aktual.budget.model.LocalChange
-import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleAction.Op.Set
@@ -16,7 +14,8 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.budget.rules.vm.EntityListFetcher
+import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
@@ -43,15 +42,16 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -65,7 +65,7 @@ internal constructor(
   private val rulesDao: RulesDao,
   private val syncController: BudgetSyncController,
   val nameFetcher: NameFetcher,
-  val entityListFetcher: EntityListFetcher,
+  conditionEntitiesLoader: ConditionEntitiesLoader,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvents =
@@ -81,6 +81,11 @@ internal constructor(
   private val mutableRule = MutableStateFlow<Rule?>(null)
 
   val events: SharedFlow<EditRuleEvent> = mutableEvents.asSharedFlow()
+
+  val conditionEntities: StateFlow<ConditionEntities?> = flow {
+    emit(conditionEntitiesLoader.load())
+  }
+    .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   val state: StateFlow<EditRuleState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -186,37 +191,13 @@ internal constructor(
 
   fun setStage(stage: RuleStage) = updateRule { r -> r.copy(stage = stage) }
 
-  fun setConditionOp(op: ConditionOp) = updateRule { r -> r.copy(conditionsOp = op) }
-
-  fun setConditionField(field: Field, index: Int) =
-    updateCondition(index) { c -> c.copy(field = field, value = JsonNull) }
-
-  fun setConditionOperator(operator: Operator, index: Int) =
-    updateCondition(index) { c -> c.copy(operator = operator) }
-
-  fun setConditionValue(value: JsonElement, index: Int) =
-    updateCondition(index) { c -> c.copy(value = value) }
-
-  fun deleteCondition(index: Int) = updateRule { r ->
-    val conditions = r.conditions.toPersistentList().removingAt(index)
-    r.copy(conditions = conditions)
-  }
-
-  fun appendCondition() {
-    val condition = emptyCondition()
-    updateRule { rule -> rule.copy(conditions = (rule.conditions + condition).toImmutableList()) }
+  fun setConditions(conditions: List<Condition>, op: ConditionOp) = updateRule { rule ->
+    rule.copy(conditions = conditions.toImmutableList(), conditionsOp = op)
   }
 
   private fun updateRule(makeCopy: (Rule) -> Rule) = mutableRule.update { rule ->
     rule ?: return@update null
     makeCopy(rule)
-  }
-
-  private fun updateCondition(index: Int, makeCopy: (Condition) -> Condition) = updateRule { rule ->
-    val conditions = rule.conditions.toMutableList()
-    val condition = makeCopy(conditions[index])
-    conditions[index] = condition
-    rule.copy(conditions = conditions.toImmutableList())
   }
 
   private fun emptyRule() =
@@ -276,3 +257,5 @@ internal constructor(
     fun create(ruleId: RuleId?, payee: PayeeId?): EditRuleViewModel
   }
 }
+
+private const val STOP_TIMEOUT_MS = 5_000L

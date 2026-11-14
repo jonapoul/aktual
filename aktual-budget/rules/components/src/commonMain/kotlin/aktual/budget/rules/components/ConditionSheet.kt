@@ -3,11 +3,10 @@ package aktual.budget.rules.components
 import aktual.budget.model.Condition
 import aktual.budget.model.Field
 import aktual.budget.rules.domain.ConditionEntities
-import aktual.budget.rules.domain.FILTER_FIELDS
+import aktual.budget.rules.domain.ConditionSchema
 import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.entities
-import aktual.budget.rules.domain.filterOperators
-import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.newCondition
 import aktual.budget.rules.domain.withOperator
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
@@ -41,12 +40,13 @@ fun ConditionSheet(
   onChange: (Condition) -> Unit,
   onDelete: () -> Unit,
   onDismiss: () -> Unit,
-  fields: ImmutableList<Field> = FILTER_FIELDS,
+  schema: ConditionSchema = FilterConditions,
+  fields: ImmutableList<Field> = schema.fields,
   onAdd: (() -> Unit)? = null,
 ) =
   HostedSheet(onDismiss = onDismiss) {
     var pickingEntity by rememberSaveable { mutableStateOf(false) }
-    val kind = condition.editableKind()
+    val kind = condition.editableKind(schema)
     if (pickingEntity && (kind == Entity || kind == EntityList)) {
       EntitySheet(
         kind = kind,
@@ -78,6 +78,7 @@ fun ConditionSheet(
       ) {
         ConditionContent(
           condition = condition,
+          schema = schema,
           fields = fields,
           data = data,
           onChange = onChange,
@@ -90,12 +91,13 @@ fun ConditionSheet(
 @Composable
 private fun ConditionContent(
   condition: Condition,
+  schema: ConditionSchema,
   fields: ImmutableList<Field>,
   data: ConditionEntities,
   onChange: (Condition) -> Unit,
   onPickEntity: () -> Unit,
 ) {
-  val kind = condition.editableKind()
+  val kind = condition.editableKind(schema)
   if (kind == null) {
     val summary = "${condition.field.label()} ${condition.operator.label()} ${condition.value}"
     Text(
@@ -110,7 +112,7 @@ private fun ConditionContent(
         AktualExposedDropDownMenu(
           modifier = Modifier.fillMaxWidth(),
           value = condition.field,
-          onValueChange = { field -> onChange(newFilterCondition(field)) },
+          onValueChange = { field -> onChange(newCondition(field, schema)) },
           options = fields,
           string = { field -> field.label() },
           textStyle = typography.bodyMedium,
@@ -121,8 +123,8 @@ private fun ConditionContent(
         AktualExposedDropDownMenu(
           modifier = Modifier.fillMaxWidth(),
           value = condition.operator,
-          onValueChange = { op -> onChange(condition.withOperator(op)) },
-          options = filterOperators(condition.field),
+          onValueChange = { op -> onChange(condition.withOperator(op, schema)) },
+          options = schema.operators(condition.field),
           string = { op -> op.label() },
           textStyle = typography.bodyMedium,
         )

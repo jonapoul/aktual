@@ -3,7 +3,7 @@ package aktual.budget.transactions.ui
 import aktual.budget.model.ConditionSet
 import aktual.budget.rules.components.ConditionTags
 import aktual.budget.rules.domain.ConditionEntityLists
-import aktual.budget.rules.domain.newFilterCondition
+import aktual.budget.rules.domain.newCondition
 import aktual.test.setPreviewContent
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.onNodeWithTag
@@ -37,7 +37,7 @@ class TransactionFilterChipsTest {
     waitForIdle()
 
     // then
-    assertThat(actions).containsExactly(Action.AddCondition(newFilterCondition(Cleared)))
+    assertThat(actions).containsExactly(Action.AddCondition(newCondition(Cleared)))
   }
 
   private companion object {

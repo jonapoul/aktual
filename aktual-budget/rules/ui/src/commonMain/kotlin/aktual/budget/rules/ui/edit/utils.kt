@@ -1,6 +1,5 @@
 package aktual.budget.rules.ui.edit
 
-import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleStage
 import aktual.core.l10n.Strings
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,13 +21,3 @@ internal enum class Mode {
   Create,
   Edit,
 }
-
-@Composable
-internal fun ConditionOp.string(): String =
-  when (this) {
-    And -> Strings.editRuleAnd
-    Or -> Strings.editRuleOr
-    Unknown -> Strings.editRuleUnknown
-  }
-
-internal val BUTTON_PADDING = PaddingValues(horizontal = 8.dp, vertical = 8.dp)

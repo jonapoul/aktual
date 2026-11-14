@@ -13,6 +13,7 @@ kotlin {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.metrox.viewmodel)
     implementation(libs.shimmer)
+    implementation(project(":aktual-budget:rules:components"))
     implementation(project(":aktual-budget:schedules:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
