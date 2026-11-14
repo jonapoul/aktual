@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
  * One bottom sheet for every [HostedSheet] inside it, so swapping one for another changes the page
  * rather than opening a new sheet. Give the first page [SheetHostState.dismiss] as its `onDismiss`.
  * A page given anything else is a sub-page, with a back button that calls its `onDismiss`. The
- * sheet keeps the height of its tallest page so far, so it doesn't shrink when swapping pages.
+ * sheet keeps the height of its tallest page so far, so it doesn't shrink when swapping pages. New
+ * pages slide in from the end, and going back slides them out again.
  */
 @Composable
 fun SheetHost(
@@ -59,9 +60,9 @@ fun SheetHost(
     val minHeight = with(LocalDensity.current) { tallestPage.toDp() }
     Column(
       modifier =
-        Modifier.heightIn(min = minHeight).onSizeChanged { size ->
-          if (size.height > tallestPage) tallestPage = size.height
-        },
+        Modifier.heightIn(min = minHeight)
+          .onSizeChanged { size -> if (size.height > tallestPage) tallestPage = size.height }
+          .slidePages(host),
     ) {
       CompositionLocalProvider(LocalSheetHost provides host) { content(host) }
     }
@@ -73,19 +74,31 @@ class SheetHostState internal constructor(private val hide: (then: () -> Unit) -
   /** Hides the sheet, then calls the host's `onDismiss` */
   val dismiss: () -> Unit = { hide {} }
 
-  // Open sub-pages by key. The deepest one gets the back button, since a page can open another
-  // inside itself
-  private val subPages = mutableStateMapOf<Any, SubPage>()
+  // Shown pages by key. The deepest one is on top and gets the back button, since a page can open
+  // another inside itself
+  private val pages = mutableStateMapOf<Any, Page>()
+  private var nextOrder = 0
+
+  internal val topPage: Page?
+    get() = pages.values.maxWithOrNull(compareBy(Page::depth, Page::order))
 
   internal val onBack: (() -> Unit)?
-    get() = subPages.values.maxByOrNull(SubPage::depth)?.onBack
+    get() = topPage?.onBack?.let { onBack -> { goBack(onBack) } }
 
-  internal fun register(key: Any, page: SubPage) {
-    subPages[key] = page
+  // Set when a page closes, so the next page change slides the other way
+  internal var isGoingBack = false
+
+  internal fun goBack(then: () -> Unit) {
+    isGoingBack = true
+    then()
+  }
+
+  internal fun register(key: Any, depth: Int, onBack: (() -> Unit)?) {
+    pages[key] = Page(key, depth, nextOrder++, onBack)
   }
 
   internal fun unregister(key: Any) {
-    subPages.remove(key)
+    pages.remove(key)
   }
 
   /** Hides the sheet, then runs [then] and the host's `onDismiss` */
@@ -122,20 +135,21 @@ fun HostedSheet(onDismiss: () -> Unit, content: @Composable HostedSheetScope.() 
   val parentDepth = LocalSheetDepth.current
   val isSubPage = onDismiss !== host.dismiss
   val depth = if (isSubPage) parentDepth + 1 else parentDepth
-  if (isSubPage) {
-    val latestOnDismiss by rememberUpdatedState(onDismiss)
-    val key = remember { Any() }
-    DisposableEffect(host, key, depth) {
-      host.register(key, SubPage(depth) { latestOnDismiss() })
-      onDispose { host.unregister(key) }
-    }
+  val latestOnDismiss by rememberUpdatedState(onDismiss)
+  val key = remember { Any() }
+  DisposableEffect(host, key, depth, isSubPage) {
+    val onBack = { latestOnDismiss() }
+    host.register(key, depth, onBack = onBack.takeIf { isSubPage })
+    onDispose { host.unregister(key) }
   }
 
   val scope =
     if (isSubPage) {
       val close = { then: () -> Unit ->
-        then()
-        onDismiss()
+        host.goBack {
+          then()
+          onDismiss()
+        }
       }
       HostedSheetScope(onClose = close, onDismiss = host::dismissThen)
     } else {
@@ -144,7 +158,7 @@ fun HostedSheet(onDismiss: () -> Unit, content: @Composable HostedSheetScope.() 
   CompositionLocalProvider(LocalSheetDepth provides depth) { scope.content() }
 }
 
-internal data class SubPage(val depth: Int, val onBack: () -> Unit)
+internal data class Page(val key: Any, val depth: Int, val order: Int, val onBack: (() -> Unit)?)
 
 private val LocalSheetHost = staticCompositionLocalOf<SheetHostState?> { null }
 

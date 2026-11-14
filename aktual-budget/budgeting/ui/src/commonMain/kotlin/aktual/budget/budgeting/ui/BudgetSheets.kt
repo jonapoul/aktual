@@ -27,14 +27,13 @@ import aktual.core.ui.formattedText
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
+import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -359,7 +358,7 @@ private fun MenuSheet(
       text = title,
       style = typography.headlineSmall,
     )
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+    Column(modifier = Modifier.verticalScrollWithBar()) {
       for (item in items) {
         BottomSheetListItem(
           label = item.label,
