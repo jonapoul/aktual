@@ -14,13 +14,17 @@ import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
+import aktual.budget.rules.vm.edit.RuleMatchesState
 import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.edit_rule_matches_applied
+import aktual.core.l10n.edit_rule_matches_apply_failed
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
@@ -47,6 +51,7 @@ import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
+import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
@@ -62,6 +67,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -85,6 +92,8 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.JsonPrimitive
+import org.jetbrains.compose.resources.getPluralString
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun EditRuleScreen(
@@ -96,11 +105,19 @@ internal fun EditRuleScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
+  val matches by viewModel.matches.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         DeletedRule -> back()
+        is AppliedActions ->
+          snackbarHostState.showSnackbar(
+            getPluralString(Res.plurals.edit_rule_matches_applied, event.count, event.count),
+          )
+        ApplyFailed ->
+          snackbarHostState.showErrorSnackbar(getString(Res.string.edit_rule_matches_apply_failed))
       }
     }
   }
@@ -111,24 +128,33 @@ internal fun EditRuleScreen(
       mode = if (id == null) Create else Edit,
       state = state,
       conditionEntities = conditionEntities,
+      matches = matches,
+      snackbarHostState = snackbarHostState,
       onAction = { action ->
-        when (action) {
-          NavBack -> back()
-          Delete -> viewModel.delete()
-          Save -> viewModel.save()
-          is SetStage -> viewModel.setStage(action.value)
-          is SetConditionsOp -> viewModel.setConditionsOp(action.value)
-          is SetCondition -> viewModel.setCondition(action.index, action.condition)
-          AddCondition -> viewModel.addCondition()
-          is RemoveCondition -> viewModel.removeCondition(action.index)
-          is SetAction -> viewModel.setAction(action.index, action.action)
-          is AddAction -> viewModel.addAction(action.splitIndex)
-          is RemoveAction -> viewModel.removeAction(action.index)
-          AddSplit -> viewModel.addSplit()
-          is RemoveSplit -> viewModel.removeSplit(action.splitIndex)
-        }
+        if (action == NavBack) back() else viewModel.handle(action)
       },
     )
+  }
+}
+
+private fun EditRuleViewModel.handle(action: EditRuleAction) {
+  when (action) {
+    NavBack -> Unit
+    Delete -> delete()
+    Save -> save()
+    is SetStage -> setStage(action.value)
+    is SetConditionsOp -> setConditionsOp(action.value)
+    is SetCondition -> setCondition(action.index, action.condition)
+    AddCondition -> addCondition()
+    is RemoveCondition -> removeCondition(action.index)
+    is SetAction -> setAction(action.index, action.action)
+    is AddAction -> addAction(action.splitIndex)
+    is RemoveAction -> removeAction(action.index)
+    AddSplit -> addSplit()
+    is RemoveSplit -> removeSplit(action.splitIndex)
+    ApplyActions -> applyActions()
+    is ToggleMatch -> toggleMatch(action.id)
+    ToggleAllMatches -> toggleAllMatches()
   }
 }
 
@@ -148,14 +174,17 @@ private fun EditRuleScaffold(
   state: EditRuleState,
   mode: Mode,
   conditionEntities: ConditionEntities?,
+  matches: RuleMatchesState,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
+    snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
@@ -221,6 +250,7 @@ private fun EditRuleScaffold(
             conditionKeys = state.conditionKeys,
             actionKeys = state.actionKeys,
             conditionEntities = conditionEntities,
+            matches = matches,
             isEnabled = !state.isWorking,
             onAction = onAction,
           )
@@ -297,6 +327,7 @@ private fun LoadedContent(
   conditionKeys: ImmutableList<Long>,
   actionKeys: ImmutableList<Long>,
   conditionEntities: ConditionEntities?,
+  matches: RuleMatchesState,
   isEnabled: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
@@ -342,7 +373,10 @@ private fun LoadedContent(
       onOpen = { index: Int -> openAction = index }.takeIf { conditionEntities != null },
       onOpenSplit = { split: Int -> openSplit = split },
       onAction = onAction,
+      hasNext = true,
     )
+
+    matchesNode(state = matches, isEnabled = isEnabled, onAction = onAction)
 
     item(key = "bottom") {
       // Room to scroll the last card out from under the save button
@@ -397,6 +431,7 @@ private fun PreviewEditRuleScaffold(
       state = state,
       mode = mode,
       conditionEntities = PREVIEW_ENTITIES,
+      matches = RuleMatchesState.Loaded(0, 0, persistentListOf()),
       onAction = {},
     )
   }

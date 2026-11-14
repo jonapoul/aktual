@@ -64,7 +64,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Clock
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -283,7 +282,7 @@ internal constructor(
         filters
           .map { it.trimmed().text }
           .distinctUntilChanged()
-          .debounce { text -> if (text.isEmpty()) Duration.ZERO else QUERY_DEBOUNCE },
+          .debounce { text -> if (text.isEmpty()) ZERO else QUERY_DEBOUNCE },
         filters.map { it.conditions }.distinctUntilChanged(),
         ::TransactionSearch,
       )

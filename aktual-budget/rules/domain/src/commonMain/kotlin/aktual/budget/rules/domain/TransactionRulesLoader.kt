@@ -47,5 +47,8 @@ class LoadedRules(val engine: RulesEngine, private val context: SnapshotRuleCont
 
   fun run(transaction: RuleTransaction): RuleTransaction = engine.run(transaction, context)
 
+  fun run(actions: RuleActions, transaction: RuleTransaction): RuleTransaction =
+    actions.run(transaction, context)
+
   fun resolvePayee(name: String): PayeeId = context.resolvePayee(name)
 }

@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.db.GetFilterRows
 import aktual.budget.db.dao.KnownBalance
 import aktual.budget.db.dao.RowBounds
 import aktual.budget.db.dao.TagsDao
@@ -8,7 +7,6 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionNotes
 import aktual.budget.db.dao.TransactionRow
 import aktual.budget.model.AccountId
-import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.FilteredSpec
 import aktual.budget.model.PayeeId
@@ -19,8 +17,8 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
 import aktual.budget.rules.domain.ConditionsMatcher
 import aktual.budget.rules.domain.FilterBounds
-import aktual.budget.rules.domain.FilterRow
 import aktual.budget.transactions.domain.TransactionSearchMatcher
+import aktual.budget.transactions.domain.toFilterRow
 import aktual.core.utils.runCatchingCancellable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -297,26 +295,4 @@ private fun FilterBounds.toRowBounds() =
     accounts = accounts?.mapTo(mutableSetOf(), ::AccountId),
     categories = categories?.mapTo(mutableSetOf(), ::CategoryId),
     payees = payees?.mapTo(mutableSetOf(), ::PayeeId),
-  )
-
-private fun GetFilterRows.toFilterRow() =
-  FilterRow(
-    date = date,
-    amount = Amount(amount),
-    account = account,
-    accountName = account_name,
-    offBudget = off_budget == true,
-    payee = payee,
-    payeeName = payee_name,
-    transferAccountName = transfer_account_name,
-    importedPayee = imported_payee?.value,
-    category = category,
-    categoryName = category_name,
-    categoryGroup = category_group,
-    categoryGroupName = category_group_name,
-    notes = notes,
-    cleared = cleared == true,
-    reconciled = reconciled == true,
-    isTransfer = transfer_id != null,
-    isParent = is_parent == true,
   )

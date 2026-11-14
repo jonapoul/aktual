@@ -11,10 +11,12 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
+import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.TransactionRule
 import aktual.budget.rules.domain.addAction
 import aktual.budget.rules.domain.addSplit
 import aktual.budget.rules.domain.newAction
@@ -24,7 +26,11 @@ import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
+import aktual.budget.rules.vm.edit.RuleMatchesState.Failed
+import aktual.budget.rules.vm.edit.RuleMatchesState.Invalid
+import aktual.budget.rules.vm.edit.RuleMatchesState.Loading
 import aktual.budget.rules.vm.hasUnknownValues
+import aktual.budget.transactions.domain.RuleMatcher
 import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
@@ -45,16 +51,27 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -70,6 +87,7 @@ internal constructor(
   private val uuidGenerator: UuidGenerator,
   private val rulesDao: RulesDao,
   private val syncController: BudgetSyncController,
+  private val ruleMatcher: RuleMatcher,
   val nameFetcher: NameFetcher,
   conditionEntitiesLoader: ConditionEntitiesLoader,
   viewModelContext: ViewModelContext,
@@ -85,6 +103,9 @@ internal constructor(
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
   private val mutableDraft = MutableStateFlow<Draft?>(null)
+  private val mutableIsApplying = MutableStateFlow(false)
+  private val matchRefreshes = MutableStateFlow(0)
+  private val mutableSelected = MutableStateFlow(persistentSetOf<TransactionId>())
   private var nextKey = 0L
 
   val events: SharedFlow<EditRuleEvent> = mutableEvents.asSharedFlow()
@@ -102,6 +123,32 @@ internal constructor(
       val draft by mutableDraft.collectAsState()
       editRuleState(isLoading, isWorking, failure, draft)
     }
+
+  @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+  val matches: StateFlow<RuleMatchesState> =
+    combine(
+        combine(
+            mutableDraft.mapNotNull { it?.rule?.toTransactionRule() }.distinctUntilChanged(),
+            matchRefreshes,
+          ) { rule, _ ->
+            rule
+          }
+          .debounce(MATCHES_DEBOUNCE_MS.milliseconds)
+          .mapLatest(::loadMatches),
+        mutableIsApplying,
+        mutableSelected,
+      ) { matches, isApplying, selected ->
+        if (matches is Loaded) {
+          val changed = matches.rows.filter { it.isChanged }.mapTo(mutableSetOf()) { it.id }
+          matches.copy(
+            selected = selected.filter { it in changed }.toImmutableSet(),
+            isApplying = isApplying,
+          )
+        } else {
+          matches
+        }
+      }
+      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = Loading)
 
   init {
     loadData()
@@ -195,6 +242,53 @@ internal constructor(
       )
     }
   }
+
+  fun toggleMatch(id: TransactionId) = mutableSelected.update { ids ->
+    if (id in ids) ids.removing(id) else ids.adding(id)
+  }
+
+  // Ticks every match that would change, or unticks them all if they already are
+  fun toggleAllMatches() {
+    val loaded = matches.value as? Loaded ?: return
+    val changed = loaded.rows.filter { it.isChanged }.map { it.id }
+    mutableSelected.update { ids ->
+      if (ids.containsAll(changed)) persistentSetOf() else changed.toPersistentSet()
+    }
+  }
+
+  // Runs the actions on the ticked transactions, whether or not the rule is saved
+  fun applyActions() {
+    val rule = mutableDraft.value?.rule?.toTransactionRule() ?: return
+    val selected = (matches.value as? Loaded)?.selected ?: return
+    if (selected.isEmpty()) return
+    mutableIsApplying.update { true }
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          val count = ruleMatcher.apply(rule, selected)
+          mutableSelected.update { persistentSetOf() }
+          mutableEvents.tryEmit(EditRuleEvent.AppliedActions(count))
+        },
+        onFailure = { e ->
+          log.e(e) { "Failed applying the actions of ${rule.id}" }
+          mutableEvents.tryEmit(ApplyFailed)
+        },
+        finally = {
+          mutableIsApplying.update { false }
+          matchRefreshes.update { it + 1 }
+        },
+      )
+    }
+  }
+
+  private suspend fun loadMatches(rule: TransactionRule): RuleMatchesState =
+    runCatchingCancellable(
+      attempt = { ruleMatcher.find(rule)?.toState() ?: Invalid },
+      onFailure = { e ->
+        log.e(e) { "Failed finding matches for ${rule.id}" }
+        Failed
+      },
+    )
 
   fun setStage(stage: RuleStage) = updateRule { r -> r.copy(stage = stage) }
 
@@ -332,6 +426,16 @@ internal constructor(
 }
 
 private const val STOP_TIMEOUT_MS = 5_000L
+private const val MATCHES_DEBOUNCE_MS = 300L
+
+private fun Rule.toTransactionRule() =
+  TransactionRule(
+    id = id,
+    conditions = conditions,
+    actions = actions,
+    stage = stage,
+    conditionsOp = conditionsOp,
+  )
 
 // Keys stay with their condition or action as others are added or removed, so the UI can animate
 // them

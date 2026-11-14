@@ -4,6 +4,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleStage
+import aktual.budget.model.TransactionId
 import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface EditRuleAction
@@ -33,3 +34,9 @@ internal data class SetAction(val index: Int, val action: RuleAction) : EditRule
 internal data object AddSplit : EditRuleAction
 
 @JvmInline internal value class RemoveSplit(val splitIndex: Int) : EditRuleAction
+
+internal data object ApplyActions : EditRuleAction
+
+@JvmInline internal value class ToggleMatch(val id: TransactionId) : EditRuleAction
+
+internal data object ToggleAllMatches : EditRuleAction
