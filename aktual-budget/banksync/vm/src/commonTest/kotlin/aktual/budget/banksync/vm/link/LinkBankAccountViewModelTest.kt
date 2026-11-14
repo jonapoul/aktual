@@ -34,7 +34,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
@@ -465,7 +465,7 @@ class LinkBankAccountViewModelTest {
           accountDao = AccountDao(database),
           dao = BankSyncDao(database),
           writer =
-            TransactionWriter(
+            TransactionWriterImpl(
               syncController = this,
               accountDao = AccountDao(database),
               categoryDao = CategoryDao(database),

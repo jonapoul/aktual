@@ -124,9 +124,9 @@ class TransactionRulesLoaderTest {
     assertThat(loaded.createdPayees).isEqualTo(mapOf(PayeeId("uuid-1") to "Tesco"))
   }
 
-  private fun loader(database: BudgetDatabase): TransactionRulesLoader {
+  private fun loader(database: BudgetDatabase): TransactionRulesLoaderImpl {
     var count = 0
-    return TransactionRulesLoader(
+    return TransactionRulesLoaderImpl(
       rulesDao = RulesDao(database),
       contextDao = RuleContextDao(database),
       uuidGenerator = { "uuid-${++count}" },

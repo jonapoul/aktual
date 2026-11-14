@@ -48,7 +48,7 @@ internal class WriterTestScope(
   private var nextId = 1
 
   val writer =
-    TransactionWriter(
+    TransactionWriterImpl(
       syncController = this,
       accountDao = accountDao,
       categoryDao = categoryDao,

@@ -26,24 +26,19 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonObject
 
 /**
- * Collects the changes of one [TransactionWriter.write] call, so they all go out in a single
- * BudgetSyncController.syncChanges(). Nothing touches the database until the block returns, so
- * anything added earlier in the same batch (payees, split children) is tracked here.
- *
  * Column names are those of the transactions table, mapped from the TransactionEntity fields the
  * way schemaConfig.views.transactions.fields in packages/loot-core/src/server/aql/schema/index.ts
  * does. As upstream, a new row's id is the message row, so there's no message for the id column
  * itself.
  */
-class TransactionBatch
-internal constructor(
+internal class TransactionBatchImpl(
   private val accountDao: AccountDao,
   private val categoryDao: CategoryDao,
   private val payeeDao: PayeeDao,
   private val transactionDao: TransactionDao,
   private val uuidGenerator: UuidGenerator,
   private val clock: Clock,
-) {
+) : TransactionBatch {
   private val changes = mutableListOf<LocalChange>()
   private val offBudget = mutableMapOf<AccountId, Boolean>()
   // The parent each transaction was given in this batch, null if it was detached
@@ -71,11 +66,7 @@ internal constructor(
 
   internal fun categorised(): Set<TransactionId> = categorised - deleted
 
-  /**
-   * db.insertTransaction(), plus batchUpdateTransactions() clearing the category of split parents
-   * and off-budget transactions. Null fields are skipped, as convertForInsert() does.
-   */
-  suspend fun insert(transaction: NewTransaction): TransactionId {
+  override suspend fun insert(transaction: NewTransaction): TransactionId {
     val t = transaction
     checkDate(t.date)
     val id = t.id ?: uuidGenerator(::TransactionId)
@@ -111,13 +102,7 @@ internal constructor(
     return id
   }
 
-  /**
-   * db.updateTransaction(), plus batchUpdateTransactions() clearing the category when the
-   * transaction moves to an off-budget account or is made a split parent. Upstream's callers pass
-   * the whole transaction, so setting a category here is also checked against the account and
-   * isParent flag the transaction already has.
-   */
-  suspend fun update(update: TransactionUpdate) {
+  override suspend fun update(update: TransactionUpdate) {
     val u = update
     u.date?.let(::checkDate)
     val category = if (clearsCategory(u)) Patch.To(null) else u.category
@@ -148,25 +133,20 @@ internal constructor(
     addAll(TRANSACTIONS, u.id.value, columns)
     updated += u.id
     if ((category as? To)?.value != null) categorised += u.id
-    if (u.parentId is To) batchParents[u.id] = u.parentId.value
-    if (u.account != null) batchAccounts[u.id] = u.account
-    if (u.isParent != null) batchIsParent[u.id] = u.isParent
+    (u.parentId as? To)?.let { batchParents[u.id] = it.value }
+    u.account?.let { batchAccounts[u.id] = it }
+    u.isParent?.let { batchIsParent[u.id] = it }
   }
 
-  // The parent's update goes first, so a part added to a new split finds it already a parent
-  suspend fun write(changes: TransactionChanges) {
+  override suspend fun write(changes: TransactionChanges) {
     changes.updated.forEach { update(it) }
     changes.added.forEach { insert(it) }
     if (changes.deleted.isNotEmpty()) delete(changes.deleted)
   }
 
-  suspend fun delete(id: TransactionId) = delete(listOf(id))
+  override suspend fun delete(id: TransactionId) = delete(listOf(id))
 
-  /**
-   * db.deleteTransaction() for each transaction and, as batchUpdateTransactions() does, every child
-   * of a split parent among them.
-   */
-  suspend fun delete(ids: Collection<TransactionId>) {
+  override suspend fun delete(ids: Collection<TransactionId>) {
     val parents = ids.toSet()
     val withChildren = LinkedHashSet(ids)
     // Stored children, unless this batch already moved them elsewhere
@@ -177,45 +157,33 @@ internal constructor(
     }
   }
 
-  /**
-   * db.insertPayee(): the payee plus a payee_mapping row pointing at itself. [id] is for payees
-   * that were given one before being saved, like those rules create.
-   */
-  fun insertPayee(
+  override fun insertPayee(
     name: String,
-    transferAccount: AccountId? = null,
-    id: PayeeId = uuidGenerator(::PayeeId),
+    transferAccount: AccountId?,
+    id: PayeeId?,
   ): PayeeId {
-    val row = id.value
+    val idOrNew = id ?: uuidGenerator(::PayeeId)
+    val row = idOrNew.value
     changes += localChange(PAYEES, row, "name", name)
     if (transferAccount != null) {
       changes += localChange(PAYEES, row, "transfer_acct", transferAccount.value)
     }
     changes += localChange(PAYEE_MAPPING, row, "targetId", row)
-    newPayees.getOrPut(name.lowercase()) { id }
-    return id
+    newPayees.getOrPut(name.lowercase()) { idOrNew }
+    return idOrNew
   }
 
-  /**
-   * accounts/payees.ts createPayee(): the ID of the live payee with this name, ignoring case, or of
-   * a new one if there's none.
-   */
-  suspend fun createPayee(name: String): PayeeId {
+  override suspend fun createPayee(name: String): PayeeId {
     val key = name.lowercase()
     return existingPayees()[key] ?: newPayees[key] ?: insertPayee(name)
   }
 
-  /** accounts/payees.ts getStartingBalancePayee() */
-  suspend fun startingBalancePayee(): StartingBalancePayee {
+  override suspend fun startingBalancePayee(): StartingBalancePayee {
     val category = categoryDao.startingBalanceCategory()
     return StartingBalancePayee(id = createPayee(STARTING_BALANCE), category = category)
   }
 
-  /**
-   * The starting balance transaction that accounts/app.ts createAccount() and accounts/sync.ts
-   * processBankSyncDownload() add. Off-budget accounts get no category.
-   */
-  suspend fun insertStartingBalance(
+  override suspend fun insertStartingBalance(
     account: AccountId,
     amount: Amount,
     date: LocalDate,
@@ -234,11 +202,7 @@ internal constructor(
     return insert(transaction)
   }
 
-  /**
-   * The forced branch of accounts/app.ts closeAccount(): deletes the account, its transactions and
-   * its transfer payee. The other side of each transfer stays, as an ordinary transaction.
-   */
-  suspend fun deleteAccount(id: AccountId) {
+  override suspend fun deleteAccount(id: AccountId) {
     val transactions = transactionDao.accountTransfers(id)
     for (linked in transactions.values) {
       if (linked != null && linked !in transactions) {
@@ -250,16 +214,11 @@ internal constructor(
     changes += tombstone(ACCOUNTS, id.value)
   }
 
-  /** accounts/app.ts updateAccount() with a new name. */
-  fun renameAccount(id: AccountId, name: String) {
+  override fun renameAccount(id: AccountId, name: String) {
     changes += localChange(ACCOUNTS, id.value, "name", name)
   }
 
-  /**
-   * db.insertAccount(): an open account at the end of the on or [offBudget] list. Its transfer
-   * payee isn't added, see [createAccount].
-   */
-  suspend fun insertAccount(name: String, offBudget: Boolean): AccountId {
+  override suspend fun insertAccount(name: String, offBudget: Boolean): AccountId {
     val id = uuidGenerator(::AccountId)
     val row = id.value
     val sortOrder = sortOrderAfter(accountDao.maxSortOrder(offBudget))
@@ -271,16 +230,12 @@ internal constructor(
     return id
   }
 
-  /**
-   * accounts/app.ts createAccount(): the account in [group], its transfer payee and, unless
-   * [balance] is zero, a starting balance on [date].
-   */
-  suspend fun createAccount(
+  override suspend fun createAccount(
     name: String,
     offBudget: Boolean,
     balance: Amount,
     date: LocalDate,
-    group: AccountGroupId? = null,
+    group: AccountGroupId?,
   ): AccountId {
     val id = insertAccount(name, offBudget)
     if (group != null) changes += localChange(ACCOUNTS, id.value, "account_group_id", group.value)
@@ -289,13 +244,11 @@ internal constructor(
     return id
   }
 
-  // Changes built elsewhere, like a bank link, to go out with the rest of the batch
-  fun add(changes: Collection<LocalChange>) {
+  override fun add(changes: Collection<LocalChange>) {
     this.changes += changes
   }
 
-  /** db.update('accounts', ...) with any of the bank sync or reconciliation fields. */
-  fun updateAccount(update: AccountUpdate) {
+  override fun updateAccount(update: AccountUpdate) {
     val columns =
       listOf(
         "balance_current" to update.balanceCurrent.messageValue { it.messageValue() },
@@ -318,7 +271,8 @@ internal constructor(
   }
 
   private suspend fun clearsCategory(u: TransactionUpdate): Boolean {
-    if (u.isParent == true || u.account != null && isOffBudget(u.account)) return true
+    val newAccount = u.account
+    if (u.isParent == true || newAccount != null && isOffBudget(newAccount)) return true
     if ((u.category as? To)?.value == null) return false
     val stored = transactionDao.row(u.id)
     val isParent = u.isParent ?: batchIsParent[u.id] ?: stored?.isParent

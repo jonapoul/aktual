@@ -25,7 +25,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
@@ -256,7 +256,7 @@ class BankSyncSettingsViewModelTest {
           accountDao = AccountDao(database),
           dao = BankSyncDao(database),
           writer =
-            TransactionWriter(
+            TransactionWriterImpl(
               syncController = this,
               accountDao = AccountDao(database),
               categoryDao = CategoryDao(database),

@@ -26,8 +26,8 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
-import aktual.budget.rules.domain.TransactionRulesLoader
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
@@ -90,7 +90,7 @@ internal class BankSyncTestScope(
   private var nextId = 1
 
   val writer =
-    TransactionWriter(
+    TransactionWriterImpl(
       syncController = this,
       accountDao = accountDao,
       categoryDao = CategoryDao(database),
@@ -105,7 +105,7 @@ internal class BankSyncTestScope(
     BankSyncImporter(
       writer = writer,
       rulesLoader =
-        TransactionRulesLoader(
+        TransactionRulesLoaderImpl(
           rulesDao = RulesDao(database),
           contextDao = RuleContextDao(database),
           uuidGenerator = ::uuid,

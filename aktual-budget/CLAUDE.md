@@ -13,6 +13,7 @@ Everything that works on an open budget: its data, sync, and the screens inside 
 - `demo` - the demo budget, which opens without a server.
 - `list` - picking a budget. It runs before a budget is open, so its VMs live in `LoggedInScope`, not `BudgetScope`.
 - The rest (`accounts`, `transactions`, `schedules`, `rules`, ...) are feature modules following the usual `domain` / `vm` / `ui` / `components` split.
+- `rules` and `transactions` also have an `api` module with the models and interfaces (`TransactionRulesLoader`, `TransactionWriter`, ...) other domain modules use, so those don't depend on the implementations in `domain`. Keep `api` modules free of `data:db`.
 
 ## DI
 

@@ -14,7 +14,7 @@ import aktual.budget.rules.domain.RuleActions
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionFilter
 import aktual.budget.rules.domain.TransactionRule
-import aktual.budget.rules.domain.TransactionRulesLoader
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.rules.domain.splitIndex
 import aktual.core.utils.UuidGenerator
 import aktual.log
@@ -32,7 +32,7 @@ class RuleMatcher(
   private val accountDao: AccountDao,
   private val categoryDao: CategoryDao,
   private val payeeDao: PayeeDao,
-  private val rulesLoader: TransactionRulesLoader,
+  private val rulesLoader: TransactionRulesLoaderImpl,
   private val writer: TransactionWriter,
   private val uuidGenerator: UuidGenerator,
 ) {

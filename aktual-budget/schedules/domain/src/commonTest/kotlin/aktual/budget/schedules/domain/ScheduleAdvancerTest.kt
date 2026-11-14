@@ -25,8 +25,8 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
-import aktual.budget.rules.domain.TransactionRulesLoader
-import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.rules.domain.TransactionRulesLoaderImpl
+import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
 import aktual.budget.utils.SyncEvents
 import aktual.core.utils.UuidGenerator
@@ -566,13 +566,13 @@ class ScheduleAdvancerTest {
       poster =
         SchedulePoster(
           rulesLoader =
-            TransactionRulesLoader(
+            TransactionRulesLoaderImpl(
               rulesDao = RulesDao(this),
               contextDao = RuleContextDao(this),
               uuidGenerator = uuidGenerator,
             ),
           transactionWriter =
-            TransactionWriter(
+            TransactionWriterImpl(
               syncController = sync,
               accountDao = AccountDao(this),
               categoryDao = CategoryDao(this),
