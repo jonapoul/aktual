@@ -15,6 +15,7 @@ import aktual.budget.rules.domain.ACTION_OPS
 import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.budget.rules.domain.withField
 import aktual.budget.rules.domain.withOp
+import aktual.budget.rules.domain.withSplitMethod
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
@@ -210,6 +211,76 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `A new split takes the remainder and sets a category`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+
+      viewModel.addSplit()
+      assertThat(awaitItem() as Success).all {
+        prop(Success::rule)
+          .prop(Rule::actions)
+          .isEqualTo(persistentListOf(CATEGORY, remainder(1), splitCategory(1)))
+        prop(Success::actionKeys).isEqualTo(persistentListOf(1L, 2L, 3L))
+      }
+
+      val fixed = remainder(1).withSplitMethod(FixedAmount).copy(value = JsonPrimitive(2000))
+      viewModel.setAction(1, fixed)
+      assertThat(awaitItem().rule().actions)
+        .isEqualTo(persistentListOf(CATEGORY, fixed, splitCategory(1)))
+    }
+  }
+
+  @Test
+  fun `Actions added to an earlier split go after its last action`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.addSplit()
+      awaitItem()
+
+      viewModel.addAction(splitIndex = 0)
+      val payee = RuleAction(value = null, op = RuleAction.Op.Set, field = Payee, type = Id)
+      assertThat(awaitItem() as Success).all {
+        prop(Success::rule)
+          .prop(Rule::actions)
+          .isEqualTo(persistentListOf(CATEGORY, payee, remainder(1), splitCategory(1)))
+        prop(Success::actionKeys).isEqualTo(persistentListOf(1L, 4L, 2L, 3L))
+      }
+    }
+  }
+
+  @Test
+  fun `Removing a split moves later ones down with their keys`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.addSplit()
+      awaitItem()
+      viewModel.addSplit()
+      awaitItem()
+
+      viewModel.removeSplit(1)
+      assertThat(awaitItem() as Success).all {
+        prop(Success::rule)
+          .prop(Rule::actions)
+          .isEqualTo(persistentListOf(CATEGORY, remainder(1), splitCategory(1)))
+        prop(Success::actionKeys).isEqualTo(persistentListOf(1L, 4L, 5L))
+      }
+
+      // The whole transaction stays
+      viewModel.removeSplit(0)
+      expectNoEvents()
+    }
+  }
+
+  @Test
   fun `A new rule sets a category`() = runDatabaseTest { scope ->
     val viewModel = createViewModel(scope)
 
@@ -334,6 +405,22 @@ class EditRuleViewModelTest {
         actions = listOf(CATEGORY),
         tombstone = false,
         conditions_op = And,
+      )
+
+    fun remainder(split: Int) =
+      RuleAction(
+        value = null,
+        op = SetSplitAmount,
+        options = RuleAction.Options(method = Remainder, splitIndex = split),
+      )
+
+    fun splitCategory(split: Int) =
+      RuleAction(
+        value = null,
+        op = RuleAction.Op.Set,
+        field = Category,
+        type = Id,
+        options = RuleAction.Options(splitIndex = split),
       )
   }
 }

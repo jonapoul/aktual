@@ -12,7 +12,10 @@ import aktual.budget.rules.components.ConditionSheet
 import aktual.budget.rules.components.label
 import aktual.budget.rules.components.nameOf
 import aktual.budget.rules.components.valueLabel
+import aktual.budget.rules.domain.ActionSplit
 import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.newActionIndex
+import aktual.budget.rules.domain.splits
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition1
 import aktual.budget.rules.ui.PreviewCondition2
@@ -31,6 +34,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AktualTooltip
 import aktual.core.ui.CardColumn
+import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipSize.Small
 import aktual.core.ui.ColorParameters
@@ -38,12 +42,16 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formattedString
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,7 +60,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -199,13 +209,13 @@ private fun ConditionsOpChip(
 private fun ConditionOp.string(): String =
   if (this == Or) Strings.editRuleMatchAny else Strings.editRuleMatchAll
 
-// Split amounts aren't editable here yet
 internal fun LazyListScope.actionsNode(
   actions: ImmutableList<RuleAction>,
   actionKeys: ImmutableList<Long>,
   names: ImmutableMap<String, String>,
   isEnabled: Boolean,
   onOpen: ((Int) -> Unit)?,
+  onOpenSplit: (Int) -> Unit,
   onAction: OnAction<EditRuleAction>,
 ) {
   item(key = "then") {
@@ -219,35 +229,120 @@ internal fun LazyListScope.actionsNode(
     }
   }
 
-  itemsIndexed(
-    items = actions,
-    key = { index, _ -> "action-${actionKeys.getOrNull(index) ?: "at-$index"}" },
-  ) { index, action ->
-    TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
-      RuleCard(
-        title = action.title(),
-        value = action.valueText(names),
-        onClick =
-          onOpen
-            ?.let { open -> { open(index) } }
-            ?.takeIf { isEnabled && action.op != SetSplitAmount },
-      )
+  val splits = actions.splits()
+  val isSplit = splits.size > 1
+  fun addAction(splitIndex: Int) {
+    onOpen?.invoke(actions.newActionIndex(splitIndex))
+    onAction(AddAction(splitIndex))
+  }
+
+  splits.fastForEach { split ->
+    // A split's amount action keeps its key as other splits come and go
+    val splitKey =
+      split.amount?.let { actionKeys.getOrNull(it.index) }?.toString() ?: "at-${split.index}"
+
+    if (isSplit) {
+      item(key = "split-$splitKey") {
+        TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
+          SplitHeader(
+            split = split,
+            onClick = { onOpenSplit(split.index) }.takeIf { isEnabled && split.amount != null },
+          )
+        }
+      }
+    }
+
+    items(
+      items = split.actions,
+      key = { (index, _) -> "action-${actionKeys.getOrNull(index) ?: "at-$index"}" },
+    ) { (index, action) ->
+      TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
+        RuleCard(
+          title = action.title(),
+          value = action.valueText(names),
+          onClick = onOpen?.let { open -> { open(index) } }?.takeIf { isEnabled },
+        )
+      }
+    }
+
+    if (isSplit) {
+      item(key = "add-action-$splitKey") {
+        TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
+          AddCard(
+            text = Strings.editRuleAddAction,
+            isEnabled = isEnabled,
+            onClick = { addAction(split.index) },
+          )
+        }
+      }
     }
   }
 
   item(key = "add-action") {
     TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
-      AddCard(
-        text = Strings.editRuleAddAction,
-        isEnabled = isEnabled,
-        onClick = {
-          onOpen?.invoke(actions.size)
-          onAction(AddAction)
-        },
-      )
+      Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
+        if (!isSplit) {
+          AddCard(
+            modifier = Modifier.weight(1f),
+            text = Strings.editRuleAddAction,
+            isEnabled = isEnabled,
+            onClick = { addAction(0) },
+          )
+        }
+        if (actions.isNotEmpty()) {
+          AddCard(
+            modifier = Modifier.weight(1f),
+            text = Strings.editRuleAddSplit,
+            isEnabled = isEnabled,
+            onClick = { onAction(AddSplit) },
+          )
+        }
+      }
     }
   }
 }
+
+@Composable
+private fun SplitHeader(split: ActionSplit, onClick: (() -> Unit)?, modifier: Modifier = Modifier) =
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(CardShape)
+        .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+        .padding(vertical = Dimens.Medium),
+    horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Text(
+      text =
+        if (split.index == 0) Strings.editRuleApplyToAll else Strings.editRuleSplit(split.index),
+      style = typography.titleSmall,
+      color = colors.pageText,
+    )
+    val summary = split.amount?.value?.splitSummary()
+    if (summary != null) {
+      Text(
+        modifier = Modifier.weight(1f),
+        text = summary,
+        style = typography.bodyMedium,
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+    }
+  }
+
+@Composable
+internal fun RuleAction.splitSummary(): String? =
+  when (options?.method) {
+    FixedAmount,
+    FixedPercent -> splitAmountText()
+    Remainder -> Strings.editRuleSplitRemainder
+    Formula -> options?.formula ?: Strings.editRuleSplitFormula
+    Unknown,
+    null -> null
+  }
 
 @Composable
 private fun RuleCard(
@@ -310,7 +405,7 @@ internal fun RuleAction.valueText(names: ImmutableMap<String, String>): String? 
 
 @Composable
 @ReadOnlyComposable
-private fun RuleAction.splitAmountText(): String? =
+internal fun RuleAction.splitAmountText(): String? =
   when (options?.method) {
     FixedAmount -> value?.longOrNull?.let { Amount(it).formattedString() }
     FixedPercent -> value?.contentOrNull?.let { "$it%" }
@@ -362,24 +457,57 @@ private fun PreviewActionsNode(@PreviewParameter(ColorParameters::class) colors:
         actions =
           persistentListOf(
             RuleAction(
-              value = JsonPrimitive("category-id"),
+              value = JsonPrimitive(PREVIEW_CATEGORY),
               op = RuleAction.Op.Set,
               field = Category,
               type = Id,
             ),
             RuleAction(value = JsonPrimitive(-1234), op = RuleAction.Op.Set, field = Field.Amount),
             RuleAction(value = JsonPrimitive("#online"), op = AppendNotes, field = Notes),
-            RuleAction(
-              value = JsonPrimitive(50),
-              op = SetSplitAmount,
-              options = RuleAction.Options(method = FixedPercent, splitIndex = 1),
-            ),
             RuleAction(value = null, op = DeleteTransaction),
           ),
-        actionKeys = persistentListOf(0L, 1L, 2L, 3L, 4L),
+        actionKeys = persistentListOf(0L, 1L, 2L, 3L),
         names = PREVIEW_NAMES,
         isEnabled = true,
         onOpen = {},
+        onOpenSplit = {},
+        onAction = {},
+      )
+    }
+  }
+
+@Preview
+@Composable
+private fun PreviewSplitActionsNode(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    LazyColumn {
+      actionsNode(
+        actions =
+          persistentListOf(
+            RuleAction(value = JsonPrimitive("#online"), op = AppendNotes, field = Notes),
+            RuleAction(
+              value = JsonPrimitive(2000),
+              op = SetSplitAmount,
+              options = RuleAction.Options(method = FixedAmount, splitIndex = 1),
+            ),
+            RuleAction(
+              value = JsonPrimitive(PREVIEW_CATEGORY),
+              op = RuleAction.Op.Set,
+              field = Category,
+              type = Id,
+              options = RuleAction.Options(splitIndex = 1),
+            ),
+            RuleAction(
+              value = null,
+              op = SetSplitAmount,
+              options = RuleAction.Options(method = Remainder, splitIndex = 2),
+            ),
+          ),
+        actionKeys = persistentListOf(0L, 1L, 2L, 3L),
+        names = PREVIEW_NAMES,
+        isEnabled = true,
+        onOpen = {},
+        onOpenSplit = {},
         onAction = {},
       )
     }
@@ -396,9 +524,11 @@ private fun PreviewEmptyActionsNode(@PreviewParameter(ColorParameters::class) co
         names = PREVIEW_NAMES,
         isEnabled = true,
         onOpen = {},
+        onOpenSplit = {},
         onAction = {},
       )
     }
   }
 
-private val PREVIEW_NAMES = persistentMapOf("category-id" to "Shopping")
+private const val PREVIEW_CATEGORY = "category-id"
+private val PREVIEW_NAMES = persistentMapOf(PREVIEW_CATEGORY to "Shopping")

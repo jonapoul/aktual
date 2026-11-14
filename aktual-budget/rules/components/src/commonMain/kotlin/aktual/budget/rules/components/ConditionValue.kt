@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -56,9 +55,16 @@ fun ConditionValue(
   modifier: Modifier = Modifier,
 ) {
   when (kind) {
-    Entity -> EntityPicker(value, names, onPickEntity, modifier)
+    Entity -> EntityPicker(value = value, names = names, onPick = onPickEntity, modifier = modifier)
 
-    EntityList -> EntityListPicker(value as JsonArray, names, onChange, onPickEntity, modifier)
+    EntityList ->
+      EntityListPicker(
+        value = value as JsonArray,
+        names = names,
+        onChange = onChange,
+        onPick = onPickEntity,
+        modifier = modifier,
+      )
 
     Text ->
       CommitTextField(
@@ -71,7 +77,7 @@ fun ConditionValue(
     // Number keyboards don't all offer a minus sign
     Money ->
       CommitTextField(
-        modifier = modifier.width(AMOUNT_WIDTH),
+        modifier = modifier.fillMaxWidth(),
         text = Amount(value.jsonPrimitive.long).toSignedInputText(),
         keyboardType = Text,
         onCommit = { text ->
@@ -231,4 +237,3 @@ fun ImmutableMap<String, String>.nameOf(id: String): String =
 
 private val NOTHING = ConditionEntity(id = "", name = "")
 private val FLAGS = persistentListOf(true, false)
-private val AMOUNT_WIDTH = 160.dp

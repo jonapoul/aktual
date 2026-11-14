@@ -122,8 +122,10 @@ internal fun EditRuleScreen(
           AddCondition -> viewModel.addCondition()
           is RemoveCondition -> viewModel.removeCondition(action.index)
           is SetAction -> viewModel.setAction(action.index, action.action)
-          AddAction -> viewModel.addAction()
+          is AddAction -> viewModel.addAction(action.splitIndex)
           is RemoveAction -> viewModel.removeAction(action.index)
+          AddSplit -> viewModel.addSplit()
+          is RemoveSplit -> viewModel.removeSplit(action.splitIndex)
         }
       },
     )
@@ -304,6 +306,7 @@ private fun LoadedContent(
   val names: ImmutableMap<String, String> = conditionEntities?.names ?: persistentMapOf()
   var openCondition by rememberSaveable { mutableStateOf<Int?>(null) }
   var openAction by rememberSaveable { mutableStateOf<Int?>(null) }
+  var openSplit by rememberSaveable { mutableStateOf<Int?>(null) }
 
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
@@ -337,6 +340,7 @@ private fun LoadedContent(
       names = names,
       isEnabled = isEnabled,
       onOpen = { index: Int -> openAction = index }.takeIf { conditionEntities != null },
+      onOpenSplit = { split: Int -> openSplit = split },
       onAction = onAction,
     )
 
@@ -366,6 +370,16 @@ private fun LoadedContent(
       entities = conditionEntities,
       onAction = onAction,
       onDismiss = { openAction = null },
+    )
+  }
+
+  val splitIndex = openSplit
+  if (splitIndex != null) {
+    RuleSplitSheet(
+      splitIndex = splitIndex,
+      actions = rule.actions,
+      onAction = onAction,
+      onDismiss = { openSplit = null },
     )
   }
 }
