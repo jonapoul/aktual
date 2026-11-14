@@ -26,6 +26,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -65,6 +67,8 @@ fun ConditionValue(
         onPick = onPickEntity,
         modifier = modifier,
       )
+
+    TextList -> TextListEditor(value = value as JsonArray, onChange = onChange, modifier = modifier)
 
     Text ->
       CommitTextField(
@@ -160,6 +164,48 @@ private fun EntityListPicker(
       icon = AktualIcons.Add,
       text = Strings.reportsFormulaQueryChoose,
       onClick = onPick,
+    )
+  }
+
+// Typed strings as removable chips, with a field that adds another on done
+@Composable
+private fun TextListEditor(
+  value: JsonArray,
+  onChange: (JsonElement) -> Unit,
+  modifier: Modifier = Modifier,
+) =
+  Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    val texts = value.map { it.jsonPrimitive.content }
+    if (texts.isNotEmpty()) {
+      FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        texts.fastForEach { text ->
+          Chip(
+            text = text,
+            trailingIcon = AktualIcons.Delete,
+            trailingIconDescription = Strings.reportsFormulaQueryRemove(text),
+            onClick = { onChange(JsonArray(texts.minus(text).map(::JsonPrimitive))) },
+          )
+        }
+      }
+    }
+
+    val state = rememberTextFieldState()
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth(),
+      state = state,
+      placeholderText = Strings.reportsFormulaQueryAddText,
+      singleLine = true,
+      keyboardOptions = KeyboardOptions(imeAction = Done),
+      onKeyboardAction = {
+        val text = state.text.toString().trim()
+        if (text.isNotEmpty() && text !in texts) {
+          onChange(JsonArray((texts + text).map(::JsonPrimitive)))
+        }
+        state.clearText()
+      },
     )
   }
 

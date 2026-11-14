@@ -29,6 +29,8 @@ class ConditionEditingTest {
     assertThat(conditionValueKind(Category, Contains)).isEqualTo(Text)
     assertThat(conditionValueKind(Account, OnBudget)).isEqualTo(NoValue)
     assertThat(conditionValueKind(Notes, Is)).isEqualTo(Text)
+    assertThat(conditionValueKind(ImportedPayee, OneOf)).isEqualTo(TextList)
+    assertThat(conditionValueKind(PayeeName, NotOneOf)).isEqualTo(TextList)
     assertThat(conditionValueKind(Date, LessThan)).isEqualTo(Day)
   }
 
@@ -38,6 +40,17 @@ class ConditionEditingTest {
     assertThat(condition.withOperator(IsNot).value).isEqualTo(JsonPrimitive("payee-1"))
     assertThat(condition.withOperator(OneOf).value).isEqualTo(JsonArray(emptyList()))
     assertThat(condition.withOperator(Contains).value).isEqualTo(JsonPrimitive(""))
+  }
+
+  @Test
+  fun `Text conditions take a list of strings for oneOf`() {
+    val condition = Condition(ImportedPayee, Is, JsonPrimitive("abc"))
+    assertThat(condition.withOperator(OneOf, RuleConditions).value)
+      .isEqualTo(JsonArray(emptyList()))
+    assertThat(
+        Condition(ImportedPayee, OneOf, JsonPrimitive("abc")).editableKind(RuleConditions),
+      )
+      .isNull()
   }
 
   @Test
@@ -62,6 +75,9 @@ class ConditionEditingTest {
     assertThat(Condition(Amount, GreaterThan, JsonPrimitive(-500)).editableKind()).isEqualTo(Money)
     assertThat(Condition(Payee, NotOneOf, JsonArray(listOf(JsonPrimitive("a")))).editableKind())
       .isEqualTo(EntityList)
+    val names = JsonArray(listOf(JsonPrimitive("Card Factory")))
+    assertThat(Condition(ImportedPayee, OneOf, names).editableKind(RuleConditions))
+      .isEqualTo(TextList)
     assertThat(Condition(Notes, HasTags, JsonPrimitive("#a")).editableKind(RuleConditions))
       .isEqualTo(Text)
   }
