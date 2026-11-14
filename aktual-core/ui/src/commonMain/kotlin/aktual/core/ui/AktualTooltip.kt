@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition.Companion.Above
 import androidx.compose.material3.TooltipDefaults.rememberTooltipPositionProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,7 +42,7 @@ fun AktualTooltip(
   tooltipText: String,
   modifier: Modifier = Modifier,
   kind: ButtonKind = Bare,
-  positionProvider: PopupPositionProvider = rememberTooltipPositionProvider(Above),
+  positionProvider: PopupPositionProvider = rememberTooltipPositionProvider(positioning = Above),
 ) {
   val visibleState = remember { MutableTransitionState(false) }
   val isShowing = visibleState.targetState
