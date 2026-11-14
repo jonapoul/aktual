@@ -1,8 +1,5 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/img/header-dark.png">
-    <img src="docs/img/header-light.png" alt="Aktual - an unofficial Kotlin Multiplatform client for Actual Budget" width="100%">
-  </picture>
+  <img src="docs/img/header.png" alt="Aktual - an unofficial Kotlin Multiplatform client for Actual Budget" width="100%">
 </p>
 
 <p align="center">
