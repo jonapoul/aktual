@@ -8,6 +8,7 @@ import aktual.core.ui.BasicTextButton
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.buttonTextStyle
 import aktual.core.ui.errorButton
+import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -52,11 +51,7 @@ fun QuerySheetPage(
   content: @Composable ColumnScope.() -> Unit,
 ) =
   Column(
-    modifier =
-      modifier
-        .verticalScroll(rememberScrollState())
-        .padding(horizontal = 20.dp)
-        .padding(bottom = 20.dp),
+    modifier = modifier.verticalScrollWithBar().padding(horizontal = 20.dp).padding(bottom = 20.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     Text(text = title, style = typography.headlineSmall)
