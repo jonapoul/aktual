@@ -495,6 +495,74 @@ internal class TransactionDaoTest {
       .containsExactly("t1")
   }
 
+  @Test
+  fun `Filter rows match id sets exactly, so an underscore isn't a wildcard`() =
+    runDaoTest { transactions ->
+      // given
+      CategoryDao(this).insert(CategoryId("a_c"), "Underscore")
+      CategoryDao(this).insert(CategoryId("abc"), "Letters")
+      PayeeDao(this).insert(PayeeId("p_1"), "Underscore")
+      PayeeDao(this).insert(PayeeId("px1"), "Letters")
+      transactions.insert("t1", ON_1, "a_c", PAYEE, DATE)
+      transactions.insert("t2", ON_1, "abc", PAYEE, DATE)
+      transactions.insert("t3", ON_2, CATEGORY, "p_1", DATE)
+      transactions.insert("t4", ON_2, CATEGORY, "px1", DATE)
+
+      // then
+      assertThat(transactions.filterIds(RowBounds(categories = setOf(CategoryId("a_c")))))
+        .containsExactly("t1")
+      assertThat(transactions.filterIds(RowBounds(payees = setOf(PayeeId("p_1")))))
+        .containsExactly("t3")
+      assertThat(transactions.filterIds(RowBounds(accounts = setOf(AccountId(ON_2)))))
+        .containsExactlyInAnyOrder("t3", "t4")
+    }
+
+  @Test
+  fun `Filter rows without a category only match when categories aren't narrowed`() =
+    runDaoTest { transactions ->
+      // given
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+      transactions.insert("t2", ON_1, category = null, PAYEE, DATE)
+
+      // then
+      assertThat(transactions.filterIds(RowBounds())).containsExactlyInAnyOrder("t1", "t2")
+      assertThat(transactions.filterIds(RowBounds(categories = setOf(CategoryId(CATEGORY)))))
+        .containsExactly("t1")
+    }
+
+  @Test
+  fun `Filter rows keep the parent of a matching split part, but not its other parts`() =
+    runDaoTest { transactions ->
+      // given
+      CategoryDao(this).insert(CategoryId("other"), "Other")
+      transactions.insert("p", ON_1, category = null, PAYEE, DATE, isParent = true)
+      transactions.insert("c1", ON_1, CATEGORY, PAYEE, DATE, parent = "p")
+      transactions.insert("c2", ON_1, "other", PAYEE, DATE, parent = "p")
+
+      // then
+      assertThat(transactions.filterIds(RowBounds(categories = setOf(CategoryId(CATEGORY)))))
+        .containsExactlyInAnyOrder("p", "c1")
+    }
+
+  @Test
+  fun `Filter row date bounds are inclusive`() = runDaoTest { transactions ->
+    // given
+    val day2 = LocalDate(2026, 1, 2)
+    val day3 = LocalDate(2026, 1, 3)
+    transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+    transactions.insert("t2", ON_1, CATEGORY, PAYEE, day2)
+    transactions.insert("t3", ON_1, CATEGORY, PAYEE, day3)
+
+    // then
+    assertThat(transactions.filterIds(RowBounds(from = day2, to = day2))).containsExactly("t2")
+    assertThat(transactions.filterIds(RowBounds(from = DATE, to = day2)))
+      .containsExactlyInAnyOrder("t1", "t2")
+    assertThat(transactions.filterIds(RowBounds(from = day2))).containsExactlyInAnyOrder("t2", "t3")
+  }
+
+  private suspend fun TransactionDao.filterIds(bounds: RowBounds): List<String> =
+    getFilterRows(bounds = bounds).map { it.id.toString() }
+
   private fun notes(id: String, notes: String?, parent: String? = null) =
     TransactionNotes(TransactionId(id), notes, parent?.let(::TransactionId))
 
