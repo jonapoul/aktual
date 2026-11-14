@@ -13,6 +13,7 @@ import kotlinx.datetime.LocalDate
  * BudgetSyncController.syncChanges(). Nothing touches the database until the block returns, so
  * anything added earlier in the same batch (payees, split children) is tracked here.
  */
+@Suppress("ComplexInterface")
 interface TransactionBatch {
   /**
    * db.insertTransaction(), plus batchUpdateTransactions() clearing the category of split parents
