@@ -2132,6 +2132,10 @@
   <string name="transactions_transfer_from">Transfer from %1$s</string>
   <string name="transactions_view_options">View options</string>
   <string name="transactions_menu">Menu</string>
+  <string name="transactions_search">Search</string>
+  <string name="transactions_search_placeholder">Search transactions</string>
+  <string name="transactions_search_close">Close search</string>
+  <string name="transactions_no_matches">No matching transactions</string>
   <string name="transactions_edit_account">Edit account</string>
   <string name="transactions_delete_account">Delete account</string>
   <string name="transactions_delete_account_title">Delete account?</string>
