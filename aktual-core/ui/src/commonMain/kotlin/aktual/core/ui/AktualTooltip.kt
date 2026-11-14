@@ -24,6 +24,7 @@ fun AktualTooltip(
   contentDescription: String?,
   tooltipText: String,
   modifier: Modifier = Modifier,
+  kind: ButtonKind = Bare,
   state: TooltipState = rememberTooltipState(isPersistent = true),
   positionProvider: PopupPositionProvider = rememberTooltipPositionProvider(Above),
 ) {
@@ -51,7 +52,7 @@ fun AktualTooltip(
     },
     content = {
       AktualIconButton(
-        kind = Normal,
+        kind = kind,
         imageVector = imageVector,
         contentDescription = contentDescription,
         onClick = { if (state.isVisible) state.dismiss() else scope.launch { state.show() } },

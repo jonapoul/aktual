@@ -3,7 +3,6 @@ package aktual.budget.rules.ui
 import aktual.budget.model.Field
 import aktual.budget.model.ScheduleId
 import aktual.budget.rules.vm.NameFetcher
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -12,9 +11,6 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 
 internal val LocalNameFetcher = staticCompositionLocalOf<NameFetcher> { DummyNameFetcher }
-
-// False while the rule editor is saving or deleting, so its inputs can't change underneath it
-internal val LocalRuleEditable = compositionLocalOf { true }
 
 @Suppress("StringLiteralDuplication")
 internal object DummyNameFetcher : NameFetcher {

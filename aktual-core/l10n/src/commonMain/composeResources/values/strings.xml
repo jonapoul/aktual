@@ -1888,6 +1888,11 @@
   <string name="edit_rule_save">Save</string>
   <string name="edit_rule_create">Create</string>
   <string name="edit_rule_unknown_values">This rule uses values that this version of the app doesn't recognize. Change them before saving.</string>
+  <string name="edit_rule_when">When</string>
+  <string name="edit_rule_then">Then</string>
+  <string name="edit_rule_match_all">all match</string>
+  <string name="edit_rule_match_any">any match</string>
+  <string name="edit_rule_no_actions">No actions yet</string>
 
 
   <!-- budget-schedules -->
