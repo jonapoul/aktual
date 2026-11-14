@@ -67,6 +67,8 @@ import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,9 +100,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.PointerInputModifierNode
 import androidx.compose.ui.platform.InspectorInfo
@@ -114,6 +119,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlin.math.abs
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
@@ -354,8 +360,8 @@ private fun DrawerNavLayout(
       modifier =
         Modifier.passTouchesThrough(!drawerState.isOpen && !drawerState.isAnimationRunning),
       drawerState = drawerState,
-      // Only allow swiping to close, so opening doesn't clash with horizontal gestures in the
-      // content
+      // Only allow swiping to close here. Opening is handled by openOnSwipe on the content, so
+      // horizontal gestures in the content still win
       gesturesEnabled = drawerState.isOpen,
       drawerContent = { BudgetDrawerSheet { sidebar(closeDrawer) } },
       content = {},
@@ -368,10 +374,32 @@ private fun DrawerNavLayout(
       appStack = appStack,
       activeStack = activeStack,
       selectedTab = selectedTab,
-      modifier = modifier.fillMaxSize(),
+      modifier = modifier.fillMaxSize().openOnSwipe(openDrawer),
     )
   }
 }
+
+// Children see drags first, so anything in the content that handles horizontal drags consumes
+// them before this does
+private fun Modifier.openOnSwipe(open: () -> Unit): Modifier =
+  pointerInput(open) {
+    awaitEachGesture {
+      val down = awaitFirstDown(requireUnconsumed = false)
+      if (down.type != Touch) return@awaitEachGesture
+      val slop = viewConfiguration.touchSlop
+      var total = Offset.Zero
+      var change = down
+      while (change.pressed && !change.isConsumed && total.getDistance() <= slop) {
+        change =
+          awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: return@awaitEachGesture
+        total += change.positionChange()
+      }
+      if (change.pressed && !change.isConsumed && total.x > abs(total.y) * 2) {
+        change.consume()
+        open()
+      }
+    }
+  }
 
 // The drawer's drag handler catches touches even when disabled, so while closed let them through
 // to the content underneath
