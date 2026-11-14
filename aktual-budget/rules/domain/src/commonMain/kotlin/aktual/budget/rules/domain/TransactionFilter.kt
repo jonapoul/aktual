@@ -6,6 +6,7 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.occurrences
@@ -40,6 +41,18 @@ data class FilterRow(
 )
 
 /**
+ * Ids and dates that every transaction a [TransactionFilter] matches is within. A null set or date
+ * doesn't narrow anything
+ */
+data class FilterBounds(
+  val from: LocalDate? = null,
+  val to: LocalDate? = null,
+  val accounts: Set<String>? = null,
+  val categories: Set<String>? = null,
+  val payees: Set<String>? = null,
+)
+
+/**
  * Matches transactions against a report's filter conditions, the way upstream queries them:
  * `conditionsToAQL` in packages/loot-core/src/server/transactions/transaction-rules.ts, compiled by
  * packages/loot-core/src/server/aql/compiler.ts. This differs from how rules match: negative
@@ -54,6 +67,18 @@ private constructor(private val conditions: List<FilterCondition>, private val o
   /** True when there's nothing to filter by, so every transaction matches */
   val isEmpty: Boolean
     get() = conditions.isEmpty()
+
+  /**
+   * What every matching transaction has, for narrowing a query before [matches] runs. Only all
+   * conditions together narrow it, since any one of them could match on its own
+   */
+  val bounds: FilterBounds by lazy {
+    if (op == Or && conditions.size > 1) {
+      FilterBounds()
+    } else {
+      conditions.fold(FilterBounds()) { bounds, condition -> condition.narrow(bounds) }
+    }
+  }
 
   fun matches(row: FilterRow): Boolean =
     when {
@@ -111,6 +136,38 @@ private class FilterCondition(private val condition: CompiledCondition) {
     val config = ((value as DateMatch).value as Recur).config
     config.occurrences(until = config.searchEnd()).dates.sorted().take(RECUR_DATE_BOUNDS).toSet()
   }
+
+  fun narrow(bounds: FilterBounds): FilterBounds {
+    val ids =
+      when (op) {
+        Is -> (value as? Text)?.value?.let(::setOf)
+        OneOf ->
+          (value as? TextList)
+            ?.values
+            ?.takeIf { values -> values.isNotEmpty() && null !in values }
+            ?.filterNotNull()
+        else -> null
+      }?.toSet()
+    val day = ((value as? DateMatch)?.value as? DateValue.Day)?.date
+    return when {
+      field == Account && ids != null -> bounds.copy(accounts = bounds.accounts.narrowTo(ids))
+      field == Category && ids != null -> bounds.copy(categories = bounds.categories.narrowTo(ids))
+      field == Payee && ids != null -> bounds.copy(payees = bounds.payees.narrowTo(ids))
+      field == Date && day != null -> bounds.narrowDates(day)
+      else -> bounds
+    }
+  }
+
+  private fun FilterBounds.narrowDates(day: LocalDate): FilterBounds {
+    val from = if (op in AFTER) day else null
+    val to = if (op in BEFORE) day else null
+    return copy(
+      from = listOfNotNull(this.from, from).maxOrNull(),
+      to = listOfNotNull(this.to, to).minOrNull(),
+    )
+  }
+
+  private fun Set<String>?.narrowTo(ids: Set<String>): Set<String> = this?.intersect(ids) ?: ids
 
   fun matches(row: FilterRow): Boolean =
     when (field.type) {
@@ -394,6 +451,8 @@ private class FilterCondition(private val condition: CompiledCondition) {
     const val RECUR_SEARCH_PERIODS = 2 * RECUR_DATE_BOUNDS
 
     val APPROX_DAYS = DatePeriod(days = 2)
+    val AFTER = setOf<Operator>(Is, GreaterThan, GreaterThanOrEquals)
+    val BEFORE = setOf<Operator>(Is, LessThan, LessThanOrEquals)
   }
 }
 

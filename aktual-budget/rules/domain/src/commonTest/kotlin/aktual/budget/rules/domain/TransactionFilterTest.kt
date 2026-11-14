@@ -10,6 +10,7 @@ import aktual.budget.model.ConditionOptions
 import aktual.budget.model.Field
 import aktual.budget.model.PayeeId
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
@@ -142,6 +143,46 @@ class TransactionFilterTest {
   @Test
   fun `Invalid regex matches nothing`() {
     assertThat(filter(cond(Notes, Matches, "(")).matches(row(notes = "("))).isFalse()
+  }
+
+  @Test
+  fun `Bounds narrow by every condition together`() {
+    val filter =
+      filter(
+        cond(Account, OneOf, listOf("a", "b")),
+        cond(Account, Is, "b"),
+        cond(Category, Is, "food"),
+        cond(Date, GreaterThanOrEquals, "2020-01-01"),
+        cond(Date, LessThan, "2020-02-01"),
+        cond(Notes, Contains, "x"),
+      )
+    assertThat(filter.bounds)
+      .isEqualTo(
+        FilterBounds(
+          from = LocalDate.parse("2020-01-01"),
+          to = LocalDate.parse("2020-02-01"),
+          accounts = setOf("b"),
+          categories = setOf("food"),
+        ),
+      )
+  }
+
+  @Test
+  fun `Bounds don't narrow by any one of several conditions`() {
+    val filter = filter(cond(Payee, Is, "a"), cond(Payee, Is, "b"), op = Or)
+    assertThat(filter.bounds).isEqualTo(FilterBounds())
+  }
+
+  @Test
+  fun `Bounds skip conditions they can't express`() {
+    val filter =
+      filter(
+        cond(Category, Is, null),
+        cond(Payee, OneOf, listOf("a", null)),
+        cond(Account, IsNot, "a"),
+        cond(Date, Is, "2020-08"),
+      )
+    assertThat(filter.bounds).isEqualTo(FilterBounds())
   }
 
   private fun filter(vararg conditions: Condition, op: ConditionOp = And) =

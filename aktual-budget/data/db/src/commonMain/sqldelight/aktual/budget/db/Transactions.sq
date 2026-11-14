@@ -701,8 +701,10 @@ SELECT vt.id, vt.notes, vt.is_child AS isChild, t.parent_id AS parentId
 -- payees and accounts, as customReportTransactions does, so they pass :skipDeleted = 0
 --
 -- A search narrows it with :pattern, a LIKE pattern for the names, and :cents and :whole, the
--- amounts its text reads as. The rows that match, plus the parents of any matching split children,
--- are a superset of what TransactionSearchMatcher matches, which has the final say
+-- amounts its text reads as, and by the dates, accounts, categories and payees its conditions allow.
+-- Each id set is passed as ",id1,id2,", since list parameters don't work in a WITH query.
+-- The rows that match, plus the parents of any matching split children, are a superset of what
+-- TransactionSearchMatcher matches, which has the final say
 getFilterRows:
 WITH scoped AS (
   SELECT
@@ -730,6 +732,9 @@ WITH scoped AS (
     vt.starting_balance_flag,
     vt.sort_order,
     (
+      (:categories IS NULL OR :categories LIKE '%,' || vt.category || ',%') AND
+      (:payees IS NULL OR :payees LIKE '%,' || vt.payee || ',%')
+    ) AND (
       :pattern IS NULL OR
       p.name LIKE :pattern ESCAPE '\' OR
       ta.name LIKE :pattern ESCAPE '\' OR
@@ -738,7 +743,7 @@ WITH scoped AS (
       a.name LIKE :pattern ESCAPE '\' OR
       (:cents IS NOT NULL AND ABS(vt.amount) = :cents) OR
       (:whole IS NOT NULL AND ABS(vt.amount) / 100 = :whole)
-    ) AS text_match
+    ) AS matched
   FROM v_transactions_internal_alive AS vt
   INNER JOIN transactions AS t ON t.id = vt.id
   LEFT JOIN accounts AS a ON (a.id = vt.account AND (:skipDeleted = 0 OR a.tombstone = 0))
@@ -748,6 +753,9 @@ WITH scoped AS (
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE
     (:account IS NULL OR vt.account = :account) AND
+    (:accounts IS NULL OR :accounts LIKE '%,' || vt.account || ',%') AND
+    (:fromDate IS NULL OR vt.date >= :fromDate) AND
+    (:toDate IS NULL OR vt.date <= :toDate) AND
     (:closed IS NULL OR (
       a.closed = :closed AND
       (:offBudget IS NULL OR a.offbudget = :offBudget)
@@ -776,7 +784,7 @@ SELECT
   is_child,
   parent_id
 FROM scoped
-WHERE text_match OR id IN (SELECT parent_id FROM scoped WHERE text_match AND is_child = 1)
+WHERE matched OR id IN (SELECT parent_id FROM scoped WHERE matched AND is_child = 1)
 ORDER BY date DESC, starting_balance_flag, sort_order DESC, id;
 
 -- Every live transaction linked to a schedule, in list order

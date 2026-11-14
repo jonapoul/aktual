@@ -30,6 +30,18 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.longOrNull
 
 // parent is set on split children only
+private fun <T> Set<T>.joinIds(value: (T) -> String) =
+  joinToString(separator = ",", prefix = ",", postfix = ",", transform = value)
+
+// What getFilterRows keeps, where a null set or date keeps everything
+data class RowBounds(
+  val from: LocalDate? = null,
+  val to: LocalDate? = null,
+  val accounts: Set<AccountId>? = null,
+  val categories: Set<CategoryId>? = null,
+  val payees: Set<PayeeId>? = null,
+)
+
 data class TransactionNotes(val id: TransactionId, val notes: String?, val parent: TransactionId?)
 
 data class TransactionRow(
@@ -261,8 +273,14 @@ class TransactionDao(database: BudgetDatabase) {
     skipDeleted: Boolean = true,
     text: String? = null,
     cents: Long? = null,
+    bounds: RowBounds = RowBounds(),
   ): List<GetFilterRows> = queries.withResult {
     getFilterRows(
+        categories = bounds.categories?.joinIds { it.value },
+        payees = bounds.payees?.joinIds { it.value },
+        accounts = bounds.accounts?.joinIds { it.value },
+        fromDate = bounds.from,
+        toDate = bounds.to,
         pattern = text?.likePattern(),
         cents = cents,
         whole = cents?.takeIf { it % CENTS == 0L }?.div(CENTS),

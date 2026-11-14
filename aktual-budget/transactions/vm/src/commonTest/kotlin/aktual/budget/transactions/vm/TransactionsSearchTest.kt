@@ -231,6 +231,24 @@ internal class TransactionsSearchTest : TransactionsViewModelTestBase() {
   }
 
   @Test
+  fun `Search conditions narrowed in the query keep a split whose part matches`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction("p", "a", null, "a", amount = 100.0, date = DATE_2, isParent = true)
+      insertTransaction("p1", "a", "a", "a", amount = 60.0, date = DATE_2, parent = "p")
+      insertTransaction("p2", "a", "b", "a", amount = 40.0, date = DATE_2, parent = "p")
+      insertTransaction("q", "a", "a", "a", amount = 100.0, date = DATE_1)
+    }
+    advanceUntilIdle()
+    val category = Condition(Category, Is, JsonPrimitive("b"))
+
+    // then
+    val search = TransactionSearch(conditions = ConditionSet(listOf(category)))
+    assertThat(searchedIds(AllAccounts, search)).containsExactly("p")
+  }
+
+  @Test
   fun `Search keeps a split where its parent sits in the list`() = runTest {
     // given
     buildViewModel(AllAccounts)
