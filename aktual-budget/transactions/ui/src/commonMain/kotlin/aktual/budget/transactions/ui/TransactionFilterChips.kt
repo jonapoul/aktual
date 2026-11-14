@@ -10,7 +10,6 @@ import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionEntityLists
 import aktual.budget.rules.domain.FILTER_FIELDS
-import aktual.budget.rules.domain.isBlank
 import aktual.budget.rules.domain.newFilterCondition
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
@@ -138,7 +137,7 @@ internal fun TransactionFilterChips(
 }
 
 // Picks a field, then edits the new condition on a page of the same sheet, with back returning
-// to the fields. Only Done adds it, so the list isn't narrowed while its value is still empty
+// to the fields. Only Done adds it, so the list isn't narrowed while it's still being edited
 @Composable
 private fun AddFilterSheet(
   entities: ConditionEntities,
@@ -159,7 +158,7 @@ private fun AddFilterSheet(
         onChange = { changed -> draft = changed },
         onDelete = {},
         onDismiss = { draft = null },
-        onAdd = { draft?.takeUnless { it.isBlank() }?.let(onAdd) },
+        onAdd = { draft?.let(onAdd) },
       )
     }
   }

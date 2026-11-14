@@ -63,7 +63,9 @@ fun Operator.label(): String =
 @Composable
 fun Condition.valueLabel(names: ImmutableMap<String, String>): String? =
   when (editableKind()) {
-    Entity -> value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
+    Entity ->
+      value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
+        ?: Strings.reportsFormulaQueryNothing
     EntityList -> (value as JsonArray).map { names.nameOf(it.jsonPrimitive.content) }.joinToString()
     Text,
     Day -> value.jsonPrimitive.content
