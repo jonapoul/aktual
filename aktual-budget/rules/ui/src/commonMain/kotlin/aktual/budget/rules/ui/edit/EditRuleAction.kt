@@ -26,6 +26,10 @@ internal data object AddCondition : EditRuleAction
 
 internal data class SetAction(val index: Int, val action: RuleAction) : EditRuleAction
 
-internal data object AddAction : EditRuleAction
+@JvmInline internal value class AddAction(val splitIndex: Int) : EditRuleAction
 
 @JvmInline internal value class RemoveAction(val index: Int) : EditRuleAction
+
+internal data object AddSplit : EditRuleAction
+
+@JvmInline internal value class RemoveSplit(val splitIndex: Int) : EditRuleAction

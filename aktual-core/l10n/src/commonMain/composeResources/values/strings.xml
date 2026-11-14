@@ -1902,6 +1902,17 @@
   <string name="edit_rule_op_append_notes">Append notes</string>
   <string name="edit_rule_op_delete_transaction">Delete transaction</string>
   <string name="edit_rule_unsupported_action">This action can't be edited in Aktual yet: %1$s</string>
+  <string name="edit_rule_add_split">Add split</string>
+  <string name="edit_rule_apply_to_all">Apply to all</string>
+  <string name="edit_rule_split">Split %1$d</string>
+  <string name="edit_rule_split_allocate">Allocate</string>
+  <string name="edit_rule_split_amount">Amount</string>
+  <string name="edit_rule_split_percent">Percent</string>
+  <string name="edit_rule_split_fixed_amount">Fixed amount</string>
+  <string name="edit_rule_split_fixed_percent">Fixed percent</string>
+  <string name="edit_rule_split_remainder">Remainder</string>
+  <string name="edit_rule_split_formula">Formula</string>
+  <string name="edit_rule_split_read_only">This split amount can't be edited in Aktual yet</string>
 
 
   <!-- budget-schedules -->

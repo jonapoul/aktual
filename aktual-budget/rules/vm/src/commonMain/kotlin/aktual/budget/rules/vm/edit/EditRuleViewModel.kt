@@ -15,8 +15,12 @@ import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.addAction
+import aktual.budget.rules.domain.addSplit
 import aktual.budget.rules.domain.newAction
-import aktual.budget.rules.domain.nextActionField
+import aktual.budget.rules.domain.newActionIndex
+import aktual.budget.rules.domain.removeSplit
+import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
@@ -196,7 +200,9 @@ internal constructor(
 
   fun setConditionsOp(op: ConditionOp) = updateRule { r -> r.copy(conditionsOp = op) }
 
+  // Late edits from a closing sheet can name an index that's since been removed
   fun setCondition(index: Int, condition: Condition) = updateRule { r ->
+    if (index !in r.conditions.indices) return@updateRule r
     r.copy(conditions = r.conditions.toPersistentList().replacingAt(index, condition))
   }
 
@@ -222,6 +228,7 @@ internal constructor(
   }
 
   fun setAction(index: Int, action: RuleAction) = updateRule { r ->
+    if (index !in r.actions.indices) return@updateRule r
     r.copy(actions = r.actions.toPersistentList().replacingAt(index, action))
   }
 
@@ -229,10 +236,9 @@ internal constructor(
     val key = nextKey++
     mutableDraft.update { draft ->
       val actions = draft?.rule?.actions ?: return@update draft
-      val action = newAction(actions.nextActionField(splitIndex), splitIndex)
       draft.copy(
-        rule = draft.rule.copy(actions = actions.toPersistentList().adding(action)),
-        actionKeys = draft.actionKeys.adding(key),
+        rule = draft.rule.copy(actions = actions.addAction(splitIndex).toImmutableList()),
+        actionKeys = draft.actionKeys.addingAt(actions.newActionIndex(splitIndex), key),
       )
     }
   }
@@ -241,6 +247,27 @@ internal constructor(
     draft?.copy(
       rule = draft.rule.copy(actions = draft.rule.actions.toPersistentList().removingAt(index)),
       actionKeys = draft.actionKeys.removingAt(index),
+    )
+  }
+
+  fun addSplit() = mutableDraft.update { draft ->
+    val actions = draft?.rule?.actions ?: return@update draft
+    val added = actions.addSplit()
+    draft.copy(
+      rule = draft.rule.copy(actions = added.toImmutableList()),
+      actionKeys = draft.actionKeys.addingAll(List(added.size - actions.size) { nextKey++ }),
+    )
+  }
+
+  fun removeSplit(splitIndex: Int) = mutableDraft.update { draft ->
+    if (draft == null || splitIndex == 0) return@update draft
+    val actions = draft.rule.actions
+    draft.copy(
+      rule = draft.rule.copy(actions = actions.removeSplit(splitIndex).toImmutableList()),
+      actionKeys =
+        draft.actionKeys
+          .filterIndexed { i, _ -> actions[i].splitIndex != splitIndex }
+          .toPersistentList(),
     )
   }
 

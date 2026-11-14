@@ -56,6 +56,14 @@ class ActionSplitTest {
   }
 
   @Test
+  fun `A new action goes after its split's last action`() {
+    assertThat(actions.newActionIndex(0)).isEqualTo(1)
+    assertThat(actions.newActionIndex(1)).isEqualTo(3)
+    assertThat(actions.newActionIndex(2)).isEqualTo(5)
+    assertThat(emptyList<RuleAction>().newActionIndex(0)).isEqualTo(0)
+  }
+
+  @Test
   fun `A new split takes the remainder and sets a category`() {
     val added = actions.addSplit()
     val split = added.splits()[3]

@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -63,12 +64,17 @@ internal fun RuleActionSheet(
   onAction: OnAction<EditRuleAction>,
   onDismiss: () -> Unit,
 ) {
+  // A focused field commits as the sheet goes, which would land on whatever moved into its index
+  var isRemoved by remember { mutableStateOf(false) }
   val action = actions.getOrNull(index) ?: return
   ActionSheet(
     action = action,
     entities = entities,
-    onChange = { onAction(SetAction(index, it)) },
-    onDelete = { onAction(RemoveAction(index)) },
+    onChange = { if (!isRemoved) onAction(SetAction(index, it)) },
+    onDelete = {
+      isRemoved = true
+      onAction(RemoveAction(index))
+    },
     onDismiss = onDismiss,
   )
 }

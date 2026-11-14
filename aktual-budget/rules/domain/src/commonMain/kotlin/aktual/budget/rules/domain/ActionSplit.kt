@@ -35,8 +35,13 @@ fun List<RuleAction>.splits(): ImmutableList<ActionSplit> {
 // Goes after the split's last action, so the list stays grouped by split
 fun List<RuleAction>.addAction(splitIndex: Int): List<RuleAction> {
   val action = newAction(nextActionField(splitIndex), splitIndex)
+  return toMutableList().apply { add(newActionIndex(splitIndex), action) }
+}
+
+// Where [addAction] puts the split's new action
+fun List<RuleAction>.newActionIndex(splitIndex: Int): Int {
   val last = indexOfLast { it.splitIndex == splitIndex }
-  return toMutableList().apply { if (last < 0) add(action) else add(last + 1, action) }
+  return if (last < 0) size else last + 1
 }
 
 // A new split takes the remainder until its amount is set, as upstream's does
