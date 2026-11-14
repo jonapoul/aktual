@@ -47,21 +47,22 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
 @Composable
-internal fun ConditionValue(
+fun ConditionValue(
   kind: ConditionValueKind,
   value: JsonElement,
   names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
   onPickEntity: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   when (kind) {
-    Entity -> EntityPicker(value, names, onPickEntity)
+    Entity -> EntityPicker(value, names, onPickEntity, modifier)
 
-    EntityList -> EntityListPicker(value as JsonArray, names, onChange, onPickEntity)
+    EntityList -> EntityListPicker(value as JsonArray, names, onChange, onPickEntity, modifier)
 
     Text ->
       CommitTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         text = value.jsonPrimitive.content,
         placeholder = Strings.reportsFormulaQueryText,
         onCommit = { text -> onChange(JsonPrimitive(text)) },
@@ -70,7 +71,7 @@ internal fun ConditionValue(
     // Number keyboards don't all offer a minus sign
     Money ->
       CommitTextField(
-        modifier = Modifier.width(AMOUNT_WIDTH),
+        modifier = modifier.width(AMOUNT_WIDTH),
         text = Amount(value.jsonPrimitive.long).toSignedInputText(),
         keyboardType = Text,
         onCommit = { text ->
@@ -80,7 +81,7 @@ internal fun ConditionValue(
 
     Day ->
       CommitTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         text = value.jsonPrimitive.content,
         placeholder = Strings.reportsFormulaQueryDate,
         onCommit = { text ->
@@ -91,6 +92,7 @@ internal fun ConditionValue(
 
     Flag ->
       AktualSlidingToggleButton(
+        modifier = modifier,
         selected = value.jsonPrimitive.content.toBoolean(),
         options = FLAGS,
         onSelect = { flag -> onChange(JsonPrimitive(flag)) },
@@ -108,10 +110,11 @@ private fun EntityPicker(
   value: JsonElement,
   names: ImmutableMap<String, String>,
   onPick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val id = value.jsonPrimitive.contentOrNull
   AktualButton(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
     text = if (id == null) Strings.reportsFormulaQueryNothing else names.nameOf(id),
     onClick = onPick,
   )
@@ -124,8 +127,9 @@ private fun EntityListPicker(
   names: ImmutableMap<String, String>,
   onChange: (JsonElement) -> Unit,
   onPick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) =
-  Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+  Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     val ids = value.map { it.jsonPrimitive.content }
     if (ids.isNotEmpty()) {
       FlowRow(
@@ -155,7 +159,7 @@ private fun EntityListPicker(
 
 // Replaces the condition while open. Picking from a list adds to it rather than replacing it
 @Composable
-internal fun EntitySheet(
+fun EntitySheet(
   kind: ConditionValueKind,
   value: JsonElement,
   entities: ImmutableList<ConditionEntity>,

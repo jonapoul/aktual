@@ -121,6 +121,9 @@ internal fun EditRuleScreen(
           is SetCondition -> viewModel.setCondition(action.index, action.condition)
           AddCondition -> viewModel.addCondition()
           is RemoveCondition -> viewModel.removeCondition(action.index)
+          is SetAction -> viewModel.setAction(action.index, action.action)
+          AddAction -> viewModel.addAction()
+          is RemoveAction -> viewModel.removeAction(action.index)
         }
       },
     )
@@ -214,6 +217,7 @@ private fun EditRuleScaffold(
             contentPadding = contentPadding,
             rule = state.rule,
             conditionKeys = state.conditionKeys,
+            actionKeys = state.actionKeys,
             conditionEntities = conditionEntities,
             isEnabled = !state.isWorking,
             onAction = onAction,
@@ -289,6 +293,7 @@ private fun ShimmerHeading(fraction: Float) =
 private fun LoadedContent(
   rule: Rule,
   conditionKeys: ImmutableList<Long>,
+  actionKeys: ImmutableList<Long>,
   conditionEntities: ConditionEntities?,
   isEnabled: Boolean,
   listState: LazyListState,
@@ -298,6 +303,7 @@ private fun LoadedContent(
 ) {
   val names: ImmutableMap<String, String> = conditionEntities?.names ?: persistentMapOf()
   var openCondition by rememberSaveable { mutableStateOf<Int?>(null) }
+  var openAction by rememberSaveable { mutableStateOf<Int?>(null) }
 
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
@@ -325,7 +331,14 @@ private fun LoadedContent(
       onAction = onAction,
     )
 
-    actionsNode(actions = rule.actions, names = names)
+    actionsNode(
+      actions = rule.actions,
+      actionKeys = actionKeys,
+      names = names,
+      isEnabled = isEnabled,
+      onOpen = { index: Int -> openAction = index }.takeIf { conditionEntities != null },
+      onAction = onAction,
+    )
 
     item(key = "bottom") {
       // Room to scroll the last card out from under the save button
@@ -342,6 +355,17 @@ private fun LoadedContent(
       entities = conditionEntities,
       onAction = onAction,
       onDismiss = { openCondition = null },
+    )
+  }
+
+  val actionIndex = openAction
+  if (actionIndex != null && conditionEntities != null) {
+    RuleActionSheet(
+      index = actionIndex,
+      actions = rule.actions,
+      entities = conditionEntities,
+      onAction = onAction,
+      onDismiss = { openAction = null },
     )
   }
 }

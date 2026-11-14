@@ -199,10 +199,14 @@ private fun ConditionsOpChip(
 private fun ConditionOp.string(): String =
   if (this == Or) Strings.editRuleMatchAny else Strings.editRuleMatchAll
 
-// Read-only for now
+// Split amounts aren't editable here yet
 internal fun LazyListScope.actionsNode(
   actions: ImmutableList<RuleAction>,
+  actionKeys: ImmutableList<Long>,
   names: ImmutableMap<String, String>,
+  isEnabled: Boolean,
+  onOpen: ((Int) -> Unit)?,
+  onAction: OnAction<EditRuleAction>,
 ) {
   item(key = "then") {
     TimelineRow(
@@ -215,21 +219,32 @@ internal fun LazyListScope.actionsNode(
     }
   }
 
-  if (actions.isEmpty()) {
-    item(key = "no-actions") {
-      TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
-        Text(
-          text = Strings.editRuleNoActions,
-          style = typography.bodyMedium,
-          color = colors.pageTextSubdued,
-        )
-      }
+  itemsIndexed(
+    items = actions,
+    key = { index, _ -> "action-${actionKeys.getOrNull(index) ?: "at-$index"}" },
+  ) { index, action ->
+    TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
+      RuleCard(
+        title = action.title(),
+        value = action.valueText(names),
+        onClick =
+          onOpen
+            ?.let { open -> { open(index) } }
+            ?.takeIf { isEnabled && action.op != SetSplitAmount },
+      )
     }
   }
 
-  itemsIndexed(items = actions, key = { index, _ -> "action-$index" }) { _, action ->
+  item(key = "add-action") {
     TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
-      RuleCard(title = action.title(), value = action.valueText(names), onClick = null)
+      AddCard(
+        text = Strings.editRuleAddAction,
+        isEnabled = isEnabled,
+        onClick = {
+          onOpen?.invoke(actions.size)
+          onAction(AddAction)
+        },
+      )
     }
   }
 }
@@ -265,14 +280,14 @@ private fun RuleCard(
   }
 
 @Composable
-private fun RuleAction.title(): String {
+internal fun RuleAction.title(): String {
   val opText = stringResource(op.resourceLabel())
   val field = field
   return if (op == RuleAction.Op.Set && field != null) "$opText ${field.label()}" else opText
 }
 
 @Composable
-private fun RuleAction.valueText(names: ImmutableMap<String, String>): String? {
+internal fun RuleAction.valueText(names: ImmutableMap<String, String>): String? {
   val template = options?.template ?: options?.formula
   val value = value
   return when {
@@ -361,7 +376,11 @@ private fun PreviewActionsNode(@PreviewParameter(ColorParameters::class) colors:
             ),
             RuleAction(value = null, op = DeleteTransaction),
           ),
+        actionKeys = persistentListOf(0L, 1L, 2L, 3L, 4L),
         names = PREVIEW_NAMES,
+        isEnabled = true,
+        onOpen = {},
+        onAction = {},
       )
     }
   }
@@ -370,7 +389,16 @@ private fun PreviewActionsNode(@PreviewParameter(ColorParameters::class) colors:
 @Composable
 private fun PreviewEmptyActionsNode(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    LazyColumn { actionsNode(actions = persistentListOf(), names = PREVIEW_NAMES) }
+    LazyColumn {
+      actionsNode(
+        actions = persistentListOf(),
+        actionKeys = persistentListOf(),
+        names = PREVIEW_NAMES,
+        isEnabled = true,
+        onOpen = {},
+        onAction = {},
+      )
+    }
   }
 
 private val PREVIEW_NAMES = persistentMapOf("category-id" to "Shopping")

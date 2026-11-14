@@ -1892,7 +1892,16 @@
   <string name="edit_rule_then">Then</string>
   <string name="edit_rule_match_all">all match</string>
   <string name="edit_rule_match_any">any match</string>
-  <string name="edit_rule_no_actions">No actions yet</string>
+  <string name="edit_rule_add_action">Add action</string>
+  <string name="edit_rule_edit_action">Edit action</string>
+  <string name="edit_rule_action_do">Do</string>
+  <string name="edit_rule_action_to">To</string>
+  <string name="edit_rule_action_text">Text</string>
+  <string name="edit_rule_op_set">Set a field</string>
+  <string name="edit_rule_op_prepend_notes">Prepend notes</string>
+  <string name="edit_rule_op_append_notes">Append notes</string>
+  <string name="edit_rule_op_delete_transaction">Delete transaction</string>
+  <string name="edit_rule_unsupported_action">This action can't be edited in Aktual yet: %1$s</string>
 
 
   <!-- budget-schedules -->
