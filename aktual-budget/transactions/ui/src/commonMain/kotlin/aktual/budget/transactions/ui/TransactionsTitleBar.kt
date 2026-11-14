@@ -21,7 +21,6 @@ import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BackHandler
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
@@ -49,7 +48,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -73,16 +71,11 @@ internal fun TransactionsTitleBar(
   reconcileStart: ReconcileStart? = null,
   accountChoices: ImmutableList<AccountChoice> = persistentListOf(),
   canSearch: Boolean = false,
+  isSearching: Boolean = false,
   query: String = "",
+  onSearch: () -> Unit = {},
+  onCloseSearch: () -> Unit = {},
 ) {
-  // Filters outlive the screen, so a list opened with a query already set shows its field
-  var isSearching by rememberSaveable { mutableStateOf(query.isNotEmpty()) }
-  val closeSearch = {
-    isSearching = false
-    onAction(Action.SetQuery(""))
-  }
-  BackHandler(enabled = isSearching, onBack = closeSearch)
-
   val title = loadedAccount.title()
 
   TopAppBar(
@@ -117,14 +110,14 @@ internal fun TransactionsTitleBar(
         AktualIconButton(
           imageVector = AktualIcons.Delete,
           contentDescription = Strings.transactionsSearchClose,
-          onClick = closeSearch,
+          onClick = onCloseSearch,
         )
       } else {
         TransactionsActions(
           loadedAccount = loadedAccount,
           canSearch = canSearch,
           reconcileStart = reconcileStart,
-          onSearch = { isSearching = true },
+          onSearch = onSearch,
           onOpenViewOptions = onOpenViewOptions,
           onAction = onAction,
         )
@@ -340,6 +333,7 @@ private fun PreviewTransactionsTitleBarSearching(
       onAction = {},
       onOpenViewOptions = {},
       canSearch = true,
+      isSearching = true,
       query = this,
     )
   }

@@ -5,7 +5,9 @@ import aktual.budget.model.ConditionOptions
 import aktual.budget.model.ConditionType
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
@@ -20,6 +22,21 @@ class ConditionEditingTest {
       .isEqualTo(Condition(Amount, Is, JsonPrimitive(0), type = ConditionType.Number))
     assertThat(newFilterCondition(Cleared))
       .isEqualTo(Condition(Cleared, Is, JsonPrimitive(true), type = ConditionType.Boolean))
+  }
+
+  @Test
+  fun `Conditions are blank until a value is picked`() {
+    assertThat(newFilterCondition(Payee).isBlank()).isTrue()
+    assertThat(newFilterCondition(Notes).isBlank()).isTrue()
+    assertThat(newFilterCondition(Date).isBlank()).isTrue()
+    assertThat(newFilterCondition(Payee).withOperator(OneOf).isBlank()).isTrue()
+    assertThat(Condition(Payee, Is, JsonPrimitive("payee-1")).isBlank()).isFalse()
+    assertThat(Condition(Payee, OneOf, JsonArray(listOf(JsonPrimitive("a")))).isBlank()).isFalse()
+    assertThat(Condition(Notes, Contains, JsonPrimitive("rent")).isBlank()).isFalse()
+    assertThat(Condition(Account, OnBudget, JsonNull).isBlank()).isFalse()
+    assertThat(newFilterCondition(Amount).isBlank()).isFalse()
+    assertThat(newFilterCondition(Cleared).isBlank()).isFalse()
+    assertThat(Condition(Notes, HasTags, JsonPrimitive("")).isBlank()).isFalse()
   }
 
   @Test

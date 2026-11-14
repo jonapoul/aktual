@@ -16,6 +16,7 @@ import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.FormulaReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.core.utils.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.test.viewModelContext
@@ -184,7 +185,13 @@ class FormulaReportViewModelTest {
           dashboardDao = dao,
           decoder = DashboardItemDecoder(),
           chartDataLoader = chartDataLoader(contexts, calendar),
-          queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
+          queryEditorDataLoader =
+            QueryEditorDataLoader(
+              database = this,
+              entityLoader = ConditionEntitiesLoader(this),
+              reports = ReportsDao(this, contexts),
+              calendar = calendar,
+            ),
           sync = sync,
           budgetScope = BudgetCoroutineScope(scope),
           viewModelContext = scope.viewModelContext,

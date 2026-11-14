@@ -152,6 +152,19 @@ fun Condition.withOperator(op: Operator): Condition {
   return copy(operator = op, value = value)
 }
 
+// Freshly added, before a value is picked. A condition the editor can't show is never blank
+fun Condition.isBlank(): Boolean =
+  when (editableKind()) {
+    Entity -> value == JsonNull
+    EntityList -> (value as JsonArray).isEmpty()
+    Text,
+    Day -> value.content().isEmpty()
+    Money,
+    Flag,
+    NoValue,
+    null -> false
+  }
+
 fun String.toDayOrNull(): LocalDate? = runCatching { LocalDate.parse(this) }.getOrNull()
 
 private fun defaultValue(kind: ConditionValueKind): JsonElement =

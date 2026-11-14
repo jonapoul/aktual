@@ -24,6 +24,8 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.AccountViewPrefs
@@ -72,6 +74,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -81,6 +84,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -105,6 +109,7 @@ internal constructor(
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
   private val filters: TransactionFilters,
+  conditionEntitiesLoader: ConditionEntitiesLoader,
   newTransactions: NewTransactions,
   server: BudgetServer,
   private val clock: Clock,
@@ -248,6 +253,13 @@ internal constructor(
 
   // Only account lists can be searched. Tag, category and filtered lists ignore the search
   val canSearch: Boolean = spec.isAccountList
+
+  // What the filter editor picks from and the chips are named by. Loaded again whenever the chips
+  // come back into view, so new payees and renames show up
+  val conditionEntities: StateFlow<ConditionEntities?> = flow {
+    emit(conditionEntitiesLoader.load())
+  }
+    .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   // The search the list is narrowed by. Typing is debounced, but clearing the text and changing
   // the conditions apply at once. Null for an empty search, or a list that ignores it
@@ -523,6 +535,7 @@ internal constructor(
 }
 
 private val QUERY_DEBOUNCE = 300.milliseconds
+private const val STOP_TIMEOUT_MS = 5_000L
 
 // Whitespace around the text matches nothing, so it doesn't make a different search
 private fun TransactionSearch.trimmed() = copy(text = text.trim())

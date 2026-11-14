@@ -23,6 +23,7 @@ import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.report.ReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.withSummaryType
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.core.utils.Calendar
 import aktual.di.BudgetCoroutineScope
 import aktual.test.viewModelContext
@@ -241,7 +242,13 @@ class ReportViewModelTest {
       ReportViewModel(
         id = ID,
         dashboardDao = dao,
-        queryEditorDataLoader = QueryEditorDataLoader(this, ReportsDao(this, contexts), calendar),
+        queryEditorDataLoader =
+          QueryEditorDataLoader(
+            database = this,
+            entityLoader = ConditionEntitiesLoader(this),
+            reports = ReportsDao(this, contexts),
+            calendar = calendar,
+          ),
         sync = sync,
         chartDataLoader = chartDataLoader(contexts, calendar),
         decoder = DashboardItemDecoder(),

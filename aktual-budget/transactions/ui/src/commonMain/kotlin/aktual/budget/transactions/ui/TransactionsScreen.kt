@@ -12,6 +12,7 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.ui.edit.ReconciledDialog
 import aktual.budget.transactions.vm.AccountChoice
@@ -31,6 +32,7 @@ import aktual.core.nav.SwitchAccountNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BackHandler
 import aktual.core.ui.ColorParams
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.DialogTextButton
@@ -107,6 +109,7 @@ fun TransactionsScreen(
   val reconciling by viewModel.reconciling.collectAsStateWithLifecycle()
   val reconcileStart by viewModel.reconcileStart.collectAsStateWithLifecycle()
   val search by viewModel.search.collectAsStateWithLifecycle()
+  val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   BankSyncSnackbars(viewModel.bankSyncFinished, snackbars)
@@ -143,6 +146,7 @@ fun TransactionsScreen(
     reconciling = reconciling,
     reconcileStart = reconcileStart,
     search = search.takeIf { viewModel.canSearch },
+    conditionEntities = conditionEntities,
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -289,7 +293,15 @@ internal fun TransactionsScaffold(
   reconcileStart: ReconcileStart? = null,
   // Null for a list that can't be searched
   search: TransactionSearch? = null,
+  conditionEntities: ConditionEntities? = null,
 ) {
+  // Filters outlive the screen, so a list opened with a query already set shows its field
+  var isSearching by rememberSaveable { mutableStateOf(search?.text.orEmpty().isNotEmpty()) }
+  val closeSearch = {
+    isSearching = false
+    onAction(Action.SetQuery(""))
+  }
+  BackHandler(enabled = isSearching, onBack = closeSearch)
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
   val pagingItems = pagingData.collectAsLazyPagingItems()
@@ -316,10 +328,17 @@ internal fun TransactionsScaffold(
               reconcileStart = reconcileStart,
               accountChoices = accountChoices,
               canSearch = search != null,
+              isSearching = isSearching,
               query = search?.text.orEmpty(),
+              onSearch = { isSearching = true },
+              onCloseSearch = closeSearch,
               onAction = onAction,
               onOpenViewOptions = { showViewOptions = true },
             )
+
+            if (search != null && (isSearching || search.conditions.conditions.isNotEmpty())) {
+              TransactionFilterChips(search.conditions, conditionEntities, onAction)
+            }
 
             // Dense rows have their own balance column, so the strip only shows for the totals
             if (showBalance && (density != Dense || clearedBalances != null)) {
