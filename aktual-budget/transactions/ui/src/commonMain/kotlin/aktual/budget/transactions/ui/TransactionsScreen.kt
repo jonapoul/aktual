@@ -48,6 +48,11 @@ import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.showErrorSnackbar
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyListState
@@ -336,8 +341,14 @@ internal fun TransactionsScaffold(
               onOpenViewOptions = { showViewOptions = true },
             )
 
-            if (search != null && (isSearching || search.conditions.conditions.isNotEmpty())) {
-              TransactionFilterChips(search.conditions, conditionEntities, onAction)
+            if (search != null) {
+              AnimatedVisibility(
+                visible = isSearching || search.conditions.conditions.isNotEmpty(),
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut(),
+              ) {
+                TransactionFilterChips(search.conditions, conditionEntities, onAction)
+              }
             }
 
             // Dense rows have their own balance column, so the strip only shows for the totals
