@@ -732,8 +732,8 @@ WITH scoped AS (
     vt.starting_balance_flag,
     vt.sort_order,
     (
-      (:categories IS NULL OR :categories LIKE '%,' || vt.category || ',%') AND
-      (:payees IS NULL OR :payees LIKE '%,' || vt.payee || ',%')
+      (:categories IS NULL OR instr(:categories || '', ',' || vt.category || ',') > 0) AND
+      (:payees IS NULL OR instr(:payees || '', ',' || vt.payee || ',') > 0)
     ) AND (
       :pattern IS NULL OR
       p.name LIKE :pattern ESCAPE '\' OR
@@ -753,7 +753,7 @@ WITH scoped AS (
   LEFT JOIN accounts AS ta ON ta.id = p.transfer_acct
   WHERE
     (:account IS NULL OR vt.account = :account) AND
-    (:accounts IS NULL OR :accounts LIKE '%,' || vt.account || ',%') AND
+    (:accounts IS NULL OR instr(:accounts || '', ',' || vt.account || ',') > 0) AND
     (:fromDate IS NULL OR vt.date >= :fromDate) AND
     (:toDate IS NULL OR vt.date <= :toDate) AND
     (:closed IS NULL OR (
