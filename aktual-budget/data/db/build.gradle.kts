@@ -31,13 +31,10 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
-    api(project(":aktual-budget:utils"))
+    api(project(":aktual-budget:model"))
     compileOnly(libs.androidx.compose.annotation)
-    implementation(libs.androidx.sqliteBundled)
     implementation(libs.sqldelight.coroutines)
-    implementation(libs.sqldelight.driver.androidx)
     implementation(libs.sqldelight.runtime)
-    implementation(project(":aktual-core:logging"))
   }
 
   commonTestDependencies {

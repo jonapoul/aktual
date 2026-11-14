@@ -1,6 +1,5 @@
 package aktual.budget.db
 
-import aktual.budget.db.test.transactionIndexNames
 import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
@@ -190,3 +189,22 @@ class DatabaseMigrationTest {
     val BUDGET_ID = BudgetId("abc-123")
   }
 }
+
+// PRAGMA index_list returns one row per index. Column 1 is the index name. SQLDelight can't
+// generate a query for sqlite_master/PRAGMA, so we read it directly off the driver.
+private suspend fun SqlDriver.transactionIndexNames(): List<String> =
+  executeQuery(
+      identifier = null,
+      sql = "PRAGMA index_list(transactions)",
+      parameters = 0,
+      mapper = { cursor ->
+        QueryResult.AsyncValue {
+          buildList {
+            while (cursor.next().await()) {
+              cursor.getString(1)?.let { add(it) }
+            }
+          }
+        }
+      },
+    )
+    .await()

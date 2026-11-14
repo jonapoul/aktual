@@ -34,6 +34,5 @@ kotlin {
     api(libs.compose.resources)
     api(libs.compose.runtime)
     api(libs.compose.uiGraphics)
-    implementation(project(":aktual-di:core"))
   }
 }
