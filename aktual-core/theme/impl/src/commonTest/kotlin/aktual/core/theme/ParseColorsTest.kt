@@ -51,6 +51,86 @@ class ParseColorsTest {
   }
 
   @Test
+  fun `Ignore comments`() {
+    val css =
+      """
+      /* The palette lives in the --tn-* variables, and every
+         --color-* variable points to one of them. */
+      :root {
+        --tn-bg: #1a1b26;
+        /* --color-pageText: #ffffff; */
+        --color-pageBackground: var(--tn-bg); /* page */
+        --color-pageText: #c0caf5;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css) as JsonCustomColors
+
+    assertThat(colors.page).all {
+      prop(PageColors::pageBackground).isEqualTo(Color(0xFF1a1b26))
+      prop(PageColors::pageText).isEqualTo(Color(0xFFc0caf5))
+    }
+  }
+
+  @Test
+  fun `Parse minified CSS`() {
+    val css = ":root{--color-pageBackground:#1a1b26;--color-pageText:#c0caf5}"
+
+    val colors = parseColors(ThyriumThemeSummary, css) as JsonCustomColors
+
+    assertThat(colors.page).all {
+      prop(PageColors::pageBackground).isEqualTo(Color(0xFF1a1b26))
+      prop(PageColors::pageText).isEqualTo(Color(0xFFc0caf5))
+    }
+  }
+
+  @Test
+  fun `Parse declarations sharing a line or spanning several`() {
+    val css =
+      """
+      :root { --color-pageBackground: #1a1b26;
+        --color-pageText: #c0caf5; --color-numberNegative: #f7768e;
+        --color-cardBackground: rgba(
+          26, 27, 38, 0.5
+        );
+        --color-pageTextLight: #565f89
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css) as JsonCustomColors
+
+    assertThat(colors.page).all {
+      prop(PageColors::pageBackground).isEqualTo(Color(0xFF1a1b26))
+      prop(PageColors::pageText).isEqualTo(Color(0xFFc0caf5))
+      prop(PageColors::numberNegative).isEqualTo(Color(0xFFf7768e))
+      prop(PageColors::cardBackground).isEqualTo(Color(26, 27, 38).copy(alpha = 0.5f))
+      prop(PageColors::pageTextLight).isEqualTo(Color(0xFF565f89))
+    }
+  }
+
+  @Test
+  fun `Fall back for colors that can't be parsed`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1a1b26;
+        --color-pageText: inherit;
+        --color-numberNegative: #f7768e;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css) as JsonCustomColors
+
+    assertThat(colors.page).all {
+      prop(PageColors::pageText).isEqualTo(DarkColors.pageText)
+      prop(PageColors::numberNegative).isEqualTo(Color(0xFFf7768e))
+    }
+  }
+
+  @Test
   fun `Resolve var references to the theme's own properties`() {
     val css =
       """

@@ -8,7 +8,9 @@ import androidx.compose.ui.graphics.Color
 fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   val properties: Map<String, String> =
     css
-      .lineSequence()
+      .replace(CommentRegex, "")
+      .split(DeclarationSeparator)
+      .asSequence()
       .map { it.trim() }
       .filter { it.startsWith("--") }
       .mapNotNull(::parsePropertyPair)
@@ -427,17 +429,20 @@ private const val TAG = "parseTheme"
 
 private const val COLOR_PREFIX = "color-"
 
-private val PropertyRegex = "--(.*?):\\s*?(.*?);".toRegex()
+private val CommentRegex = """/\*[\s\S]*?\*/""".toRegex()
+
+// Splitting on braces too means declarations on the same line as their selector are kept
+private val DeclarationSeparator = "[;{}]".toRegex()
+
+private val PropertyRegex = """--([\w-]+)\s*:([\s\S]*)""".toRegex()
 
 private val VarRegex = """var\(\s*--([\w-]+)\s*(?:,\s*(.+?)\s*)?\)""".toRegex()
 
 // Themes can declare their own properties alongside the --color- ones, and reference them by var()
-private fun parsePropertyPair(line: String): Pair<String, String>? {
-  val match = PropertyRegex.find(line)
+private fun parsePropertyPair(declaration: String): Pair<String, String>? {
+  val match = PropertyRegex.matchEntire(declaration)
   if (match == null) {
-    check(!line.startsWith("--$COLOR_PREFIX")) {
-      "Attribute '$line' doesn't match regex $PropertyRegex"
-    }
+    log.w(TAG) { "Skipping declaration '$declaration', it doesn't match regex $PropertyRegex" }
     return null
   }
   val (_, name, string) = match.groupValues
@@ -449,7 +454,7 @@ private fun Map<String, String>.resolveColor(
   value: String,
   seen: Set<String> = emptySet(),
 ): Color? {
-  val match = VarRegex.matchEntire(value) ?: return value.parseColor()
+  val match = VarRegex.matchEntire(value) ?: return value.parseColorOrNull()
   val (_, name, fallback) = match.groupValues
   val target = if (name in seen) null else get(name)
   return target?.let { resolveColor(it, seen + name) }
