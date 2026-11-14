@@ -1914,6 +1914,7 @@
   <string name="edit_rule_split_formula">Formula</string>
   <string name="edit_rule_split_read_only">This split amount can't be edited in Aktual yet</string>
   <string name="edit_rule_matches">Matches</string>
+  <string name="edit_rule_matches_show">Show Matches</string>
   <string name="edit_rule_matches_none">No transactions match these conditions</string>
   <string name="edit_rule_matches_invalid">Fix the actions to see what they would change</string>
   <string name="edit_rule_matches_failed">Couldn't load the matching transactions</string>

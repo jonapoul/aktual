@@ -217,11 +217,10 @@ internal fun LazyListScope.actionsNode(
   onOpen: ((Int) -> Unit)?,
   onOpenSplit: (Int) -> Unit,
   onAction: OnAction<EditRuleAction>,
-  hasNext: Boolean = false,
 ) {
   item(key = "then") {
     TimelineRow(
-      hasRail = hasNext,
+      hasRail = false,
       node = {
         IconNode(AktualIcons.Bolt, colors.buttonPrimaryBackground, colors.buttonPrimaryText)
       },
@@ -244,7 +243,7 @@ internal fun LazyListScope.actionsNode(
 
     if (isSplit) {
       item(key = "split-$splitKey") {
-        TimelineRow(modifier = Modifier.animateItem(), hasRail = hasNext) {
+        TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           SplitHeader(
             split = split,
             onClick = { onOpenSplit(split.index) }.takeIf { isEnabled && split.amount != null },
@@ -257,7 +256,7 @@ internal fun LazyListScope.actionsNode(
       items = split.actions,
       key = { (index, _) -> "action-${actionKeys.getOrNull(index) ?: "at-$index"}" },
     ) { (index, action) ->
-      TimelineRow(modifier = Modifier.animateItem(), hasRail = hasNext) {
+      TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
         RuleCard(
           title = action.title(),
           value = action.valueText(names),
@@ -268,7 +267,7 @@ internal fun LazyListScope.actionsNode(
 
     if (isSplit) {
       item(key = "add-action-$splitKey") {
-        TimelineRow(modifier = Modifier.animateItem(), hasRail = hasNext) {
+        TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           AddCard(
             text = Strings.editRuleAddAction,
             isEnabled = isEnabled,
@@ -280,7 +279,7 @@ internal fun LazyListScope.actionsNode(
   }
 
   item(key = "add-action") {
-    TimelineRow(modifier = Modifier.animateItem(), hasRail = hasNext, isEndOfStep = hasNext) {
+    TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
       Row(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
         if (!isSplit) {
           AddCard(

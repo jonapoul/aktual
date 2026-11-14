@@ -30,12 +30,10 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,20 +51,15 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.LocalDate
 
-// The header shows while the sheet is collapsed, so measure it with [headerModifier] for the peek
 @Composable
 internal fun MatchesSheetContent(
   state: RuleMatchesState,
   isEnabled: Boolean,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
-  headerModifier: Modifier = Modifier,
 ) =
-  Column(modifier = modifier.fillMaxWidth().navigationBarsPadding()) {
-    Column(modifier = headerModifier.fillMaxWidth()) {
-      BottomSheetDefaults.DragHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
-      MatchesHeader(state, isEnabled, onAction)
-    }
+  Column(modifier = modifier.fillMaxWidth()) {
+    MatchesHeader(state, isEnabled, onAction)
     if (state is Loaded) {
       LazyColumn(
         contentPadding =

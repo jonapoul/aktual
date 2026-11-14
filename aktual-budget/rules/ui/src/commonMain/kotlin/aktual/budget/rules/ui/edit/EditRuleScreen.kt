@@ -19,6 +19,8 @@ import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.ViewShow
+import aktual.core.ui.HostedSheet
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Res
@@ -32,6 +34,7 @@ import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -42,7 +45,6 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
@@ -57,19 +59,16 @@ import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -82,12 +81,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.ShimmerBounds.Window
@@ -188,34 +183,11 @@ private fun EditRuleScaffold(
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
-  val density = LocalDensity.current
-  var headerHeight by remember { mutableStateOf(0.dp) }
-  val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-  val peekHeight = if (state is Success) headerHeight + navBarHeight else 0.dp
+  var showMatches by rememberSaveable { mutableStateOf(false) }
 
-  BottomSheetScaffold(
+  Scaffold(
     modifier = modifier.fillMaxSize(),
     snackbarHost = { SnackbarHost(snackbarHostState) },
-    sheetPeekHeight = peekHeight,
-    sheetSwipeEnabled = state is Success,
-    sheetDragHandle = null,
-    sheetContainerColor = colors.modalBackground,
-    sheetContentColor = colors.pageText,
-    sheetContent = {
-      if (state is Success) {
-        ProvideSurfaceColor(colors.modalBackground) {
-          MatchesSheetContent(
-            state = matches,
-            isEnabled = !state.isWorking,
-            onAction = onAction,
-            headerModifier =
-              Modifier.onSizeChanged { size ->
-                headerHeight = with(density) { size.height.toDp() }
-              },
-          )
-        }
-      }
-    },
     topBar = {
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
@@ -225,11 +197,31 @@ private fun EditRuleScaffold(
           Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
         },
         actions = {
-          if (mode == Edit) {
-            MoreMenu(isEnabled = state is Success && !state.isWorking, onAction = onAction)
-          }
+          MoreMenu(
+            mode = mode,
+            isEnabled = state is Success && !state.isWorking,
+            onShowMatches = { showMatches = true },
+            onAction = onAction,
+          )
         },
       )
+    },
+    floatingActionButton = {
+      if (state is Success) {
+        Column {
+          AktualButton(
+            text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+            icon = AktualIcons.Check,
+            kind = Primary,
+            shape = CardShape,
+            contentPadding = FabPadding,
+            isEnabled = state.canSave,
+            isLoading = state.isWorking,
+            onClick = { onAction(Save) },
+          )
+          BottomSpacing()
+        }
+      }
     },
   ) { innerPadding ->
     Box {
@@ -255,12 +247,11 @@ private fun EditRuleScaffold(
 
         Loading -> LoadingContent(contentModifier.padding(contentPadding))
 
-        is Success -> {
+        is Success ->
           LoadedContent(
             modifier = contentModifier,
             listState = listState,
             contentPadding = contentPadding,
-            bottomPadding = peekHeight,
             rule = state.rule,
             conditionKeys = state.conditionKeys,
             actionKeys = state.actionKeys,
@@ -268,27 +259,24 @@ private fun EditRuleScaffold(
             isEnabled = !state.isWorking,
             onAction = onAction,
           )
-
-          AktualButton(
-            modifier =
-              Modifier.align(BottomEnd).padding(end = FabMargin, bottom = peekHeight + FabMargin),
-            text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-            icon = AktualIcons.Check,
-            kind = Primary,
-            shape = CardShape,
-            contentPadding = FabPadding,
-            isEnabled = state.canSave,
-            isLoading = state.isWorking,
-            onClick = { onAction(Save) },
-          )
-        }
       }
+    }
+  }
+
+  if (showMatches && state is Success) {
+    HostedSheet(onDismiss = { showMatches = false }) {
+      MatchesSheetContent(state = matches, isEnabled = !state.isWorking, onAction = onAction)
     }
   }
 }
 
 @Composable
-private fun MoreMenu(isEnabled: Boolean, onAction: OnAction<EditRuleAction>) = Box {
+private fun MoreMenu(
+  mode: Mode,
+  isEnabled: Boolean,
+  onShowMatches: () -> Unit,
+  onAction: OnAction<EditRuleAction>,
+) = Box {
   var showMenu by remember { mutableStateOf(false) }
 
   AktualIconButton(
@@ -299,18 +287,30 @@ private fun MoreMenu(isEnabled: Boolean, onAction: OnAction<EditRuleAction>) = B
   )
 
   AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-    val string = Strings.editRuleActionDelete
-    val red = colors.errorText
+    val matches = Strings.editRuleMatchesShow
     AktualDropdownMenuItem(
-      text = { Text(string, color = red) },
+      text = { Text(matches) },
       onClick = {
         showMenu = false
-        onAction(Delete)
+        onShowMatches()
       },
-      leadingIcon = {
-        Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
-      },
+      leadingIcon = { Icon(imageVector = AktualIcons.ViewShow, contentDescription = matches) },
     )
+
+    if (mode == Edit) {
+      val string = Strings.editRuleActionDelete
+      val red = colors.errorText
+      AktualDropdownMenuItem(
+        text = { Text(string, color = red) },
+        onClick = {
+          showMenu = false
+          onAction(Delete)
+        },
+        leadingIcon = {
+          Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
+        },
+      )
+    }
   }
 }
 
@@ -358,7 +358,6 @@ private fun LoadedContent(
   isEnabled: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  bottomPadding: Dp,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
@@ -404,8 +403,9 @@ private fun LoadedContent(
     )
 
     item(key = "bottom") {
-      // Room to scroll the last card out from under the save button and the matches sheet
-      VerticalSpacer(FabClearance + bottomPadding)
+      // Room to scroll the last card out from under the save button
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
     }
   }
 
@@ -444,7 +444,6 @@ private fun LoadedContent(
 
 private val FabPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
 private val FabClearance = 72.dp
-private val FabMargin = 16.dp
 
 @PortraitPreview
 @Composable
