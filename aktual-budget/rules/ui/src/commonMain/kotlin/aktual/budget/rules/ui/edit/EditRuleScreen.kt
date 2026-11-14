@@ -20,7 +20,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.ViewShow
-import aktual.core.ui.HostedSheet
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Res
@@ -40,6 +39,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HostedSheet
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
