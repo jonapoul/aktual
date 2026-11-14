@@ -93,6 +93,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
@@ -107,7 +109,6 @@ internal fun EditRuleScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
-  val matches by viewModel.matches.collectAsStateWithLifecycle()
   val snackbarHostState = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
@@ -130,7 +131,7 @@ internal fun EditRuleScreen(
       mode = if (id == null) Create else Edit,
       state = state,
       conditionEntities = conditionEntities,
-      matches = matches,
+      matches = viewModel.matches,
       snackbarHostState = snackbarHostState,
       onAction = { action ->
         if (action == NavBack) back() else viewModel.handle(action)
@@ -176,7 +177,7 @@ private fun EditRuleScaffold(
   state: EditRuleState,
   mode: Mode,
   conditionEntities: ConditionEntities?,
-  matches: RuleMatchesState,
+  matches: StateFlow<RuleMatchesState>,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
@@ -265,7 +266,9 @@ private fun EditRuleScaffold(
 
   if (showMatches && state is Success) {
     HostedSheet(onDismiss = { showMatches = false }) {
-      MatchesSheetContent(state = matches, isEnabled = !state.isWorking, onAction = onAction)
+      // Collected only while shown, so the matches aren't searched for while the sheet is closed
+      val matchesState by matches.collectAsStateWithLifecycle()
+      MatchesSheetContent(state = matchesState, isEnabled = !state.isWorking, onAction = onAction)
     }
   }
 }
@@ -455,7 +458,7 @@ private fun PreviewEditRuleScaffold(
       state = state,
       mode = mode,
       conditionEntities = PREVIEW_ENTITIES,
-      matches = RuleMatchesState.Loaded(0, 0, persistentListOf()),
+      matches = MutableStateFlow(RuleMatchesState.Loaded(0, 0, persistentListOf())),
       onAction = {},
     )
   }
