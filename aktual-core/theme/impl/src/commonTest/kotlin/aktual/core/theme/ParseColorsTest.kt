@@ -51,6 +51,29 @@ class ParseColorsTest {
   }
 
   @Test
+  fun `Ignore comments`() {
+    val css =
+      """
+      /* The palette lives in the --tn-* variables, and every
+         --color-* variable points to one of them. */
+      :root {
+        --tn-bg: #1a1b26;
+        /* --color-pageText: #ffffff; */
+        --color-pageBackground: var(--tn-bg); /* page */
+        --color-pageText: #c0caf5;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css) as JsonCustomColors
+
+    assertThat(colors.page).all {
+      prop(PageColors::pageBackground).isEqualTo(Color(0xFF1a1b26))
+      prop(PageColors::pageText).isEqualTo(Color(0xFFc0caf5))
+    }
+  }
+
+  @Test
   fun `Resolve var references to the theme's own properties`() {
     val css =
       """

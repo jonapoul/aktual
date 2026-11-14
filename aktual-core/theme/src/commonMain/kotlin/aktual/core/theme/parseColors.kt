@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   val properties: Map<String, String> =
     css
+      .replace(CommentRegex, "")
       .lineSequence()
       .map { it.trim() }
       .filter { it.startsWith("--") }
@@ -426,6 +427,8 @@ private fun buildCustomColors(
 private const val TAG = "parseTheme"
 
 private const val COLOR_PREFIX = "color-"
+
+private val CommentRegex = """/\*[\s\S]*?\*/""".toRegex()
 
 private val PropertyRegex = "--(.*?):\\s*?(.*?);".toRegex()
 
