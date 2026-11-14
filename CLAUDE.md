@@ -82,7 +82,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew --rerun-tasks
 ```
 
-Run `./scripts/detekt.sh` before opening a PR and fix what it reports. `lint.sh`, `test.sh` and `compile.sh` share the same change-detection logic (extracted into `scripts/lib/`).
+Run `./scripts/detekt.sh` before opening a PR and fix what it reports. `lint.sh`, `test.sh` and `compile.sh` share the same change-detection logic (extracted into `scripts/lib/`). If it fails, it will output to `build/reports/detekt/all-issues.txt`, so read that file for a list of all issues across the project.
 
 ## Architecture
 

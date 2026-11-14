@@ -15,5 +15,10 @@ internal data object Save : EditRuleAction
 
 @JvmInline internal value class SetStage(val value: RuleStage) : EditRuleAction
 
-internal data class SetConditions(val conditions: List<Condition>, val op: ConditionOp) :
-  EditRuleAction
+@JvmInline internal value class SetConditionsOp(val value: ConditionOp) : EditRuleAction
+
+internal data class SetCondition(val index: Int, val condition: Condition) : EditRuleAction
+
+internal data object AddCondition : EditRuleAction
+
+@JvmInline internal value class RemoveCondition(val index: Int) : EditRuleAction

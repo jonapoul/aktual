@@ -1,13 +1,12 @@
 package aktual.budget.rules.ui.edit
 
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
-import aktual.budget.model.RuleStage
-import aktual.budget.rules.components.ConditionsEditor
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntityLists
 import aktual.budget.rules.ui.LocalNameFetcher
-import aktual.budget.rules.ui.LocalRuleEditable
+import aktual.budget.rules.ui.PreviewCondition2
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState
@@ -17,23 +16,20 @@ import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
 import aktual.core.icons.DotsHorizontalTriple
-import aktual.core.icons.InformationOutline
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Save
-import aktual.core.icons.material.SaveAs
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
-import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.AktualTooltip
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardColumn
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
@@ -43,6 +39,8 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -51,17 +49,17 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -72,15 +70,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.ShimmerBounds.Window
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.serialization.json.JsonPrimitive
 
 @Composable
 internal fun EditRuleScreen(
@@ -113,7 +117,10 @@ internal fun EditRuleScreen(
           Delete -> viewModel.delete()
           Save -> viewModel.save()
           is SetStage -> viewModel.setStage(action.value)
-          is SetConditions -> viewModel.setConditions(action.conditions, action.op)
+          is SetConditionsOp -> viewModel.setConditionsOp(action.value)
+          is SetCondition -> viewModel.setCondition(action.index, action.condition)
+          AddCondition -> viewModel.addCondition()
+          is RemoveCondition -> viewModel.removeCondition(action.index)
         }
       },
     )
@@ -125,6 +132,11 @@ private fun metroViewModel(id: RuleId?, payee: PayeeId?) =
   assistedMetroViewModel<EditRuleViewModel, EditRuleViewModel.Factory>(key = "$id-$payee") {
     create(id, payee)
   }
+
+internal enum class Mode {
+  Create,
+  Edit,
+}
 
 @Composable
 private fun EditRuleScaffold(
@@ -144,141 +156,97 @@ private fun EditRuleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
-        title = { EditRuleTitle(mode) },
-        actions = { EditRuleActions(state, mode, onAction) },
+        title = {
+          Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
+        },
+        actions = {
+          if (mode == Edit) {
+            MoreMenu(isEnabled = state is Success && !state.isWorking, onAction = onAction)
+          }
+        },
       )
+    },
+    floatingActionButton = {
+      if (state is Success) {
+        Column {
+          AktualButton(
+            text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+            icon = AktualIcons.Check,
+            kind = Primary,
+            shape = CardShape,
+            contentPadding = FabPadding,
+            isEnabled = state.canSave,
+            isLoading = state.isWorking,
+            onClick = { onAction(Save) },
+          )
+          BottomSpacing()
+        }
+      }
     },
   ) { innerPadding ->
     Box {
       PageBackground()
 
-      EditRuleContent(
-        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
-        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-        state = state,
-        conditionEntities = conditionEntities,
-        listState = listState,
-        onAction = onAction,
-      )
+      val contentModifier = Modifier.hazedTopBarContent(hazeState, innerPadding)
+      val contentPadding =
+        PaddingValues(
+          start = Dimens.Huge,
+          end = Dimens.Huge,
+          top =
+            hazedTopBarContentPadding(hazeState, innerPadding).calculateTopPadding() + Dimens.Huge,
+        )
+
+      when (state) {
+        is Failure ->
+          FailureScreen(
+            modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+            title = Strings.editRuleFailedTitle,
+            reason = state.reason,
+            action = null,
+          )
+
+        Loading -> LoadingContent(contentModifier.padding(contentPadding))
+
+        is Success ->
+          LoadedContent(
+            modifier = contentModifier,
+            listState = listState,
+            contentPadding = contentPadding,
+            rule = state.rule,
+            conditionKeys = state.conditionKeys,
+            conditionEntities = conditionEntities,
+            isEnabled = !state.isWorking,
+            onAction = onAction,
+          )
+      }
     }
   }
 }
 
 @Composable
-private fun EditRuleTitle(mode: Mode, modifier: Modifier = Modifier) {
-  Text(
-    modifier = modifier,
-    text =
-      when (mode) {
-        Create -> Strings.editRuleToolbarCreate
-        Edit -> Strings.editRuleToolbarEdit
-      },
+private fun MoreMenu(isEnabled: Boolean, onAction: OnAction<EditRuleAction>) = Box {
+  var showMenu by remember { mutableStateOf(false) }
+
+  AktualIconButton(
+    onClick = { showMenu = true },
+    isEnabled = isEnabled,
+    imageVector = AktualIcons.DotsHorizontalTriple,
+    contentDescription = Strings.editRuleMenu,
   )
-}
 
-@Composable
-private fun EditRuleActions(
-  state: EditRuleState,
-  mode: Mode,
-  onAction: OnAction<EditRuleAction>,
-  modifier: Modifier = Modifier,
-) {
-  Row(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(4.dp, alignment = Alignment.End),
-  ) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    AktualIconButton(
-      kind = Normal,
-      onClick = { onAction(Save) },
-      isEnabled = state is Success && state.canSave,
-      imageVector =
-        when (mode) {
-          Create -> MaterialIcons.SaveAs
-          Edit -> MaterialIcons.Save
-        },
-      contentDescription =
-        when (mode) {
-          Create -> Strings.editRuleCreate
-          Edit -> Strings.editRuleSave
-        },
-    )
-
-    AktualIconButton(
-      kind = Normal,
-      onClick = { showMenu = !showMenu },
-      isEnabled = state is Success,
-      imageVector = AktualIcons.DotsHorizontalTriple,
-      contentDescription = Strings.editRuleMenu,
-    )
-
-    MoreMenu(state, showMenu, onAction, onDismissRequest = { showMenu = false })
-  }
-}
-
-@Composable
-private fun MoreMenu(
-  state: EditRuleState,
-  showMenu: Boolean,
-  onAction: OnAction<EditRuleAction>,
-  onDismissRequest: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  AktualDropdownMenu(
-    modifier = modifier,
-    expanded = showMenu,
-    onDismissRequest = onDismissRequest,
-  ) {
+  AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
     val string = Strings.editRuleActionDelete
     val red = colors.errorText
     AktualDropdownMenuItem(
-      enabled = state is Success,
       text = { Text(string, color = red) },
       onClick = {
-        onDismissRequest()
+        showMenu = false
         onAction(Delete)
       },
       leadingIcon = {
         Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
       },
     )
-  }
-}
-
-@Composable
-private fun EditRuleContent(
-  state: EditRuleState,
-  conditionEntities: ConditionEntities?,
-  listState: LazyListState,
-  contentPadding: PaddingValues,
-  onAction: OnAction<EditRuleAction>,
-  modifier: Modifier = Modifier,
-) {
-  when (state) {
-    is Failure -> {
-      FailureScreen(
-        modifier = modifier,
-        title = Strings.editRuleFailedTitle,
-        reason = state.reason,
-        action = null,
-      )
-    }
-
-    Loading ->
-      LoadingContent(modifier = modifier, contentPadding = contentPadding, onAction = onAction)
-
-    is Success -> {
-      LoadedContent(
-        modifier = modifier,
-        rule = state.rule,
-        conditionEntities = conditionEntities,
-        isEnabled = !state.isWorking,
-        listState = listState,
-        contentPadding = contentPadding,
-        onAction = onAction,
-      )
-    }
   }
 }
 
@@ -292,103 +260,94 @@ private val Failure.reason: String
     }
 
 /** Keep in sync with [LoadedContent] */
-@Suppress("unused")
 @Composable
-private fun LoadingContent(
-  onAction: OnAction<EditRuleAction>,
-  contentPadding: PaddingValues,
-  modifier: Modifier = Modifier,
-) {
-  // TBC
+private fun LoadingContent(modifier: Modifier = Modifier) {
+  val shimmer = rememberShimmer(Window)
+  Column(modifier = modifier.shimmer(shimmer)) {
+    TimelineRow(hasRail = true, node = { DotNode() }, isEndOfStep = true) {
+      ShimmerHeading(fraction = 0.3f)
+      ShimmerBlock(Modifier.fillMaxWidth().height(36.dp))
+    }
+    TimelineRow(hasRail = true, node = { ShimmerNode() }) { ShimmerHeading(fraction = 0.4f) }
+    TimelineRow(hasRail = true) { ShimmerCard() }
+    TimelineRow(hasRail = true, isEndOfStep = true) { ShimmerCard() }
+    TimelineRow(hasRail = false, node = { ShimmerNode() }) { ShimmerHeading(fraction = 0.2f) }
+    TimelineRow(hasRail = false) { ShimmerCard() }
+  }
 }
+
+@Composable
+private fun ShimmerHeading(fraction: Float) =
+  ShimmerLine(style = typography.titleMedium, modifier = Modifier.fillMaxWidth(fraction))
+
+@Composable private fun ShimmerNode() = ShimmerBlock(Modifier.fillMaxSize(), shape = CircleShape)
+
+@Composable private fun ShimmerCard() = ShimmerBlock(Modifier.fillMaxWidth().height(60.dp))
 
 /** Keep in sync with [LoadingContent] */
 @Composable
 private fun LoadedContent(
   rule: Rule,
+  conditionKeys: ImmutableList<Long>,
   conditionEntities: ConditionEntities?,
   isEnabled: Boolean,
-  onAction: OnAction<EditRuleAction>,
-  contentPadding: PaddingValues,
   listState: LazyListState,
+  contentPadding: PaddingValues,
+  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
-    CompositionLocalProvider(LocalRuleEditable provides isEnabled) {
-      LazyColumn(
-        modifier = Modifier.padding(Dimens.ScreenPadding).scrollbar(listState),
-        state = listState,
-        contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
-      ) {
-        if (rule.hasUnknownValues) {
-          item { WarningBanner(text = Strings.editRuleUnknownValues) }
-        }
+  val names: ImmutableMap<String, String> = conditionEntities?.names ?: persistentMapOf()
+  var openCondition by rememberSaveable { mutableStateOf<Int?>(null) }
 
-        item { RuleStage(rule, onAction) }
-
-        if (conditionEntities != null) {
-          item {
-            ConditionsEditor(
-              conditions = rule.conditions,
-              conditionsOp = rule.conditionsOp,
-              data = conditionEntities,
-              onChange = { conditions, op -> onAction(SetConditions(conditions, op)) },
-              schema = RuleConditions,
-              isEnabled = isEnabled,
-            )
-          }
-        }
-
-        item { BottomSpacing() }
+  LazyColumn(
+    modifier = modifier.fillMaxSize().scrollbar(listState),
+    state = listState,
+    contentPadding = contentPadding,
+  ) {
+    if (rule.hasUnknownValues) {
+      item(key = "unknown-values") {
+        WarningBanner(
+          modifier = Modifier.padding(bottom = Dimens.Huge),
+          text = Strings.editRuleUnknownValues,
+        )
       }
     }
 
-    Column {
-      VerticalSpacer(weight = 1f)
+    stageNode(stage = rule.stage, isEnabled = isEnabled, onAction = onAction)
 
+    conditionsNode(
+      conditions = rule.conditions,
+      conditionKeys = conditionKeys,
+      conditionsOp = rule.conditionsOp,
+      names = names,
+      isEnabled = isEnabled,
+      onOpen = { index: Int -> openCondition = index }.takeIf { conditionEntities != null },
+      onAction = onAction,
+    )
+
+    actionsNode(actions = rule.actions, names = names)
+
+    item(key = "bottom") {
+      // Room to scroll the last card out from under the save button
+      VerticalSpacer(FabClearance)
       BottomSpacing()
     }
   }
-}
 
-@Composable
-private fun RuleStage(
-  rule: Rule,
-  onAction: OnAction<EditRuleAction>,
-  modifier: Modifier = Modifier,
-) {
-  val isEnabled = LocalRuleEditable.current
-  CardColumn(
-    modifier = modifier.fillMaxWidth(),
-    contentPadding = CARD_PADDING,
-    verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
-  ) {
-    Row {
-      Text(
-        modifier = Modifier.weight(1f),
-        text = Strings.editRuleStage,
-        style = typography.titleSmall,
-      )
-
-      AktualTooltip(
-        imageVector = AktualIcons.InformationOutline,
-        contentDescription = null,
-        tooltipText = Strings.editRuleStageDesc,
-      )
-    }
-
-    val stages = RuleStage.known
-    AktualSlidingToggleButton(
-      modifier = Modifier.fillMaxWidth(),
-      options = stages,
-      isEnabled = isEnabled,
-      selected = rule.stage,
-      onSelect = { stage -> onAction(SetStage(stage)) },
-      string = { it.string() },
+  val index = openCondition
+  if (index != null && conditionEntities != null) {
+    RuleConditionSheet(
+      index = index,
+      conditions = rule.conditions,
+      entities = conditionEntities,
+      onAction = onAction,
+      onDismiss = { openCondition = null },
     )
   }
 }
+
+private val FabPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+private val FabClearance = 72.dp
 
 @PortraitPreview
 @Composable
@@ -409,11 +368,33 @@ private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode 
 
 private class EditRuleStateProvider :
   ColorParamsProvider<EditRuleStateParams>(
-    EditRuleStateParams(Success(PreviewRule1, isWorking = false)),
-    EditRuleStateParams(Success(PreviewRule1, isWorking = true)),
+    EditRuleStateParams(Success(PREVIEW_RULE, isWorking = false)),
+    EditRuleStateParams(Success(PREVIEW_RULE, isWorking = true)),
+    EditRuleStateParams(Success(PREVIEW_EMPTY_RULE, isWorking = false), mode = Create),
+    EditRuleStateParams(Success(PREVIEW_UNKNOWN_RULE, isWorking = false)),
     EditRuleStateParams(Loading),
     EditRuleStateParams(EditRuleState.OtherFailure("Something broke")),
   )
+
+private val PREVIEW_RULE =
+  PreviewRule1.copy(
+    conditions = persistentListOf(PreviewCondition2),
+    actions =
+      persistentListOf(
+        RuleAction(
+          field = Category,
+          type = Id,
+          value = JsonPrimitive("category-id"),
+          op = RuleAction.Op.Set,
+        ),
+        RuleAction(field = Notes, type = null, value = JsonPrimitive("#online"), op = AppendNotes),
+      ),
+  )
+
+private val PREVIEW_EMPTY_RULE =
+  PreviewRule1.copy(conditions = persistentListOf(), actions = persistentListOf())
+
+private val PREVIEW_UNKNOWN_RULE = PreviewRule1.copy(stage = Unknown)
 
 private val PREVIEW_ENTITIES =
   ConditionEntityLists(
@@ -421,5 +402,5 @@ private val PREVIEW_ENTITIES =
     categories = persistentListOf(),
     categoryGroups = persistentListOf(),
     payees = persistentListOf(),
-    names = persistentMapOf(),
+    names = persistentMapOf("category-id" to "Shopping"),
   )

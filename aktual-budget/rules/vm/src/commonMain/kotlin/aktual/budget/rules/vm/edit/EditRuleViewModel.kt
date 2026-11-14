@@ -40,8 +40,10 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -77,7 +79,8 @@ internal constructor(
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
-  private val mutableRule = MutableStateFlow<Rule?>(null)
+  private val mutableDraft = MutableStateFlow<Draft?>(null)
+  private var nextConditionKey = 0L
 
   val events: SharedFlow<EditRuleEvent> = mutableEvents.asSharedFlow()
 
@@ -91,8 +94,8 @@ internal constructor(
       val isLoading by mutableIsLoading.collectAsState()
       val isWorking by mutableIsWorking.collectAsState()
       val failure by mutableFailure.collectAsState()
-      val rule by mutableRule.collectAsState()
-      editRuleState(isLoading, isWorking, failure, rule)
+      val draft by mutableDraft.collectAsState()
+      editRuleState(isLoading, isWorking, failure, draft?.rule, draft?.conditionKeys)
     }
 
   init {
@@ -104,7 +107,7 @@ internal constructor(
 
     viewModelScope.launch {
       if (ruleId == null) {
-        mutableRule.update { if (payee == null) emptyRule() else payeeRule(payee) }
+        mutableDraft.update { draft(if (payee == null) emptyRule() else payeeRule(payee)) }
         mutableIsLoading.update { false }
         return@launch
       }
@@ -122,7 +125,7 @@ internal constructor(
               conditionsOp = rule.conditions_op ?: Default,
               actions = rule.actions.orEmpty().toImmutableList(),
             )
-          mutableRule.update { model }
+          mutableDraft.update { draft(model) }
         }
       } catch (e: Exception) {
         log.e(e) { "Failed loading $ruleId" }
@@ -157,7 +160,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          val model = mutableRule.value
+          val model = mutableDraft.value?.rule
           if (model == null) {
             log.w { "Tried to save without a rule?" }
           } else if (model.hasUnknownValues) {
@@ -190,14 +193,39 @@ internal constructor(
 
   fun setStage(stage: RuleStage) = updateRule { r -> r.copy(stage = stage) }
 
-  fun setConditions(conditions: List<Condition>, op: ConditionOp) = updateRule { rule ->
-    rule.copy(conditions = conditions.toImmutableList(), conditionsOp = op)
+  fun setConditionsOp(op: ConditionOp) = updateRule { r -> r.copy(conditionsOp = op) }
+
+  fun setCondition(index: Int, condition: Condition) = updateRule { r ->
+    r.copy(conditions = r.conditions.toPersistentList().replacingAt(index, condition))
   }
 
-  private fun updateRule(makeCopy: (Rule) -> Rule) = mutableRule.update { rule ->
-    rule ?: return@update null
-    makeCopy(rule)
+  fun addCondition() {
+    val key = nextConditionKey++
+    mutableDraft.update { draft ->
+      draft?.copy(
+        rule =
+          draft.rule.copy(
+            conditions = draft.rule.conditions.toPersistentList().adding(emptyCondition()),
+          ),
+        conditionKeys = draft.conditionKeys.adding(key),
+      )
+    }
   }
+
+  fun removeCondition(index: Int) = mutableDraft.update { draft ->
+    draft?.copy(
+      rule =
+        draft.rule.copy(conditions = draft.rule.conditions.toPersistentList().removingAt(index)),
+      conditionKeys = draft.conditionKeys.removingAt(index),
+    )
+  }
+
+  private fun updateRule(makeCopy: (Rule) -> Rule) = mutableDraft.update { draft ->
+    draft?.copy(rule = makeCopy(draft.rule))
+  }
+
+  private fun draft(rule: Rule) =
+    Draft(rule, rule.conditions.map { nextConditionKey++ }.toPersistentList())
 
   private fun emptyRule() =
     Rule(
@@ -258,3 +286,6 @@ internal constructor(
 }
 
 private const val STOP_TIMEOUT_MS = 5_000L
+
+// Keys stay with their condition as others are added or removed, so the UI can animate them
+private data class Draft(val rule: Rule, val conditionKeys: PersistentList<Long>)
