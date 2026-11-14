@@ -10,6 +10,7 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
     css
       .replace(CommentRegex, "")
       .split(DeclarationSeparator)
+      .asSequence()
       .map { it.trim() }
       .filter { it.startsWith("--") }
       .mapNotNull(::parsePropertyPair)
