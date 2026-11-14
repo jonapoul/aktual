@@ -185,9 +185,9 @@ internal constructor(
         .stateIn(viewModelScope, Eagerly, initialValue = null)
     }
 
-  // Open accounts to switch to. Empty unless the list is a single account's
+  // Open accounts to switch to. Empty unless the list is a single account's or every account's
   val accountChoices: StateFlow<ImmutableList<AccountChoice>> =
-    if (accountId == null) {
+    if (!spec.isAccountList || spec.accountSpec is Group) {
       MutableStateFlow(persistentListOf())
     } else {
       accountDao

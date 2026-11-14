@@ -38,7 +38,8 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun AccountSwitcher(
   title: String,
-  selected: AccountId,
+  // Null when every account is selected
+  selected: AccountId?,
   choices: ImmutableList<AccountChoice>,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
@@ -66,6 +67,14 @@ internal fun AccountSwitcher(
     }
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.transactionsTitleAll,
+        trailingIcon = if (selected == null) AktualIcons.Check else null,
+        onClick = {
+          expanded = false
+          if (selected != null) onAction(SwitchToAllAccounts)
+        },
+      )
       val none = Strings.transactionsTitleNone
       choices.fastForEach { choice ->
         AktualDropdownMenuItem(

@@ -35,6 +35,10 @@ class SwitchAccountNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(id: AccountId) {
     stack[stack.lastIndex] = AccountTransactionsNavRoute(id)
   }
+
+  fun all() {
+    stack[stack.lastIndex] = TransactionsNavRoute
+  }
 }
 
 @Immutable

@@ -3,6 +3,7 @@ package aktual.budget.transactions.vm
 import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec.AllAccounts
+import aktual.budget.model.AccountSpec.Group
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.Amount
 import aktual.budget.model.TagId
@@ -60,9 +61,29 @@ internal class AccountOptionsTest : TransactionsViewModelTestBase() {
   }
 
   @Test
-  fun `Only a single account's list has accounts to switch to`() = runTest {
+  fun `Every account's list offers the open accounts to switch to`() = runTest {
     // given
     buildViewModel(AllAccounts)
+
+    // then
+    viewModel.accountChoices
+      .dropWhile { it.isEmpty() }
+      .test {
+        assertThatNextEmissionIsEqualTo(
+          persistentListOf(
+            AccountChoice(AccountId("a"), "Amex"),
+            AccountChoice(AccountId("b"), "Barclays"),
+            AccountChoice(AccountId("c"), "Chase"),
+            AccountChoice(LINKED, "Linked"),
+          ),
+        )
+      }
+  }
+
+  @Test
+  fun `A group's list has no accounts to switch to`() = runTest {
+    // given
+    buildViewModel(Group(OnBudget))
     advanceUntilIdle()
 
     // then
