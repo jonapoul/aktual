@@ -5,6 +5,7 @@ import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import kotlin.test.Test
 
 class ParseColorTest {
@@ -62,12 +63,52 @@ class ParseColorTest {
       .isEqualTo(Color(red = 0f, green = 0f, blue = 0f, alpha = 0.2f))
   }
 
+  @Test
+  fun `rgb with percentages`() {
+    assertThat("rgb(100%, 50%, 0%)".parseColor())
+      .isEqualTo(Color(red = 1f, green = 0.5f, blue = 0f))
+  }
+
+  @Test
+  fun `rgb with alpha`() {
+    assertThat("rgb(0, 0, 0, 0.3)".parseColor())
+      .isEqualTo(Color(red = 0f, green = 0f, blue = 0f, alpha = 0.3f))
+  }
+
+  @Test
+  fun `rgba without alpha`() {
+    assertThat("rgba(255, 0, 0)".parseColor()).isEqualTo(Color(0xFFFF0000))
+  }
+
+  @Test
+  fun `uppercase function name`() {
+    assertThat("RGB(255, 0, 0)".parseColor()).isEqualTo(Color(0xFFFF0000))
+  }
+
+  // --- hsl ---
+
+  @Test
+  fun `hsl red`() {
+    assertThat("hsl(0, 100%, 50%)".parseColor()).isEqualTo(Color(0xFFFF0000))
+  }
+
+  @Test
+  fun `hsla with alpha`() {
+    assertThat("hsla(0, 100%, 50%, 0.5)".parseColor())
+      .isEqualTo(Color(red = 1f, green = 0f, blue = 0f, alpha = 0.5f))
+  }
+
   // --- transparent ---
 
   @Test
   fun transparent() {
     // --color-buttonMenuBackground: transparent
     assertThat("transparent".parseColor()).isEqualTo(Transparent)
+  }
+
+  @Test
+  fun `uppercase transparent`() {
+    assertThat("TRANSPARENT".parseColor()).isEqualTo(Transparent)
   }
 
   // --- errors ---
@@ -80,5 +121,11 @@ class ParseColorTest {
   @Test
   fun `invalid hex length throws ColorParseException`() {
     assertFailure { "#12345".parseColor() }.isInstanceOf<ColorParseException>()
+  }
+
+  @Test
+  fun `unrecognized format returns null when parsing or null`() {
+    assertThat("inherit".parseColorOrNull()).isNull()
+    assertThat("#12345".parseColorOrNull()).isNull()
   }
 }
