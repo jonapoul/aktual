@@ -139,7 +139,7 @@ class ListPayeesViewModelTest {
       insertPayeeRule("r1", payee = "argos")
 
       // then
-      assertThatNextEmissionIsEqualTo(Success(persistentListOf(ARGOS.copy(numRules = 1))))
+      assertThatNextEmissionIsEqualTo(Success(persistentListOf(ARGOS.copy(numRules = 1, isUnused = false))))
     }
   }
 
