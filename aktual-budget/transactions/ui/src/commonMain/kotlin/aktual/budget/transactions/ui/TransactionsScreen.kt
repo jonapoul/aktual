@@ -164,6 +164,7 @@ fun TransactionsScreen(
         NavBack -> back()
         is EditAccount -> editAccount = action.id
         is SwitchAccount -> switchAccount(action.id)
+        SwitchToAllAccounts -> switchAccount.all()
         is OpenTransaction -> openTransaction(action.id)
         is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) openTag(action.id)
         CreateTransaction ->

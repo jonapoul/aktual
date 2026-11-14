@@ -111,10 +111,13 @@ internal fun TransactionsTitleBar(
             initialQuery = query,
             onQueryChange = { onAction(Action.SetQuery(it)) },
           )
-        } else if (loadedAccount is SpecificAccount && accountChoices.size > 1) {
+        } else if (
+          (loadedAccount is SpecificAccount || loadedAccount == AllAccounts) &&
+            accountChoices.isNotEmpty()
+        ) {
           AccountSwitcher(
             title = title,
-            selected = loadedAccount.account.id,
+            selected = (loadedAccount as? SpecificAccount)?.account?.id,
             choices = accountChoices,
             onAction = onAction,
           )

@@ -19,6 +19,8 @@ internal sealed interface Action {
 
   @JvmInline value class SwitchAccount(val id: AccountId) : Action
 
+  data object SwitchToAllAccounts : Action
+
   data object BankSync : ViewModelAction
 
   data object DeleteAccount : ViewModelAction
