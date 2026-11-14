@@ -103,8 +103,9 @@ fun AktualTooltip(
                   transformOrigin = origin
                   scaleX = scale
                   scaleY = scale
-                  translationX = (origin.pivotFractionX - 0.5f) * size.width * shift
-                  translationY = (origin.pivotFractionY - 0.5f) * 2 * size.height * shift
+                  translationX = (origin.pivotFractionX - CENTRE) * size.width * shift
+                  translationY =
+                    (if (origin.pivotFractionY > CENTRE) 1 else -1) * size.height * shift
                 }
                 .sizeIn(minWidth = 40.dp, minHeight = 24.dp, maxWidth = 200.dp)
                 .clip(CardShape)
@@ -119,6 +120,8 @@ fun AktualTooltip(
     }
   }
 }
+
+private const val CENTRE = 0.5f
 
 private fun animationSpec(target: EnterExitState) =
   if (target == Visible) {
