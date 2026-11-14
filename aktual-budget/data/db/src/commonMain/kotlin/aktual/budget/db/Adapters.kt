@@ -23,7 +23,6 @@ import aktual.budget.model.Interval
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.ReportDate
-import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
@@ -109,7 +108,6 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
   }
 
 private val conditions = jsonSerializable(ListSerializer(Condition.serializer()))
-private val ruleActions = jsonSerializable(ListSerializer(RuleAction.serializer()))
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 private val cleanupDef = jsonSerializable(ListSerializer(CleanupTemplate.serializer()))
 
@@ -288,8 +286,8 @@ internal val RulesAdapter =
   Rules.Adapter(
     idAdapter = ruleId,
     stageAdapter = ruleStage,
-    conditionsAdapter = conditions,
-    actionsAdapter = ruleActions,
+    conditionsAdapter = jsonSerializable(RuleJson.conditions),
+    actionsAdapter = jsonSerializable(RuleJson.actions),
     conditions_opAdapter = conditionsOp,
   )
 

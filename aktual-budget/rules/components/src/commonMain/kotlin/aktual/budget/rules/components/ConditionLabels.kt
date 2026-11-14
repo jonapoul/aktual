@@ -71,6 +71,7 @@ fun Condition.valueLabel(
       value.jsonPrimitive.contentOrNull?.let { names.nameOf(it) }
         ?: Strings.reportsFormulaQueryNothing
     EntityList -> (value as JsonArray).map { names.nameOf(it.jsonPrimitive.content) }.joinToString()
+    TextList -> (value as JsonArray).joinToString { it.jsonPrimitive.content }
     Text,
     Day -> value.jsonPrimitive.content
     Money -> Amount(value.jsonPrimitive.long).formattedString()

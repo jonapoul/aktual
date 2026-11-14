@@ -5,9 +5,14 @@ import kotlin.contracts.contract
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * [Acct], [Description] and [ImportedDescription] are the `transactions` table's column names for
+ * [Account], [Payee] and [ImportedPayee]. Upstream stores rule fields under those names, and
+ * `RuleJson` in `data:db` maps them back, so loaded rules only use the public ones.
+ */
 @Serializable
 enum class Field {
-  @SerialName("acct") Acct, // legacy
+  @SerialName("acct") Acct,
   @SerialName("account") Account,
   @SerialName("amount") Amount,
   @SerialName("category") Category,

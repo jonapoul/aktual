@@ -177,8 +177,11 @@ fun conditionValueKind(field: Field, op: Operator): ConditionValueKind =
     ImportedPayee,
     ImportedDescription,
     PayeeName,
-    Unknown -> Text
+    Unknown -> textValueKind(op)
   }
+
+private fun textValueKind(op: Operator): ConditionValueKind =
+  if (op == OneOf || op == NotOneOf) TextList else Text
 
 private fun idValueKind(op: Operator): ConditionValueKind =
   when (op) {
@@ -213,7 +216,8 @@ fun Condition.editableKind(schema: ConditionSchema = FilterConditions): Conditio
 private fun JsonElement.fits(kind: ConditionValueKind): Boolean =
   when (kind) {
     Entity -> this == JsonNull || isString()
-    EntityList -> this is JsonArray && all { it.isString() }
+    EntityList,
+    TextList -> this is JsonArray && all { it.isString() }
     Text -> isString()
     Money -> this is JsonPrimitive && !isString && longOrNull != null
     Day -> isString() && (content().isEmpty() || content().toDayOrNull() != null)
@@ -244,7 +248,8 @@ private fun defaultValue(kind: ConditionValueKind): JsonElement =
   when (kind) {
     Entity,
     NoValue -> JsonNull
-    EntityList -> JsonArray(emptyList())
+    EntityList,
+    TextList -> JsonArray(emptyList())
     Text,
     Day -> JsonPrimitive("")
     Money -> JsonPrimitive(0)
@@ -256,7 +261,8 @@ private fun Field.conditionType(): ConditionType =
     Entity,
     EntityList,
     NoValue -> Id
-    Text -> ConditionType.String
+    Text,
+    TextList -> ConditionType.String
     Money -> ConditionType.Number
     Day -> Date
     Flag -> ConditionType.Boolean

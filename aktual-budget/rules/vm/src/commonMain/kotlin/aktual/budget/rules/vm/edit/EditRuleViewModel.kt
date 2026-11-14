@@ -1,6 +1,7 @@
 package aktual.budget.rules.vm.edit
 
 import aktual.budget.db.DbJson
+import aktual.budget.db.RuleJson
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
@@ -408,9 +409,14 @@ internal constructor(
           RULES,
           row,
           "conditions",
-          DbJson.encodeToString(conditions.orEmpty()),
+          DbJson.encodeToString(RuleJson.conditions, conditions.orEmpty()),
         ),
-        localChange(RULES, row, "actions", DbJson.encodeToString(actions.orEmpty())),
+        localChange(
+          RULES,
+          row,
+          "actions",
+          DbJson.encodeToString(RuleJson.actions, actions.orEmpty()),
+        ),
         localChange(RULES, row, "tombstone", tombstone),
         localChange(RULES, row, "conditions_op", conditions_op),
       )

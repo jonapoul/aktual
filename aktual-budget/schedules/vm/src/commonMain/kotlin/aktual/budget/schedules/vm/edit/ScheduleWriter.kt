@@ -1,6 +1,7 @@
 package aktual.budget.schedules.vm.edit
 
 import aktual.budget.db.DbJson
+import aktual.budget.db.RuleJson
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES
 import aktual.budget.db.dao.DatabaseTables.SCHEDULES_NEXT_DATE
@@ -27,7 +28,6 @@ import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonPrimitive
 
 internal class DuplicateScheduleNameException(name: String) :
@@ -213,12 +213,10 @@ internal class ScheduleWriter(
 // normalizeScheduleName()
 private fun String.normalized(): String? = trim().ifEmpty { null }
 
-private fun List<Condition>.encode(): String =
-  DbJson.encodeToString(ListSerializer(Condition.serializer()), this)
+private fun List<Condition>.encode(): String = DbJson.encodeToString(RuleJson.conditions, this)
 
 @JvmName("encodeActions")
-private fun List<RuleAction>.encode(): String =
-  DbJson.encodeToString(ListSerializer(RuleAction.serializer()), this)
+private fun List<RuleAction>.encode(): String = DbJson.encodeToString(RuleJson.actions, this)
 
 private fun Condition.withoutType(): Condition = copy(type = null)
 

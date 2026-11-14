@@ -20,9 +20,16 @@ When `.github/upstream-migration-tracker/last-known-migration.txt` is updated wi
 |------|---------|
 | `MigrateDatabase.kt` (`data:impl`) | Custom migration runner - `DatabaseMigrations` list maps `Long` timestamp → `List<String>` of SQL statements |
 | `Adapters.kt` | Column type adapters (JSON, typed IDs, enums) |
+| `RuleJson.kt` | Serializers for rule conditions/actions that map upstream's internal field names (see below) |
 | `BuildDatabase.kt` | Constructs `BudgetDatabase` with all adapters |
 | `sqldelight/aktual/budget/db/*.sq` | Table definitions and named queries |
 | `sqldelight/schemas/1.db` | Schema snapshot for fresh installs (regenerated on compile) |
+
+## Rule field names
+
+Upstream stores the `conditions` and `actions` of the `rules` table with the `transactions` table's column names where they differ from the public ones: `payee` as `description`, `account` as `acct`, `imported_payee` as `imported_description` (`toInternalField` / `fromInternalField` in `loot-core/src/server/transactions/transaction-rules.ts`). Its SQL, like the payee rules lookup in `Payees.sq`, relies on the internal names.
+
+`RuleJson.conditions` / `RuleJson.actions` do the same renaming. The `rules` table adapter uses them, so loaded rules only use `Payee` / `Account` / `ImportedPayee`. Anything writing rule JSON to a sync message (`localChange(RULES, ...)`) must encode with them too, not with a plain `ListSerializer`. Saved filters and custom reports store conditions with the public names, so they don't use them.
 
 ## Migration rules
 

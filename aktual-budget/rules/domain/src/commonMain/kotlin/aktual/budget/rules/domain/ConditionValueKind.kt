@@ -5,6 +5,7 @@ enum class ConditionValueKind {
   Entity,
   EntityList,
   Text,
+  TextList,
   Money,
   Day,
   Flag,
