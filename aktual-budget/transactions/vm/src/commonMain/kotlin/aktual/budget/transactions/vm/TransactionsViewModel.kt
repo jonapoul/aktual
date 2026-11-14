@@ -246,6 +246,9 @@ internal constructor(
   // As typed, for the search field and filter chips. Shared by every account list
   val search: StateFlow<TransactionSearch> = filters
 
+  // Only account lists can be searched. Tag, category and filtered lists ignore the search
+  val canSearch: Boolean = spec.isAccountList
+
   // The search the list is narrowed by. Typing is debounced, but clearing the text and changing
   // the conditions apply at once. Null for an empty search, or a list that ignores it
   @OptIn(FlowPreview::class)

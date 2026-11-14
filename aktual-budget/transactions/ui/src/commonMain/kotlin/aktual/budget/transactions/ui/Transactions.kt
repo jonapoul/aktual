@@ -15,6 +15,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SearchMessage
 import aktual.core.ui.scrollbar
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
@@ -54,6 +55,7 @@ internal fun Transactions(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   expandSplits: Boolean = false,
+  isSearched: Boolean = false,
 ) {
   val refresh = pagingItems.loadState.refresh
   when {
@@ -85,7 +87,7 @@ internal fun Transactions(
 
     refresh is Loading -> TransactionsLoading(innerPadding, modifier.padding(contentPadding))
 
-    else -> TransactionsEmpty(innerPadding, modifier.padding(contentPadding))
+    else -> TransactionsEmpty(innerPadding, isSearched, modifier.padding(contentPadding))
   }
 }
 
@@ -112,17 +114,25 @@ private fun TransactionsLoading(innerPadding: PaddingValues, modifier: Modifier 
 private const val NUM_SHIMMER_ROWS = 30
 
 @Composable
-private fun TransactionsEmpty(innerPadding: PaddingValues, modifier: Modifier = Modifier) {
+private fun TransactionsEmpty(
+  innerPadding: PaddingValues,
+  isSearched: Boolean,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier = modifier.fillMaxSize()) {
     VerticalSpacer(innerPadding.calculateTopPadding())
 
-    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Center) {
-      Text(
-        text = Strings.transactionsEmpty,
-        textAlign = Center,
-        fontStyle = Italic,
-        color = colors.tableText,
-      )
+    if (isSearched) {
+      SearchMessage(modifier = Modifier.weight(1f), text = Strings.transactionsNoMatches)
+    } else {
+      Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Center) {
+        Text(
+          text = Strings.transactionsEmpty,
+          textAlign = Center,
+          fontStyle = Italic,
+          color = colors.tableText,
+        )
+      }
     }
 
     BottomSpacing()
@@ -248,6 +258,7 @@ private fun PreviewTransactions(
         innerPadding = Zero,
         toggledSplits = persistentSetOf(TRANSACTION_SPLIT.id),
         splitsPinnedOpen = false,
+        isSearched = isSearched,
         onAction = {},
       )
     }
@@ -256,6 +267,7 @@ private fun PreviewTransactions(
 private data class TransactionsParams(
   val density: TransactionsDensity,
   val pagingData: Flow<PagingData<Transaction>> = previewPagingData(PREVIEW_TRANSACTIONS),
+  val isSearched: Boolean = false,
 )
 
 private class TransactionsProvider :
@@ -268,4 +280,5 @@ private class TransactionsProvider :
     TransactionsParams(Dense, emptyPreviewPagingData(loading = true)),
     TransactionsParams(Compact, emptyPreviewPagingData(loading = false)),
     TransactionsParams(Dense, emptyPreviewPagingData(loading = false)),
+    TransactionsParams(Compact, emptyPreviewPagingData(loading = false), isSearched = true),
   )

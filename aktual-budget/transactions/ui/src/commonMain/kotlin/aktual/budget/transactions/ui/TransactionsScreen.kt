@@ -9,6 +9,7 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
+import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.tags.domain.TagLabel
@@ -20,6 +21,7 @@ import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.budget.transactions.vm.ReconcileStart
 import aktual.budget.transactions.vm.Reconciling
 import aktual.budget.transactions.vm.Transaction
+import aktual.budget.transactions.vm.TransactionsEvent
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -59,6 +61,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -103,27 +106,21 @@ fun TransactionsScreen(
   val tags by viewModel.tags.collectAsStateWithLifecycle()
   val reconciling by viewModel.reconciling.collectAsStateWithLifecycle()
   val reconcileStart by viewModel.reconcileStart.collectAsStateWithLifecycle()
+  val search by viewModel.search.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   BankSyncSnackbars(viewModel.bankSyncFinished, snackbars)
 
-  val deleted = Strings.transactionsDeleteAccountDone
-  val deleteFailed = Strings.transactionsDeleteAccountFailed
-  val reconcileFailed = Strings.transactionsReconcileFailed
   val adjustmentNotes = Strings.transactionsReconcileAdjustmentNotes
   var showLoginKept by rememberSaveable { mutableStateOf(false) }
   var confirmUnlock by remember { mutableStateOf<TransactionId?>(null) }
   var editAccount by remember { mutableStateOf<AccountId?>(null) }
-  LaunchedEffect(viewModel) {
-    viewModel.events.collect { event ->
-      when (event) {
-        AccountDeleted -> snackbars.show(message = deleted).also { accountDeleted() }
-        AccountDeletedBankLoginKept -> showLoginKept = true
-        DeleteAccountFailed -> snackbars.show { showErrorSnackbar(deleteFailed) }
-        ReconcileFailed -> snackbars.show { showErrorSnackbar(reconcileFailed) }
-      }
-    }
-  }
+  TransactionsEvents(
+    events = viewModel.events,
+    snackbars = snackbars,
+    onAccountDelete = accountDeleted::invoke,
+    onBankLoginKeep = { showLoginKept = true },
+  )
 
   TransactionsScaffold(
     pagingData = viewModel.pagingData,
@@ -145,6 +142,7 @@ fun TransactionsScreen(
     tags = tags,
     reconciling = reconciling,
     reconcileStart = reconcileStart,
+    search = search.takeIf { viewModel.canSearch },
     onAction = { action ->
       when (action) {
         NavBack -> back()
@@ -213,6 +211,30 @@ private fun TransactionsViewModel.handle(action: ViewModelAction) {
 }
 
 @Composable
+private fun TransactionsEvents(
+  events: Flow<TransactionsEvent>,
+  snackbars: Snackbars,
+  onAccountDelete: () -> Unit,
+  onBankLoginKeep: () -> Unit,
+) {
+  val deleted = Strings.transactionsDeleteAccountDone
+  val deleteFailed = Strings.transactionsDeleteAccountFailed
+  val reconcileFailed = Strings.transactionsReconcileFailed
+  val currentOnAccountDelete by rememberUpdatedState(onAccountDelete)
+  val currentOnBankLoginKeep by rememberUpdatedState(onBankLoginKeep)
+  LaunchedEffect(events) {
+    events.collect { event ->
+      when (event) {
+        AccountDeleted -> snackbars.show(message = deleted).also { currentOnAccountDelete() }
+        AccountDeletedBankLoginKept -> currentOnBankLoginKeep()
+        DeleteAccountFailed -> snackbars.show { showErrorSnackbar(deleteFailed) }
+        ReconcileFailed -> snackbars.show { showErrorSnackbar(reconcileFailed) }
+      }
+    }
+  }
+}
+
+@Composable
 private fun BankSyncSnackbars(finished: Flow<BankSyncSummary>, snackbars: Snackbars) {
   LaunchedEffect(finished) {
     finished.collect { summary ->
@@ -265,6 +287,8 @@ internal fun TransactionsScaffold(
   tags: ImmutableList<TagLabel> = persistentListOf(),
   reconciling: Reconciling? = null,
   reconcileStart: ReconcileStart? = null,
+  // Null for a list that can't be searched
+  search: TransactionSearch? = null,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -291,6 +315,8 @@ internal fun TransactionsScaffold(
               isRoot = isRoot,
               reconcileStart = reconcileStart,
               accountChoices = accountChoices,
+              canSearch = search != null,
+              query = search?.text.orEmpty(),
               onAction = onAction,
               onOpenViewOptions = { showViewOptions = true },
             )
@@ -324,6 +350,7 @@ internal fun TransactionsScaffold(
               toggledSplits = toggledSplits,
               expandSplits = expandSplits,
               splitsPinnedOpen = splitsPinnedOpen,
+              isSearched = search?.isEmpty == false,
               onAction = onAction,
             )
           }

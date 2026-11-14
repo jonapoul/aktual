@@ -7,8 +7,10 @@ import aktual.budget.transactions.vm.ReconcileStart
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheckCircle1
+import aktual.core.icons.Delete
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Pencil1
+import aktual.core.icons.SearchAlternate
 import aktual.core.icons.Trash
 import aktual.core.icons.Tuning
 import aktual.core.l10n.Strings
@@ -16,7 +18,10 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BackHandler
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
@@ -31,16 +36,26 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.stringLong
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import kotlinx.collections.immutable.ImmutableList
@@ -57,26 +72,18 @@ internal fun TransactionsTitleBar(
   onOpenViewOptions: () -> Unit,
   reconcileStart: ReconcileStart? = null,
   accountChoices: ImmutableList<AccountChoice> = persistentListOf(),
+  canSearch: Boolean = false,
+  query: String = "",
 ) {
-  val title =
-    when (loadedAccount) {
-      AllAccounts -> Strings.transactionsTitleAll
-      Uncategorised -> Strings.transactionsUncategorisedTitle
-      Loading -> Strings.transactionsTitleLoading
-      is SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
-      is Group ->
-        when (loadedAccount.group) {
-          OnBudget -> Strings.transactionsTitleOnBudget
-          OffBudget -> Strings.transactionsTitleOffBudget
-          Closed -> Strings.transactionsTitleClosed
-        }
-      is SpecificTag -> "#${loadedAccount.tag}"
-      is Filtered -> loadedAccount.title
-      is SpecificCategory ->
-        loadedAccount.month?.let {
-          Strings.transactionsCategoryTitle(loadedAccount.name, it.stringLong())
-        } ?: loadedAccount.name
-    }
+  // Filters outlive the screen, so a list opened with a query already set shows its field
+  var isSearching by rememberSaveable { mutableStateOf(query.isNotEmpty()) }
+  val closeSearch = {
+    isSearching = false
+    onAction(Action.SetQuery(""))
+  }
+  BackHandler(enabled = isSearching, onBack = closeSearch)
+
+  val title = loadedAccount.title()
 
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, listState),
@@ -89,7 +96,12 @@ internal fun TransactionsTitleBar(
       }
     },
     title = {
-      if (loadedAccount is SpecificAccount && accountChoices.size > 1) {
+      if (isSearching) {
+        TransactionsSearchField(
+          initialQuery = query,
+          onQueryChange = { onAction(Action.SetQuery(it)) },
+        )
+      } else if (loadedAccount is SpecificAccount && accountChoices.size > 1) {
         AccountSwitcher(
           title = title,
           selected = loadedAccount.account.id,
@@ -101,26 +113,112 @@ internal fun TransactionsTitleBar(
       }
     },
     actions = {
-      AktualIconButton(
-        imageVector = AktualIcons.Add,
-        contentDescription = Strings.transactionsCreate,
-        onClick = { onAction(CreateTransaction) },
-      )
-
-      AktualIconButton(
-        imageVector = AktualIcons.Tuning,
-        contentDescription = Strings.transactionsViewOptions,
-        onClick = onOpenViewOptions,
-      )
-
-      if (loadedAccount is SpecificAccount) {
-        TransactionsMenu(
-          accountId = loadedAccount.account.id,
+      if (isSearching) {
+        AktualIconButton(
+          imageVector = AktualIcons.Delete,
+          contentDescription = Strings.transactionsSearchClose,
+          onClick = closeSearch,
+        )
+      } else {
+        TransactionsActions(
+          loadedAccount = loadedAccount,
+          canSearch = canSearch,
           reconcileStart = reconcileStart,
+          onSearch = { isSearching = true },
+          onOpenViewOptions = onOpenViewOptions,
           onAction = onAction,
         )
       }
     },
+  )
+}
+
+@Composable
+private fun LoadedAccount.title(): String =
+  when (this) {
+    AllAccounts -> Strings.transactionsTitleAll
+    Uncategorised -> Strings.transactionsUncategorisedTitle
+    Loading -> Strings.transactionsTitleLoading
+    is SpecificAccount -> account.name ?: Strings.transactionsTitleNone
+    is Group ->
+      when (group) {
+        OnBudget -> Strings.transactionsTitleOnBudget
+        OffBudget -> Strings.transactionsTitleOffBudget
+        Closed -> Strings.transactionsTitleClosed
+      }
+    is SpecificTag -> "#$tag"
+    is Filtered -> title
+    is SpecificCategory ->
+      month?.let {
+        Strings.transactionsCategoryTitle(name, it.stringLong())
+      } ?: name
+  }
+
+@Composable
+private fun TransactionsActions(
+  loadedAccount: LoadedAccount,
+  canSearch: Boolean,
+  reconcileStart: ReconcileStart?,
+  onSearch: () -> Unit,
+  onOpenViewOptions: () -> Unit,
+  onAction: OnAction<Action>,
+) {
+  if (canSearch) {
+    AktualIconButton(
+      imageVector = AktualIcons.SearchAlternate,
+      contentDescription = Strings.transactionsSearch,
+      onClick = onSearch,
+    )
+  }
+
+  AktualIconButton(
+    imageVector = AktualIcons.Add,
+    contentDescription = Strings.transactionsCreate,
+    onClick = { onAction(CreateTransaction) },
+  )
+
+  AktualIconButton(
+    imageVector = AktualIcons.Tuning,
+    contentDescription = Strings.transactionsViewOptions,
+    onClick = onOpenViewOptions,
+  )
+
+  if (loadedAccount is SpecificAccount) {
+    TransactionsMenu(
+      accountId = loadedAccount.account.id,
+      reconcileStart = reconcileStart,
+      onAction = onAction,
+    )
+  }
+}
+
+@Composable
+private fun TransactionsSearchField(
+  initialQuery: String,
+  onQueryChange: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val state = rememberTextFieldState(initialText = initialQuery)
+  val focusRequester = remember { FocusRequester() }
+  val focusManager = LocalFocusManager.current
+  val currentOnQueryChange by rememberUpdatedState(onQueryChange)
+
+  // Opened from the search button, not reopened with a query already set
+  LaunchedEffect(Unit) { if (initialQuery.isEmpty()) focusRequester.requestFocus() }
+
+  LaunchedEffect(state) {
+    snapshotFlow { state.text.toString() }.collect { currentOnQueryChange(it) }
+  }
+
+  AktualTextField(
+    modifier = modifier.focusRequester(focusRequester).fillMaxWidth(),
+    state = state,
+    singleLine = true,
+    placeholderText = Strings.transactionsSearchPlaceholder,
+    showBorder = false,
+    textStyle = typography.bodyLarge,
+    keyboardOptions = KeyboardOptions(imeAction = Search),
+    onKeyboardAction = { focusManager.clearFocus() },
   )
 }
 
@@ -224,8 +322,29 @@ private fun PreviewTransactionsTitleBar(
       isRoot = true,
       onAction = {},
       onOpenViewOptions = {},
+      canSearch = true,
     )
   }
+
+@Preview
+@Composable
+private fun PreviewTransactionsTitleBarSearching(
+  @PreviewParameter(SearchQueryProvider::class) params: ColorParams<String>,
+) =
+  PreviewWithColorParams(params) {
+    TransactionsTitleBar(
+      hazeState = rememberHazedTopBarState(),
+      listState = rememberLazyListState(),
+      loadedAccount = LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+      isRoot = true,
+      onAction = {},
+      onOpenViewOptions = {},
+      canSearch = true,
+      query = this,
+    )
+  }
+
+private class SearchQueryProvider : ColorParamsProvider<String>("groceries")
 
 private class TransactionsTitleBarProvider :
   ColorParamsProvider<LoadedAccount>(
