@@ -91,7 +91,7 @@ foo_barsAdapter = FooBarsAdapter,  // multi-word table: foo_bars
 
 ### 7. Add the migration function in MigrateDatabase.kt
 
-File: `aktual-budget/data/db/src/commonMain/kotlin/aktual/budget/db/MigrateDatabase.kt`
+File: `aktual-budget/data/impl/src/commonMain/kotlin/aktual/budget/db/MigrateDatabase.kt`
 
 Add the call inside `with(migrator) { ... }` in `migrateDatabase`:
 ```kotlin
@@ -118,7 +118,7 @@ Rules:
 
 ### 8. Update the migration test
 
-File: `aktual-budget/data/db/src/commonTest/kotlin/aktual/budget/db/DatabaseMigrationTest.kt`
+File: `aktual-budget/data/impl/src/commonTest/kotlin/aktual/budget/db/DatabaseMigrationTest.kt`
 
 Add a call at the end of the test body:
 ```kotlin

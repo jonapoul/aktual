@@ -18,30 +18,10 @@ import aktual.budget.model.ScheduleNextDateId
 import aktual.test.inMemoryDriverFactory
 import aktual.test.runDatabaseTest
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
-import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import kotlin.time.Instant
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
-
-// PRAGMA index_list returns one row per index. Column 1 is the index name. SQLDelight can't
-// generate a query for sqlite_master/PRAGMA, so we read it directly off the driver.
-internal suspend fun SqlDriver.transactionIndexNames(): List<String> =
-  executeQuery(
-      identifier = null,
-      sql = "PRAGMA index_list(transactions)",
-      parameters = 0,
-      mapper = { cursor ->
-        QueryResult.AsyncValue {
-          buildList {
-            while (cursor.next().await()) {
-              cursor.getString(1)?.let { add(it) }
-            }
-          }
-        }
-      },
-    )
-    .await()
 
 internal suspend fun BudgetDatabase.getAccountById(id: AccountId): Accounts? =
   accountsQueries.getById(id).awaitAsOneOrNull()

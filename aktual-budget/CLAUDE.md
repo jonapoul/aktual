@@ -7,7 +7,7 @@ Everything that works on an open budget: its data, sync, and the screens inside 
 - `utils` - shared budget-level types: `BudgetFiles`, `BudgetLocalPreferences`, `BudgetSyncController`, `SyncEvents`, `SyncStateHolder`.
 - `model` - budget model types and ID value classes.
 - `data:db` - SQLDelight schema, DAOs and migrations. See [data/db](data/db/CLAUDE.md).
-- `data:encryption`, `data:proto`, `data:impl` - encryption, sync protobuf encoding, and their implementations.
+- `data:encryption`, `data:proto`, `data:impl` - encryption, sync protobuf encoding, and their implementations. `data:impl` also holds the database migrations and `AndroidxSqlDriverFactory`.
 - `sync` - syncing with the server (`BudgetSyncControllerImpl`).
 - `formula` - formula parser and evaluator (spreadsheet-style functions), ported from upstream.
 - `demo` - the demo budget, which opens without a server.

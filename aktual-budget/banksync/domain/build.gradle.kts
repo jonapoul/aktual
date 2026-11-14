@@ -5,6 +5,7 @@ kotlin {
     api(project(":aktual-api"))
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-budget:transactions:api"))
+    api(project(":aktual-budget:utils"))
     api(project(":aktual-core:utils"))
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":aktual-core:logging"))

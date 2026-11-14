@@ -17,4 +17,8 @@ kotlin {
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:utils"))
   }
+
+  desktopTestDependencies {
+    implementation(project(":aktual-budget:data:impl"))
+  }
 }

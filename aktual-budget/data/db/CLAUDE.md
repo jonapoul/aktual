@@ -1,6 +1,6 @@
 # aktual-budget:data:db
 
-SQLDelight database module. Owns the schema, adapters, and client-side migration logic.
+SQLDelight database module. Owns the schema, adapters and DAOs. The migration runner (`MigrateDatabase.kt`) and `AndroidxSqlDriverFactory` live in `aktual-budget:data:impl`, so `data:db` doesn't depend on `budget:utils` or `core:logging`. Keep it that way: domain modules depend on `data:db` through `api`.
 
 ## Adding a new upstream migration
 
@@ -11,14 +11,14 @@ When `.github/upstream-migration-tracker/last-known-migration.txt` is updated wi
 3. Running `gradle generateDatabaseSchema`
 4. Adding model types and ID value classes in `aktual-budget:model`
 5. Wiring adapters in `Adapters.kt` and `BuildDatabase.kt`
-6. Adding the migration function to `MigrateDatabase.kt`
-7. Adding a check to `LoadExistingDatabaseFromFileTest`
+6. Adding the migration function to `MigrateDatabase.kt` (in `data:impl`)
+7. Adding a check to `DatabaseMigrationTest` (in `data:impl`)
 
 ## Key files
 
 | File | Purpose |
 |------|---------|
-| `MigrateDatabase.kt` | Custom migration runner - `DatabaseMigrations` list maps `Long` timestamp → `List<String>` of SQL statements |
+| `MigrateDatabase.kt` (`data:impl`) | Custom migration runner - `DatabaseMigrations` list maps `Long` timestamp → `List<String>` of SQL statements |
 | `Adapters.kt` | Column type adapters (JSON, typed IDs, enums) |
 | `BuildDatabase.kt` | Constructs `BudgetDatabase` with all adapters |
 | `sqldelight/aktual/budget/db/*.sq` | Table definitions and named queries |

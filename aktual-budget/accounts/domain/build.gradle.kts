@@ -4,6 +4,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data:db"))
     api(project(":aktual-budget:transactions:api"))
+    api(project(":aktual-budget:utils"))
     api(project(":aktual-core:utils"))
   }
 
