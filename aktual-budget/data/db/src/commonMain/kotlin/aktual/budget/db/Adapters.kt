@@ -20,7 +20,6 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
-import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.ReportDate
@@ -164,7 +163,6 @@ private val categoryId = stringAdapter(::CategoryId)
 private val cleanupGroupsId = stringAdapter(::CleanupGroupId)
 private val customReportsId = stringAdapter(::CustomReportId)
 private val dashboardPageId = stringAdapter(::DashboardPageId)
-private val operator = stringAdapter(decode = Operator::parse, encode = Operator::string)
 private val payeeId = stringAdapter(::PayeeId)
 private val payeeLocationId = stringAdapter(::PayeeLocationId)
 private val reportDate = stringAdapter(ReportDate::parse)
@@ -336,8 +334,8 @@ internal val TagsAdapter = Tags.Adapter(idAdapter = tagId)
 internal val TransactionFiltersAdapter =
   Transaction_filters.Adapter(
     idAdapter = transactionFilterId,
-    conditionsAdapter = jsonArray,
-    conditions_opAdapter = operator,
+    conditionsAdapter = conditions,
+    conditions_opAdapter = conditionsOp,
   )
 
 internal val ZeroBudgetMonthsAdapter =

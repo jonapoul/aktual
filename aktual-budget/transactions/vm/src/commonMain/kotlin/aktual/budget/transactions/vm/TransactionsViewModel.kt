@@ -30,6 +30,9 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.AccountViewPrefs
 import aktual.budget.transactions.domain.Reconciler
+import aktual.budget.transactions.domain.SaveFilterResult
+import aktual.budget.transactions.domain.SavedFilter
+import aktual.budget.transactions.domain.SavedFilters
 import aktual.budget.transactions.domain.TransactionFilters
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
@@ -108,6 +111,7 @@ internal constructor(
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
   private val filters: TransactionFilters,
+  private val savedFilters: SavedFilters,
   conditionEntitiesLoader: ConditionEntitiesLoader,
   newTransactions: NewTransactions,
   server: BudgetServer,
@@ -259,6 +263,17 @@ internal constructor(
     conditionEntitiesLoader
       .observe()
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
+
+  val savedFiltersState: StateFlow<SavedFiltersState> =
+    combine(savedFilters.observe(), filters.savedId, filters) { saved, id, search ->
+        val applied = saved.firstOrNull { it.id == id }
+        SavedFiltersState(
+          filters = saved,
+          applied = applied,
+          isModified = applied != null && applied.conditions != search.conditions,
+        )
+      }
+      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), SavedFiltersState())
 
   // The search the list is narrowed by. Typing is debounced, but clearing the text and changing
   // the conditions apply at once. Null for an empty search, or a list that ignores it
@@ -435,6 +450,54 @@ internal constructor(
   fun setConditionsOp(op: ConditionOp) = filters.setConditionsOp(op)
 
   fun clearFilters() = filters.reset()
+
+  fun clearConditions() = filters.clearConditions()
+
+  fun applySavedFilter(filter: SavedFilter) = filters.apply(filter)
+
+  fun saveFilter(name: String) = saveFilter { savedFilters.create(name, filters.value.conditions) }
+
+  // Saves the current conditions over the applied filter's
+  fun updateSavedFilter() {
+    val applied = savedFiltersState.value.applied ?: return
+    saveFilter { savedFilters.update(applied.id, applied.name, filters.value.conditions) }
+  }
+
+  // Renames the applied filter, keeping its saved conditions
+  fun renameSavedFilter(name: String) {
+    val applied = savedFiltersState.value.applied ?: return
+    saveFilter { savedFilters.update(applied.id, name, applied.conditions) }
+  }
+
+  fun deleteSavedFilter() {
+    val applied = savedFiltersState.value.applied ?: return
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = { savedFilters.delete(applied.id) },
+        onFailure = { e -> log.e(e) { "Failed deleting filter ${applied.id}" } },
+      )
+    }
+  }
+
+  private fun saveFilter(save: suspend () -> SaveFilterResult) {
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          when (val result = save()) {
+            is Saved -> filters.saved(result.id)
+            is NameTaken -> mutableEvents.trySend(TransactionsEvent.FilterNameTaken(result.name))
+            is ConditionsTaken ->
+              mutableEvents.trySend(TransactionsEvent.FilterConditionsTaken(result.name))
+            NameRequired -> log.w { "Not saving a filter without a name" }
+          }
+        },
+        onFailure = { e ->
+          log.e(e) { "Failed saving filter" }
+          mutableEvents.trySend(SaveFilterFailed)
+        },
+      )
+    }
+  }
 
   fun toggleSplit(id: TransactionId) {
     mutableToggledSplits.update { ids -> if (id in ids) ids.removing(id) else ids.adding(id) }

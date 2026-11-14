@@ -48,7 +48,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -82,10 +81,10 @@ internal constructor(
 
   val events: SharedFlow<EditRuleEvent> = mutableEvents.asSharedFlow()
 
-  val conditionEntities: StateFlow<ConditionEntities?> = flow {
-    emit(conditionEntitiesLoader.load())
-  }
-    .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
+  val conditionEntities: StateFlow<ConditionEntities?> =
+    conditionEntitiesLoader
+      .observe()
+      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   val state: StateFlow<EditRuleState> =
     viewModelScope.launchMolecule(Immediate) {

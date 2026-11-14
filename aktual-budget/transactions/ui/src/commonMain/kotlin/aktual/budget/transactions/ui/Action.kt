@@ -7,6 +7,7 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
+import aktual.budget.transactions.domain.SavedFilter
 import aktual.budget.transactions.vm.AccountOption
 import androidx.compose.runtime.Immutable
 
@@ -59,6 +60,18 @@ internal sealed interface Action {
   @JvmInline value class SetConditionsOp(val op: ConditionOp) : ViewModelAction
 
   data object ClearFilters : ViewModelAction
+
+  data object ClearConditions : ViewModelAction
+
+  @JvmInline value class ApplySavedFilter(val filter: SavedFilter) : ViewModelAction
+
+  @JvmInline value class SaveFilter(val name: String) : ViewModelAction
+
+  data object UpdateSavedFilter : ViewModelAction
+
+  @JvmInline value class RenameSavedFilter(val name: String) : ViewModelAction
+
+  data object DeleteSavedFilter : ViewModelAction
 }
 
 // Handled by the view model alone
