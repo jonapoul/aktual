@@ -23,6 +23,7 @@ import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.checkbox
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,10 +63,13 @@ internal fun MatchesSheetContent(
   Column(modifier = modifier.fillMaxWidth()) {
     MatchesHeader(state, isEnabled, onAction)
     if (state is Loaded) {
+      val lazyListState = rememberLazyListState()
       LazyColumn(
+        modifier = Modifier.scrollbar(lazyListState),
         contentPadding =
           PaddingValues(start = Dimens.Huge, end = Dimens.Huge, bottom = Dimens.Huge),
         verticalArrangement = Arrangement.spacedBy(Dimens.Large),
+        state = lazyListState,
       ) {
         items(items = state.rows, key = { row -> row.id.value }) { row ->
           MatchCard(
