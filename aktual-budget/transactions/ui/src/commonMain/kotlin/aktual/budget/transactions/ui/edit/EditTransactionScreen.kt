@@ -81,12 +81,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -99,15 +96,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.createSavedStateHandle
-import com.valentinilk.shimmer.rememberShimmer
-import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -456,41 +450,6 @@ private fun TopBarActions(
   }
 }
 
-// Stands in for the amount and the fields card while the transaction loads
-/** Keep in sync with [HeroAmount] and [FieldRow] */
-@Composable
-private fun ShimmerTransaction(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, ShimmerBarShape)
-  Column(
-    modifier =
-      modifier.fillMaxSize().padding(horizontal = CardInset).shimmer(rememberShimmer(Window)),
-    verticalArrangement = Arrangement.spacedBy(CardSpacing),
-  ) {
-    Column(
-      modifier = Modifier.fillMaxWidth().padding(HeroPadding),
-      horizontalAlignment = CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(HeroSpacing),
-    ) {
-      Box(modifier = bar.size(width = ShimmerToggleWidth, height = ShimmerToggleHeight))
-      Box(modifier = bar.size(width = ShimmerAmountWidth, height = ShimmerAmountHeight))
-    }
-
-    DetailCard {
-      repeat(SHIMMER_ROWS) { index ->
-        if (index > 0) HorizontalDivider()
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(RowPadding),
-          verticalAlignment = CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(RowGap),
-        ) {
-          Box(modifier = bar.size(width = ShimmerLabelWidth, height = ShimmerTextHeight))
-          Box(modifier = bar.weight(1f).height(ShimmerTextHeight))
-        }
-      }
-    }
-  }
-}
-
 @Composable
 private fun LoadFailure(
   state: EditTransactionState.Failure,
@@ -553,7 +512,7 @@ private fun NothingToCreateWith(
 @Composable
 internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
   Column(
-    modifier = Modifier.fillMaxWidth().background(colors.buttonNormalBackground, DetailCardShape),
+    modifier = Modifier.fillMaxWidth().background(colors.tableBackground, DetailCardShape),
     content = content,
   )
 
@@ -582,28 +541,16 @@ internal fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
 internal val CardInset = 16.dp
 internal val CardSpacing = 12.dp
 internal val DetailCardShape = RoundedCornerShape(10.dp)
-private val HeroPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 4.dp)
-private val HeroSpacing = 10.dp
 internal val HeroAmountSize = textSizes.hero
 internal val HeroAmountTracking = letterSpacings.tight
 private val DateSize = textSizes.medium
 private val SaveShape = RoundedCornerShape(percent = 50)
 private val SaveInset = 8.dp
-private val RowPadding = PaddingValues(horizontal = 16.dp, vertical = 15.dp)
-private val RowGap = 12.dp
 internal val ValueSize = textSizes.mediumPlus
 private val BalancePadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 internal val SplitHeaderPadding = PaddingValues(start = 4.dp, bottom = 8.dp)
 internal val SplitHeaderSize = textSizes.smallPlus
 internal val SplitHeaderTracking = letterSpacings.wider
-private val ShimmerBarShape = RoundedCornerShape(4.dp)
-private val ShimmerToggleWidth = 200.dp
-private val ShimmerToggleHeight = 30.dp
-private val ShimmerAmountWidth = 180.dp
-private val ShimmerAmountHeight = 44.dp
-private val ShimmerLabelWidth = 72.dp
-private val ShimmerTextHeight = 18.dp
-private const val SHIMMER_ROWS = 6
 
 @PortraitPreview
 @Composable

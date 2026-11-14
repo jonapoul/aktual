@@ -25,6 +25,12 @@ Spacing uses `Dimens` (dp), not `AktualTheme`.
 
 Use the `CardColumn` (column) or `CardRow` composable for card containers, passing `contentPadding` and `onClick` rather than chaining `padding`/`clickable` yourself. `Modifier.card` is for cases `CardColumn` can't cover, like applying the card style conditionally or adding `shimmer()` after the padding.
 
+## Loading shimmers
+
+- Build placeholders from `ShimmerLine` (a bar the height of one line of a `TextStyle`), `ShimmerBlock` (icons, switches, charts) and `ShimmerChip` (`Shimmer.kt`). Don't hardcode bar heights in dp. Pass `ShimmerLine` the same font size and weight as the text it replaces.
+- Lay the shimmer out like the loaded content: same rows and sections, built from the real composable's padding and size constants, in the same file so they can stay private. Compare the two previews side by side.
+- Put `.shimmer()` on the content, not on a card or anything else with a background, or the background fades too. Share one `rememberShimmer(Window)` between the pieces so they shimmer in step.
+
 ## Buttons
 
 Use `AktualButton` and `AktualIconButton` (`AktualButtons.kt`), picking a `ButtonKind` (`Primary`, `Normal`, `Bare`, `Tonal`, `Destructive`) and passing `isLoading` rather than building a spinner yourself. Only drop to `BasicTextButton` / `BasicIconButton` for colours no kind covers.
