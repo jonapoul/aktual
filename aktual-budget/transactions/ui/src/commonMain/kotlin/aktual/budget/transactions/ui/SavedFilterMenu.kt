@@ -90,18 +90,18 @@ internal fun SavedFilterSheet(
         BottomSheetListItem(label = label, isSelected = false, onClick = { dismiss(onClick) })
       }
       if (hasConditions && (applied == null || saved.isModified)) {
-        item(Strings.transactionsFilterSaveNew) { onName(FilterNaming.SaveNew) }
+        item(Strings.transactionsFilterSaveNew) { onName(SaveNew) }
       }
       if (applied != null && saved.isModified) {
-        item(Strings.transactionsFilterUpdate) { onAction(Action.UpdateSavedFilter) }
+        item(Strings.transactionsFilterUpdate) { onAction(UpdateSavedFilter) }
         item(Strings.transactionsFilterRevert) { onAction(Action.ApplySavedFilter(applied)) }
       }
       if (applied != null) {
-        item(Strings.transactionsFilterRename) { onName(FilterNaming.Rename) }
-        item(Strings.transactionsFilterDelete) { onAction(Action.DeleteSavedFilter) }
+        item(Strings.transactionsFilterRename) { onName(Rename) }
+        item(Strings.transactionsFilterDelete) { onAction(DeleteSavedFilter) }
       }
       if (hasConditions) {
-        item(Strings.transactionsFilterClear) { onAction(Action.ClearConditions) }
+        item(Strings.transactionsFilterClear) { onAction(ClearConditions) }
       }
     }
   }
@@ -121,8 +121,11 @@ internal fun FilterNameDialog(
     val enabled = name.isNotEmpty() && name != initialName
     AktualAlertDialogContent(
       title =
-        if (initialName.isEmpty()) Strings.transactionsFilterSaveNew
-        else Strings.transactionsFilterRename,
+        if (initialName.isEmpty()) {
+          Strings.transactionsFilterSaveNew
+        } else {
+          Strings.transactionsFilterRename
+        },
       buttons = {
         DialogTextButton(text = Strings.transactionsFilterNameCancel, onClick = onDismiss)
         DialogTextButton(

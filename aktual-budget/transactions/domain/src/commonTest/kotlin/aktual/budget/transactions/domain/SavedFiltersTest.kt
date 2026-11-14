@@ -23,7 +23,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 class SavedFiltersTest {
   @Test
-  fun `Saved filters are created, updated and deleted`() = runSavedFiltersTest {
+  fun `Saved filters are created, updated and deleted`() = runSavedFiltersTest { filters ->
     filters.observe().test {
       assertThat(awaitItem()).isEmpty()
 
@@ -51,13 +51,12 @@ class SavedFiltersTest {
   }
 
   @Test
-  fun `A name is required`() = runSavedFiltersTest {
-    assertThat(filters.create("  ", ConditionSet(listOf(PAYEE))))
-      .isEqualTo(SaveFilterResult.NameRequired)
+  fun `A name is required`() = runSavedFiltersTest { filters ->
+    assertThat(filters.create("  ", ConditionSet(listOf(PAYEE)))).isEqualTo(NameRequired)
   }
 
   @Test
-  fun `Names are unique, except against the filter itself`() = runSavedFiltersTest {
+  fun `Names are unique, except against the filter itself`() = runSavedFiltersTest { filters ->
     // given
     filters.create("Groceries", ConditionSet(listOf(PAYEE)))
 
@@ -69,7 +68,7 @@ class SavedFiltersTest {
   }
 
   @Test
-  fun `The same conditions can't be saved twice`() = runSavedFiltersTest {
+  fun `The same conditions can't be saved twice`() = runSavedFiltersTest { filters ->
     // given
     filters.create("Groceries", ConditionSet(listOf(PAYEE, NOTES)))
 
@@ -82,7 +81,7 @@ class SavedFiltersTest {
 
   @Test
   fun `List values never count as the same, as upstream compares them by reference`() =
-    runSavedFiltersTest {
+    runSavedFiltersTest { filters ->
       // given
       filters.create("Groceries", ConditionSet(listOf(ONE_OF)))
 
@@ -91,9 +90,7 @@ class SavedFiltersTest {
         .isEqualTo(SaveFilterResult.Saved(ID_2))
     }
 
-  private class SavedFiltersTestScope(val filters: SavedFilters)
-
-  private fun runSavedFiltersTest(action: suspend SavedFiltersTestScope.() -> Unit) = runTest {
+  private fun runSavedFiltersTest(action: suspend (filters: SavedFilters) -> Unit) = runTest {
     val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
     driver.use {
       val database = buildDatabase(driver)
@@ -108,7 +105,7 @@ class SavedFiltersTest {
         }
       var nextId = 1
       val filters = SavedFilters(TransactionFilterDao(database), sync) { "filter-${nextId++}" }
-      SavedFiltersTestScope(filters).action()
+      action(filters)
     }
   }
 

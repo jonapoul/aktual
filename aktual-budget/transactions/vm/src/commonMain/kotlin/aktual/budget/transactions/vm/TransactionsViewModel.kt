@@ -96,7 +96,7 @@ import kotlinx.coroutines.launch
 
 @Stable
 @AssistedInject
-@Suppress("LongParameterList")
+@Suppress("LongParameterList", "TooManyFunctions") // One per list action, search and saved filters
 class TransactionsViewModel
 internal constructor(
   @Assisted private val spec: TransactionsSpec,

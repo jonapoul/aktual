@@ -139,16 +139,16 @@ private class FilterCondition(private val condition: CompiledCondition) {
 
   fun narrow(bounds: FilterBounds): FilterBounds {
     val ids =
-      when (op) {
-        Is -> (value as? Text)?.value?.let(::setOf)
-        OneOf ->
+      when {
+        op == Is -> (value as? Text)?.value?.let(::setOf)
+        op == OneOf ->
           (value as? TextList)
             ?.values
             ?.takeIf { values -> values.isNotEmpty() && null !in values }
             ?.filterNotNull()
         else -> null
       }?.toSet()
-    val day = ((value as? DateMatch)?.value as? DateValue.Day)?.date
+    val day = ((value as? DateMatch)?.value as? Day)?.date
     return when {
       field == Account && ids != null -> bounds.copy(accounts = bounds.accounts.narrowTo(ids))
       field == Category && ids != null -> bounds.copy(categories = bounds.categories.narrowTo(ids))

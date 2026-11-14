@@ -82,7 +82,7 @@ internal constructor(
     name: String,
     conditions: ConditionSet,
   ): SaveFilterResult? {
-    if (name.isEmpty()) return SaveFilterResult.NameRequired
+    if (name.isEmpty()) return NameRequired
     val others = dao.getAllActive().map { it.toSavedFilter() }.filter { it.id != id }
     if (others.any { it.name == name }) return SaveFilterResult.NameTaken(name)
     val same = others.firstOrNull { it.conditions.sameAs(conditions) }
