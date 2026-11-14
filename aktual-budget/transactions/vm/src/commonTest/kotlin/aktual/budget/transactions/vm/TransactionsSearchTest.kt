@@ -33,9 +33,13 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -323,7 +327,7 @@ internal class TransactionsSearchTest : TransactionsViewModelTestBase() {
       assertThatNextEmissionIsEqualTo(true)
 
       // when
-      viewModel.setSearch(TransactionSearch(text = "argos"))
+      viewModel.setQuery("argos")
       advanceUntilIdle()
 
       // then
@@ -333,7 +337,7 @@ internal class TransactionsSearchTest : TransactionsViewModelTestBase() {
       .containsExactly("a" to null)
 
     // when
-    viewModel.setSearch(TransactionSearch())
+    viewModel.clearFilters()
     advanceUntilIdle()
 
     // then
@@ -349,11 +353,134 @@ internal class TransactionsSearchTest : TransactionsViewModelTestBase() {
     val tagged = factory.create(TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))))
 
     // when
-    tagged.setSearch(TransactionSearch(text = "argos"))
+    tagged.setQuery("argos")
 
     // then
     tagged.showBalance.test { assertThatNextEmissionIsEqualTo(false) }
     tagged.viewModelScope.cancel()
+  }
+
+  @Test
+  fun `Typing is debounced`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    advanceUntilIdle()
+
+    viewModel.showBalance.test {
+      assertThatNextEmissionIsEqualTo(true)
+
+      // when
+      viewModel.setQuery("arg")
+      advanceTimeBy(200.milliseconds)
+      viewModel.setQuery("argos")
+      advanceTimeBy(200.milliseconds)
+
+      // then
+      expectNoEvents()
+      advanceTimeBy(150.milliseconds)
+      assertThatNextEmissionIsEqualTo(false)
+
+      // when
+      viewModel.setQuery("")
+      runCurrent()
+
+      // then
+      assertThatNextEmissionIsEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `Conditions apply without waiting`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    advanceUntilIdle()
+
+    viewModel.showBalance.test {
+      assertThatNextEmissionIsEqualTo(true)
+
+      // when
+      viewModel.addCondition(Condition(Category, Is, JsonPrimitive("b")))
+      runCurrent()
+
+      // then
+      assertThatNextEmissionIsEqualTo(false)
+
+      // when
+      viewModel.removeCondition(index = 0)
+      runCurrent()
+
+      // then
+      assertThatNextEmissionIsEqualTo(true)
+    }
+  }
+
+  @Test
+  fun `Whitespace around the query doesn't change the search`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    viewModel.setQuery("argos")
+    advanceUntilIdle()
+
+    viewModel.showBalance.test {
+      assertThatNextEmissionIsEqualTo(false)
+
+      // when
+      viewModel.setQuery("argos ")
+      advanceUntilIdle()
+
+      // then
+      expectNoEvents()
+    }
+    assertThat(viewModel.search.value).isEqualTo(TransactionSearch(text = "argos "))
+  }
+
+  @Test
+  fun `Conditions edit, change op and clear`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    val payee = Condition(Payee, Is, JsonPrimitive("a"))
+    val category = Condition(Category, Is, JsonPrimitive("b"))
+
+    viewModel.search.test {
+      assertThatNextEmissionIsEqualTo(TransactionSearch())
+
+      // when
+      viewModel.addCondition(payee)
+      viewModel.addCondition(category)
+      viewModel.editCondition(index = 0, category)
+      viewModel.setConditionsOp(Or)
+
+      // then
+      assertThat(expectMostRecentItem())
+        .isEqualTo(TransactionSearch(conditions = ConditionSet(listOf(category, category), Or)))
+
+      // when
+      viewModel.clearFilters()
+
+      // then
+      assertThatNextEmissionIsEqualTo(TransactionSearch())
+    }
+  }
+
+  @Test
+  fun `Search carries over to another account's list`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+    with(transactions) {
+      insertTransaction("a", "b", "a", "a", date = DATE_2)
+      insertTransaction("b", "b", "a", "b", date = DATE_1)
+    }
+    viewModel.setQuery("argos")
+    advanceUntilIdle()
+
+    // when
+    val other = factory.create(TransactionsSpec(SpecificAccount(AccountId("b"))))
+
+    // then
+    other.search.test { assertThatNextEmissionIsEqualTo(TransactionSearch(text = "argos")) }
+    other.showBalance.test { assertThatNextEmissionIsEqualTo(false) }
+    assertThat(other.pagingData.asSnapshot().map { it.id.toString() }).containsExactly("a")
+    other.viewModelScope.cancel()
   }
 
   private fun searchSource(spec: AccountSpec, search: TransactionSearch): TransactionsPagingSource {

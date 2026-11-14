@@ -13,6 +13,8 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.CategorySpec
+import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.DbMetadataKey.Companion.TransactionDensity
 import aktual.budget.model.SyncedPrefKey.PerAccount.HideReconciled
 import aktual.budget.model.SyncedPrefKey.PerAccount.ShowBalances
@@ -26,6 +28,7 @@ import aktual.budget.tags.domain.TagLabel
 import aktual.budget.tags.domain.toTagLabels
 import aktual.budget.transactions.domain.AccountViewPrefs
 import aktual.budget.transactions.domain.Reconciler
+import aktual.budget.transactions.domain.TransactionFilters
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -56,12 +59,15 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -70,9 +76,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -96,6 +104,7 @@ internal constructor(
   private val reconciler: Reconciler,
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
+  private val filters: TransactionFilters,
   newTransactions: NewTransactions,
   server: BudgetServer,
   private val clock: Clock,
@@ -120,7 +129,6 @@ internal constructor(
   // The bank balance being reconciled against, while reconciling
   private val mutableReconcileTarget = MutableStateFlow<Amount?>(null)
   private val mutableReconcileBusy = MutableStateFlow(false)
-  private val mutableSearch = MutableStateFlow(TransactionSearch())
   private var reconcileJob: Job? = null
 
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
@@ -235,13 +243,30 @@ internal constructor(
       BankSyncSummary.of(results.filter { it.account == accountId })
     }
 
-  val search: StateFlow<TransactionSearch> = mutableSearch.asStateFlow()
+  // As typed, for the search field and filter chips. Shared by every account list
+  val search: StateFlow<TransactionSearch> = filters.state
+
+  // The search the list is narrowed by. Typing is debounced, but clearing the text and changing
+  // the conditions apply at once. Null for an empty search, or a list that ignores it
+  @OptIn(FlowPreview::class)
+  private val activeSearch: StateFlow<TransactionSearch?> =
+    combine(
+        filters.state
+          .map { it.text.trim() }
+          .distinctUntilChanged()
+          .debounce { text -> if (text.isEmpty()) Duration.ZERO else QUERY_DEBOUNCE },
+        filters.state.map { it.conditions }.distinctUntilChanged(),
+        ::TransactionSearch,
+      )
+      .map(spec::activeSearch)
+      .distinctUntilChanged()
+      .stateIn(viewModelScope, Eagerly, initialValue = spec.activeSearch(filters.state.value))
 
   // A filtered or searched list only holds part of each account, so it has no balance to show
   val showBalance: StateFlow<Boolean> =
-    mutableSearch
-      .map { spec.isAccountList && spec.activeSearch(it) == null }
-      .stateIn(viewModelScope, Eagerly, initialValue = spec.isAccountList)
+    activeSearch
+      .map(::hasBalance)
+      .stateIn(viewModelScope, Eagerly, initialValue = hasBalance(activeSearch.value))
 
   val balance: StateFlow<Amount?> =
     if (spec.isAccountList) {
@@ -258,12 +283,16 @@ internal constructor(
   // an invalidation
   val toggledSplits: StateFlow<ImmutableSet<TransactionId>> = mutableToggledSplits.asStateFlow()
 
+  // A new search starts a new pager, so the list starts from the top
   val pagingData: Flow<PagingData<Transaction>> =
-    Pager(
-        config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
-        pagingSourceFactory = ::buildPagingSource,
-      )
-      .flow
+    activeSearch
+      .flatMapLatest { search ->
+        Pager(
+            config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
+            pagingSourceFactory = { buildPagingSource(search) },
+          )
+          .flow
+      }
       .cachedIn(viewModelScope)
 
   init {
@@ -316,13 +345,6 @@ internal constructor(
     // Hiding reconciled transactions changes the rows in the list
     viewModelScope.launch {
       hideReconciled.drop(count = 1).collect { currentPagingSource?.invalidate() }
-    }
-
-    // So does searching, though not a change to a search that leaves it empty
-    viewModelScope.launch {
-      mutableSearch.map(spec::activeSearch).distinctUntilChanged().drop(count = 1).collect {
-        currentPagingSource?.invalidate()
-      }
     }
 
     // Invalidate PagingSource when transaction data changes.
@@ -384,9 +406,17 @@ internal constructor(
     }
   }
 
-  fun setSearch(search: TransactionSearch) {
-    mutableSearch.update { search }
-  }
+  fun setQuery(text: String) = filters.setQuery(text)
+
+  fun addCondition(condition: Condition) = filters.addCondition(condition)
+
+  fun editCondition(index: Int, condition: Condition) = filters.editCondition(index, condition)
+
+  fun removeCondition(index: Int) = filters.removeCondition(index)
+
+  fun setConditionsOp(op: ConditionOp) = filters.setConditionsOp(op)
+
+  fun clearFilters() = filters.clear()
 
   fun toggleSplit(id: TransactionId) {
     mutableToggledSplits.update { ids -> if (id in ids) ids.removing(id) else ids.adding(id) }
@@ -469,16 +499,20 @@ internal constructor(
     }
   }
 
-  private fun buildPagingSource() =
+  private fun hasBalance(search: TransactionSearch?) = spec.isAccountList && search == null
+
+  private fun buildPagingSource(search: TransactionSearch?) =
     TransactionsPagingSource(
         transactionDao = transactionDao,
         tagsDao = tagsDao,
         spec = spec,
         hideReconciled = hideReconciled.value,
-        search = spec.activeSearch(mutableSearch.value),
+        search = search,
       )
       .also { currentPagingSource = it }
 
   // As the bank sync screen decides it
   private fun Accounts.isLinked() = account_sync_source != null && account_id != null
 }
+
+private val QUERY_DEBOUNCE = 300.milliseconds

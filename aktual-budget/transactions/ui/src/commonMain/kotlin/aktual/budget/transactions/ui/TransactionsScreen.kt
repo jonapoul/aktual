@@ -203,6 +203,12 @@ private fun TransactionsViewModel.handle(action: ViewModelAction) {
     is Action.ToggleSplit -> toggleSplit(action.id)
     is Action.StartReconciling -> startReconciling(action.target)
     Action.FinishReconciling -> finishReconciling()
+    is Action.SetQuery -> setQuery(action.text)
+    is Action.AddCondition -> addCondition(action.condition)
+    is Action.EditCondition -> editCondition(action.index, action.condition)
+    is Action.RemoveCondition -> removeCondition(action.index)
+    is Action.SetConditionsOp -> setConditionsOp(action.op)
+    Action.ClearFilters -> clearFilters()
   }
 }
 
