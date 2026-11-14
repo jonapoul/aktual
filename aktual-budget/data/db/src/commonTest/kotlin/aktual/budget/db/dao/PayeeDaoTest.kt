@@ -161,7 +161,7 @@ internal class PayeeDaoTest {
     }
 
   @Test
-  fun `Payees in a rule's description condition aren't unused`() = runDaoTest { payees, _ ->
+  fun `Payees in a rule's payee condition aren't unused`() = runDaoTest { payees, _ ->
     // given
     insertRule("r1", Condition(field = Description, operator = Is, value = JsonPrimitive("a")))
     insertRule("r2", Condition(field = Payee, operator = Is, value = JsonPrimitive("b")))
@@ -172,7 +172,7 @@ internal class PayeeDaoTest {
     )
 
     // then
-    assertThat(payees.unused()).containsExactlyInAnyOrder(PayeeId("b"), PayeeId("c"))
+    assertThat(payees.unused()).containsExactlyInAnyOrder(PayeeId("c"))
   }
 
   @Test

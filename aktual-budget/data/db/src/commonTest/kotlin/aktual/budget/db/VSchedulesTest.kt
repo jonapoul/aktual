@@ -7,9 +7,7 @@ import aktual.budget.db.test.insertRule
 import aktual.budget.db.test.insertSchedule
 import aktual.budget.db.test.insertScheduleJsonPaths
 import aktual.budget.db.test.insertScheduleNextDate
-import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
-import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.test.runDatabaseTest
@@ -18,7 +16,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 internal class VSchedulesTest {
@@ -166,9 +163,6 @@ internal class VSchedulesTest {
   }
 }
 
-private val ActionsSerializer = ListSerializer(RuleAction.serializer())
-private val ConditionsSerializer = ListSerializer(Condition.serializer())
-
 private val RULE_1_CONDITIONS =
   """
   [
@@ -208,7 +202,7 @@ private val RULE_1_CONDITIONS =
   ]
   """
     .trimIndent()
-    .let { Json.decodeFromString(ConditionsSerializer, it) }
+    .let { Json.decodeFromString(RuleJson.conditions, it) }
 
 private val RULE_1_ACTIONS =
   """
@@ -222,7 +216,7 @@ private val RULE_1_ACTIONS =
   ]
   """
     .trimIndent()
-    .let { Json.decodeFromString(ActionsSerializer, it) }
+    .let { Json.decodeFromString(RuleJson.actions, it) }
 
 private val RULE_2_CONDITIONS =
   """
@@ -260,7 +254,7 @@ private val RULE_2_CONDITIONS =
   ]
   """
     .trimIndent()
-    .let { Json.decodeFromString(ConditionsSerializer, it) }
+    .let { Json.decodeFromString(RuleJson.conditions, it) }
 
 private val RULE_2_ACTIONS =
   """
@@ -272,7 +266,7 @@ private val RULE_2_ACTIONS =
   ]
   """
     .trimIndent()
-    .let { Json.decodeFromString(ActionsSerializer, it) }
+    .let { Json.decodeFromString(RuleJson.actions, it) }
 
 private val RULE_3_CONDITIONS =
   """
@@ -310,7 +304,7 @@ private val RULE_3_CONDITIONS =
   ]
   """
     .trimIndent()
-    .let { Json.decodeFromString(ConditionsSerializer, it) }
+    .let { Json.decodeFromString(RuleJson.conditions, it) }
 
 private val RULE_3_ACTIONS =
   """
@@ -322,4 +316,4 @@ private val RULE_3_ACTIONS =
   ]
   """
     .trimIndent()
-    .let { Json.decodeFromString(ActionsSerializer, it) }
+    .let { Json.decodeFromString(RuleJson.actions, it) }
