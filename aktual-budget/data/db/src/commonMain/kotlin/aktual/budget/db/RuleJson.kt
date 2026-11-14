@@ -31,6 +31,8 @@ object RuleJson {
   val actions: KSerializer<List<RuleAction>> =
     InternalFieldSerializer(ListSerializer(RuleAction.serializer()))
 
+  private const val FIELD = "field"
+
   // schemaConfig.views.transactions.fields in packages/loot-core/src/server/aql/schema/index.ts,
   // limited to the fields rules can use
   private val PUBLIC_TO_INTERNAL =
@@ -62,6 +64,4 @@ object RuleJson {
       },
     )
   }
-
-  private const val FIELD = "field"
 }
