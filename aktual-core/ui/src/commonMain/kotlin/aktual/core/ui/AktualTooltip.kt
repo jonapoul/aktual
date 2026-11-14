@@ -1,23 +1,30 @@
 package aktual.core.ui
 
 import aktual.core.ui.AktualTheme.colors
-import androidx.compose.material3.PlainTooltip
+import aktual.core.ui.AktualTheme.typography
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition.Companion.Above
-import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults.rememberTooltipPositionProvider
-import androidx.compose.material3.TooltipState
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
-import kotlinx.coroutines.launch
+import androidx.compose.ui.window.PopupProperties
 
-/** Basically a wrapper around the blurring functionality */
+// Not TooltipBox: its popup isn't focusable on desktop, so taps outside it reach the content
+// underneath instead of only dismissing the tooltip
 @Composable
 fun AktualTooltip(
   imageVector: ImageVector,
@@ -25,38 +32,41 @@ fun AktualTooltip(
   tooltipText: String,
   modifier: Modifier = Modifier,
   kind: ButtonKind = Bare,
-  state: TooltipState = rememberTooltipState(isPersistent = true),
   positionProvider: PopupPositionProvider = rememberTooltipPositionProvider(Above),
 ) {
-  val scope = rememberCoroutineScope()
+  var isVisible by remember { mutableStateOf(false) }
 
-  TooltipBox(
-    modifier = modifier,
-    positionProvider = positionProvider,
-    state = state,
-    tooltip = {
-      val dialogBlurState = LocalDialogBlurState.current
-      DisposableEffect(Unit) {
-        dialogBlurState.activeDialogCount++
-        onDispose { dialogBlurState.activeDialogCount-- }
+  Box(modifier = modifier) {
+    AktualIconButton(
+      kind = kind,
+      imageVector = imageVector,
+      contentDescription = contentDescription,
+      onClick = { isVisible = !isVisible },
+    )
+
+    if (isVisible) {
+      Popup(
+        popupPositionProvider = positionProvider,
+        onDismissRequest = { isVisible = false },
+        properties = PopupProperties(focusable = true),
+      ) {
+        val dialogBlurState = LocalDialogBlurState.current
+        DisposableEffect(Unit) {
+          dialogBlurState.activeDialogCount++
+          onDispose { dialogBlurState.activeDialogCount-- }
+        }
+
+        Box(
+          modifier =
+            Modifier.sizeIn(minWidth = 40.dp, minHeight = 24.dp, maxWidth = 200.dp)
+              .clip(CardShape)
+              .background(colors.tooltipBackground)
+              .padding(horizontal = 8.dp, vertical = 4.dp),
+          contentAlignment = CenterStart,
+        ) {
+          Text(text = tooltipText, color = colors.tooltipText, style = typography.bodySmall)
+        }
       }
-
-      PlainTooltip(
-        modifier = Modifier.clip(CardShape),
-        caretShape = CardShape,
-        shape = CardShape,
-        contentColor = colors.tooltipText,
-        containerColor = colors.tooltipBackground,
-        content = { Text(tooltipText) },
-      )
-    },
-    content = {
-      AktualIconButton(
-        kind = kind,
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        onClick = { if (state.isVisible) state.dismiss() else scope.launch { state.show() } },
-      )
-    },
-  )
+    }
+  }
 }
