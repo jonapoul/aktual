@@ -6,6 +6,9 @@ import aktual.budget.db.withResult
 import aktual.budget.model.CategoryGroupId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import app.cash.sqldelight.coroutines.asFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class CategoryGroupDao(database: BudgetDatabase) {
   private val queries = database.categoryGroupsQueries
@@ -21,6 +24,9 @@ class CategoryGroupDao(database: BudgetDatabase) {
   suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
     getAllActive().awaitAsList()
   }
+
+  // Emits whenever the table behind getAllActive() is written to
+  fun observeChanges(): Flow<Unit> = queries.getAllActive().asFlow().map {}
 
   // Hidden groups included
   suspend fun nameMap(): Map<CategoryGroupId, String?> = queries.withResult {

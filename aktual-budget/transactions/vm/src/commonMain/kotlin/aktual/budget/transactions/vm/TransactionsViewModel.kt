@@ -84,7 +84,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -254,12 +253,12 @@ internal constructor(
   // Only account lists can be searched. Tag, category and filtered lists ignore the search
   val canSearch: Boolean = spec.isAccountList
 
-  // What the filter editor picks from and the chips are named by. Loaded again whenever the chips
-  // come back into view, so new payees and renames show up
-  val conditionEntities: StateFlow<ConditionEntities?> = flow {
-    emit(conditionEntitiesLoader.load())
-  }
-    .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
+  // What the filter editor picks from and the chips are named by, kept up to date with new payees
+  // and renames
+  val conditionEntities: StateFlow<ConditionEntities?> =
+    conditionEntitiesLoader
+      .observe()
+      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   // The search the list is narrowed by. Typing is debounced, but clearing the text and changing
   // the conditions apply at once. Null for an empty search, or a list that ignores it

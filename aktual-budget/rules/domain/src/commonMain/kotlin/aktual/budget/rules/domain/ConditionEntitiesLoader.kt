@@ -11,6 +11,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapLatest
 
 @Immutable
 data class ConditionEntityLists(
@@ -21,12 +25,24 @@ data class ConditionEntityLists(
   override val names: ImmutableMap<String, String>,
 ) : ConditionEntities
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Inject
 class ConditionEntitiesLoader(database: BudgetDatabase) {
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)
   private val categoryGroups = CategoryGroupDao(database)
   private val payees = PayeeDao(database)
+
+  // Loads again whenever an account, category, group or payee changes
+  fun observe(): Flow<ConditionEntityLists> =
+    combine(
+        accounts.observeAllActive(),
+        categories.observeChanges(),
+        categoryGroups.observeChanges(),
+        payees.observeListChanges(),
+      ) { _, _, _, _ ->
+      }
+      .mapLatest { load() }
 
   suspend fun load(): ConditionEntityLists {
     val activePayees = payees.getAllActive()

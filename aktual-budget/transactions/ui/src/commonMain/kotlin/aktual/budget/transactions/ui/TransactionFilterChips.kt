@@ -158,7 +158,7 @@ private fun AddFilterSheet(
         onChange = { changed -> draft = changed },
         onDelete = {},
         onDismiss = { draft = null },
-        onAdd = { draft?.let(onAdd) },
+        onAdd = { onAdd(condition) },
       )
     }
   }
