@@ -151,7 +151,7 @@ Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `j
 - [aktual-app/nav](aktual-app/nav/CLAUDE.md) - navigation architecture
 - [aktual-core/l10n](aktual-core/l10n/CLAUDE.md) - localization
 - [aktual-core/icons](aktual-core/icons/CLAUDE.md) - custom + Material icons, country flags
-- [aktual-core/ui](aktual-core/ui/CLAUDE.md) - `AktualTheme` tokens (colors, typography, text sizes, line heights, letter spacing)
+- [aktual-core/ui](aktual-core/ui/CLAUDE.md) - `AktualTheme` tokens (colors, typography, text sizes, line heights, letter spacing), cards, buttons, loading shimmers
 - [aktual-prefs](aktual-prefs/CLAUDE.md) - adding a new setting
 - [aktual-test/api](aktual-test/api/CLAUDE.md) - test HTTP mocks + generated fixtures
 - [aktual-test/smoke](aktual-test/smoke/CLAUDE.md) - VM DI smoke tests

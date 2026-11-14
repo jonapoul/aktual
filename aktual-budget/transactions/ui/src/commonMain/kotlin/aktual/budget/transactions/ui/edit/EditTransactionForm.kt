@@ -22,8 +22,11 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ButtonShape
 import aktual.core.ui.OnAction
 import aktual.core.ui.RootOverlayContent
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedText
@@ -50,16 +53,19 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,9 +85,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import com.valentinilk.shimmer.Shimmer
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -489,6 +499,104 @@ private fun StatusRow(
     )
   }
 
+// Stands in for the amount and the fields card while the transaction loads, laid out like them.
+// The shimmer goes on the content rather than the whole column, so the card keeps its colour
+@Composable
+internal fun ShimmerTransaction(modifier: Modifier = Modifier) {
+  val shimmer = rememberShimmer(Window)
+  Column(
+    modifier = modifier.fillMaxSize().padding(horizontal = CardInset),
+    verticalArrangement = Arrangement.spacedBy(CardSpacing),
+  ) {
+    Column(
+      modifier = Modifier.fillMaxWidth().padding(AmountPadding).shimmer(shimmer),
+      horizontalAlignment = CenterHorizontally,
+      verticalArrangement = Arrangement.spacedBy(AmountSpacing),
+    ) {
+      // A full-width bar the height of the toggle's labels and their padding
+      Box(modifier = Modifier.width(ToggleWidth)) {
+        Text(
+          modifier = Modifier.padding(TogglePadding),
+          text = "",
+          style = lineStyle(ToggleTextSize),
+        )
+        ShimmerBlock(modifier = Modifier.matchParentSize(), shape = ButtonShape)
+      }
+
+      val lineColor = colors.tableBorder
+      Box(
+        modifier =
+          Modifier.drawBehind { underline(lineColor, UnderlineWidth.toPx()) }
+            .padding(UnderlinePadding),
+      ) {
+        ShimmerLine(
+          modifier = Modifier.width(ShimmerAmountWidth),
+          style = lineStyle(HeroAmountSize),
+        )
+      }
+    }
+
+    DetailCard {
+      SHIMMER_VALUE_WIDTHS.forEachIndexed { index, width ->
+        if (index > 0) HorizontalDivider()
+        ShimmerFieldRow(shimmer = shimmer, valueWidth = width, showChevron = index != NOTES_ROW)
+      }
+      HorizontalDivider()
+      Row(
+        modifier =
+          Modifier.fillMaxWidth()
+            .heightIn(min = FieldRowHeight)
+            .padding(SwitchRowPadding)
+            .shimmer(shimmer),
+        verticalAlignment = CenterVertically,
+      ) {
+        Box(modifier = Modifier.weight(1f)) {
+          ShimmerLine(
+            modifier = Modifier.width(ShimmerLabelWidth),
+            style = lineStyle(FieldLabelSize),
+          )
+        }
+        ShimmerBlock(
+          modifier = Modifier.size(ShimmerSwitchWidth, ShimmerSwitchHeight),
+          shape = CircleShape,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun ShimmerFieldRow(shimmer: Shimmer, valueWidth: Float, showChevron: Boolean) =
+  Row(
+    modifier =
+      Modifier.fillMaxWidth()
+        .heightIn(min = FieldRowHeight)
+        .padding(FieldRowPadding)
+        .shimmer(shimmer),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(FieldRowGap),
+  ) {
+    Box(modifier = Modifier.width(FieldLabelWidth)) {
+      ShimmerLine(modifier = Modifier.width(ShimmerLabelWidth), style = lineStyle(FieldLabelSize))
+    }
+    Box(modifier = Modifier.weight(1f)) {
+      ShimmerLine(modifier = Modifier.fillMaxWidth(valueWidth), style = lineStyle(ValueSize))
+    }
+    if (showChevron) {
+      Icon(
+        modifier = Modifier.size(ChevronSize).rotate(degrees = -90f),
+        imageVector = AktualIcons.CheveronDown,
+        contentDescription = null,
+        tint = colors.pageTextSubdued,
+      )
+    }
+  }
+
+@Composable
+@ReadOnlyComposable
+private fun lineStyle(fontSize: TextUnit): TextStyle =
+  LocalTextStyle.current.merge(fontSize = fontSize)
+
 /** Keep in sync with ShimmerTransaction */
 @Composable
 internal fun HeroAmount(
@@ -658,3 +766,10 @@ private val FieldLabelSize = textSizes.smallPlus
 private val ChevronSize = 16.dp
 private val KeypadPadding = 8.dp
 internal const val EMPTY_AMOUNT = "0"
+private val ShimmerAmountWidth = 140.dp
+private val ShimmerLabelWidth = 56.dp
+private val ShimmerSwitchWidth = 52.dp
+private val ShimmerSwitchHeight = 32.dp
+// Payee, category, account, date, schedule and notes, as fractions of the value's width
+private val SHIMMER_VALUE_WIDTHS = listOf(0.6f, 0.45f, 0.5f, 0.7f, 0.3f, 0.4f)
+private const val NOTES_ROW = 5

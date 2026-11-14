@@ -199,8 +199,6 @@ internal object List{Name}DS {
 
   val itemCardPadding = 8.dp
   val itemContentSpacing = 4.dp
-
-  val shimmerItemTextHeight = 20.dp
 }
 ```
 
@@ -214,9 +212,9 @@ package {pkg}.ui.list
 import {pkg}.vm.{Name}
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.CardShape
 import aktual.core.ui.OnAction
 import aktual.core.ui.RowShape
+import aktual.core.ui.ShimmerLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -224,8 +222,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -275,17 +273,15 @@ internal fun ShimmerList{Name}Item(
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
-        .padding(List{Name}DS.itemCardPadding)
-        .shimmer(shimmer),
+        .padding(List{Name}DS.itemCardPadding),
     horizontalArrangement = Arrangement.spacedBy(List{Name}DS.itemContentSpacing),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Box(
-      modifier =
-        Modifier.fillMaxWidth(fraction = 0.55f)
-          .height(List{Name}DS.shimmerItemTextHeight)
-          .background(colors.pageText, CardShape)
-    )
+    // Shimmer the content, not the card, so the card keeps its colour. Give each line the style of
+    // the text it stands in for
+    Box(modifier = Modifier.weight(1f).shimmer(shimmer)) {
+      ShimmerLine(modifier = Modifier.fillMaxWidth(fraction = 0.55f), style = LocalTextStyle.current)
+    }
   }
 }
 ```
@@ -329,6 +325,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
