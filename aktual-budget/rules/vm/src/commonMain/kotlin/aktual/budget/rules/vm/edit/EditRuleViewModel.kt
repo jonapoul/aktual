@@ -9,13 +9,14 @@ import aktual.budget.model.ConditionOp
 import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
-import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.newAction
+import aktual.budget.rules.domain.nextActionField
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
@@ -80,7 +81,7 @@ internal constructor(
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
   private val mutableDraft = MutableStateFlow<Draft?>(null)
-  private var nextConditionKey = 0L
+  private var nextKey = 0L
 
   val events: SharedFlow<EditRuleEvent> = mutableEvents.asSharedFlow()
 
@@ -95,7 +96,7 @@ internal constructor(
       val isWorking by mutableIsWorking.collectAsState()
       val failure by mutableFailure.collectAsState()
       val draft by mutableDraft.collectAsState()
-      editRuleState(isLoading, isWorking, failure, draft?.rule, draft?.conditionKeys)
+      editRuleState(isLoading, isWorking, failure, draft)
     }
 
   init {
@@ -200,7 +201,7 @@ internal constructor(
   }
 
   fun addCondition() {
-    val key = nextConditionKey++
+    val key = nextKey++
     mutableDraft.update { draft ->
       draft?.copy(
         rule =
@@ -220,12 +221,39 @@ internal constructor(
     )
   }
 
+  fun setAction(index: Int, action: RuleAction) = updateRule { r ->
+    r.copy(actions = r.actions.toPersistentList().replacingAt(index, action))
+  }
+
+  fun addAction(splitIndex: Int = 0) {
+    val key = nextKey++
+    mutableDraft.update { draft ->
+      val actions = draft?.rule?.actions ?: return@update draft
+      val action = newAction(actions.nextActionField(splitIndex), splitIndex)
+      draft.copy(
+        rule = draft.rule.copy(actions = actions.toPersistentList().adding(action)),
+        actionKeys = draft.actionKeys.adding(key),
+      )
+    }
+  }
+
+  fun removeAction(index: Int) = mutableDraft.update { draft ->
+    draft?.copy(
+      rule = draft.rule.copy(actions = draft.rule.actions.toPersistentList().removingAt(index)),
+      actionKeys = draft.actionKeys.removingAt(index),
+    )
+  }
+
   private fun updateRule(makeCopy: (Rule) -> Rule) = mutableDraft.update { draft ->
     draft?.copy(rule = makeCopy(draft.rule))
   }
 
   private fun draft(rule: Rule) =
-    Draft(rule, rule.conditions.map { nextConditionKey++ }.toPersistentList())
+    Draft(
+      rule = rule,
+      conditionKeys = rule.conditions.map { nextKey++ }.toPersistentList(),
+      actionKeys = rule.actions.map { nextKey++ }.toPersistentList(),
+    )
 
   private fun emptyRule() =
     Rule(
@@ -233,7 +261,7 @@ internal constructor(
       stage = Default,
       conditionsOp = Default,
       conditions = persistentListOf(emptyCondition()),
-      actions = persistentListOf(emptyAction()),
+      actions = persistentListOf(newAction(Category)),
     )
 
   // Matches upstream's "Create rule" from the payees screen
@@ -244,19 +272,10 @@ internal constructor(
           persistentListOf(
             Condition(field = Payee, operator = Is, type = Id, value = JsonPrimitive(payee.value)),
           ),
-        actions = persistentListOf(RuleAction(value = null, op = Set, field = Category, type = Id)),
       )
 
   private fun emptyCondition() =
     Condition(field = Payee, operator = Is, type = Id, value = JsonNull)
-
-  private fun emptyAction() =
-    RuleAction(
-      value = null,
-      op = Default,
-      field = Payee,
-      type = Default,
-    )
 
   private fun insertChanges(rule: Rules): List<LocalChange> {
     val row = rule.id.toString()
@@ -287,5 +306,10 @@ internal constructor(
 
 private const val STOP_TIMEOUT_MS = 5_000L
 
-// Keys stay with their condition as others are added or removed, so the UI can animate them
-private data class Draft(val rule: Rule, val conditionKeys: PersistentList<Long>)
+// Keys stay with their condition or action as others are added or removed, so the UI can animate
+// them
+internal data class Draft(
+  val rule: Rule,
+  val conditionKeys: PersistentList<Long>,
+  val actionKeys: PersistentList<Long>,
+)

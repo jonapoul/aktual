@@ -14,8 +14,9 @@ sealed interface EditRuleState {
   data class Success(
     val rule: Rule,
     val isWorking: Boolean,
-    // One per condition, for animating them in and out
+    // One per condition and action, for animating them in and out
     val conditionKeys: ImmutableList<Long> = persistentListOf(),
+    val actionKeys: ImmutableList<Long> = persistentListOf(),
   ) : EditRuleState {
     val canSave: Boolean
       get() = !rule.hasUnknownValues
@@ -35,12 +36,11 @@ internal fun editRuleState(
   loading: Boolean,
   working: Boolean,
   failure: EditRuleState.Failure?,
-  rule: Rule?,
-  conditionKeys: ImmutableList<Long>?,
+  draft: Draft?,
 ): EditRuleState =
   when {
     loading -> Loading
     failure != null -> failure
-    rule == null -> NotFound
-    else -> EditRuleState.Success(rule, working, conditionKeys ?: persistentListOf())
+    draft == null -> NotFound
+    else -> EditRuleState.Success(draft.rule, working, draft.conditionKeys, draft.actionKeys)
   }
