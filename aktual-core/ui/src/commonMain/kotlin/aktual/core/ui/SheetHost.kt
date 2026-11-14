@@ -1,26 +1,35 @@
 package aktual.core.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import kotlinx.coroutines.launch
 
 /**
  * One bottom sheet for every [HostedSheet] inside it, so swapping one for another changes the page
  * rather than opening a new sheet. Give the first page [SheetHostState.dismiss] as its `onDismiss`.
- * A page given anything else is a sub-page, with a back button that calls its `onDismiss`.
+ * A page given anything else is a sub-page, with a back button that calls its `onDismiss`. The
+ * sheet keeps the height of its tallest page so far, so it doesn't shrink when swapping pages.
  */
 @Composable
 fun SheetHost(
   onDismiss: () -> Unit,
+  modifier: Modifier = Modifier,
   content: @Composable (host: SheetHostState) -> Unit,
 ) {
   val sheetState =
@@ -40,12 +49,22 @@ fun SheetHost(
 
   val onBack = host.onBack
   AktualModalBottomSheet(
+    modifier = modifier,
     onDismissRequest = onDismiss,
     sheetState = sheetState,
     onBack = onBack,
   ) {
     BackHandler(enabled = onBack != null) { onBack?.invoke() }
-    CompositionLocalProvider(LocalSheetHost provides host) { content(host) }
+    var tallestPage by remember { mutableIntStateOf(0) }
+    val minHeight = with(LocalDensity.current) { tallestPage.toDp() }
+    Column(
+      modifier =
+        Modifier.heightIn(min = minHeight).onSizeChanged { size ->
+          if (size.height > tallestPage) tallestPage = size.height
+        },
+    ) {
+      CompositionLocalProvider(LocalSheetHost provides host) { content(host) }
+    }
   }
 }
 
