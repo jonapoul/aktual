@@ -2,6 +2,8 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
@@ -45,6 +47,18 @@ internal sealed interface Action {
   data object CreateReconcileAdjustment : Action
 
   data object FinishReconciling : ViewModelAction
+
+  @JvmInline value class SetQuery(val text: String) : ViewModelAction
+
+  @JvmInline value class AddCondition(val condition: Condition) : ViewModelAction
+
+  data class EditCondition(val index: Int, val condition: Condition) : ViewModelAction
+
+  @JvmInline value class RemoveCondition(val index: Int) : ViewModelAction
+
+  @JvmInline value class SetConditionsOp(val op: ConditionOp) : ViewModelAction
+
+  data object ClearFilters : ViewModelAction
 }
 
 // Handled by the view model alone
