@@ -244,23 +244,27 @@ internal constructor(
     }
 
   // As typed, for the search field and filter chips. Shared by every account list
-  val search: StateFlow<TransactionSearch> = filters.state
+  val search: StateFlow<TransactionSearch> = filters
 
   // The search the list is narrowed by. Typing is debounced, but clearing the text and changing
   // the conditions apply at once. Null for an empty search, or a list that ignores it
   @OptIn(FlowPreview::class)
   private val activeSearch: StateFlow<TransactionSearch?> =
     combine(
-        filters.state
-          .map { it.text.trim() }
+        filters
+          .map { it.trimmed().text }
           .distinctUntilChanged()
           .debounce { text -> if (text.isEmpty()) Duration.ZERO else QUERY_DEBOUNCE },
-        filters.state.map { it.conditions }.distinctUntilChanged(),
+        filters.map { it.conditions }.distinctUntilChanged(),
         ::TransactionSearch,
       )
       .map(spec::activeSearch)
       .distinctUntilChanged()
-      .stateIn(viewModelScope, Eagerly, initialValue = spec.activeSearch(filters.state.value))
+      .stateIn(
+        viewModelScope,
+        Eagerly,
+        initialValue = spec.activeSearch(filters.value.trimmed()),
+      )
 
   // A filtered or searched list only holds part of each account, so it has no balance to show
   val showBalance: StateFlow<Boolean> =
@@ -416,7 +420,7 @@ internal constructor(
 
   fun setConditionsOp(op: ConditionOp) = filters.setConditionsOp(op)
 
-  fun clearFilters() = filters.clear()
+  fun clearFilters() = filters.reset()
 
   fun toggleSplit(id: TransactionId) {
     mutableToggledSplits.update { ids -> if (id in ids) ids.removing(id) else ids.adding(id) }
@@ -516,3 +520,6 @@ internal constructor(
 }
 
 private val QUERY_DEBOUNCE = 300.milliseconds
+
+// Whitespace around the text matches nothing, so it doesn't make a different search
+private fun TransactionSearch.trimmed() = copy(text = text.trim())

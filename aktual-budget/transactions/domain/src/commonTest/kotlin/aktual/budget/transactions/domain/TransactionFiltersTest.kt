@@ -21,7 +21,7 @@ class TransactionFiltersTest {
 
   @Test
   fun `Query is set`() = runTest {
-    filters.state.test {
+    filters.test {
       assertThat(awaitItem()).isEqualTo(TransactionSearch())
 
       // when
@@ -34,7 +34,7 @@ class TransactionFiltersTest {
 
   @Test
   fun `Conditions are added, edited and removed`() = runTest {
-    filters.state.test {
+    filters.test {
       skipItems(count = 1)
 
       // when
@@ -64,7 +64,7 @@ class TransactionFiltersTest {
     // given
     filters.addCondition(PAYEE)
 
-    filters.state.test {
+    filters.test {
       skipItems(count = 1)
 
       // when
@@ -82,7 +82,7 @@ class TransactionFiltersTest {
     // given
     filters.addCondition(PAYEE)
 
-    filters.state.test {
+    filters.test {
       skipItems(count = 1)
 
       // when
@@ -101,11 +101,11 @@ class TransactionFiltersTest {
     filters.addCondition(PAYEE)
     filters.setConditionsOp(Or)
 
-    filters.state.test {
+    filters.test {
       skipItems(count = 1)
 
       // when
-      filters.clear()
+      filters.reset()
 
       // then
       assertThat(awaitItem()).isEqualTo(TransactionSearch())
