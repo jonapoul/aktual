@@ -129,16 +129,13 @@ internal fun CustomReportSettings(
     CategoriesSection(draft = draft, editorData = editorData) { sheet = it }
 
     if (editorData != null) {
-      Column {
-        SectionLabel(Strings.reportsCustomEditorFilters)
-        ConditionsList(
-          conditions = draft.conditions,
-          conditionsOp = draft.conditionsOp,
-          names = editorData.query.names,
-          onChange = onConditions,
-          onOpen = { conditionIndex = it },
-        )
-      }
+      ConditionsList(
+        conditions = draft.conditions,
+        conditionsOp = draft.conditionsOp,
+        names = editorData.query.names,
+        onChange = onConditions,
+        onOpen = { conditionIndex = it },
+      )
     }
   }
 }

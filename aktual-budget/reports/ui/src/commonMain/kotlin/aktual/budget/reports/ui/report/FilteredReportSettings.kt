@@ -208,16 +208,13 @@ internal fun FilteredReportSettings(
     display?.invoke(this)
 
     if (editorData != null) {
-      Column {
-        SectionLabel(Strings.reportsCustomEditorFilters)
-        ConditionsList(
-          conditions = conditions,
-          conditionsOp = conditionsOp,
-          names = editorData.names,
-          onChange = onConditions,
-          onOpen = { conditionIndex = it },
-        )
-      }
+      ConditionsList(
+        conditions = conditions,
+        conditionsOp = conditionsOp,
+        names = editorData.names,
+        onChange = onConditions,
+        onOpen = { conditionIndex = it },
+      )
     }
   }
 }

@@ -106,19 +106,16 @@ internal fun BudgetAnalysisSettings(
     }
 
     if (editorData != null) {
-      Column {
-        SectionLabel(Strings.reportsCustomEditorFilters)
-        ConditionsList(
-          conditions = settings.conditions,
-          conditionsOp = settings.conditionsOp,
-          names = editorData.names,
-          fields = BUDGET_ANALYSIS_FIELDS,
-          onChange = { conditions, op ->
-            onEdit { it.copy(conditions = conditions.toImmutableList(), conditionsOp = op) }
-          },
-          onOpen = { conditionIndex = it },
-        )
-      }
+      ConditionsList(
+        conditions = settings.conditions,
+        conditionsOp = settings.conditionsOp,
+        names = editorData.names,
+        fields = BUDGET_ANALYSIS_FIELDS,
+        onChange = { conditions, op ->
+          onEdit { it.copy(conditions = conditions.toImmutableList(), conditionsOp = op) }
+        },
+        onOpen = { conditionIndex = it },
+      )
     }
   }
 }

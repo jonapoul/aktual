@@ -1784,7 +1784,6 @@
   <string name="reports_custom_editor_categories_complex">Remove the category filters to choose categories here</string>
   <string name="reports_custom_editor_select_all">Select all</string>
   <string name="reports_custom_editor_select_none">Select none</string>
-  <string name="reports_custom_editor_filters">Filters</string>
   <string name="reports_custom_editor_revert">Revert</string>
   <string name="reports_custom_editor_unsaved">Unsaved changes</string>
   <string name="reports_custom_editor_discard_message">Your changes to this report will be lost.</string>
