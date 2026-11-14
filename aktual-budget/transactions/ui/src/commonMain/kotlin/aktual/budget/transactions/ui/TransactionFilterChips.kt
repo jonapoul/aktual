@@ -17,16 +17,18 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualModalBottomSheet
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.HostedSheet
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.Rectangle
+import aktual.core.ui.SheetHost
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +36,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -55,8 +58,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.JsonPrimitive
 
-// One chip per condition, tapped to edit and removed by its icon. A new condition is held here
-// until its sheet closes, so the list isn't narrowed to nothing while its value is still empty
+// One chip per condition, tapped to edit and removed by its icon
 @Composable
 internal fun TransactionFilterChips(
   conditions: ConditionSet,
@@ -65,8 +67,7 @@ internal fun TransactionFilterChips(
   modifier: Modifier = Modifier,
 ) {
   var editing by rememberSaveable { mutableStateOf<Int?>(null) }
-  var pickingField by rememberSaveable { mutableStateOf(false) }
-  var draft by remember { mutableStateOf<Condition?>(null) }
+  var adding by rememberSaveable { mutableStateOf(false) }
   val names = entities?.names ?: persistentMapOf()
 
   CardColumn(
@@ -104,20 +105,21 @@ internal fun TransactionFilterChips(
         text = Strings.transactionsFilterAdd,
         colors = ChipDefaults.selectableColors(isSelected = false),
         trailingIcon = AktualIcons.Add,
-        onClick = { pickingField = true },
+        onClick = { adding = true },
         role = Button,
       )
     }
   }
 
-  if (pickingField) {
-    FieldSheet(
-      onSelect = { field -> draft = newFilterCondition(field) },
-      onDismiss = { pickingField = false },
+  if (entities == null) return
+
+  if (adding) {
+    AddFilterSheet(
+      entities = entities,
+      onAdd = { condition -> onAction(Action.AddCondition(condition)) },
+      onDismiss = { adding = false },
     )
   }
-
-  if (entities == null) return
 
   editing?.let { index ->
     conditions.conditions.getOrNull(index)?.let { condition ->
@@ -133,18 +135,33 @@ internal fun TransactionFilterChips(
       )
     }
   }
+}
 
-  draft?.let { condition ->
-    ConditionSheet(
-      condition = condition,
-      data = entities,
-      onChange = { changed -> draft = changed },
-      onDelete = { draft = null },
-      onDismiss = {
-        draft?.takeUnless { it.isBlank() }?.let { onAction(Action.AddCondition(it)) }
-        draft = null
-      },
-    )
+// Picks a field, then edits the new condition on a page of the same sheet, with back returning
+// to the fields. Only Done adds it, so the list isn't narrowed while its value is still empty
+@Composable
+private fun AddFilterSheet(
+  entities: ConditionEntities,
+  onAdd: (Condition) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  var draft by remember { mutableStateOf<Condition?>(null) }
+  SheetHost(onDismiss = onDismiss) { host ->
+    val condition = draft
+    if (condition == null) {
+      HostedSheet(onDismiss = host.dismiss) {
+        FieldList(onSelect = { field -> draft = newFilterCondition(field) })
+      }
+    } else {
+      ConditionSheet(
+        condition = condition,
+        data = entities,
+        onChange = { changed -> draft = changed },
+        onDelete = {},
+        onDismiss = { draft = null },
+        onAdd = { draft?.takeUnless { it.isBlank() }?.let(onAdd) },
+      )
+    }
   }
 }
 
@@ -179,19 +196,19 @@ private fun ConditionChip(
 }
 
 @Composable
-private fun FieldSheet(onSelect: (Field) -> Unit, onDismiss: () -> Unit) =
-  AktualModalBottomSheet(onDismissRequest = onDismiss) {
-    Column(modifier = Modifier.verticalScrollWithBar()) {
-      FILTER_FIELDS.fastForEach { field ->
-        BottomSheetListItem(
-          label = field.label().replaceFirstChar { it.titlecase() },
-          isSelected = false,
-          onClick = {
-            onSelect(field)
-            onDismiss()
-          },
-        )
-      }
+private fun FieldList(onSelect: (Field) -> Unit) =
+  Column(modifier = Modifier.verticalScrollWithBar()) {
+    Text(
+      modifier = Modifier.padding(horizontal = 20.dp).padding(bottom = 8.dp),
+      text = Strings.transactionsFilterAdd,
+      style = typography.headlineSmall,
+    )
+    FILTER_FIELDS.fastForEach { field ->
+      BottomSheetListItem(
+        label = field.label().replaceFirstChar { it.titlecase() },
+        isSelected = false,
+        onClick = { onSelect(field) },
+      )
     }
   }
 
