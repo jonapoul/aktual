@@ -2,13 +2,13 @@ package aktual.app.desktop
 
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
-import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.logging.CrashReporter
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.log
+import aktual.prefs.components.rememberAppIconPainter
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,6 +30,9 @@ import logcat.LogPriority
 import logcat.LogcatLogger
 
 private const val TAG = "Main"
+
+// Matches the rounded square of the packaged desktop icons
+private const val WINDOW_ICON_CORNERS = 0.22f
 
 fun main() {
   val graph = createGraph<JvmAppGraph>()
@@ -85,6 +88,8 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
         .collect { windowPrefs.save(state) }
     }
 
+    val appIcon by remember(graph) { graph.appIconController.current }.collectAsState()
+
     val viewModel =
       viewModel<AktualDesktopViewModel>(
         viewModelStoreOwner = viewModelStoreOwner,
@@ -102,7 +107,7 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
 
       Window(
         title = Strings.appName,
-        icon = Drawables.appIcon192,
+        icon = rememberAppIconPainter(appIcon, cornerFraction = WINDOW_ICON_CORNERS),
         resizable = true,
         enabled = true,
         focusable = true,

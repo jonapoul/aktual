@@ -45,6 +45,7 @@ import aktual.crashes.vm.CrashPromptViewModel
 import aktual.crashes.vm.CrashReportViewModel
 import aktual.crashes.vm.CrashReportsViewModel
 import aktual.metrics.vm.MetricsViewModel
+import aktual.prefs.vm.appicon.AppIconSettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
@@ -201,6 +202,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun securitySettings() = testVm<SecuritySettingsViewModel>()
 
   @Test fun systemUiSettings() = testVm<SystemUiSettingsViewModel>()
+
+  @Test fun appIconSettings() = testVm<AppIconSettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
 

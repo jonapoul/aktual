@@ -18,6 +18,7 @@ enum class SettingsPage {
   SystemUi,
   Security,
   Format,
+  LauncherIcon,
 }
 
 enum class SettingsSearchKind {

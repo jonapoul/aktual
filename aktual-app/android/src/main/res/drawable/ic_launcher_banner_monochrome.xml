@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Overridden by the debug and ci build types to mark the icon -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+  <solid android:color="@android:color/transparent" />
+</shape>

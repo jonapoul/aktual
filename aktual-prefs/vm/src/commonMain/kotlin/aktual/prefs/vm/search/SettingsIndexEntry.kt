@@ -1,6 +1,7 @@
 package aktual.prefs.vm.search
 
 import aktual.core.l10n.Res
+import aktual.core.l10n.settings_app_icon
 import aktual.core.l10n.settings_currency
 import aktual.core.l10n.settings_currency_add_space
 import aktual.core.l10n.settings_currency_default
@@ -128,4 +129,5 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
           entry(Res.string.settings_format_distance),
         ),
       ),
+    SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),
   )

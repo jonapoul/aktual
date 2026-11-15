@@ -43,3 +43,9 @@ The root `SettingsScreen` only lists links to the other settings screens.
 ## Security settings
 
 The app lock toggle needs a successful unlock before it's saved. The VM can't show the system prompt, so it calls `AppLockAuthenticator` (bound per platform in `aktual-app:android` / `aktual-app:desktop`). On Android, `AndroidAppLockAuthenticator` passes the request to `AktualActivity`, which shows the prompt and reports the result back.
+
+## App icon
+
+`AppIcon` lists the launcher icon variants, and `AppIconController` applies one per platform. `AndroidAppIconController` (`aktual-core:android`) enables the matching `Launcher<Name>` activity-alias in the app manifest and disables the rest. `DesktopAppIconController` (`aktual-core:jvm`) stores the choice, and the window icon follows it.
+
+Each variant is drawn twice, so keep the two in step: in Compose by `AppIconPainter.kt` (`components`, used by the picker and the desktop window), and as vector drawables in `aktual-app/android/src/main/res/drawable` with an adaptive icon per variant in `mipmap-anydpi`. Adding a variant needs the enum entry, its manifest alias, the drawables, and a label string. The debug and ci build types override `ic_launcher_banner` / `ic_launcher_banner_monochrome` to stamp DEV / CI across every variant.
