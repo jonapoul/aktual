@@ -92,7 +92,8 @@ private fun JsonPrimitive?.fits(kind: ConditionValueKind): Boolean =
     Flag -> this != null && !isString && booleanOrNull != null
     NoValue -> true
     EntityList,
-    TextList -> false
+    TextList,
+    Recurrence -> false
   }
 
 fun newAction(field: Field, splitIndex: Int = 0): RuleAction =
@@ -148,6 +149,7 @@ private fun defaultActionValue(kind: ConditionValueKind): JsonPrimitive? =
     Entity,
     EntityList,
     TextList,
+    Recurrence,
     NoValue -> null
     Text,
     Day -> JsonPrimitive("")

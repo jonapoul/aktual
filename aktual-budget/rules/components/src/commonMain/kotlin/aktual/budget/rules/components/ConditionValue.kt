@@ -6,6 +6,9 @@ import aktual.budget.model.toSignedInputText
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionValueKind
 import aktual.budget.rules.domain.toDayOrNull
+import aktual.budget.rules.domain.toJsonElement
+import aktual.budget.rules.domain.toRecurConfigOrNull
+import aktual.budget.schedules.components.RecurConfigFields
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Delete
@@ -99,6 +102,15 @@ fun ConditionValue(
           if (day.isEmpty() || day.toDayOrNull() != null) onChange(JsonPrimitive(day))
         },
       )
+
+    Recurrence ->
+      value.toRecurConfigOrNull()?.let { config ->
+        RecurConfigFields(
+          modifier = modifier,
+          config = config,
+          onConfigChange = { onChange(it.toJsonElement()) },
+        )
+      }
 
     Flag ->
       AktualSlidingToggleButton(
