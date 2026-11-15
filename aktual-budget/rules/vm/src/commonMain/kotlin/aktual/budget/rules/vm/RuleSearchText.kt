@@ -44,7 +44,7 @@ internal class RuleSearchText(
     val content = action.value?.content ?: return@buildList
     when (action.op) {
       Set -> add(name(action.field, content))
-      LinkSchedule -> nameFetcher.name(ScheduleId(content)).first()?.let(::add)
+      LinkSchedule -> nameFetcher(ScheduleId(content)).first()?.let(::add)
       AppendNotes,
       PrependNotes,
       SetSplitAmount -> add(content)
@@ -54,11 +54,11 @@ internal class RuleSearchText(
   }
 
   private suspend fun name(field: Field?, value: String): String =
-    if (field.isIdField()) nameFetcher.name(field, value).first() ?: value else value
+    if (field.isIdField()) nameFetcher(field, value).first() ?: value else value
 
   private suspend fun names(field: Field, values: List<String>): List<String> =
     if (field.isIdField()) {
-      nameFetcher.names(field, values).first().map { it.jsonPrimitive.content }
+      nameFetcher(field, values).first().map { it.jsonPrimitive.content }
     } else {
       values
     }

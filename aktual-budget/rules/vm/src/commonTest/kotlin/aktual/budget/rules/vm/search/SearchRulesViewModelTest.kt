@@ -236,11 +236,11 @@ class SearchRulesViewModelTest {
     private val names =
       mapOf("p1" to "Landlord", "p2" to "Gym", "p3" to "landlord ltd", "c1" to "Groceries")
 
-    override fun name(field: Field, id: String): Flow<String?> = flowOf(names[id])
+    override fun invoke(field: Field, id: String): Flow<String?> = flowOf(names[id])
 
-    override fun name(id: ScheduleId): Flow<String?> = flowOf("Phone bill")
+    override fun invoke(id: ScheduleId): Flow<String?> = flowOf("Phone bill")
 
-    override fun names(field: Field, ids: List<String>): Flow<JsonArray> =
+    override fun invoke(field: Field, ids: List<String>): Flow<JsonArray> =
       flowOf(
         buildJsonArray { ids.forEach { add(JsonPrimitive(names[it] ?: it)) } },
       )

@@ -8,9 +8,9 @@ import kotlinx.serialization.json.JsonArray
 
 @Stable
 interface NameFetcher {
-  fun name(field: Field, id: String): Flow<String?>
+  operator fun invoke(field: Field, id: String): Flow<String?>
 
-  fun name(id: ScheduleId): Flow<String?>
+  operator fun invoke(id: ScheduleId): Flow<String?>
 
-  fun names(field: Field, ids: List<String>): Flow<JsonArray>
+  operator fun invoke(field: Field, ids: List<String>): Flow<JsonArray>
 }

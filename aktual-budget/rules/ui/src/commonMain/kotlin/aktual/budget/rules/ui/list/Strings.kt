@@ -163,9 +163,9 @@ private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow
     Description,
     Payee ->
       when (val value = condition.value) {
-        is JsonArray -> nameFetcher.names(condition.field, value.toList())
+        is JsonArray -> nameFetcher(condition.field, value.toList())
         is JsonPrimitive ->
-          nameFetcher.name(condition.field, value.content).map { it?.let(::JsonPrimitive) }
+          nameFetcher(condition.field, value.content).map { it?.let(::JsonPrimitive) }
 
         else -> null
       }
@@ -286,13 +286,13 @@ private fun actionNameFlow(action: RuleAction, nameFetcher: NameFetcher): Flow<S
     Set -> {
       val field = action.field
       if (field.isIdField() && value != null) {
-        nameFetcher.name(field, value.content)
+        nameFetcher(field, value.content)
       } else {
         null
       }
     }
 
-    LinkSchedule -> value?.let { nameFetcher.name(ScheduleId(it.content)) }
+    LinkSchedule -> value?.let { nameFetcher(ScheduleId(it.content)) }
 
     else -> null
   }
