@@ -6,23 +6,23 @@ import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.core.utils.UuidGenerator
+import aktual.di.BudgetScope
 import aktual.log
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.LocalDate
 
-// Posts one schedule's transaction on demand, as postTransactionForSchedule() in
-// packages/loot-core/src/server/schedules/app.ts does
 @Inject
-class ScheduleTransactionPoster(
+@ContributesBinding(BudgetScope::class)
+class ScheduleTransactionPosterImpl(
   private val scheduleDao: ScheduleDao,
   private val transactionWriter: TransactionWriter,
   rulesLoader: TransactionRulesLoader,
   uuidGenerator: UuidGenerator,
-) {
+) : ScheduleTransactionPoster {
   private val poster = SchedulePoster(rulesLoader, transactionWriter, uuidGenerator)
 
-  // Gives the posted transactions, which is empty if a rule deleted it
-  suspend fun post(id: ScheduleId, date: LocalDate): List<TransactionId> {
+  override suspend fun post(id: ScheduleId, date: LocalDate): List<TransactionId> {
     val row = scheduleDao[id] ?: error("No schedule $id")
     val transaction = row.toRuleTransaction(date) ?: error("Schedule $id has no account")
     val batch = poster.batch()
@@ -30,8 +30,7 @@ class ScheduleTransactionPoster(
     return batch.post()
   }
 
-  // Deletes what post() added, along with the other side of any transfer
-  suspend fun unpost(ids: List<TransactionId>) {
+  override suspend fun unpost(ids: List<TransactionId>) {
     if (ids.isEmpty()) return
     transactionWriter.write(runTransfers = true) { delete(ids) }
     log.i { "Unposted transactions $ids" }
