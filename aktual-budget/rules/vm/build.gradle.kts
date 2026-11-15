@@ -6,6 +6,7 @@ kotlin {
     api(project(":aktual-budget:data:db"))
     implementation(project(":aktual-budget:schedules:domain"))
     implementation(project(":aktual-budget:transactions:domain"))
+    implementation(project(":aktual-budget:utils"))
     implementation(project(":aktual-core:l10n"))
   }
 }
