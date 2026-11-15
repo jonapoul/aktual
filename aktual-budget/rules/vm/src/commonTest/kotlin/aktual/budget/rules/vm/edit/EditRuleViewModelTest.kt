@@ -545,7 +545,7 @@ class EditRuleViewModelTest {
   private suspend fun ReceiveTurbine<RuleMatchesState>.awaitLoadedMatches():
     RuleMatchesState.Loaded {
     var state = awaitItem()
-    while (state !is RuleMatchesState.Loaded) state = awaitItem()
+    while (state !is Loaded) state = awaitItem()
     return state
   }
 
