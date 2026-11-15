@@ -26,17 +26,19 @@ import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.ACTION_OPS
-import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.RulesLoaderImpl
+import aktual.budget.rules.domain.RulesWriterImpl
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.rules.domain.withField
 import aktual.budget.rules.domain.withOp
 import aktual.budget.rules.domain.withSplitMethod
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
-import aktual.budget.schedules.domain.SchedulesLoader
-import aktual.budget.transactions.domain.RuleMatcher
+import aktual.budget.schedules.domain.SchedulesLoaderImpl
+import aktual.budget.transactions.domain.RuleMatcherImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
@@ -582,10 +584,10 @@ class EditRuleViewModelTest {
       ruleId = ruleId,
       payee = payee,
       uuidGenerator = { "id-${nextId++}" },
-      rulesDao = RulesDao(this),
-      syncController = sync,
+      rulesLoader = RulesLoaderImpl(RulesDao(this)),
+      rulesWriter = RulesWriterImpl(RulesDao(this), sync),
       ruleMatcher =
-        RuleMatcher(
+        RuleMatcherImpl(
           transactionDao = TransactionDao(this),
           accountDao = AccountDao(this),
           categoryDao = CategoryDao(this),
@@ -606,9 +608,9 @@ class EditRuleViewModelTest {
           uuidGenerator = { "id-${nextId++}" },
         ),
       nameFetcher = FakeNameFetcher,
-      conditionEntitiesLoader = ConditionEntitiesLoader(this),
+      conditionEntitiesLoader = ConditionEntitiesLoaderImpl(this),
       schedulesLoader =
-        SchedulesLoader(
+        SchedulesLoaderImpl(
           scheduleDao = ScheduleDao(this),
           accountDao = AccountDao(this),
           payeeDao = PayeeDao(this),

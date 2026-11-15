@@ -18,8 +18,9 @@ import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLeng
 import aktual.budget.model.UpcomingLength
 import aktual.budget.model.upcomingDays
 import aktual.core.utils.Calendar
+import aktual.di.BudgetScope
 import aktual.log
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.ContributesBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -36,22 +37,22 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-@Inject
-class SchedulesLoader(
+@ContributesBinding(BudgetScope::class)
+class SchedulesLoaderImpl(
   private val scheduleDao: ScheduleDao,
   private val accountDao: AccountDao,
   private val payeeDao: PayeeDao,
   private val preferencesDao: PreferencesDao,
   private val calendar: Calendar,
-) {
-  suspend fun load(): ImmutableList<Schedule> {
+) : SchedulesLoader {
+  override suspend fun load(): ImmutableList<Schedule> {
     val rows = scheduleDao.getAll()
     val latestTxDates = scheduleDao.latestTransactionDates(rows.minFromDate(calendar.today()))
     val globalLength = preferencesDao[UpcomingScheduledTransactionLength].toUpcomingLength()
     return toSchedules(rows, latestTxDates, globalLength)
   }
 
-  fun observe(): Flow<ImmutableList<Schedule>> =
+  override fun observe(): Flow<ImmutableList<Schedule>> =
     scheduleDao
       .observeAll()
       .flatMapLatest { rows ->
@@ -64,16 +65,15 @@ class SchedulesLoader(
       }
       .distinctUntilChanged()
 
-  fun observeUpcomingLength(): Flow<UpcomingLength> =
+  override fun observeUpcomingLength(): Flow<UpcomingLength> =
     preferencesDao
       .observe(UpcomingScheduledTransactionLength)
       .map { it.toUpcomingLength() ?: DefaultUpcomingLength }
       .distinctUntilChanged()
 
-  // The schedule that owns this rule, if any
-  suspend fun ownerOf(rule: RuleId): ScheduleId? = scheduleDao.idByRule(rule)
+  override suspend fun ownerOf(rule: RuleId): ScheduleId? = scheduleDao.idByRule(rule)
 
-  suspend fun load(id: ScheduleId): Schedule? {
+  override suspend fun load(id: ScheduleId): Schedule? {
     val today = calendar.today()
     val row = scheduleDao[id] ?: return null
     val payeeNames = payeeDao.getAllActive().associate { it.id to it.name }

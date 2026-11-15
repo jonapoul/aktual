@@ -128,7 +128,7 @@ internal class RuleMatcherTest {
   }
 
   private fun WriterTestScope.matcher() =
-    RuleMatcher(
+    RuleMatcherImpl(
       transactionDao = transactionDao,
       accountDao = accountDao,
       categoryDao = categoryDao,

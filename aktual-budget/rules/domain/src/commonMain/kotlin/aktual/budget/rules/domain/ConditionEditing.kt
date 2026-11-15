@@ -21,7 +21,6 @@ import aktual.budget.model.TransferOperator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -301,8 +300,6 @@ private fun JsonElement.convert(
 private val ID_KINDS = setOf<ConditionValueKind>(Entity, EntityList)
 
 private val STRING_KINDS = ID_KINDS + setOf<ConditionValueKind>(Text, TextList)
-
-fun String.toDayOrNull(): LocalDate? = runCatching { LocalDate.parse(this) }.getOrNull()
 
 private fun defaultValue(kind: ConditionValueKind): JsonElement =
   when (kind) {

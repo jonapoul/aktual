@@ -2,9 +2,9 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
+import aktual.budget.rules.domain.Rule
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
-import aktual.budget.rules.vm.Rule
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons

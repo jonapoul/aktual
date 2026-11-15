@@ -1,7 +1,7 @@
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.RuleStage
-import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.domain.Rule
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors

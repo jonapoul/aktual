@@ -44,7 +44,7 @@ import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.rules.domain.CategoryLearner
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
-import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.budget.tags.domain.TagCreator
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.LastTransaction
@@ -1975,7 +1975,7 @@ class EditTransactionViewModelTest {
           contexts = contexts,
         ),
       schedulesLoader =
-        SchedulesLoader(
+        SchedulesLoaderImpl(
           scheduleDao = ScheduleDao(this),
           accountDao = accountDao,
           payeeDao = payeeDao,

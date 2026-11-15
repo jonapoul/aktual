@@ -17,17 +17,12 @@ import aktual.budget.rules.domain.TransactionRule
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.rules.domain.splitIndex
 import aktual.core.utils.UuidGenerator
+import aktual.di.BudgetScope
 import aktual.log
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.ContributesBinding
 
-/**
- * The transactions a draft rule's conditions match, and what its actions would do to them, as the
- * rule editor in upstream's RuleEditor.tsx shows them. Conditions match the way a transaction
- * filter does, so with `make-filters-from-conditions` rather than how rules run. Split parents
- * never match, and nor do split children if the rule makes splits.
- */
-@Inject
-class RuleMatcher(
+@ContributesBinding(BudgetScope::class)
+class RuleMatcherImpl(
   private val transactionDao: TransactionDao,
   private val accountDao: AccountDao,
   private val categoryDao: CategoryDao,
@@ -35,9 +30,8 @@ class RuleMatcher(
   private val rulesLoader: TransactionRulesLoaderImpl,
   private val writer: TransactionWriter,
   private val uuidGenerator: UuidGenerator,
-) {
-  /** Null if the rule's actions are invalid */
-  suspend fun find(rule: TransactionRule): RuleMatches? {
+) : RuleMatcher {
+  override suspend fun find(rule: TransactionRule): RuleMatches? {
     val actions = RuleActions.compile(rule.id, rule.actions) ?: return null
     val filter = TransactionFilter.compile(rule.conditions, rule.conditionsOp)
     if (filter.isEmpty) return RuleMatches(emptyList(), emptyMap(), emptyMap())
@@ -72,11 +66,7 @@ class RuleMatcher(
     return RuleMatches(matches, names + newNames(matches, names), rules.createdPayees)
   }
 
-  /**
-   * Runs the rule's actions on the [selected] transactions it matches, as `rule-apply-actions`
-   * does, and returns how many it changed
-   */
-  suspend fun apply(rule: TransactionRule, selected: Set<TransactionId>): Int {
+  override suspend fun apply(rule: TransactionRule, selected: Set<TransactionId>): Int {
     val matches = find(rule) ?: return 0
     val changed = matches.matches.filter { it.isChanged && it.before.id in selected }
     if (changed.isEmpty()) return 0
@@ -146,19 +136,6 @@ class RuleMatcher(
 
   private fun <T> patch(before: T?, after: T?): Patch<T?> =
     if (before == after) Keep else Patch.To(after)
-}
-
-data class RuleMatches(
-  // Newest first
-  val matches: List<RuleMatch>,
-  // The names of the payees, categories and accounts before and after, by id
-  val names: Map<String, String>,
-  internal val createdPayees: Map<PayeeId, String> = emptyMap(),
-)
-
-data class RuleMatch(val before: RuleTransaction, val after: RuleTransaction) {
-  val isChanged: Boolean
-    get() = before != after
 }
 
 private fun FilterBounds.toRowBounds() =

@@ -9,10 +9,10 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.RulesLoaderImpl
 import aktual.budget.rules.vm.RuleSearchText
-import aktual.budget.rules.vm.RulesLoader
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.core.l10n.StringLookup
 import aktual.test.runDatabaseTest
@@ -225,7 +225,7 @@ class SearchRulesViewModelTest {
     return SearchRulesViewModel(
       initialPayee = payee,
       savedState = savedState,
-      loader = RulesLoader(RulesDao(this)),
+      loader = RulesLoaderImpl(RulesDao(this)),
       searchText = RuleSearchText(FakeNameFetcher, FakeStringLookup),
       nameFetcher = FakeNameFetcher,
       viewModelContext = scope.viewModelContext,

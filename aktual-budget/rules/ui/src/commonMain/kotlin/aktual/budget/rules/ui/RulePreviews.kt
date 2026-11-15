@@ -4,7 +4,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
-import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.domain.Rule
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.json.JsonPrimitive
 
