@@ -66,7 +66,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun RuleActionSheet(
   initial: RuleAction,
   entities: ConditionEntities,
-  schedules: ImmutableList<Schedule>,
+  schedules: ImmutableList<Schedule>?,
   onDone: (RuleAction) -> Unit,
   onDelete: (() -> Unit)?,
   onDismiss: () -> Unit,
@@ -88,7 +88,7 @@ internal fun RuleActionSheet(
 private fun ActionSheet(
   action: RuleAction,
   entities: ConditionEntities,
-  schedules: ImmutableList<Schedule>,
+  schedules: ImmutableList<Schedule>?,
   onChange: (RuleAction) -> Unit,
   onDone: () -> Unit,
   onDelete: (() -> Unit)?,
@@ -100,7 +100,7 @@ private fun ActionSheet(
     val kind = action.editableKind()
     val field = action.field
     val isLink = action.op == LinkSchedule
-    if (pickingSchedule && isLink) {
+    if (pickingSchedule && isLink && schedules != null) {
       SchedulePickerPage(
         selected = action.scheduleId,
         schedules = schedules,
@@ -142,7 +142,7 @@ private fun ColumnScope.ActionContent(
   action: RuleAction,
   kind: ConditionValueKind?,
   names: ImmutableMap<String, String>,
-  schedules: ImmutableList<Schedule>,
+  schedules: ImmutableList<Schedule>?,
   onChange: (RuleAction) -> Unit,
   onPickEntity: () -> Unit,
   onPickSchedule: () -> Unit,
@@ -192,15 +192,17 @@ private fun ColumnScope.ActionContent(
       Column {
         SectionLabel(Strings.editRuleActionSchedule)
         val id = action.scheduleId
-        val schedule = id?.let { schedules.firstOrNull { s -> s.id == it } }
+        val schedule = id?.let { schedules?.firstOrNull { s -> s.id == it } }
         AktualButton(
           modifier = Modifier.fillMaxWidth(),
           text =
             when {
+              schedules == null -> Strings.editRuleSchedulesLoading
               id == null -> Strings.editRulePickSchedule
               schedule == null -> Strings.editRuleScheduleMissing
               else -> schedule.name ?: Strings.listSchedulesUnnamedSchedule
             },
+          isEnabled = schedules != null,
           onClick = onPickSchedule,
         )
       }

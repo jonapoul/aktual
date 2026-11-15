@@ -122,15 +122,13 @@ internal constructor(
       .observe()
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
-  // For the linked schedule's card, and to pick one to link
-  val schedules: StateFlow<ImmutableList<Schedule>> =
+  // For the linked schedule's card, and to pick one to link. Null until they've loaded, and stays
+  // null if they fail, so a linked schedule isn't shown as missing when it just hasn't loaded
+  val schedules: StateFlow<ImmutableList<Schedule>?> =
     schedulesLoader
       .observe()
-      .catch { e ->
-        log.w(e) { "Failed loading schedules" }
-        emit(persistentListOf())
-      }
-      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = persistentListOf())
+      .catch { e -> log.w(e) { "Failed loading schedules" } }
+      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   val state: StateFlow<EditRuleState> =
     viewModelScope.launchMolecule(Immediate) {

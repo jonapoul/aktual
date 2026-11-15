@@ -49,6 +49,7 @@ import aktual.core.ui.formattedString
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -232,7 +233,7 @@ internal fun LazyListScope.actionsNode(
   onAdd: ((splitIndex: Int) -> Unit)?,
   onOpenSplit: (Long) -> Unit,
   onAction: OnAction<EditRuleAction>,
-  schedules: ImmutableList<Schedule> = persistentListOf(),
+  schedules: ImmutableList<Schedule>? = persistentListOf(),
 ) {
   item(key = "then") {
     TimelineRow(
@@ -274,7 +275,8 @@ internal fun LazyListScope.actionsNode(
         if (action.op == LinkSchedule) {
           val id = action.value?.contentOrNull?.let(::ScheduleId)
           ScheduleCard(
-            schedule = id?.let { schedules.firstOrNull { s -> s.id == it } },
+            isLoaded = schedules != null,
+            schedule = id?.let { schedules?.firstOrNull { s -> s.id == it } },
             onOpen = id?.let { { onAction(OpenSchedule(id)) } },
             onEdit = clickToOpen(key, onOpen.takeIf { isEnabled }),
           )
@@ -404,9 +406,11 @@ private fun RuleCard(
   }
 
 // Tapping it opens the schedule, and the pencil edits the link. Shows the schedule as upstream's
-// rule editor does: its name, payee, account, amount, next date and status
+// rule editor does: its name, payee, account, amount, next date and status. Until the schedules
+// have loaded it only shows its title
 @Composable
 private fun ScheduleCard(
+  isLoaded: Boolean,
   schedule: Schedule?,
   onOpen: (() -> Unit)?,
   onEdit: (() -> Unit)?,
@@ -440,29 +444,38 @@ private fun ScheduleCard(
       }
     }
 
-    if (schedule == null) {
-      Text(
-        text = Strings.editRuleScheduleMissing,
-        style = typography.bodyLarge,
-        color = colors.pageTextSubdued,
-      )
-    } else {
-      Text(
-        text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
-        style = typography.bodyLarge,
-        color = if (schedule.name == null) colors.pageTextSubdued else colors.pageText,
-        maxLines = 2,
-        overflow = Ellipsis,
-      )
-      FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
-        ScheduleDetail(schedule.payeeName)
-        ScheduleDetail(schedule.accountName)
-        ScheduleDetail(
-          text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
-          color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
+    when {
+      !isLoaded -> Unit
+
+      schedule == null ->
+        Text(
+          text = Strings.editRuleScheduleMissing,
+          style = typography.bodyLarge,
+          color = colors.pageTextSubdued,
         )
-        ScheduleDetail(schedule.nextDate.formatted())
-      }
+
+      else -> ScheduleSummary(schedule)
+    }
+  }
+
+@Composable
+private fun ScheduleSummary(schedule: Schedule, modifier: Modifier = Modifier) =
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Small)) {
+    Text(
+      text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
+      style = typography.bodyLarge,
+      color = if (schedule.name == null) colors.pageTextSubdued else colors.pageText,
+      maxLines = 2,
+      overflow = Ellipsis,
+    )
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
+      ScheduleDetail(schedule.payeeName)
+      ScheduleDetail(schedule.accountName)
+      ScheduleDetail(
+        text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
+        color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
+      )
+      ScheduleDetail(schedule.nextDate.formatted())
     }
   }
 

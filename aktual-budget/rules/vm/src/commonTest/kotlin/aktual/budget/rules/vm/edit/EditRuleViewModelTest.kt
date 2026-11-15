@@ -437,6 +437,17 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Schedules are null until they've loaded`() = runDatabaseTest { scope ->
+    insertSchedule(id = "s", rule = "a")
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.schedules.test {
+      assertThat(awaitItem()).isNull()
+      assertThat(awaitItem()).isNotNull()
+    }
+  }
+
+  @Test
   fun `A tombstoned schedule doesn't own its rule`() = runDatabaseTest { scope ->
     insertRule(SAVED)
     insertSchedule(id = "s", rule = "a", tombstone = true)
