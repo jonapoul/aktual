@@ -4,13 +4,13 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `component
 
 ## Adding a new setting
 
-1. **Declare it.** Pick the right interface in `aktual-prefs/src/.../` - `AppPreferences`, `CurrencyPreferences`, `FormatPreferences`, `SecurityPreferences`, `SystemUiPreferences`, or `ThemePreferences` - and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
+1. **Declare it.** Pick the right `*Preferences` interface in `aktual-prefs/src/.../` (e.g. `AppPreferences`, `FormatPreferences`, `TransactionPreferences`) and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 
-1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `transactions`). Add a field using the appropriate wrapper:
+1. **Add to state.** Each settings screen has its own `*SettingsState` under `aktual-prefs/vm/.../<screen>/` (`systemui`, `security`, `format`, `theme`). Add a field using the appropriate wrapper:
    - `BooleanPreference` - toggle
-   - `SliderPreference` - float slider (wrap in a factory for range; see `HazeRadiusPreference`)
+   - `SliderPreference` - float slider with a `range` (see the factories in `SystemUiSettingsState.kt`)
    - `ListPreference<T>` - enum dropdown
 
 1. **Collect in the VM.** In the matching `*SettingsViewModel.kt`, using the helpers in `PreferenceCollection.kt`:

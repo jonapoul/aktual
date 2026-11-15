@@ -14,27 +14,16 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
 - In coroutine code, catch failures with `runCatchingCancellable(attempt = { }, onFailure = { e -> }, finally = { })` (`aktual-core:utils`), not `runCatching` or a hand-written `catch (e: CancellationException) { throw e }`. It rethrows cancellation and returns the result of `attempt`, or of `onFailure` if it threw. Use `finally` instead of wrapping it in `try`/`finally`.
-- The project compiles with `-Xcontext-sensitive-resolution` (CSR). Write enum entries, sealed subtypes and companion properties unqualified wherever the expected type is known, and don't import the entry. The `RedundantQualifier` detekt rule flags any you miss. Don't qualify just in case.
-  ```kotlin
-  // Unqualified
-  takesRole(Admin); role == Admin; val role: Role = Admin; assertThat(role).isEqualTo(Admin)
-  when (role) { Admin -> 1 }; state is Failure; state as Failure; takesKind(Button); listOf<Role>(Admin, Basic)
-  role ?: Admin; amount > Zero; Admin in roles; val f: () -> Role = { Admin }
-
-  // Must qualify: no expected type, or a constructor call
-  val role = Role.Admin; listOf(Role.Admin); a to Role.Admin; roles += Role.Admin
-  val r = if (x) Role.Admin else Role.Basic; takesState(State.Failure("x"))
-  ```
-  - Only a type, function or imported property in scope makes a name ambiguous (an icon import like `aktual.core.icons.Copy` clashes with `LogExportTarget.Copy`) (`LoginMethod.Password` vs the `Password` class, `Role.Checkbox` vs the `Checkbox` composable). Another enum's entry with the same name doesn't count, so `consume(Plus)` and `UnaryNode(Plus, x)` both resolve.
-  - CSR can't infer a type argument from the name, so it doesn't apply where the parameter type mentions the call's own type parameter, like `get(key: DbMetadataKey<T>)`. Statically import `DbMetadataKey` companion keys instead (`import aktual.budget.model.DbMetadataKey.Companion.BudgetName`, then `prefs[BudgetName]`).
-  - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`), since that forces a qualifier at every use.
+- The project compiles with `-Xcontext-sensitive-resolution` (CSR). Write enum entries, sealed subtypes and companion properties unqualified wherever the expected type is known (`takesRole(Admin)`, `state is Failure`, `when (role) { Admin -> 1 }`), and don't import the entry. Qualify only with no expected type (`val role = Role.Admin`, `listOf(Role.Admin)`), in constructor calls (`State.Failure("x")`), or when a type, function or imported property of the same name is in scope. The `RedundantQualifier` detekt rule flags the rest.
+  - CSR doesn't apply where the parameter type mentions the call's own type parameter (`get(key: DbMetadataKey<T>)`). Statically import the companion key instead (`DbMetadataKey.Companion.BudgetName`).
+  - Don't name new enum entries or sealed subtypes after Kotlin types (`Number`, `Any`, `Boolean`, `Error`).
 - `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` - add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - Don't use `FontFamily.Monospace` (except log messages and stack traces) or ` · ` dot separators in UI text. See [aktual-core/ui](aktual-core/ui/CLAUDE.md) for the alternatives.
 - When copying or porting third-party code or assets into the repo (fonts, icons, images, ported source) rather than adding a Gradle dependency, add an entry to `NonLibraryArtifacts` in `aktual-about/data/.../NonLibraryArtifacts.kt` so it shows on the licenses screen.
 - Before using or adding an icon, check upstream Actual for an equivalent and prefer it over Material. See [aktual-core/icons](aktual-core/icons/CLAUDE.md).
 - In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Put tests in `commonTest`. In modules with an android target they run on both targets. Use `androidHostTest` only for tests needing real Android behaviour (`Context`, `Bundle`, `Looper`, Compose UI), with `@RunWith(RobolectricTestRunner::class)`. Host tests run on plain JUnit otherwise, with Android stubs returning defaults (`isReturnDefaultValues`).
-- Wrap comments at 100 columns, counting the indent and the `// ` prefix (an 8-space indent leaves 89 characters of text). That is where `ktfmt --google-style` wraps them, not the `max_line_length` of 120 in `.editorconfig`. ktfmt doesn't reflow comments: it moves the overflow of each long line onto a new `//` line of its own, leaving stubs like `// Existing` mid-paragraph. When writing or editing a multi-line comment, rewrap the whole paragraph so every line fits. A line even one column over gets split, so measure rather than eyeball it: before running ktfmt, `git diff -U0 origin/main -- '*.kt' '*.kts' | grep -E '^\+\s*//' | awk 'length > 101'` must print nothing (101 allows for the diff's `+`). After ktfmt the stubs are short enough to pass that check, so look for them instead: a `//` line of one or two words followed by another `//` line.
+- Wrap comments at 100 columns including indent and `// ` (ktfmt's limit, not the 120 in `.editorconfig`). ktfmt splits long comment lines into short stubs instead of reflowing, so rewrap whole paragraphs yourself. Before ktfmt, `git diff -U0 origin/main -- '*.kt' '*.kts' | grep -E '^\+\s*//' | awk 'length > 101'` must print nothing.
 
 ## Build commands
 
@@ -158,3 +147,4 @@ Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `j
 - [aktual-budget/data/db](aktual-budget/data/db/CLAUDE.md) - database schema, migrations, adapters
 - [build-logic](build-logic/CLAUDE.md) - convention plugins
 - [detekt-rules](detekt-rules/CLAUDE.md) - custom detekt rules
+- [.github/upstream-migration-tracker](.github/upstream-migration-tracker/CLAUDE.md) - daily upstream migration check and auto PR
