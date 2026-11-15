@@ -1,6 +1,5 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator
@@ -146,7 +145,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
       Notes -> notes
       Payee,
       Date,
-      RuleField.Amount,
+      Amount,
       Category,
       CategoryGroup,
       Account,
@@ -167,7 +166,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
       PayeeName,
       Date,
       Notes,
-      RuleField.Amount,
+      Amount,
       Cleared,
       Reconciled,
       Saved,
@@ -185,7 +184,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
       PayeeName,
       Date,
       Notes,
-      RuleField.Amount,
+      Amount,
       Cleared,
       Reconciled,
       Saved,
@@ -379,7 +378,7 @@ private class FilterCondition(private val condition: CompiledCondition) {
         PayeeName,
         Date,
         Notes,
-        RuleField.Amount,
+        Amount,
         Category,
         CategoryGroup,
         Account,

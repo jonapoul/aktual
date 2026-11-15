@@ -60,14 +60,14 @@ class BankSyncProviderSetupImpl(
 private val ProviderCredential.secret: BankSyncSecret
   get() =
     when (this) {
-      GoCardlessSecretId -> BankSyncSecret.GoCardlessSecretId
-      GoCardlessSecretKey -> BankSyncSecret.GoCardlessSecretKey
-      SimpleFinToken -> BankSyncSecret.SimpleFinToken
-      PluggyAiClientId -> BankSyncSecret.PluggyAiClientId
-      PluggyAiClientSecret -> BankSyncSecret.PluggyAiClientSecret
-      PluggyAiItemIds -> BankSyncSecret.PluggyAiItemIds
-      AkahuAppToken -> BankSyncSecret.AkahuAppToken
-      AkahuUserToken -> BankSyncSecret.AkahuUserToken
-      EnableBankingApplicationId -> BankSyncSecret.EnableBankingApplicationId
-      EnableBankingSecretKey -> BankSyncSecret.EnableBankingSecretKey
+      GoCardlessSecretId -> GoCardlessSecretId
+      GoCardlessSecretKey -> GoCardlessSecretKey
+      SimpleFinToken -> SimpleFinToken
+      PluggyAiClientId -> PluggyAiClientId
+      PluggyAiClientSecret -> PluggyAiClientSecret
+      PluggyAiItemIds -> PluggyAiItemIds
+      AkahuAppToken -> AkahuAppToken
+      AkahuUserToken -> AkahuUserToken
+      EnableBankingApplicationId -> EnableBankingApplicationId
+      EnableBankingSecretKey -> EnableBankingSecretKey
     }
