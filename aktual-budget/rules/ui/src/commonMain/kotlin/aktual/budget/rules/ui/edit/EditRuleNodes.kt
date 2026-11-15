@@ -14,6 +14,7 @@ import aktual.budget.rules.components.nameOf
 import aktual.budget.rules.components.valueLabel
 import aktual.budget.rules.domain.ActionSplit
 import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.splits
 import aktual.budget.rules.ui.PreviewCondition1
 import aktual.budget.rules.ui.PreviewCondition2
@@ -79,6 +80,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
@@ -148,7 +151,8 @@ internal fun LazyListScope.conditionsNode(
       val key = conditionKeys.getOrNull(index)
       RuleCard(
         title = "${condition.field.label()} ${condition.operator.label()}",
-        value = condition.valueLabel(names, RuleConditions),
+        value = condition.valueLabel(names, RuleConditions).takeUnless { condition.isEmpty() },
+        hasValue = condition.editableKind(RuleConditions) != NoValue,
         onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
       )
     }
@@ -284,6 +288,7 @@ internal fun LazyListScope.actionsNode(
           RuleCard(
             title = action.title(),
             value = action.valueText(names),
+            hasValue = action.op != DeleteTransaction && action.op != Unknown,
             onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
           )
         }
@@ -379,6 +384,7 @@ internal fun RuleAction.splitSummary(): String? =
 private fun RuleCard(
   title: String,
   value: String?,
+  hasValue: Boolean,
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) =
@@ -402,7 +408,21 @@ private fun RuleCard(
         maxLines = 2,
         overflow = Ellipsis,
       )
+    } else if (hasValue) {
+      Text(
+        text = Strings.editRuleValueEmpty,
+        style = typography.bodyLarge,
+        color = colors.pageTextSubdued,
+        fontStyle = Italic,
+      )
     }
+  }
+
+private fun Condition.isEmpty(): Boolean =
+  when (val value = value) {
+    is JsonArray -> value.isEmpty()
+    is JsonPrimitive -> value.contentOrNull.isNullOrEmpty()
+    is JsonObject -> false
   }
 
 // Tapping it opens the schedule, and the pencil edits the link. Shows the schedule as upstream's
@@ -498,8 +518,7 @@ internal fun RuleAction.valueText(names: ImmutableMap<String, String>): String? 
     template != null -> template
     op == SetSplitAmount -> splitAmountText()
     op != RuleAction.Op.Set -> value?.contentOrNull
-    field.isIdField() ->
-      value?.contentOrNull?.let { names.nameOf(it) } ?: Strings.reportsFormulaQueryNothing
+    field.isIdField() -> value?.contentOrNull?.let { names.nameOf(it) }
     field == Field.Amount -> value?.longOrNull?.let { Amount(it).formattedString() }
     field == Cleared ->
       when (value?.booleanOrNull) {

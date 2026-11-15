@@ -1881,6 +1881,7 @@
   <string name="edit_rule_toolbar_edit">Edit Rule</string>
   <string name="edit_rule_toolbar_create">Create Rule</string>
   <string name="edit_rule_menu">Menu</string>
+  <string name="edit_rule_value_empty">nothing</string>
   <string name="edit_rule_action_delete">Delete Rule</string>
   <string name="edit_rule_failed_title">Error</string>
   <string name="edit_rule_failed_no_match">No rule found!</string>
