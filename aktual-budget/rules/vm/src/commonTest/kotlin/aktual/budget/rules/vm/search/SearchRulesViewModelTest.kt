@@ -119,6 +119,22 @@ class SearchRulesViewModelTest {
   }
 
   @Test
+  fun `Results update when a rule changes`() = runDatabaseTest { scope ->
+    insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
+    insertRule(id = "b", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p3"))))
+    val viewModel = createViewModel(scope)
+
+    viewModel.setQuery("landlord")
+
+    viewModel.state.test {
+      assertThat(awaitResults()).extracting { it.id.value }.containsExactly("a", "b")
+
+      insertRule(id = "a", conditions = listOf(notesDoNotContain("x")))
+      assertThat(awaitResults()).extracting { it.id.value }.containsExactly("b")
+    }
+  }
+
+  @Test
   fun `A payee filter lists its rules without a query`() = runDatabaseTest { scope ->
     insertRule(id = "a", conditions = listOf(Condition(Payee, Is, JsonPrimitive("p1"))))
     insertRule(id = "b", conditions = listOf(Condition(Payee, OneOf, ids("p2", "p3"))))

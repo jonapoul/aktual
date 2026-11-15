@@ -39,7 +39,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 # Build and launch apps
 ./gradlew :aktual-app:desktop:run
-./gradlew :aktual-app:android:installDebug && adb shell am start -n dev.jonpoulton.aktual.app.dev/aktual.app.android.AktualActivity
+./scripts/run-android.sh     # install and launch debug build on all connected devices
 
 # Tests - always module-specific. `./gradlew allTests` pegs the machine; don't run it.
 # Never pass a bare `:module:test` - it's ambiguous for KMP modules. Use `testAll` (both
