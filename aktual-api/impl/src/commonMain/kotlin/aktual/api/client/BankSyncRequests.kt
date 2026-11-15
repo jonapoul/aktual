@@ -23,7 +23,7 @@ internal inline fun <reified T : Any> HttpRequestBuilder.bankSyncRequest(
   timeout: Duration? = null,
 ) {
   url(remote.url, source.serverPath(), endpoint)
-  header(AktualHeaders.TOKEN, remote.token)
+  header(AktualHeaders.TOKEN, remote.token.value)
 
   if (timeout != null) {
     timeout {

@@ -30,7 +30,7 @@ internal constructor(
 ) : FileDecrypter {
   override suspend fun invoke(id: BudgetId, meta: Meta, filePath: Path): DecryptResult {
     val decryptedPath = files.decryptedZip(id, mkdirs = true)
-    log.d { "Decrypting $id from $filePath into $decryptedPath with $meta" }
+    log.d { "Decrypting $id from $filePath into $decryptedPath with keyId=${meta.keyId}" }
     return decrypt(
       contexts = contexts,
       keys = keys,
@@ -48,7 +48,7 @@ class BufferDecrypterImpl(
   private val keys: EncryptionKeys,
 ) : BufferDecrypter {
   override suspend operator fun invoke(meta: Meta, buffer: Buffer): DecryptResult {
-    log.d { "Decrypting ${buffer.size} bytes with $meta" }
+    log.d { "Decrypting ${buffer.size} bytes with keyId=${meta.keyId}" }
     val output = Buffer()
     return decrypt(
       contexts = contexts,

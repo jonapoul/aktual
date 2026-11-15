@@ -1,6 +1,7 @@
 package aktual.budget.encryption
 
 import aktual.core.model.KeyId
+import dev.zacsweers.redacted.annotations.Redacted
 import okio.ByteString
 
 interface Meta {
@@ -13,6 +14,6 @@ interface Meta {
 data class DefaultMeta(
   override val keyId: KeyId?,
   override val algorithm: String,
-  override val iv: ByteString,
-  override val authTag: ByteString,
+  @Redacted override val iv: ByteString,
+  @Redacted override val authTag: ByteString,
 ) : Meta

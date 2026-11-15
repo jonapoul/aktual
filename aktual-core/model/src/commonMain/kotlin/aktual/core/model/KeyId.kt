@@ -1,5 +1,6 @@
 package aktual.core.model
 
+import dev.zacsweers.redacted.annotations.Redacted
 import javax.crypto.SecretKey
 import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
@@ -15,4 +16,4 @@ value class KeyId(val value: String) : Comparable<KeyId> {
   override fun compareTo(other: KeyId) = value.compareTo(other.value)
 }
 
-data class Key(val raw: SecretKey, val encoded: ByteString)
+@Redacted data class Key(val raw: SecretKey, val encoded: ByteString)

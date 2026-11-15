@@ -119,7 +119,6 @@ mockk = { module = "io.mockk:mockk", version = "1.14.12" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.18.2" }
 proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.10.0" }
-redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.17" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0" }
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }

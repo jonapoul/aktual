@@ -27,9 +27,12 @@ internal inline fun <reified E> enumStringTranslator() where E : Enum<E>, E : Se
     override fun decode(value: String): E? = enumValues<E>().firstOrNull { it.value == value }
   }
 
-internal inline fun <reified T : Any> toStringTranslator(crossinline constructor: (String) -> T) =
+internal inline fun <reified T : Any> toStringTranslator(
+  crossinline constructor: (String) -> T,
+  crossinline encode: (T) -> String = { it.toString() },
+) =
   object : Translator<String, T> {
-    override fun encode(value: T): String = value.toString()
+    override fun encode(value: T): String = encode(value)
 
     override fun decode(value: String): T = constructor(value)
   }

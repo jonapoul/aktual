@@ -45,10 +45,10 @@ internal constructor(
       try {
         withContext(contexts.io) { syncApi.fetchUserFileInfo(token, budgetId) }
       } catch (e: ResponseException) {
-        log.e { "Failed fetching UserFile for $budgetId with $token! Response = ${e.response}" }
+        log.e { "Failed fetching UserFile for $budgetId! Response = ${e.response}" }
         return e.parseFailure()
       } catch (e: IOException) {
-        log.e(e) { "Failed fetching UserFile of $budgetId with $token" }
+        log.e(e) { "Failed fetching UserFile of $budgetId" }
         return Result.IOFailure(e.requireMessage())
       }
 

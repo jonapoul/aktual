@@ -1,4 +1,7 @@
-plugins { id("aktual.module.kotlin") }
+plugins {
+  id("aktual.module.kotlin")
+  alias(libs.plugins.redacted)
+}
 
 kotlin {
   commonMainDependencies {

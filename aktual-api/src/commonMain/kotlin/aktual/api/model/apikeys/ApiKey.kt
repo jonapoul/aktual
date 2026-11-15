@@ -2,7 +2,6 @@ package aktual.api.model.apikeys
 
 import aktual.budget.model.BudgetId
 import aktual.core.model.Token
-import dev.zacsweers.redacted.annotations.Redacted
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,7 +26,7 @@ data class CreatedApiKey(
   @SerialName("name") val name: String,
   @SerialName("fileIds") val budgets: List<BudgetId>,
   @SerialName("createdAt") val createdAtSeconds: Long,
-  @Redacted @SerialName("key") val key: Token,
+  @SerialName("key") val key: Token,
 )
 
 @Serializable

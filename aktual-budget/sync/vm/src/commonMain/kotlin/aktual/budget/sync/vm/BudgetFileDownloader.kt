@@ -44,12 +44,12 @@ internal constructor(
         }
       }
     } catch (e: ResponseException) {
-      log.e(e) { "HTTP failure downloading $id with $token" }
+      log.e(e) { "HTTP failure downloading $id" }
       deleteDir(id)
       with(e.response.status) { emit(Failure.Http(value, description, Zero)) }
       return
     } catch (e: IOException) {
-      log.e(e) { "Failed fetching initial download request for $id with $token" }
+      log.e(e) { "Failed fetching initial download request for $id" }
       deleteDir(id)
       emit(Failure.IO(e.requireMessage(), Zero))
       return
