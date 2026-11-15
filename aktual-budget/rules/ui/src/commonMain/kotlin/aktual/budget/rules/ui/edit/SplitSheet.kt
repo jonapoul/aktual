@@ -5,7 +5,7 @@ import aktual.budget.rules.components.ConditionValue
 import aktual.budget.rules.components.QuerySheetPage
 import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.domain.isEditableSplitAmount
-import aktual.budget.rules.domain.splits
+import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.domain.withSplitMethod
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -16,7 +16,6 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.slider
 import androidx.compose.foundation.layout.Arrangement
@@ -42,38 +41,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.longOrNull
 
-// Shows nothing once the split is gone, e.g. straight after removing it
+// Edits a copy of the split's amount action, passed to [onDone] when Done is pressed
 @Composable
 internal fun RuleSplitSheet(
-  splitIndex: Int,
-  actions: ImmutableList<RuleAction>,
-  onAction: OnAction<EditRuleAction>,
+  initial: RuleAction,
+  onDone: (RuleAction) -> Unit,
+  onRemove: () -> Unit,
   onDismiss: () -> Unit,
 ) {
-  // A focused field commits as the sheet goes, which would land on whatever moved into its index
-  var isRemoved by remember { mutableStateOf(false) }
-  val amount =
-    remember(actions, splitIndex) { actions.splits().getOrNull(splitIndex)?.amount } ?: return
+  var draft by remember { mutableStateOf(initial) }
   HostedSheet(onDismiss = onDismiss) {
     QuerySheetPage(
-      title = Strings.editRuleSplit(splitIndex),
+      title = Strings.editRuleSplit(draft.splitIndex),
       close = ::close,
-      onDelete = {
-        isRemoved = true
-        onAction(RemoveSplit(splitIndex))
-      },
+      onDelete = onRemove,
+      onDone = { onDone(draft) },
+      confirm = Update,
     ) {
-      SplitContent(
-        action = amount.value,
-        onChange = { if (!isRemoved) onAction(SetAction(amount.index, it)) },
-      )
+      SplitContent(action = draft, onChange = { draft = it })
     }
   }
 }

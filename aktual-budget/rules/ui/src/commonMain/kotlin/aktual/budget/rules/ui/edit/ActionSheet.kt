@@ -27,7 +27,6 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -55,37 +53,35 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import org.jetbrains.compose.resources.stringResource
 
-// Shows nothing until the action at [index] exists, e.g. straight after adding it
+// Edits a copy of the action, passed to [onDone] when Done is pressed. Without [onDelete] it's a
+// new action, so it can't be deleted
 @Composable
 internal fun RuleActionSheet(
-  index: Int,
-  actions: ImmutableList<RuleAction>,
+  initial: RuleAction,
   entities: ConditionEntities,
-  onAction: OnAction<EditRuleAction>,
+  onDone: (RuleAction) -> Unit,
+  onDelete: (() -> Unit)?,
   onDismiss: () -> Unit,
 ) {
-  // A focused field commits as the sheet goes, which would land on whatever moved into its index
-  var isRemoved by remember { mutableStateOf(false) }
-  val action = actions.getOrNull(index) ?: return
+  var draft by remember { mutableStateOf(initial) }
   ActionSheet(
-    action = action,
+    action = draft,
     entities = entities,
-    onChange = { if (!isRemoved) onAction(SetAction(index, it)) },
-    onDelete = {
-      isRemoved = true
-      onAction(RemoveAction(index))
-    },
+    onChange = { draft = it },
+    onDone = { onDone(draft) },
+    onDelete = onDelete,
     onDismiss = onDismiss,
   )
 }
 
-// Edits one action in place. Actions the editor can't show can only be deleted
+// Actions the editor can't show can only be deleted
 @Composable
 private fun ActionSheet(
   action: RuleAction,
   entities: ConditionEntities,
   onChange: (RuleAction) -> Unit,
-  onDelete: () -> Unit,
+  onDone: () -> Unit,
+  onDelete: (() -> Unit)?,
   onDismiss: () -> Unit,
 ) =
   HostedSheet(onDismiss = onDismiss) {
@@ -101,7 +97,13 @@ private fun ActionSheet(
         onDismiss = { pickingEntity = false },
       )
     } else {
-      QuerySheetPage(title = Strings.editRuleEditAction, close = ::close, onDelete = onDelete) {
+      QuerySheetPage(
+        title = if (onDelete == null) Strings.editRuleAddAction else Strings.editRuleEditAction,
+        close = ::close,
+        onDelete = onDelete,
+        onDone = onDone,
+        confirm = if (onDelete == null) Add else Update,
+      ) {
         ActionContent(
           action = action,
           kind = kind,

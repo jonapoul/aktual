@@ -1,5 +1,8 @@
 package aktual.budget.rules.components
 
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Check
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
@@ -48,8 +52,11 @@ fun QuerySheetPage(
   close: (then: () -> Unit) -> Unit,
   modifier: Modifier = Modifier,
   onDelete: (() -> Unit)? = null,
+  onDone: () -> Unit = {},
+  confirm: QuerySheetConfirm = Done,
   content: @Composable ColumnScope.() -> Unit,
-) =
+) {
+  val focusManager = LocalFocusManager.current
   Column(
     modifier = modifier.verticalScrollWithBar().padding(horizontal = 20.dp).padding(bottom = 20.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -75,8 +82,31 @@ fun QuerySheetPage(
       AktualButton(
         kind = Primary,
         modifier = Modifier.weight(1f).testTag(ConditionTags.QuerySheetDone),
-        text = Strings.reportsFormulaEditorDone,
-        onClick = { close {} },
+        text =
+          when (confirm) {
+            Done -> Strings.reportsFormulaEditorDone
+            QuerySheetConfirm.Add -> Strings.reportsFormulaQueryAddConfirm
+            Update -> Strings.reportsFormulaQueryUpdateConfirm
+          },
+        icon =
+          when (confirm) {
+            Done -> null
+            QuerySheetConfirm.Add -> AktualIcons.Add
+            Update -> AktualIcons.Check
+          },
+        onClick = {
+          // Commits a field still being typed in before Done reads the value
+          focusManager.clearFocus()
+          close(onDone)
+        },
       )
     }
   }
+}
+
+// Done closes a sheet editing in place. Add and Update save a draft of a new or existing item
+enum class QuerySheetConfirm {
+  Done,
+  Add,
+  Update,
+}

@@ -5,6 +5,9 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntityLists
+import aktual.budget.rules.domain.newCondition
+import aktual.budget.rules.domain.nextAction
+import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition2
 import aktual.budget.rules.ui.PreviewRule1
@@ -161,12 +164,12 @@ private fun EditRuleViewModel.handle(action: EditRuleAction) {
     Save -> save()
     is SetStage -> setStage(action.value)
     is SetConditionsOp -> setConditionsOp(action.value)
-    is SetCondition -> setCondition(action.index, action.condition)
-    AddCondition -> addCondition()
-    is RemoveCondition -> removeCondition(action.index)
-    is SetAction -> setAction(action.index, action.action)
-    is AddAction -> addAction(action.splitIndex)
-    is RemoveAction -> removeAction(action.index)
+    is SetCondition -> setCondition(action.key, action.condition)
+    is AddCondition -> addCondition(action.condition)
+    is RemoveCondition -> removeCondition(action.key)
+    is SetAction -> setAction(action.key, action.action)
+    is AddAction -> addAction(action.action)
+    is RemoveAction -> removeAction(action.key)
     AddSplit -> addSplit()
     is RemoveSplit -> removeSplit(action.splitIndex)
     ApplyActions -> applyActions()
@@ -431,9 +434,12 @@ private fun LoadedContent(
   modifier: Modifier = Modifier,
 ) {
   val names: ImmutableMap<String, String> = conditionEntities?.names ?: persistentMapOf()
-  var openCondition by rememberSaveable { mutableStateOf<Int?>(null) }
-  var openAction by rememberSaveable { mutableStateOf<Int?>(null) }
-  var openSplit by rememberSaveable { mutableStateOf<Int?>(null) }
+  // Sheets open on a key, so they stay on their condition or action as others come and go
+  var openCondition by rememberSaveable { mutableStateOf<Long?>(null) }
+  var isAddingCondition by rememberSaveable { mutableStateOf(false) }
+  var openAction by rememberSaveable { mutableStateOf<Long?>(null) }
+  var addingActionToSplit by rememberSaveable { mutableStateOf<Int?>(null) }
+  var openSplit by rememberSaveable { mutableStateOf<Long?>(null) }
 
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
@@ -443,7 +449,7 @@ private fun LoadedContent(
     if (rule.hasUnknownValues) {
       item(key = "unknown-values") {
         WarningBanner(
-          modifier = Modifier.padding(bottom = Dimens.Huge),
+          modifier = Modifier.animateItem().padding(bottom = Dimens.Huge),
           text = Strings.editRuleUnknownValues,
         )
       }
@@ -457,7 +463,8 @@ private fun LoadedContent(
       conditionsOp = rule.conditionsOp,
       names = names,
       isEnabled = isEnabled,
-      onOpen = { index: Int -> openCondition = index }.takeIf { conditionEntities != null },
+      onOpen = { key: Long -> openCondition = key }.takeIf { conditionEntities != null },
+      onAdd = { isAddingCondition = true }.takeIf { conditionEntities != null },
       onAction = onAction,
     )
 
@@ -466,8 +473,9 @@ private fun LoadedContent(
       actionKeys = actionKeys,
       names = names,
       isEnabled = isEnabled,
-      onOpen = { index: Int -> openAction = index }.takeIf { conditionEntities != null },
-      onOpenSplit = { split: Int -> openSplit = split },
+      onOpen = { key: Long -> openAction = key }.takeIf { conditionEntities != null },
+      onAdd = { split: Int -> addingActionToSplit = split }.takeIf { conditionEntities != null },
+      onOpenSplit = { key: Long -> openSplit = key },
       onAction = onAction,
     )
 
@@ -478,34 +486,56 @@ private fun LoadedContent(
     }
   }
 
-  val index = openCondition
-  if (index != null && conditionEntities != null) {
-    RuleConditionSheet(
-      index = index,
-      conditions = rule.conditions,
-      entities = conditionEntities,
-      onAction = onAction,
-      onDismiss = { openCondition = null },
-    )
+  if (conditionEntities != null) {
+    openCondition?.let { key ->
+      val condition = rule.conditions.getOrNull(conditionKeys.indexOf(key)) ?: return@let
+      RuleConditionSheet(
+        initial = condition,
+        entities = conditionEntities,
+        onDone = { onAction(SetCondition(key, it)) },
+        onDelete = { onAction(RemoveCondition(key)) },
+        onDismiss = { openCondition = null },
+      )
+    }
+
+    if (isAddingCondition) {
+      RuleConditionSheet(
+        initial = newCondition(Payee, RuleConditions),
+        entities = conditionEntities,
+        onDone = { onAction(AddCondition(it)) },
+        onDelete = null,
+        onDismiss = { isAddingCondition = false },
+      )
+    }
+
+    openAction?.let { key ->
+      val action = rule.actions.getOrNull(actionKeys.indexOf(key)) ?: return@let
+      RuleActionSheet(
+        initial = action,
+        entities = conditionEntities,
+        onDone = { onAction(SetAction(key, it)) },
+        onDelete = { onAction(RemoveAction(key)) },
+        onDismiss = { openAction = null },
+      )
+    }
+
+    addingActionToSplit?.let { split ->
+      RuleActionSheet(
+        initial = rule.actions.nextAction(split),
+        entities = conditionEntities,
+        onDone = { onAction(AddAction(it)) },
+        onDelete = null,
+        onDismiss = { addingActionToSplit = null },
+      )
+    }
   }
 
-  val actionIndex = openAction
-  if (actionIndex != null && conditionEntities != null) {
-    RuleActionSheet(
-      index = actionIndex,
-      actions = rule.actions,
-      entities = conditionEntities,
-      onAction = onAction,
-      onDismiss = { openAction = null },
-    )
-  }
-
-  val splitIndex = openSplit
-  if (splitIndex != null) {
+  openSplit?.let { key ->
+    val amount = rule.actions.getOrNull(actionKeys.indexOf(key)) ?: return@let
     RuleSplitSheet(
-      splitIndex = splitIndex,
-      actions = rule.actions,
-      onAction = onAction,
+      initial = amount,
+      onDone = { onAction(SetAction(key, it)) },
+      onRemove = { onAction(RemoveSplit(amount.splitIndex)) },
       onDismiss = { openSplit = null },
     )
   }

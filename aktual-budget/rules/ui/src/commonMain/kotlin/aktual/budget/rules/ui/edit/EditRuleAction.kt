@@ -19,17 +19,17 @@ internal data object Save : EditRuleAction
 
 @JvmInline internal value class SetConditionsOp(val value: ConditionOp) : EditRuleAction
 
-internal data class SetCondition(val index: Int, val condition: Condition) : EditRuleAction
+internal data class SetCondition(val key: Long, val condition: Condition) : EditRuleAction
 
-internal data object AddCondition : EditRuleAction
+@JvmInline internal value class AddCondition(val condition: Condition) : EditRuleAction
 
-@JvmInline internal value class RemoveCondition(val index: Int) : EditRuleAction
+@JvmInline internal value class RemoveCondition(val key: Long) : EditRuleAction
 
-internal data class SetAction(val index: Int, val action: RuleAction) : EditRuleAction
+internal data class SetAction(val key: Long, val action: RuleAction) : EditRuleAction
 
-@JvmInline internal value class AddAction(val splitIndex: Int) : EditRuleAction
+@JvmInline internal value class AddAction(val action: RuleAction) : EditRuleAction
 
-@JvmInline internal value class RemoveAction(val index: Int) : EditRuleAction
+@JvmInline internal value class RemoveAction(val key: Long) : EditRuleAction
 
 internal data object AddSplit : EditRuleAction
 
