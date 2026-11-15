@@ -102,6 +102,7 @@ private fun ActionSheet(
         close = ::close,
         onDelete = onDelete,
         onDone = onDone,
+        confirm = if (onDelete == null) Add else Update,
       ) {
         ActionContent(
           action = action,

@@ -294,7 +294,6 @@ private fun EditRuleScaffold(
         showDiscardDialog = false
         onAction(NavBack)
       },
-
       onCancel = { showDiscardDialog = false },
     )
   }

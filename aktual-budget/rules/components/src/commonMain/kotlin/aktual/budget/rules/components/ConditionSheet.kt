@@ -44,6 +44,7 @@ fun ConditionSheet(
   schema: ConditionSchema = FilterConditions,
   fields: ImmutableList<Field> = schema.fields,
   onDone: () -> Unit = {},
+  confirm: QuerySheetConfirm = Done,
   onAdd: (() -> Unit)? = null,
 ) =
   HostedSheet(onDismiss = onDismiss) {
@@ -68,6 +69,7 @@ fun ConditionSheet(
         close = if (onAdd == null) ::close else ::dismiss,
         onDelete = onDelete.takeIf { onAdd == null },
         onDone = onAdd ?: onDone,
+        confirm = if (onAdd == null) confirm else Add,
       ) {
         ConditionContent(
           condition = condition,

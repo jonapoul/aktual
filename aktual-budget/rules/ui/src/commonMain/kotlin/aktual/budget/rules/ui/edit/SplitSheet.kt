@@ -62,6 +62,7 @@ internal fun RuleSplitSheet(
       close = ::close,
       onDelete = onRemove,
       onDone = { onDone(draft) },
+      confirm = Update,
     ) {
       SplitContent(action = draft, onChange = { draft = it })
     }

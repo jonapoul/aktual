@@ -178,6 +178,7 @@ internal fun RuleConditionSheet(
     onDelete = onDelete ?: {},
     onDismiss = onDismiss,
     onDone = { onDone(draft) },
+    confirm = Update,
     onAdd = { onDone(draft) }.takeIf { onDelete == null },
   )
 }
