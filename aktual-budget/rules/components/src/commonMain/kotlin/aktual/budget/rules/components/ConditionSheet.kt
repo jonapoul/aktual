@@ -119,7 +119,7 @@ private fun ConditionContent(
         AktualExposedDropDownMenu(
           modifier = Modifier.fillMaxWidth(),
           value = condition.operator,
-          onValueChange = { op -> onChange(condition.withOperator(op, schema)) },
+          onValueChange = { op -> onChange(condition.withOperator(op, schema, data.names)) },
           options = condition.operators(schema),
           string = { op -> op.label() },
           textStyle = typography.bodyMedium,
