@@ -13,7 +13,7 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.reports.vm.pinned.PinnedReports
-import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
@@ -40,7 +40,7 @@ internal fun BudgetDatabase.createHomeViewModel(
       contexts = contexts,
     )
   val schedulesLoader =
-    SchedulesLoader(
+    SchedulesLoaderImpl(
       scheduleDao = ScheduleDao(this),
       accountDao = AccountDao(this),
       payeeDao = PayeeDao(this),

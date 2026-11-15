@@ -2,10 +2,16 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
-    api(libs.kotlinx.serialization.json)
-    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-budget:rules:api"))
+    api(project(":aktual-budget:schedules:api"))
+    implementation(project(":aktual-budget:transactions:api"))
+    implementation(project(":aktual-core:l10n"))
+    implementation(project(":aktual-core:utils"))
+  }
+
+  commonTestDependencies {
+    implementation(project(":aktual-budget:rules:domain"))
     implementation(project(":aktual-budget:schedules:domain"))
     implementation(project(":aktual-budget:transactions:domain"))
-    implementation(project(":aktual-core:l10n"))
   }
 }

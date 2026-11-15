@@ -21,13 +21,13 @@ import aktual.budget.model.TransferOperator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.longOrNull
 
 // The fields a filter's conditions can use, in the order the editor offers them
@@ -252,14 +252,54 @@ fun newCondition(field: Field, schema: ConditionSchema = FilterConditions): Cond
   )
 }
 
-// Keeps the value when the new operator takes the same kind
-fun Condition.withOperator(op: Operator, schema: ConditionSchema = FilterConditions): Condition {
+// Carries the value over to the new operator where it can, so "one of A, B" becomes "is A" and a
+// payee "is X" becomes "contains" X's name. [names] maps ids to names for that
+fun Condition.withOperator(
+  op: Operator,
+  schema: ConditionSchema = FilterConditions,
+  names: Map<String, String> = emptyMap(),
+): Condition {
   val kind = valueKind(op)
-  val value = if (editableKind(schema) == kind) value else defaultValue(kind)
+  val from = editableKind(schema)
+  val value = from?.let { value.convert(it, kind, names) } ?: defaultValue(kind)
   return copy(operator = op, value = value)
 }
 
-fun String.toDayOrNull(): LocalDate? = runCatching { LocalDate.parse(this) }.getOrNull()
+private fun JsonElement.convert(
+  from: ConditionValueKind,
+  to: ConditionValueKind,
+  names: Map<String, String>,
+): JsonElement? {
+  if (from == to) return this
+  if (from !in STRING_KINDS || to !in STRING_KINDS) return null
+  // Text can't become an id without picking one
+  if (from !in ID_KINDS && to in ID_KINDS) return null
+
+  val strings =
+    when (this) {
+        is JsonArray -> map { it.content() }
+        is JsonPrimitive -> listOfNotNull(contentOrNull)
+        is JsonObject -> emptyList()
+      }
+      .let { if (from in ID_KINDS && to !in ID_KINDS) it.mapNotNull(names::get) else it }
+      .filter { it.isNotEmpty() }
+
+  return when (to) {
+    EntityList,
+    TextList -> JsonArray(strings.map(::JsonPrimitive))
+    Entity -> strings.firstOrNull()?.let(::JsonPrimitive) ?: JsonNull
+    Text -> JsonPrimitive(strings.firstOrNull().orEmpty())
+    Money,
+    Day,
+    Recurrence,
+    Flag,
+    NoValue -> null
+  }
+}
+
+private val ID_KINDS = setOf<ConditionValueKind>(Entity, EntityList)
+
+private val STRING_KINDS = ID_KINDS + setOf<ConditionValueKind>(Text, TextList)
 
 private fun defaultValue(kind: ConditionValueKind): JsonElement =
   when (kind) {

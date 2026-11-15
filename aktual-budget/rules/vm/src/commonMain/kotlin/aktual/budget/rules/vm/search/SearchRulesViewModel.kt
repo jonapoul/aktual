@@ -1,12 +1,12 @@
 package aktual.budget.rules.vm.search
 
 import aktual.budget.model.PayeeId
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.RulesLoader
 import aktual.budget.rules.domain.TransactionRule
 import aktual.budget.rules.domain.payeeIds
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.RuleSearchText
-import aktual.budget.rules.vm.RulesLoader
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
 import aktual.core.utils.runCatchingCancellable

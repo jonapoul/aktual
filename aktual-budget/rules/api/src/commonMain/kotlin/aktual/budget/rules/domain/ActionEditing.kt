@@ -5,6 +5,7 @@ import aktual.budget.model.RuleAction
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
@@ -179,3 +180,5 @@ private fun Field.actionType(): RuleAction.Type =
     PayeeName -> RuleAction.Type.String
     Unknown -> Unknown
   }
+
+fun String.toDayOrNull(): LocalDate? = runCatching { LocalDate.parse(this) }.getOrNull()

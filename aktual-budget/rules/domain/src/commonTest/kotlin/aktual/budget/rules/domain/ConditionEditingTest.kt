@@ -39,15 +39,45 @@ class ConditionEditingTest {
   fun `Changing operator keeps a value of the same kind`() {
     val condition = Condition(Payee, Is, JsonPrimitive("payee-1"))
     assertThat(condition.withOperator(IsNot).value).isEqualTo(JsonPrimitive("payee-1"))
-    assertThat(condition.withOperator(OneOf).value).isEqualTo(JsonArray(emptyList()))
+  }
+
+  @Test
+  fun `Changing operator carries ids between one and a list`() {
+    val one = Condition(Payee, Is, JsonPrimitive("payee-1"))
+    assertThat(one.withOperator(OneOf).value).isEqualTo(JsonArray(listOf(JsonPrimitive("payee-1"))))
+
+    val list = Condition(Payee, OneOf, JsonArray(listOf(JsonPrimitive("a"), JsonPrimitive("b"))))
+    assertThat(list.withOperator(Is).value).isEqualTo(JsonPrimitive("a"))
+    assertThat(Condition(Payee, OneOf, JsonArray(emptyList())).withOperator(Is).value)
+      .isEqualTo(JsonNull)
+  }
+
+  @Test
+  fun `Changing operator turns ids into their names as text`() {
+    val condition = Condition(Payee, Is, JsonPrimitive("payee-1"))
+    assertThat(condition.withOperator(Contains, names = mapOf("payee-1" to "Shop")).value)
+      .isEqualTo(JsonPrimitive("Shop"))
     assertThat(condition.withOperator(Contains).value).isEqualTo(JsonPrimitive(""))
+  }
+
+  @Test
+  fun `Changing operator doesn't turn text into ids`() {
+    val condition = Condition(Payee, Contains, JsonPrimitive("Shop"))
+    assertThat(condition.withOperator(Is).value).isEqualTo(JsonNull)
+    assertThat(condition.withOperator(OneOf).value).isEqualTo(JsonArray(emptyList()))
   }
 
   @Test
   fun `Text conditions take a list of strings for oneOf`() {
     val condition = Condition(ImportedPayee, Is, JsonPrimitive("abc"))
     assertThat(condition.withOperator(OneOf, RuleConditions).value)
-      .isEqualTo(JsonArray(emptyList()))
+      .isEqualTo(JsonArray(listOf(JsonPrimitive("abc"))))
+    assertThat(
+        Condition(ImportedPayee, OneOf, JsonArray(listOf(JsonPrimitive("abc"))))
+          .withOperator(Contains, RuleConditions)
+          .value,
+      )
+      .isEqualTo(JsonPrimitive("abc"))
     assertThat(
         Condition(ImportedPayee, OneOf, JsonPrimitive("abc")).editableKind(RuleConditions),
       )

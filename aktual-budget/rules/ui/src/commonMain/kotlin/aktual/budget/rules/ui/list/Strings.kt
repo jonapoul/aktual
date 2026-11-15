@@ -13,10 +13,10 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.isIdField
+import aktual.budget.rules.domain.NameFetcher
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
-import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.label
 import aktual.budget.schedules.components.description
 import aktual.core.l10n.Strings

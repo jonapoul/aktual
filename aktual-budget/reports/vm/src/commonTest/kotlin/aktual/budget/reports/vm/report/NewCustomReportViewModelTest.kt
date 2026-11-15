@@ -23,7 +23,7 @@ import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.toConfig
 import aktual.budget.reports.vm.withMode
-import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
 import aktual.core.utils.Calendar
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.viewModelContext
@@ -128,7 +128,7 @@ class NewCustomReportViewModelTest {
           queryEditorDataLoader =
             QueryEditorDataLoader(
               database = this,
-              entityLoader = ConditionEntitiesLoader(this),
+              entityLoader = ConditionEntitiesLoaderImpl(this),
               reports = ReportsDao(this, contexts),
               calendar = calendar,
             ),

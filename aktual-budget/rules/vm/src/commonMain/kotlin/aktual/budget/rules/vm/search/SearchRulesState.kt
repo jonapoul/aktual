@@ -1,6 +1,6 @@
 package aktual.budget.rules.vm.search
 
-import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.domain.Rule
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 

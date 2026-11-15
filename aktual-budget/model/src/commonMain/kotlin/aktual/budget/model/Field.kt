@@ -37,6 +37,6 @@ fun Field?.isIdField(): Boolean {
   return this in FIELDS_WITH_IDS
 }
 
-// Make sure this stays in sync with [aktual.budget.rules.vm.NameFetcherImpl.name]
+// Make sure this stays in sync with [aktual.budget.rules.domain.NameFetcherImpl.name]
 private val FIELDS_WITH_IDS =
   setOf<Field>(Acct, Account, Category, CategoryGroup, Payee, Description)

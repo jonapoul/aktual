@@ -10,8 +10,9 @@ import aktual.budget.model.Field
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.RulesLoader
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.RulesLoaderImpl
+import aktual.budget.rules.domain.RulesWriterImpl
 import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
@@ -107,8 +108,8 @@ class ListRulesViewModelTest {
 
   private fun BudgetDatabase.createViewModel(scope: TestScope) =
     ListRulesViewModel(
-      loader = RulesLoader(RulesDao(this)),
-      syncController = TestSyncController(),
+      loader = RulesLoaderImpl(RulesDao(this)),
+      writer = RulesWriterImpl(RulesDao(this), TestSyncController()),
       nameFetcher = FakeNameFetcher,
       viewModelContext = scope.viewModelContext,
     )

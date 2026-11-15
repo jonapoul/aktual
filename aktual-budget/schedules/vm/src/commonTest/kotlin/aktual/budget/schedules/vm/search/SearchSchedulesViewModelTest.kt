@@ -7,7 +7,7 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.Schedule
-import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
 import aktual.core.utils.Calendar
@@ -110,7 +110,7 @@ class SearchSchedulesViewModelTest {
   private fun BudgetDatabase.createViewModel(scope: TestScope): SearchSchedulesViewModel {
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     val loader =
-      SchedulesLoader(
+      SchedulesLoaderImpl(
         scheduleDao = ScheduleDao(this),
         accountDao = AccountDao(this),
         payeeDao = PayeeDao(this),

@@ -9,9 +9,7 @@ Automated system that checks daily for new database migrations in [actualbudget/
 3. If new migrations are found:
    - Updates `last-known-migration.txt` to the newest migration.
    - Creates a PR on branch `auto/upstream-migrations` listing the new migrations (label: `upstream-changes`).
-   - If a PR already exists, the new migrations are recomputed against the tracker on that branch (the
-     one on `main` lags behind while the PR is open), then pushed and appended to the PR body. If the
-     branch already covers everything upstream, the workflow exits cleanly.
+   - If a PR already exists, the new migrations are recomputed against the tracker on that branch (the one on `main` lags behind while the PR is open), then pushed and appended to the PR body. If the branch already covers everything upstream, the workflow exits cleanly.
 4. If no new migrations are found, the workflow exits cleanly with no side effects.
 
 ## Files

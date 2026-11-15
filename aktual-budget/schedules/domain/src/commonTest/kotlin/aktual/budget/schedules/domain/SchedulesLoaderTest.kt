@@ -155,7 +155,7 @@ class SchedulesLoaderTest {
     PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
 
   private fun BudgetDatabase.loader(scope: TestScope) =
-    SchedulesLoader(
+    SchedulesLoaderImpl(
       scheduleDao = ScheduleDao(this),
       accountDao = AccountDao(this),
       payeeDao = PayeeDao(this),

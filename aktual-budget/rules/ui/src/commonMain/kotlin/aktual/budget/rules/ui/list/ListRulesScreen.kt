@@ -1,10 +1,10 @@
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.RuleId
+import aktual.budget.rules.domain.Rule
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
-import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.list.ListRulesState
 import aktual.budget.rules.vm.list.ListRulesState.Empty
 import aktual.budget.rules.vm.list.ListRulesState.Failure

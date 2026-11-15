@@ -5,8 +5,9 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.CategoryGroupDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.di.BudgetScope
 import androidx.compose.runtime.Immutable
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.ContributesBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -26,15 +27,14 @@ data class ConditionEntityLists(
 ) : ConditionEntities
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@Inject
-class ConditionEntitiesLoader(database: BudgetDatabase) {
+@ContributesBinding(BudgetScope::class)
+class ConditionEntitiesLoaderImpl(database: BudgetDatabase) : ConditionEntitiesLoader {
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)
   private val categoryGroups = CategoryGroupDao(database)
   private val payees = PayeeDao(database)
 
-  // Loads again whenever an account, category, group or payee changes
-  fun observe(): Flow<ConditionEntityLists> =
+  override fun observe(): Flow<ConditionEntityLists> =
     combine(
         accounts.observeAllActive(),
         categories.observeChanges(),
@@ -44,7 +44,7 @@ class ConditionEntitiesLoader(database: BudgetDatabase) {
       }
       .mapLatest { load() }
 
-  suspend fun load(): ConditionEntityLists {
+  override suspend fun load(): ConditionEntityLists {
     val activePayees = payees.getAllActive()
     return ConditionEntityLists(
       accounts = accounts.getAllActive().entities({ it.id.toString() }, { it.name }),

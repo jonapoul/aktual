@@ -1,8 +1,8 @@
 package aktual.budget.rules.vm.edit
 
 import aktual.budget.model.ScheduleId
-import aktual.budget.rules.vm.Rule
-import aktual.budget.rules.vm.hasUnknownValues
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.hasUnknownValues
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
@@ -32,8 +32,6 @@ sealed interface EditRuleState {
   sealed interface Failure : EditRuleState
 
   data object NotFound : Failure
-
-  @JvmInline value class SaveFailed(val reason: String) : Failure
 
   @JvmInline value class OtherFailure(val reason: String) : Failure
 }

@@ -1,4 +1,4 @@
-package aktual.budget.rules.vm
+package aktual.budget.rules.domain
 
 import aktual.budget.model.Operator
 

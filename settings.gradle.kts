@@ -205,6 +205,7 @@ include(
   ":aktual-budget:rules:domain",
   ":aktual-budget:rules:ui",
   ":aktual-budget:rules:vm",
+  ":aktual-budget:schedules:api",
   ":aktual-budget:schedules:components",
   ":aktual-budget:schedules:domain",
   ":aktual-budget:schedules:ui",

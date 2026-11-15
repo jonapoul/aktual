@@ -1,41 +1,34 @@
 package aktual.budget.rules.vm.edit
 
-import aktual.budget.db.DbJson
-import aktual.budget.db.RuleJson
-import aktual.budget.db.Rules
-import aktual.budget.db.dao.DatabaseTables.RULES
-import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
-import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
-import aktual.budget.model.localChange
-import aktual.budget.model.tombstone
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.RulesLoader
+import aktual.budget.rules.domain.RulesWriter
 import aktual.budget.rules.domain.TransactionRule
 import aktual.budget.rules.domain.addAction
 import aktual.budget.rules.domain.addSplit
+import aktual.budget.rules.domain.hasUnknownValues
 import aktual.budget.rules.domain.newAction
 import aktual.budget.rules.domain.newActionIndex
 import aktual.budget.rules.domain.removeSplit
 import aktual.budget.rules.domain.splitIndex
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.edit.RuleMatchesState.Failed
 import aktual.budget.rules.vm.edit.RuleMatchesState.Invalid
 import aktual.budget.rules.vm.edit.RuleMatchesState.Loading
-import aktual.budget.rules.vm.hasUnknownValues
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.transactions.domain.RuleMatcher
-import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
@@ -78,6 +71,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -91,8 +85,8 @@ internal constructor(
   @Assisted private val ruleId: RuleId?,
   @Assisted private val payee: PayeeId?,
   private val uuidGenerator: UuidGenerator,
-  private val rulesDao: RulesDao,
-  private val syncController: BudgetSyncController,
+  private val rulesLoader: RulesLoader,
+  private val rulesWriter: RulesWriter,
   private val ruleMatcher: RuleMatcher,
   val nameFetcher: NameFetcher,
   conditionEntitiesLoader: ConditionEntitiesLoader,
@@ -163,7 +157,16 @@ internal constructor(
           matches
         }
       }
-      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = Loading)
+      // Starts each opening of the sheet with nothing ticked, so applying can't change a match
+      // ticked last time and forgotten
+      .onStart { mutableSelected.update { persistentSetOf() } }
+      // Stops and forgets the matches as soon as the sheet closes, so they're searched for again
+      // when it opens rather than showing old results
+      .stateIn(
+        viewModelScope,
+        WhileSubscribed(stopTimeoutMillis = 0, replayExpirationMillis = 0),
+        initialValue = Loading,
+      )
 
   init {
     loadData()
@@ -179,27 +182,21 @@ internal constructor(
         return@launch
       }
 
-      try {
-        val rule = rulesDao[ruleId]
-        if (rule == null) {
-          mutableFailure.update { NotFound }
-        } else {
-          val model =
-            Rule(
-              id = rule.id,
-              stage = rule.stage ?: Default,
-              conditions = rule.conditions.orEmpty().toImmutableList(),
-              conditionsOp = rule.conditions_op ?: Default,
-              actions = rule.actions.orEmpty().toImmutableList(),
-            )
-          mutableDraft.update { draft(model, schedulesLoader.ownerOf(rule.id)) }
-        }
-      } catch (e: Exception) {
-        log.e(e) { "Failed loading $ruleId" }
-        mutableFailure.update { EditRuleState.OtherFailure(e.requireMessage()) }
-      } finally {
-        mutableIsLoading.update { false }
-      }
+      runCatchingCancellable(
+        attempt = {
+          val rule = rulesLoader.load(ruleId)
+          if (rule == null) {
+            mutableFailure.update { NotFound }
+          } else {
+            mutableDraft.update { draft(rule, schedulesLoader.ownerOf(rule.id)) }
+          }
+        },
+        onFailure = { e ->
+          log.e(e) { "Failed loading $ruleId" }
+          mutableFailure.update { EditRuleState.OtherFailure(e.requireMessage()) }
+        },
+        finally = { mutableIsLoading.update { false } },
+      )
     }
   }
 
@@ -214,10 +211,8 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          rulesDao.tombstone(setOf(id))
+          rulesWriter.delete(id)
           mutableEvents.tryEmit(DeletedRule)
-          val change = tombstone(dataset = RULES, row = id.toString())
-          syncController.syncChanges(change)
         },
         onFailure = { e -> log.e(e) { "Failed tombstoning $id" } },
         finally = { mutableIsWorking.update { false } },
@@ -237,26 +232,14 @@ internal constructor(
           } else if (model.hasUnknownValues) {
             log.w { "Not saving $model, it has unknown values" }
           } else {
-            val rule =
-              with(model) {
-                Rules(
-                  id = id,
-                  stage = stage,
-                  conditions = conditions,
-                  actions = actions,
-                  tombstone = false,
-                  conditions_op = conditionsOp,
-                )
-              }
-            rulesDao.insert(rule)
-            log.i { "Saved $rule" }
+            rulesWriter.save(model)
             mutableDraft.update { draft -> draft?.copy(saved = model) }
-            syncController.syncChanges(insertChanges(rule))
+            mutableEvents.tryEmit(Saved)
           }
         },
         onFailure = { e ->
           log.e(e) { "Failed saving $ruleId" }
-          mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
+          mutableEvents.tryEmit(EditRuleEvent.SaveFailed(e.requireMessage()))
         },
         finally = { mutableIsWorking.update { false } },
       )
@@ -421,30 +404,6 @@ internal constructor(
 
   private fun emptyCondition() =
     Condition(field = Payee, operator = Is, type = Id, value = JsonNull)
-
-  private fun insertChanges(rule: Rules): List<LocalChange> {
-    val row = rule.id.toString()
-    return with(rule) {
-      listOf(
-        localChange(RULES, row, "id", row),
-        localChange(RULES, row, "stage", stage),
-        localChange(
-          RULES,
-          row,
-          "conditions",
-          DbJson.encodeToString(RuleJson.conditions, conditions.orEmpty()),
-        ),
-        localChange(
-          RULES,
-          row,
-          "actions",
-          DbJson.encodeToString(RuleJson.actions, actions.orEmpty()),
-        ),
-        localChange(RULES, row, "tombstone", tombstone),
-        localChange(RULES, row, "conditions_op", conditions_op),
-      )
-    }
-  }
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey

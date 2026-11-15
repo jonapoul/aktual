@@ -1,15 +1,13 @@
 package aktual.budget.rules.vm.list
 
-import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.model.RuleId
-import aktual.budget.model.tombstone
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.RulesLoader
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.RulesLoader
+import aktual.budget.rules.domain.RulesWriter
 import aktual.budget.rules.vm.list.ListRulesState.Empty
 import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
-import aktual.budget.utils.BudgetSyncController
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -35,7 +33,7 @@ import kotlinx.coroutines.launch
 class ListRulesViewModel
 internal constructor(
   loader: RulesLoader,
-  private val syncController: BudgetSyncController,
+  private val writer: RulesWriter,
   val nameFetcher: NameFetcher,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -62,8 +60,7 @@ internal constructor(
 
   fun delete(id: RuleId) {
     viewModelScope.launch {
-      syncController.syncChanges(listOf(tombstone(dataset = RULES, row = id.toString())))
-      log.d { "Tombstoned rule $id" }
+      writer.delete(id)
     }
   }
 }

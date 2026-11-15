@@ -23,7 +23,7 @@ import aktual.budget.model.untombstone
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleTransactionPoster
-import aktual.budget.schedules.domain.SchedulesLoader
+import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSyncController
@@ -428,7 +428,7 @@ class ListSchedulesViewModelTest {
   ): ListSchedulesViewModel {
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
     val loader =
-      SchedulesLoader(
+      SchedulesLoaderImpl(
         scheduleDao = ScheduleDao(this),
         accountDao = AccountDao(this),
         payeeDao = PayeeDao(this),

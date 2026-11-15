@@ -5,20 +5,20 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntityLists
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.hasUnknownValues
 import aktual.budget.rules.domain.newCondition
 import aktual.budget.rules.domain.nextAction
 import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition2
 import aktual.budget.rules.ui.PreviewRule1
-import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.edit.RuleMatchesState
-import aktual.budget.rules.vm.hasUnknownValues
 import aktual.budget.schedules.domain.Schedule
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
@@ -29,8 +29,10 @@ import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.edit_rule_failed_saving
 import aktual.core.l10n.edit_rule_matches_applied
 import aktual.core.l10n.edit_rule_matches_apply_failed
+import aktual.core.l10n.edit_rule_saved
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.AktualAlertDialog
@@ -38,6 +40,7 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -66,6 +69,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
@@ -100,6 +104,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -142,6 +149,11 @@ internal fun EditRuleScreen(
           )
         ApplyFailed ->
           snackbarHostState.showErrorSnackbar(getString(Res.string.edit_rule_matches_apply_failed))
+        Saved -> snackbarHostState.showSuccessSnackbar(getString(Res.string.edit_rule_saved))
+        is SaveFailed ->
+          snackbarHostState.showErrorSnackbar(
+            getString(Res.string.edit_rule_failed_saving, event.reason),
+          )
       }
     }
   }
@@ -218,7 +230,6 @@ private fun EditRuleScaffold(
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
-    snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
@@ -248,7 +259,6 @@ private fun EditRuleScaffold(
         },
       )
     },
-    floatingActionButton = { SaveButton(state = state, mode = mode, onAction = onAction) },
   ) { innerPadding ->
     Box {
       PageBackground()
@@ -287,6 +297,18 @@ private fun EditRuleScaffold(
             isEnabled = !state.isWorking,
             onAction = onAction,
           )
+      }
+
+      // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
+      // when the button hides after saving
+      Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
+        SaveButton(state = state, mode = mode, onAction = onAction)
+        SnackbarHost(
+          hostState = snackbarHostState,
+          modifier = Modifier.align(CenterHorizontally),
+          snackbar = ::AktualSnackbar,
+        )
+        BottomSpacing()
       }
     }
   }
@@ -337,19 +359,17 @@ private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<Edit
     exit = slideOutVertically { it } + scaleOut(targetScale = FabInitialScale) + fadeOut(),
   ) {
     val success = state as? Success ?: return@AnimatedVisibility
-    Column {
-      AktualButton(
-        text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-        icon = AktualIcons.Check,
-        kind = Primary,
-        shape = CardShape,
-        contentPadding = FabPadding,
-        isEnabled = success.canSave,
-        isLoading = success.isWorking,
-        onClick = { onAction(Save) },
-      )
-      BottomSpacing()
-    }
+    AktualButton(
+      modifier = Modifier.padding(end = Dimens.Huge, bottom = Dimens.Huge),
+      text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+      icon = AktualIcons.Check,
+      kind = Primary,
+      shape = CardShape,
+      contentPadding = FabPadding,
+      isEnabled = success.canSave,
+      isLoading = success.isWorking,
+      onClick = { onAction(Save) },
+    )
   }
 }
 
@@ -402,7 +422,6 @@ private val Failure.reason: String
   get() =
     when (this) {
       NotFound -> Strings.editRuleFailedNoMatch
-      is SaveFailed -> Strings.editRuleFailedSaving(reason)
       is OtherFailure -> Strings.editRuleFailedOther(reason)
     }
 

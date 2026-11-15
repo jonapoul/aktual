@@ -14,6 +14,7 @@ import aktual.budget.rules.components.nameOf
 import aktual.budget.rules.components.valueLabel
 import aktual.budget.rules.domain.ActionSplit
 import aktual.budget.rules.domain.ConditionEntities
+import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.splits
 import aktual.budget.rules.ui.PreviewCondition1
 import aktual.budget.rules.ui.PreviewCondition2
@@ -46,6 +47,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -68,6 +70,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -79,6 +82,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
@@ -148,7 +153,9 @@ internal fun LazyListScope.conditionsNode(
       val key = conditionKeys.getOrNull(index)
       RuleCard(
         title = "${condition.field.label()} ${condition.operator.label()}",
-        value = condition.valueLabel(names, RuleConditions),
+        value = condition.valueLabel(names, RuleConditions).takeUnless { condition.isEmpty() },
+        hasValue = condition.editableKind(RuleConditions) != NoValue,
+        isEnabled = isEnabled,
         onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
       )
     }
@@ -199,6 +206,7 @@ private fun ConditionsOpChip(
   var showMenu by remember { mutableStateOf(false) }
   Box {
     Chip(
+      modifier = Modifier.alpha(enabledAlpha(isEnabled)),
       text = op.string(),
       size = Small,
       textStyle = typography.bodySmall,
@@ -260,6 +268,7 @@ internal fun LazyListScope.actionsNode(
         TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           SplitHeader(
             split = split,
+            isEnabled = isEnabled,
             onClick = clickToOpen(amountKey, onOpenSplit.takeIf { isEnabled }),
           )
         }
@@ -276,6 +285,7 @@ internal fun LazyListScope.actionsNode(
           val id = action.value?.contentOrNull?.let(::ScheduleId)
           ScheduleCard(
             isLoaded = schedules != null,
+            isEnabled = isEnabled,
             schedule = id?.let { schedules?.firstOrNull { s -> s.id == it } },
             onOpen = id?.let { { onAction(OpenSchedule(id)) } },
             onEdit = clickToOpen(key, onOpen.takeIf { isEnabled }),
@@ -284,6 +294,8 @@ internal fun LazyListScope.actionsNode(
           RuleCard(
             title = action.title(),
             value = action.valueText(names),
+            hasValue = action.op != DeleteTransaction && action.op != Unknown,
+            isEnabled = isEnabled,
             onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
           )
         }
@@ -334,11 +346,17 @@ private fun clickToOpen(key: Long?, onOpen: ((Long) -> Unit)?): (() -> Unit)? {
 }
 
 @Composable
-private fun SplitHeader(split: ActionSplit, onClick: (() -> Unit)?, modifier: Modifier = Modifier) =
+private fun SplitHeader(
+  split: ActionSplit,
+  isEnabled: Boolean,
+  onClick: (() -> Unit)?,
+  modifier: Modifier = Modifier,
+) =
   Row(
     modifier =
       modifier
         .fillMaxWidth()
+        .alpha(enabledAlpha(isEnabled))
         .clip(CardShape)
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(vertical = Dimens.Medium),
@@ -379,11 +397,13 @@ internal fun RuleAction.splitSummary(): String? =
 private fun RuleCard(
   title: String,
   value: String?,
+  hasValue: Boolean,
+  isEnabled: Boolean,
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) =
   CardColumn(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().alpha(enabledAlpha(isEnabled)),
     verticalArrangement = Arrangement.spacedBy(Dimens.Small),
     onClick = onClick,
   ) {
@@ -402,7 +422,30 @@ private fun RuleCard(
         maxLines = 2,
         overflow = Ellipsis,
       )
+    } else if (hasValue) {
+      Text(
+        text = Strings.editRuleValueEmpty,
+        style = typography.bodyLarge,
+        color = colors.pageTextSubdued,
+        fontStyle = Italic,
+      )
     }
+  }
+
+// Fades things out while the rule is saving, to match the stage toggle and add buttons
+@Composable
+private fun enabledAlpha(isEnabled: Boolean): Float {
+  val alpha by animateFloatAsState(if (isEnabled) 1f else DisabledAlpha)
+  return alpha
+}
+
+private const val DisabledAlpha = 0.5f
+
+private fun Condition.isEmpty(): Boolean =
+  when (val value = value) {
+    is JsonArray -> value.isEmpty()
+    is JsonPrimitive -> value.contentOrNull.isNullOrEmpty()
+    is JsonObject -> false
   }
 
 // Tapping it opens the schedule, and the pencil edits the link. Shows the schedule as upstream's
@@ -411,15 +454,16 @@ private fun RuleCard(
 @Composable
 private fun ScheduleCard(
   isLoaded: Boolean,
+  isEnabled: Boolean,
   schedule: Schedule?,
   onOpen: (() -> Unit)?,
   onEdit: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) =
   CardColumn(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().alpha(enabledAlpha(isEnabled)),
     verticalArrangement = Arrangement.spacedBy(Dimens.Small),
-    onClick = onOpen.takeIf { schedule != null },
+    onClick = onOpen.takeIf { schedule != null && isEnabled },
   ) {
     Row(
       horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
@@ -498,8 +542,7 @@ internal fun RuleAction.valueText(names: ImmutableMap<String, String>): String? 
     template != null -> template
     op == SetSplitAmount -> splitAmountText()
     op != RuleAction.Op.Set -> value?.contentOrNull
-    field.isIdField() ->
-      value?.contentOrNull?.let { names.nameOf(it) } ?: Strings.reportsFormulaQueryNothing
+    field.isIdField() -> value?.contentOrNull?.let { names.nameOf(it) }
     field == Field.Amount -> value?.longOrNull?.let { Amount(it).formattedString() }
     field == Cleared ->
       when (value?.booleanOrNull) {

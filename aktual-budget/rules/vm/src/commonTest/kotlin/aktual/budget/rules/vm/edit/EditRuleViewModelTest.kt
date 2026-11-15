@@ -1,7 +1,9 @@
 package aktual.budget.rules.vm.edit
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.Categories
 import aktual.budget.db.Rules
+import aktual.budget.db.Transactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.RULES
@@ -12,6 +14,9 @@ import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
+import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
+import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType
 import aktual.budget.model.Field
@@ -19,18 +24,21 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.ACTION_OPS
-import aktual.budget.rules.domain.ConditionEntitiesLoader
+import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
+import aktual.budget.rules.domain.NameFetcher
+import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.domain.RulesLoaderImpl
+import aktual.budget.rules.domain.RulesWriterImpl
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.rules.domain.withField
 import aktual.budget.rules.domain.withOp
 import aktual.budget.rules.domain.withSplitMethod
-import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
-import aktual.budget.schedules.domain.SchedulesLoader
-import aktual.budget.transactions.domain.RuleMatcher
+import aktual.budget.schedules.domain.SchedulesLoaderImpl
+import aktual.budget.transactions.domain.RuleMatcherImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
@@ -344,6 +352,22 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Saving says so`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.setStage(Pre)
+      viewModel.events.test {
+        viewModel.save()
+        assertThat(awaitItem()).isEqualTo(Saved)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Changes are tracked against the saved rule`() = runDatabaseTest { scope ->
     insertRule(SAVED)
     val viewModel = createViewModel(scope, RuleId("a"))
@@ -467,6 +491,48 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Matches are searched for again when shown again`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope)
+
+    viewModel.matches.test {
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loading)
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loaded(0, 0, persistentListOf()))
+    }
+
+    // Lets the search stop now nothing's watching, as it would while the sheet is closed
+    scope.advanceUntilIdle()
+
+    viewModel.matches.test {
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loading)
+      assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loaded(0, 0, persistentListOf()))
+    }
+  }
+
+  @Test
+  fun `Ticked matches are forgotten when shown again`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    insertTransaction(id = "t", notes = "x")
+    val viewModel = createViewModel(scope, RuleId("a"))
+    viewModel.state.test { awaitLoaded() }
+
+    viewModel.matches.test {
+      assertThat(awaitLoadedMatches()).all {
+        prop(RuleMatchesState.Loaded::changing).isEqualTo(1)
+        prop(RuleMatchesState.Loaded::selected).isEmpty()
+      }
+      viewModel.toggleMatch(TransactionId("t"))
+      assertThat(awaitItem())
+        .isInstanceOf<RuleMatchesState.Loaded>()
+        .prop(RuleMatchesState.Loaded::selected)
+        .isNotEmpty()
+    }
+
+    scope.advanceUntilIdle()
+
+    viewModel.matches.test { assertThat(awaitLoadedMatches().selected).isEmpty() }
+  }
+
+  @Test
   fun `Matches can't show invalid actions`() = runDatabaseTest { scope ->
     val viewModel = createViewModel(scope)
 
@@ -476,6 +542,13 @@ class EditRuleViewModelTest {
       viewModel.setAction(1L, CATEGORY.copy(field = Account, value = JsonPrimitive("")))
       assertThat(awaitItem()).isEqualTo(Invalid)
     }
+  }
+
+  private suspend fun ReceiveTurbine<RuleMatchesState>.awaitLoadedMatches():
+    RuleMatchesState.Loaded {
+    var state = awaitItem()
+    while (state !is Loaded) state = awaitItem()
+    return state
   }
 
   private suspend fun ReceiveTurbine<EditRuleState>.awaitLoaded(): EditRuleState {
@@ -511,10 +584,10 @@ class EditRuleViewModelTest {
       ruleId = ruleId,
       payee = payee,
       uuidGenerator = { "id-${nextId++}" },
-      rulesDao = RulesDao(this),
-      syncController = sync,
+      rulesLoader = RulesLoaderImpl(RulesDao(this)),
+      rulesWriter = RulesWriterImpl(RulesDao(this), sync),
       ruleMatcher =
-        RuleMatcher(
+        RuleMatcherImpl(
           transactionDao = TransactionDao(this),
           accountDao = AccountDao(this),
           categoryDao = CategoryDao(this),
@@ -535,9 +608,9 @@ class EditRuleViewModelTest {
           uuidGenerator = { "id-${nextId++}" },
         ),
       nameFetcher = FakeNameFetcher,
-      conditionEntitiesLoader = ConditionEntitiesLoader(this),
+      conditionEntitiesLoader = ConditionEntitiesLoaderImpl(this),
       schedulesLoader =
-        SchedulesLoader(
+        SchedulesLoaderImpl(
           scheduleDao = ScheduleDao(this),
           accountDao = AccountDao(this),
           payeeDao = PayeeDao(this),
@@ -550,6 +623,56 @@ class EditRuleViewModelTest {
         ),
       viewModelContext = scope.viewModelContext,
     )
+  }
+
+  private suspend fun BudgetDatabase.insertTransaction(id: String, notes: String) {
+    AccountDao(this).insert(id = AccountId("acc"), name = "Account", offBudget = false)
+    // The category CATEGORY sets, so the rule changes the transaction
+    categoryMappingQueries.insert(CategoryId("c"), CategoryId("c"))
+    categoriesQueries.insert(
+      Categories(
+        id = CategoryId("c"),
+        name = "Groceries",
+        is_income = false,
+        cat_group = null,
+        sort_order = null,
+        tombstone = false,
+        hidden = false,
+        goal_def = null,
+        template_settings = null,
+        cleanup_def = null,
+      ),
+    )
+    transactionsQueries.withoutResult {
+      insert(
+        Transactions(
+          id = TransactionId(id),
+          isParent = false,
+          isChild = false,
+          acct = AccountId("acc"),
+          category = null,
+          amount = Amount(-1000),
+          description = null,
+          notes = notes,
+          date = LocalDate(2026, 1, 1),
+          financial_id = null,
+          type = null,
+          location = null,
+          error = null,
+          imported_description = null,
+          starting_balance_flag = false,
+          transferred_id = null,
+          sort_order = null,
+          tombstone = false,
+          cleared = true,
+          pending = false,
+          parent_id = null,
+          schedule = null,
+          reconciled = false,
+          raw_synced_data = null,
+        ),
+      )
+    }
   }
 
   private suspend fun BudgetDatabase.insertSchedule(

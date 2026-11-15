@@ -1,4 +1,4 @@
-package aktual.budget.rules.vm
+package aktual.budget.rules.domain
 
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
@@ -10,7 +10,7 @@ import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.json.JsonNull
 
-class RuleTest {
+class RuleUnknownValuesTest {
   @Test
   fun `Known values`() {
     assertThat(RULE.hasUnknownValues).isFalse()

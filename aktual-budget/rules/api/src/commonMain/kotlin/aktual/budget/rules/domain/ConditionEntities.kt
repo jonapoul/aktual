@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.Flow
 
 @Immutable data class ConditionEntity(val id: String, val name: String)
 
@@ -20,6 +21,13 @@ interface ConditionEntities {
   // Every entity's name by id, including hidden categories and closed accounts that saved
   // conditions can still point to
   val names: ImmutableMap<String, String>
+}
+
+interface ConditionEntitiesLoader {
+  // Loads again whenever an account, category, group or payee changes
+  fun observe(): Flow<ConditionEntities>
+
+  suspend fun load(): ConditionEntities
 }
 
 fun ConditionEntities.entities(field: Field): ImmutableList<ConditionEntity> =
