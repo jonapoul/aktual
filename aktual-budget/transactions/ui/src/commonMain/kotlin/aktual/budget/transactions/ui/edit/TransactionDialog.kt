@@ -4,6 +4,7 @@ import aktual.budget.transactions.vm.edit.EditTransactionError
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.DialogButtonKind
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import androidx.compose.material3.Text
@@ -132,6 +133,7 @@ internal fun ConfirmDeleteDialog(onConfirm: () -> Unit, onCancel: () -> Unit) =
     confirm = Strings.transactionDeleteConfirm,
     cancel = Strings.transactionSheetCancel,
     highlight = colors.errorText,
+    confirmKind = Destructive,
     onConfirm = onConfirm,
     onCancel = onCancel,
   )
@@ -157,6 +159,7 @@ private fun ConfirmDialog(
   highlight: Color,
   onConfirm: () -> Unit,
   onCancel: () -> Unit,
+  confirmKind: DialogButtonKind = Primary,
 ) =
   AktualAlertDialog(
     title = title,
@@ -164,7 +167,7 @@ private fun ConfirmDialog(
     onDismissRequest = onCancel,
     buttons = {
       DialogTextButton(text = cancel, onClick = onCancel)
-      DialogTextButton(kind = Primary, text = confirm, onClick = onConfirm)
+      DialogTextButton(kind = confirmKind, text = confirm, onClick = onConfirm)
     },
     content = { Text(message) },
   )
