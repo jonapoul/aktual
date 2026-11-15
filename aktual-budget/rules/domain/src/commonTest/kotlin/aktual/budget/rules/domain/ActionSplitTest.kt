@@ -1,10 +1,10 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.model.Field
 import aktual.budget.model.RuleAction
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNull
@@ -43,15 +43,14 @@ class ActionSplitTest {
   fun `The whole transaction is always a split`() {
     val splits = emptyList<RuleAction>().splits()
     assertThat(splits.map { it.index }).containsExactly(0)
-    assertThat(splits[0].actions).isEqualTo(emptyList<IndexedValue<RuleAction>>())
+    assertThat(splits[0].actions).isEmpty()
   }
 
   @Test
   fun `Adding an action keeps the list grouped by split`() {
     val added = actions.addAction(actions.nextAction(1))
     assertThat(added[3]).isEqualTo(newAction(Payee, splitIndex = 1))
-    assertThat(added.splits()[1].actions.map { it.value.field })
-      .isEqualTo(listOf<Field?>(Category, Payee))
+    assertThat(added.splits()[1].actions.map { it.value.field }).isEqualTo(listOf(Category, Payee))
     assertThat(listOf(payee).addAction(listOf(payee).nextAction(0)).last().field)
       .isEqualTo(Category)
   }
