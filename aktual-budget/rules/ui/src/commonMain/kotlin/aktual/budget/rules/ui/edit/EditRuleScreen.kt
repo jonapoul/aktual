@@ -142,6 +142,8 @@ internal fun EditRuleScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
+        // Like upstream, a new rule goes back to where it was created from
+        Created,
         DeletedRule -> back()
         is AppliedActions ->
           snackbarHostState.showSnackbar(

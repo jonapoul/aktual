@@ -18,6 +18,7 @@ import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -26,6 +27,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.OnAction
@@ -33,6 +35,7 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.StuckHeaders
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -54,14 +57,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -150,8 +157,40 @@ private fun ListRulesScaffold(
           listState = listState,
         )
       }
+
+      if (state is Success) {
+        AktualFab(
+          modifier =
+            Modifier.align(BottomEnd)
+              .padding(
+                end = Dimens.Huge,
+                bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
+              ),
+          text = Strings.rulesCreate,
+          icon = AktualIcons.Add,
+          isExpanded = listState.isScrollingUp(),
+          onClick = { onAction(CreateNew) },
+        )
+      }
     }
   }
+}
+
+// True until the list scrolls down, then again once it scrolls back up
+@Composable
+private fun LazyListState.isScrollingUp(): Boolean {
+  var isUp by remember(this) { mutableStateOf(true) }
+  LaunchedEffect(this) {
+    var previous = firstVisibleItemIndex to firstVisibleItemScrollOffset
+    snapshotFlow { firstVisibleItemIndex to firstVisibleItemScrollOffset }
+      .collect { position ->
+        if (position != previous) {
+          isUp = compareValuesBy(position, previous, { it.first }, { it.second }) < 0
+          previous = position
+        }
+      }
+  }
+  return isUp
 }
 
 @Composable
@@ -260,9 +299,15 @@ private fun ContentSuccess(
       )
     }
 
-    item { BottomSpacing() }
+    item {
+      // Room to scroll the last rule out from under the create button
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
+
+private val FabClearance = 72.dp
 
 @Composable internal expect fun rulesHeaderText(): String
 
