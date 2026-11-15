@@ -190,36 +190,14 @@ fun TransactionsScreen(
 
   editAccount?.let { id -> EditAccountSheet(id = id, onDismiss = { editAccount = null }) }
 
-  confirmUnlock?.let { id ->
-    ReconciledDialog(
-      message = Strings.transactionReconciledUnlock,
-      onConfirm = {
-        confirmUnlock = null
-        viewModel.unlockTransaction(id)
-      },
-      onCancel = { confirmUnlock = null },
-    )
-  }
-
-  confirmDelete?.let { pending ->
-    val dismiss = { confirmDelete = null }
-    if (pending.reconciled) {
-      // As upstream, a reconciled transaction warns first, then asks as for any other
-      ReconciledDialog(
-        message = Strings.transactionReconciledDelete,
-        onConfirm = { confirmDelete = pending.copy(reconciled = false) },
-        onCancel = dismiss,
-      )
-    } else {
-      ConfirmDeleteDialog(
-        onConfirm = {
-          dismiss()
-          viewModel.deleteTransaction(pending.id)
-        },
-        onCancel = dismiss,
-      )
-    }
-  }
+  RowDialogs(
+    confirmUnlock = confirmUnlock,
+    confirmDelete = confirmDelete,
+    onConfirmUnlockChange = { confirmUnlock = it },
+    onConfirmDeleteChange = { confirmDelete = it },
+    onUnlock = viewModel::unlockTransaction,
+    onDelete = viewModel::deleteTransaction,
+  )
 
   if (showLoginKept) {
     BankLoginKeptDialog(
@@ -303,6 +281,48 @@ private fun BankSyncSnackbars(finished: Flow<BankSyncSummary>, snackbars: Snackb
     finished.collect { summary ->
       snackbars.show { showBankSyncSummary(summary) }
     }
+  }
+}
+
+// Asked of a single row: unlocking it while reconciling, or deleting it after a swipe
+@Composable
+@Suppress("LongParameterList")
+private fun RowDialogs(
+  confirmUnlock: TransactionId?,
+  confirmDelete: PendingDelete?,
+  onConfirmUnlockChange: (TransactionId?) -> Unit,
+  onConfirmDeleteChange: (PendingDelete?) -> Unit,
+  onUnlock: (TransactionId) -> Unit,
+  onDelete: (TransactionId) -> Unit,
+) {
+  confirmUnlock?.let { id ->
+    ReconciledDialog(
+      message = Strings.transactionReconciledUnlock,
+      onConfirm = {
+        onConfirmUnlockChange(null)
+        onUnlock(id)
+      },
+      onCancel = { onConfirmUnlockChange(null) },
+    )
+  }
+
+  val pending = confirmDelete ?: return
+  val dismiss = { onConfirmDeleteChange(null) }
+  if (pending.reconciled) {
+    // As upstream, a reconciled transaction warns first, then asks as for any other
+    ReconciledDialog(
+      message = Strings.transactionReconciledDelete,
+      onConfirm = { onConfirmDeleteChange(pending.copy(reconciled = false)) },
+      onCancel = dismiss,
+    )
+  } else {
+    ConfirmDeleteDialog(
+      onConfirm = {
+        dismiss()
+        onDelete(pending.id)
+      },
+      onCancel = dismiss,
+    )
   }
 }
 
