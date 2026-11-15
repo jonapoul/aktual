@@ -4,7 +4,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:banksync"))
     api(project(":aktual-budget:data:db"))
-    api(project(":aktual-core:utils"))
+    implementation(project(":aktual-core:utils"))
   }
 
   commonTestDependencies {

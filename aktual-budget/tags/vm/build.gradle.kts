@@ -9,7 +9,6 @@ kotlin {
     api(libs.compose.uiGraphics)
     api(project(":aktual-budget:tags"))
     api(project(":aktual-budget:utils"))
-    api(project(":aktual-core:utils"))
     api(project(":aktual-prefs"))
     implementation(libs.androidx.datastore.core)
     implementation(libs.metrox.viewmodel)

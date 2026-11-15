@@ -4,6 +4,5 @@ kotlin {
   commonMainDependencies {
     api(libs.kotlinx.coroutines.core)
     api(project(":aktual-api"))
-    api(project(":aktual-budget:model"))
   }
 }

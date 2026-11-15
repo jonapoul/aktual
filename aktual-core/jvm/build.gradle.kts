@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
   api(project(":aktual-core:logging:impl"))
-  api(project(":aktual-core:utils"))
   api(project(":aktual-prefs"))
   api(libs.compose.ui)
   api(libs.compose.uiUnit)

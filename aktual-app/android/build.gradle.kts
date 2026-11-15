@@ -175,6 +175,7 @@ dependencies {
   implementation(project(":aktual-app:ui-budget"))
   implementation(project(":aktual-core:android"))
   implementation(project(":aktual-core:logging"))
+  implementation(project(":aktual-core:logging:impl"))
   implementation(libs.alakazam.kotlin)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
