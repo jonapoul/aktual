@@ -4,7 +4,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,12 +17,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemColors
-import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -123,36 +121,38 @@ fun BottomSheetListItem(
   trailingContent: (@Composable () -> Unit)? = null,
   labelColor: Color = Unspecified,
 ) {
-  ListItem(
-    modifier = modifier.clickable(enabled, onClick = onClick),
-    leadingContent = leadingContent,
-    headlineContent = { Text(text = label, color = labelColor) },
-    trailingContent =
-      if (isSelected || trailingContent != null) {
-        {
-          Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = CenterVertically,
-          ) {
-            if (isSelected) BottomSheetIcon(AktualIcons.Check)
-            trailingContent?.invoke()
-          }
-        }
-      } else {
-        null
-      },
-    colors = colors.listItem(),
-  )
-}
+  val contentColor = if (enabled) colors.pageText else colors.pageText.disabled
+  CompositionLocalProvider(LocalContentColor provides contentColor) {
+    Row(
+      modifier =
+        modifier
+          .fillMaxWidth()
+          .clickable(enabled, onClick = onClick)
+          .padding(horizontal = Dimens.Huge, vertical = Dimens.Large),
+      horizontalArrangement = Arrangement.spacedBy(Dimens.Huge),
+      verticalAlignment = CenterVertically,
+    ) {
+      leadingContent?.invoke()
 
-@Composable
-private fun Colors.listItem(): ListItemColors =
-  ListItemDefaults.colors(
-    containerColor = Transparent,
-    headlineColor = pageText,
-    leadingIconColor = pageText,
-    trailingIconColor = pageText,
-  )
+      Text(
+        modifier = Modifier.weight(1f),
+        text = label,
+        color = if (enabled) labelColor else Unspecified,
+        style = AktualTheme.typography.bodyLarge,
+      )
+
+      if (isSelected || trailingContent != null) {
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
+          verticalAlignment = CenterVertically,
+        ) {
+          if (isSelected) BottomSheetIcon(AktualIcons.Check)
+          trailingContent?.invoke()
+        }
+      }
+    }
+  }
+}
 
 @Composable
 fun BottomSheetMessage(text: String, modifier: Modifier = Modifier) =
