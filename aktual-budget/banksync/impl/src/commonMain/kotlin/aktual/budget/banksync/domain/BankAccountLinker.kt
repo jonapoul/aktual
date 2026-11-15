@@ -16,7 +16,9 @@ import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
+import aktual.di.BudgetScope
 import aktual.log
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
  * unlinkAccount() in packages/loot-core/src/server/accounts/app.ts.
  */
 @Inject
+@ContributesBinding(BudgetScope::class)
 class BankAccountLinker(
   private val api: BankSyncApi,
   private val accountDao: AccountDao,
@@ -34,7 +37,7 @@ class BankAccountLinker(
   private val bankSync: BankSyncController,
   private val uuidGenerator: UuidGenerator,
   private val scope: BudgetCoroutineScope,
-) {
+) : BankAccountUnlinker {
   /**
    * Links [account] to [external], which [source] listed, then starts its first sync in the
    * budget's scope, after any sync already running.
@@ -67,11 +70,7 @@ class BankAccountLinker(
     return account
   }
 
-  /**
-   * Clears [account]'s link. Once nothing else uses its GoCardless bank login, that's deleted too.
-   * Failing to delete it doesn't stop the unlink, as upstream, but returns false.
-   */
-  suspend fun unlink(account: AccountId): Boolean {
+  override suspend fun unlink(account: AccountId): Boolean {
     val row = checkNotNull(accountDao[account]) { "Account $account not found" }
     val bank = row.bank ?: return true
     val columns =

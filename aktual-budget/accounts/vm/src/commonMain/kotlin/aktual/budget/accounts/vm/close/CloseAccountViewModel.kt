@@ -2,7 +2,7 @@ package aktual.budget.accounts.vm.close
 
 import aktual.budget.accounts.domain.AccountWriter
 import aktual.budget.banksync.domain.AccountDeleter
-import aktual.budget.banksync.domain.BankAccountLinker
+import aktual.budget.banksync.domain.BankAccountUnlinker
 import aktual.budget.db.GetManageList
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
@@ -52,7 +52,7 @@ class CloseAccountViewModel
 internal constructor(
   @Assisted private val accountId: AccountId,
   private val writer: AccountWriter,
-  private val linker: BankAccountLinker,
+  private val linker: BankAccountUnlinker,
   private val deleter: AccountDeleter,
   categoryDao: CategoryDao,
   accountDao: AccountDao,
