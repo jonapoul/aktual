@@ -8,7 +8,6 @@ kotlin {
     api(project(":aktual-budget:reports"))
     api(project(":aktual-budget:schedules"))
     api(project(":aktual-budget:utils"))
-    api(project(":aktual-core:utils"))
   }
 
   commonTestDependencies {

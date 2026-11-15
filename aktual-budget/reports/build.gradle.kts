@@ -9,7 +9,6 @@ kotlin {
     api(libs.kotlinx.coroutines.core)
     api(project(":aktual-budget:formula"))
     api(project(":aktual-budget:model"))
-    api(project(":aktual-core:model"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(project(":aktual-core:logging"))
   }
