@@ -26,7 +26,6 @@ const val MC_MAX_TAX_BAND_RATE = 0.99
 const val MC_MAX_ANNUAL_FEE_RATE = 0.1
 private const val MIN_HORIZON_YEARS = 1
 private const val MAX_HORIZON_YEARS = 100
-const val DEFAULT_INFLATION_MEAN = 0.025
 
 data class AssetWeights(val stocks: Double, val bonds: Double, val cash: Double)
 

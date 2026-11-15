@@ -5,6 +5,8 @@ import fallback.serializer.Fallback
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+const val DEFAULT_INFLATION_MEAN = 0.025
+
 // From packages/loot-core/src/types/models/dashboard.ts. Amounts are in minor units, rates and
 // percentages are decimal fractions (0.06 = 6%)
 @Serializable

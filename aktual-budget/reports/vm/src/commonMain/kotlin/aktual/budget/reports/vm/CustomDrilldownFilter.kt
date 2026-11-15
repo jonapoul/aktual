@@ -7,7 +7,6 @@ import aktual.budget.model.ConditionsFilter
 import aktual.budget.model.ExactTags
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
-import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.Month.DECEMBER
@@ -17,23 +16,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
-
-/**
- * The part of a custom report a tap drills down to: a [group] in an [interval]. A null [group]
- * covers every group, and a null [interval] the report's whole dates. [flow] narrows it to money in
- * or out, as the table's deposits and payments columns do
- */
-@Immutable
-data class CustomDrilldown(
-  val group: CustomGroup? = null,
-  val interval: CustomInterval? = null,
-  val flow: CustomFlow? = null,
-)
-
-enum class CustomFlow {
-  In,
-  Out,
-}
 
 // packages/desktop-client/src/components/reports/graphs/showActivity.ts: the report's own
 // conditions, plus the group, dates, flow and shown rows the tapped amount was summed from. Unlike
@@ -160,7 +142,3 @@ private fun condition(
   value: JsonElement,
   options: ConditionOptions? = null,
 ) = Condition(field = field, operator = operator, value = value, options = options)
-
-/** Budgeted reports have no transactions to show */
-val CustomData.canDrillDown: Boolean
-  get() = config.balanceType != Budgeted

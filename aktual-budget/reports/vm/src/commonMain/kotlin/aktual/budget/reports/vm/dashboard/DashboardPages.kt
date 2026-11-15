@@ -7,7 +7,6 @@ import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.utils.UuidGenerator
 import aktual.log
-import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -15,8 +14,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-
-@Immutable data class DashboardPage(val id: DashboardPageId, val name: String)
 
 @Inject
 internal class DashboardPages(

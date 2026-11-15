@@ -83,7 +83,7 @@ internal class CustomReportSync(
   // selected_categories and color_scheme are left alone, since upstream no longer writes them
   private fun CustomReportConfig.toColumns(metadata: JsonObject?): Map<String, MessageValue> =
     buildMap {
-      when (dates) {
+      when (val dates = dates) {
         is Live -> {
           put("date_static", false.messageValue())
           put("date_range", DateRangeType.serializer().encode(dates.type))

@@ -238,7 +238,7 @@ internal object LenientYearMonthSerializer : KSerializer<YearMonth> {
   }
 }
 
-internal fun String.toYearMonthOrNull(): YearMonth? =
+fun String.toYearMonthOrNull(): YearMonth? =
   try {
     YearMonth.parse(this)
   } catch (_: IllegalArgumentException) {

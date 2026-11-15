@@ -8,6 +8,7 @@ kotlin {
   commonMainDependencies {
     api(libs.kotlinx.datetime)
     api(project(":aktual-budget:formula"))
+    api(project(":aktual-budget:reports"))
     api(project(":aktual-budget:rules:impl"))
     api(project(":aktual-budget:tags:impl"))
     implementation(project(":aktual-budget:budgeting:impl"))
