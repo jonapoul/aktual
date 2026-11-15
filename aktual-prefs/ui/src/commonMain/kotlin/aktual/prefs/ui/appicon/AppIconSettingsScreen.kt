@@ -82,7 +82,11 @@ private fun AppIconSettingsScaffold(
           verticalAlignment = CenterVertically,
         ) {
           LauncherShapes.forEach { shape ->
-            AppIconImage(icon = selected, modifier = Modifier.size(PreviewSize), shape = shape)
+            AppIconImage(
+              icon = selected,
+              modifier = Modifier.size(PreviewSize).border(HairlineWidth, colors.cardBorder, shape),
+              shape = shape,
+            )
           }
         }
       }
@@ -94,6 +98,7 @@ private fun AppIconSettingsScaffold(
           modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
           horizontalArrangement = Arrangement.SpaceEvenly,
           verticalArrangement = Arrangement.spacedBy(12.dp),
+          maxItemsInEachRow = OPTIONS_PER_ROW,
         ) {
           AppIcon.entries.forEach { icon ->
             IconOption(icon = icon, isSelected = icon == selected, onClick = { onSelect(icon) })
@@ -121,7 +126,8 @@ private fun IconOption(icon: AppIcon, isSelected: Boolean, onClick: () -> Unit) 
       modifier =
         Modifier.border(width = 3.dp, color = ringColor, shape = AppIconShape)
           .padding(5.dp)
-          .size(OptionIconSize),
+          .size(OptionIconSize)
+          .border(HairlineWidth, colors.cardBorder, AppIconShape),
     )
     Text(
       text = icon.label(),
@@ -160,6 +166,10 @@ private val LauncherShapes: ImmutableList<Shape> =
 private val PreviewSize = 64.dp
 private val OptionIconSize = 56.dp
 private val OptionWidth = 84.dp
+private val HairlineWidth = 1.dp
+
+// Seven icons sit as four and three rather than leaving one alone on a phone-width row
+private const val OPTIONS_PER_ROW = 4
 
 @PortraitPreview
 @Composable
