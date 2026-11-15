@@ -143,7 +143,7 @@ internal fun LazyListScope.conditionsNode(
       RuleCard(
         title = "${condition.field.label()} ${condition.operator.label()}",
         value = condition.valueLabel(names, RuleConditions),
-        onClick = if (onOpen != null && key != null && isEnabled) ({ onOpen(key) }) else null,
+        onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
       )
     }
   }
@@ -252,7 +252,7 @@ internal fun LazyListScope.actionsNode(
         TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           SplitHeader(
             split = split,
-            onClick = if (amountKey != null && isEnabled) ({ onOpenSplit(amountKey) }) else null,
+            onClick = clickToOpen(amountKey, onOpenSplit.takeIf { isEnabled }),
           )
         }
       }
@@ -267,7 +267,7 @@ internal fun LazyListScope.actionsNode(
         RuleCard(
           title = action.title(),
           value = action.valueText(names),
-          onClick = if (onOpen != null && key != null && isEnabled) ({ onOpen(key) }) else null,
+          onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
         )
       }
     }
@@ -307,6 +307,12 @@ internal fun LazyListScope.actionsNode(
       }
     }
   }
+}
+
+// Null when there's nothing to open, so the card isn't clickable
+private fun clickToOpen(key: Long?, onOpen: ((Long) -> Unit)?): (() -> Unit)? {
+  if (key == null || onOpen == null) return null
+  return { onOpen(key) }
 }
 
 @Composable
