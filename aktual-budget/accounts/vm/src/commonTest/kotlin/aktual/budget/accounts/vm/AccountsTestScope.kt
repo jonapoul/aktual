@@ -4,7 +4,7 @@ import aktual.api.client.BankSyncApi
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.budget.accounts.domain.AccountWriter
-import aktual.budget.banksync.domain.AccountDeleter
+import aktual.budget.banksync.domain.AccountDeleterImpl
 import aktual.budget.banksync.domain.BankAccountLinker
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncProgress
@@ -93,7 +93,7 @@ internal class AccountsTestScope(
       scope = BudgetCoroutineScope(scope),
     )
 
-  val deleter = AccountDeleter(linker, transactions)
+  val deleter = AccountDeleterImpl(linker, transactions)
 
   // Cancelled when the test ends, since their scopes aren't children of the test's
   fun <T : ViewModel> track(viewModel: T): T = viewModel.also(viewModels::add)

@@ -1,4 +1,4 @@
--- Lookups for bank sync, see aktual-budget:banksync:domain. The views don't carry raw_synced_data,
+-- Lookups for bank sync, see aktual-budget:banksync:impl. The views don't carry raw_synced_data,
 -- and SQLDelight can't type the computed parent_id of v_transactions_internal, so both come from
 -- the joined transactions row
 

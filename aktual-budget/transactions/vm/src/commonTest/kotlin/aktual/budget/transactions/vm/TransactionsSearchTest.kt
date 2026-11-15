@@ -11,6 +11,7 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.localChange
+import aktual.budget.transactions.domain.TransactionMatcherImpl
 import aktual.budget.transactions.vm.test.DATE_1
 import aktual.budget.transactions.vm.test.DATE_2
 import aktual.budget.transactions.vm.test.DATE_3
@@ -505,6 +506,7 @@ internal class TransactionsSearchTest : TransactionsViewModelTestBase() {
     val listSpec = TransactionsSpec(accountSpec = spec)
     return TransactionsPagingSource(
       transactionDao = transactions,
+      matcher = TransactionMatcherImpl(transactions),
       tagsDao = tags,
       spec = listSpec,
       search = listSpec.activeSearch(search),

@@ -34,6 +34,7 @@ import aktual.budget.transactions.domain.SaveFilterResult
 import aktual.budget.transactions.domain.SavedFilter
 import aktual.budget.transactions.domain.SavedFilters
 import aktual.budget.transactions.domain.TransactionFilters
+import aktual.budget.transactions.domain.TransactionMatcher
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -103,6 +104,7 @@ internal constructor(
   private val accountDao: AccountDao,
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
+  private val matcher: TransactionMatcher,
   private val categoryDao: CategoryDao,
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
@@ -251,7 +253,7 @@ internal constructor(
     }
 
   // As typed, for the search field and filter chips. Shared by every account list
-  val search: StateFlow<TransactionSearch> = filters
+  val search: StateFlow<TransactionSearch> = filters.search
 
   // Only account lists can be searched. Tag, category and filtered lists ignore the search
   val canSearch: Boolean = spec.isAccountList
@@ -264,7 +266,7 @@ internal constructor(
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   val savedFiltersState: StateFlow<SavedFiltersState> =
-    combine(savedFilters.observe(), filters.savedId, filters) { saved, id, search ->
+    combine(savedFilters.observe(), filters.savedId, filters.search) { saved, id, search ->
         val applied = saved.firstOrNull { it.id == id }
         SavedFiltersState(
           filters = saved,
@@ -279,11 +281,11 @@ internal constructor(
   @OptIn(FlowPreview::class)
   private val activeSearch: StateFlow<TransactionSearch?> =
     combine(
-        filters
+        filters.search
           .map { it.trimmed().text }
           .distinctUntilChanged()
           .debounce { text -> if (text.isEmpty()) ZERO else QUERY_DEBOUNCE },
-        filters.map { it.conditions }.distinctUntilChanged(),
+        filters.search.map { it.conditions }.distinctUntilChanged(),
         ::TransactionSearch,
       )
       .map(spec::activeSearch)
@@ -291,7 +293,7 @@ internal constructor(
       .stateIn(
         viewModelScope,
         Eagerly,
-        initialValue = spec.activeSearch(filters.value.trimmed()),
+        initialValue = spec.activeSearch(filters.search.value.trimmed()),
       )
 
   // A filtered or searched list only holds part of each account, so it has no balance to show
@@ -454,12 +456,14 @@ internal constructor(
 
   fun applySavedFilter(filter: SavedFilter) = filters.apply(filter)
 
-  fun saveFilter(name: String) = saveFilter { savedFilters.create(name, filters.value.conditions) }
+  fun saveFilter(name: String) = saveFilter {
+    savedFilters.create(name, filters.search.value.conditions)
+  }
 
   // Saves the current conditions over the applied filter's
   fun updateSavedFilter() {
     val applied = savedFiltersState.value.applied ?: return
-    saveFilter { savedFilters.update(applied.id, applied.name, filters.value.conditions) }
+    saveFilter { savedFilters.update(applied.id, applied.name, filters.search.value.conditions) }
   }
 
   // Renames the applied filter, keeping its saved conditions
@@ -585,6 +589,7 @@ internal constructor(
     TransactionsPagingSource(
         transactionDao = transactionDao,
         tagsDao = tagsDao,
+        matcher = matcher,
         spec = spec,
         hideReconciled = hideReconciled.value,
         search = search,

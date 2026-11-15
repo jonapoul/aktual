@@ -1,4 +1,4 @@
--- Lookups for running rules against transactions, see aktual-budget:rules:domain
+-- Lookups for running rules against transactions, see aktual-budget:rules:impl
 
 -- packages/loot-core/src/server/db/index.ts getPayee() / getPayeeByName()
 rulePayees:

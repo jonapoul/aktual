@@ -1,4 +1,4 @@
--- Lookups for category learning, see CategoryLearner in aktual-budget:transactions:domain
+-- Lookups for category learning, see CategoryLearner in aktual-budget:transactions:impl
 
 -- The changed transactions batchUpdateTransactions() in
 -- packages/loot-core/src/server/transactions/index.ts passes to updateCategoryRules()

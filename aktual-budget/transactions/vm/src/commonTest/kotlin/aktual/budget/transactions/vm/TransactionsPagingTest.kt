@@ -9,6 +9,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.localChange
+import aktual.budget.transactions.domain.TransactionMatcherImpl
 import aktual.budget.transactions.vm.test.DATED_A
 import aktual.budget.transactions.vm.test.DATED_B
 import aktual.budget.transactions.vm.test.DATED_C
@@ -57,6 +58,7 @@ internal class TransactionsPagingTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
@@ -112,6 +114,7 @@ internal class TransactionsPagingTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
@@ -157,6 +160,7 @@ internal class TransactionsPagingTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
@@ -255,6 +259,7 @@ internal class TransactionsPagingTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))),
       )
@@ -301,6 +306,7 @@ internal class TransactionsPagingTest : TransactionsViewModelTestBase() {
   private fun pagingSource(spec: AccountSpec, hideReconciled: Boolean = false) =
     TransactionsPagingSource(
       transactionDao = transactions,
+      matcher = TransactionMatcherImpl(transactions),
       tagsDao = tags,
       spec = TransactionsSpec(spec),
       hideReconciled = hideReconciled,

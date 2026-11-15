@@ -10,6 +10,7 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.localChange
 import aktual.budget.tags.domain.TagLabel
+import aktual.budget.transactions.domain.TransactionMatcherImpl
 import aktual.budget.transactions.vm.test.DATED_A
 import aktual.budget.transactions.vm.test.DATED_B
 import aktual.budget.transactions.vm.test.DATED_C
@@ -67,6 +68,7 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
@@ -93,6 +95,7 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
@@ -127,6 +130,7 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(SpecificAccount(AccountId("a"))),
       )
@@ -158,6 +162,7 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
@@ -200,6 +205,7 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))),
       )
@@ -234,7 +240,12 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
         categorySpec = CategorySpec.SpecificCategory(CategoryId("a"), YearMonth(2025, 6)),
       )
     val source =
-      TransactionsPagingSource(transactionDao = transactions, tagsDao = tags, spec = spec)
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
+        tagsDao = tags,
+        spec = spec,
+      )
     val params = LoadParams.Refresh<PageKey>(key = null, loadSize = 50, placeholdersEnabled = false)
 
     // then - no balances, since the list only holds part of each account
@@ -265,12 +276,14 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val uncategorised =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(categorySpec = Uncategorised),
       )
     val uncategorisedWithTag =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec =
           TransactionsSpec(
@@ -309,6 +322,7 @@ internal class TransactionsListTest : TransactionsViewModelTestBase() {
     val pagingSource =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(AllAccounts),
       )
