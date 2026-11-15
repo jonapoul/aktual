@@ -7,13 +7,13 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -89,13 +89,9 @@ internal fun ChartDateConfig(
 
     VerticalSpacer(SPACING)
 
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      itemVerticalAlignment = CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(SPACING),
-    ) {
+    AnimatedFlowRow(modifier = Modifier.fillMaxWidth(), itemVerticalAlignment = CenterVertically) {
       DateRangeType.known.fastForEach { type ->
-        DateRangeTypeButton(type = type, onClick = onDateRangeType)
+        item(key = type) { DateRangeTypeButton(type = type, onClick = onDateRangeType) }
       }
     }
   }

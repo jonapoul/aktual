@@ -25,7 +25,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -468,24 +467,28 @@ private fun PreviewButtons(@PreviewParameter(ColorParameters::class) colors: Col
   PreviewWithColors(colors) {
     Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       ButtonKind.entries.fastForEach { kind ->
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        AnimatedFlowRow {
           for (isEnabled in listOf(true, false)) {
             for (isLoading in listOf(false, true)) {
-              AktualButton(
-                text = kind.name,
-                kind = kind,
-                isEnabled = isEnabled,
-                isLoading = isLoading,
-                onClick = {},
-              )
-              AktualButton(
-                text = kind.name,
-                kind = kind,
-                icon = AktualIcons.Add,
-                isEnabled = isEnabled,
-                isLoading = isLoading,
-                onClick = {},
-              )
+              item {
+                AktualButton(
+                  text = kind.name,
+                  kind = kind,
+                  isEnabled = isEnabled,
+                  isLoading = isLoading,
+                  onClick = {},
+                )
+              }
+              item {
+                AktualButton(
+                  text = kind.name,
+                  kind = kind,
+                  icon = AktualIcons.Add,
+                  isEnabled = isEnabled,
+                  isLoading = isLoading,
+                  onClick = {},
+                )
+              }
             }
           }
         }
@@ -499,23 +502,27 @@ private fun PreviewIconButtons(@PreviewParameter(ColorParameters::class) colors:
   PreviewWithColors(colors) {
     Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       ButtonKind.entries.fastForEach { kind ->
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        AnimatedFlowRow {
           for (isEnabled in listOf(true, false)) {
+            item {
+              AktualIconButton(
+                imageVector = AktualIcons.Check,
+                contentDescription = kind.name,
+                kind = kind,
+                isEnabled = isEnabled,
+                onClick = {},
+              )
+            }
+          }
+          item {
             AktualIconButton(
               imageVector = AktualIcons.Check,
               contentDescription = kind.name,
               kind = kind,
-              isEnabled = isEnabled,
+              isLoading = true,
               onClick = {},
             )
           }
-          AktualIconButton(
-            imageVector = AktualIcons.Check,
-            contentDescription = kind.name,
-            kind = kind,
-            isLoading = true,
-            onClick = {},
-          )
         }
       }
     }
@@ -527,21 +534,25 @@ private fun PreviewDialogTextButtons(@PreviewParameter(ColorParameters::class) c
   PreviewWithColors(colors) {
     Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       DialogButtonKind.entries.fastForEach { kind ->
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        AnimatedFlowRow {
           for (isEnabled in listOf(true, false)) {
+            item {
+              DialogTextButton(
+                text = kind.name,
+                kind = kind,
+                isEnabled = isEnabled,
+                onClick = {},
+              )
+            }
+          }
+          item {
             DialogTextButton(
               text = kind.name,
               kind = kind,
-              isEnabled = isEnabled,
+              isLoading = true,
               onClick = {},
             )
           }
-          DialogTextButton(
-            text = kind.name,
-            kind = kind,
-            isLoading = true,
-            onClick = {},
-          )
         }
       }
     }

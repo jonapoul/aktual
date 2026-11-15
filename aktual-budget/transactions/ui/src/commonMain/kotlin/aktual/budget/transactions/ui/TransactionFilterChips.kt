@@ -18,6 +18,7 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
@@ -31,9 +32,7 @@ import aktual.core.ui.Rectangle
 import aktual.core.ui.SheetHost
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -79,43 +78,47 @@ internal fun TransactionFilterChips(
     shape = Rectangle,
     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp),
   ) {
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(2.dp),
-      verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
+    AnimatedFlowRow(modifier = Modifier.fillMaxWidth()) {
       if (hasConditions || saved.filters.isNotEmpty()) {
-        SavedFilterChip(saved, hasConditions, onClick = { showSaved = true })
+        item(key = SAVED_KEY) {
+          SavedFilterChip(saved, hasConditions, onClick = { showSaved = true })
+        }
       }
 
       if (conditions.conditions.size > 1) {
-        val isAny = conditions.op == Or
-        Chip(
-          text =
-            if (isAny) Strings.transactionsFilterMatchAny else Strings.transactionsFilterMatchAll,
-          colors = ChipDefaults.selectableColors(isSelected = true),
-          trailingIcon = AktualIcons.CheveronDown,
-          onClick = { onAction(Action.SetConditionsOp(if (isAny) And else Or)) },
-          role = Button,
-        )
+        item(key = MATCH_KEY) {
+          val isAny = conditions.op == Or
+          Chip(
+            text =
+              if (isAny) Strings.transactionsFilterMatchAny else Strings.transactionsFilterMatchAll,
+            colors = ChipDefaults.selectableColors(isSelected = true),
+            trailingIcon = AktualIcons.CheveronDown,
+            onClick = { onAction(Action.SetConditionsOp(if (isAny) And else Or)) },
+            role = Button,
+          )
+        }
       }
 
       conditions.conditions.fastForEachIndexed { index, condition ->
-        ConditionChip(
-          condition = condition,
-          names = names,
-          onClick = { editing = index },
-          onRemove = { onAction(Action.RemoveCondition(index)) },
-        )
+        item(key = condition) {
+          ConditionChip(
+            condition = condition,
+            names = names,
+            onClick = { editing = index },
+            onRemove = { onAction(Action.RemoveCondition(index)) },
+          )
+        }
       }
 
-      Chip(
-        text = Strings.transactionsFilterAdd,
-        colors = ChipDefaults.selectableColors(isSelected = false),
-        trailingIcon = AktualIcons.Add,
-        onClick = { adding = true },
-        role = Button,
-      )
+      item(key = ADD_KEY) {
+        Chip(
+          text = Strings.transactionsFilterAdd,
+          colors = ChipDefaults.selectableColors(isSelected = false),
+          trailingIcon = AktualIcons.Add,
+          onClick = { adding = true },
+          role = Button,
+        )
+      }
     }
   }
 
@@ -168,6 +171,10 @@ internal fun TransactionFilterChips(
 
 // Picks a field, then edits the new condition on a page of the same sheet, with back returning
 // to the fields. Only Done adds it, so the list isn't narrowed while it's still being edited
+private const val SAVED_KEY = "saved"
+private const val MATCH_KEY = "match"
+private const val ADD_KEY = "add"
+
 @Composable
 private fun AddFilterSheet(
   entities: ConditionEntities,

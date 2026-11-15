@@ -19,6 +19,7 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.Chip
 import aktual.core.ui.HostedSheet
@@ -26,7 +27,6 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -174,18 +174,17 @@ private fun EntityListPicker(
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     val ids = value.map { it.jsonPrimitive.content }
     if (ids.isNotEmpty()) {
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
+      AnimatedFlowRow {
         ids.fastForEach { id ->
-          val name = names.nameOf(id)
-          Chip(
-            text = name,
-            trailingIcon = AktualIcons.Delete,
-            trailingIconDescription = Strings.reportsFormulaQueryRemove(name),
-            onClick = { onChange(JsonArray(ids.minus(id).map(::JsonPrimitive))) },
-          )
+          item(key = id) {
+            val name = names.nameOf(id)
+            Chip(
+              text = name,
+              trailingIcon = AktualIcons.Delete,
+              trailingIconDescription = Strings.reportsFormulaQueryRemove(name),
+              onClick = { onChange(JsonArray(ids.minus(id).map(::JsonPrimitive))) },
+            )
+          }
         }
       }
     }
@@ -209,17 +208,16 @@ private fun TextListEditor(
   Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     val texts = value.map { it.jsonPrimitive.content }
     if (texts.isNotEmpty()) {
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
+      AnimatedFlowRow {
         texts.fastForEach { text ->
-          Chip(
-            text = text,
-            trailingIcon = AktualIcons.Delete,
-            trailingIconDescription = Strings.reportsFormulaQueryRemove(text),
-            onClick = { onChange(JsonArray(texts.minus(text).map(::JsonPrimitive))) },
-          )
+          item(key = text) {
+            Chip(
+              text = text,
+              trailingIcon = AktualIcons.Delete,
+              trailingIconDescription = Strings.reportsFormulaQueryRemove(text),
+              onClick = { onChange(JsonArray(texts.minus(text).map(::JsonPrimitive))) },
+            )
+          }
         }
       }
     }

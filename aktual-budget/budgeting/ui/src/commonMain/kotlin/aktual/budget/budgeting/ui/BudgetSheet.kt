@@ -7,6 +7,7 @@ import aktual.budget.model.toSignedInputText
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AmountField
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.EditorSheet
@@ -15,8 +16,6 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.stringLong
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -82,19 +81,15 @@ private fun QuickActionButtons(
   onClick: (QuickAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  FlowRow(
-    modifier = modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalArrangement = Arrangement.spacedBy(2.dp),
-    maxItemsInEachRow = 2,
-  ) {
+  AnimatedFlowRow(modifier = modifier.fillMaxWidth(), maxItemsInEachRow = 2) {
     for (action in QuickAction.available(type)) {
-      AktualButton(
-        modifier = Modifier.weight(1f),
-        text = action.string(),
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-        onClick = { onClick(action) },
-      )
+      item(key = action, weight = 1f) {
+        AktualButton(
+          text = action.string(),
+          contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+          onClick = { onClick(action) },
+        )
+      }
     }
   }
 }

@@ -26,16 +26,15 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
-import aktual.core.ui.Dimens
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -158,17 +157,16 @@ private fun ColumnScope.ActionContent(
   } else {
     Column {
       SectionLabel(Strings.editRuleActionDo)
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
-      ) {
+      AnimatedFlowRow {
         actionOps(action.splitIndex).fastForEach { op ->
-          Chip(
-            text = op.string(),
-            colors = ChipDefaults.selectableColors(isSelected = op == action.op),
-            role = RadioButton,
-            onClick = { onChange(action.withOp(op)) },
-          )
+          item(key = op) {
+            Chip(
+              text = op.string(),
+              colors = ChipDefaults.selectableColors(isSelected = op == action.op),
+              role = RadioButton,
+              onClick = { onChange(action.withOp(op)) },
+            )
+          }
         }
       }
     }

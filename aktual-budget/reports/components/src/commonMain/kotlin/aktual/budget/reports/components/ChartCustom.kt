@@ -24,6 +24,7 @@ import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -31,10 +32,8 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -193,12 +192,8 @@ private fun Legend(
   bars: ImmutableList<CustomBar>,
   modifier: Modifier = Modifier,
 ) =
-  FlowRow(
-    modifier = modifier.heightIn(max = LegendMaxHeight).verticalScrollWithBar(),
-    horizontalArrangement = spacedBy(12.dp),
-    verticalArrangement = spacedBy(2.dp),
-  ) {
-    bars.fastForEach { bar -> LegendItem(bar.name, bar.color) }
+  AnimatedFlowRow(modifier = modifier.heightIn(max = LegendMaxHeight).verticalScrollWithBar()) {
+    bars.fastForEach { bar -> item(key = bar.name) { LegendItem(bar.name, bar.color) } }
   }
 
 @Composable

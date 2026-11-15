@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloState
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.CardShape
 import aktual.core.ui.OnAction
 import aktual.core.ui.redacted
@@ -15,7 +16,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,12 +64,9 @@ internal fun CashflowGraph(chart: CashflowChart, config: McConfig, modifier: Mod
       YearBreakdown(chart, config, year)
     }
 
-    FlowRow(
-      horizontalArrangement = Arrangement.spacedBy(40.dp),
-      verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-      LegendGroup(Strings.monteCarloCashflowMoneyIn, chart.inflows, config)
-      LegendGroup(Strings.monteCarloCashflowMoneyOut, chart.outflows, config)
+    AnimatedFlowRow {
+      item { LegendGroup(Strings.monteCarloCashflowMoneyIn, chart.inflows, config) }
+      item { LegendGroup(Strings.monteCarloCashflowMoneyOut, chart.outflows, config) }
     }
   }
 
@@ -169,17 +166,16 @@ internal fun BreakdownRow(
 internal fun LegendGroup(heading: String, series: ImmutableList<CashflowSeries>, config: McConfig) =
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     GroupHeading(heading)
-    FlowRow(
-      horizontalArrangement = Arrangement.spacedBy(15.dp),
-      verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
+    AnimatedFlowRow {
       for (entry in series) {
-        Row(
-          verticalAlignment = CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-          Swatch(seriesColor(entry.colorIndex, colors), size = 12.dp)
-          Text(text = entry.label(config), style = typography.bodySmall)
+        item {
+          Row(
+            verticalAlignment = CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+          ) {
+            Swatch(seriesColor(entry.colorIndex, colors), size = 12.dp)
+            Text(text = entry.label(config), style = typography.bodySmall)
+          }
         }
       }
     }
