@@ -6,6 +6,7 @@ import aktual.budget.db.TransactionDatesFromDate
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
+import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleJsonPathIndex
 import aktual.budget.model.ScheduleNextDateId
@@ -36,6 +37,11 @@ class ScheduleDao(database: BudgetDatabase) {
 
   suspend operator fun get(id: ScheduleId): GetAllActive? = schedules.withResult {
     getActive(id, ::GetAllActive).awaitAsOneOrNull()
+  }
+
+  // The schedule that owns this rule, if any
+  suspend fun idByRule(rule: RuleId): ScheduleId? = schedules.withResult {
+    getIdByRule(rule).awaitAsList().firstOrNull()
   }
 
   // The active schedule already using this name, if any

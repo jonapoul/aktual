@@ -12,6 +12,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
@@ -31,6 +32,8 @@ import aktual.budget.rules.vm.edit.RuleMatchesState.Failed
 import aktual.budget.rules.vm.edit.RuleMatchesState.Invalid
 import aktual.budget.rules.vm.edit.RuleMatchesState.Loading
 import aktual.budget.rules.vm.hasUnknownValues
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.transactions.domain.RuleMatcher
 import aktual.budget.utils.BudgetSyncController
 import aktual.core.utils.UuidGenerator
@@ -53,6 +56,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
@@ -68,6 +72,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -91,6 +96,7 @@ internal constructor(
   private val ruleMatcher: RuleMatcher,
   val nameFetcher: NameFetcher,
   conditionEntitiesLoader: ConditionEntitiesLoader,
+  private val schedulesLoader: SchedulesLoader,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvents =
@@ -114,6 +120,14 @@ internal constructor(
   val conditionEntities: StateFlow<ConditionEntities?> =
     conditionEntitiesLoader
       .observe()
+      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
+
+  // For the linked schedule's card, and to pick one to link. Null until they've loaded, and stays
+  // null if they fail, so a linked schedule isn't shown as missing when it just hasn't loaded
+  val schedules: StateFlow<ImmutableList<Schedule>?> =
+    schedulesLoader
+      .observe()
+      .catch { e -> log.w(e) { "Failed loading schedules" } }
       .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = null)
 
   val state: StateFlow<EditRuleState> =
@@ -178,7 +192,7 @@ internal constructor(
               conditionsOp = rule.conditions_op ?: Default,
               actions = rule.actions.orEmpty().toImmutableList(),
             )
-          mutableDraft.update { draft(model) }
+          mutableDraft.update { draft(model, schedulesLoader.ownerOf(rule.id)) }
         }
       } catch (e: Exception) {
         log.e(e) { "Failed loading $ruleId" }
@@ -191,6 +205,10 @@ internal constructor(
 
   fun delete() {
     val id = ruleId ?: return
+    if (mutableDraft.value?.schedule != null) {
+      log.w { "Not deleting $id, it belongs to a schedule" }
+      return
+    }
 
     mutableIsWorking.update { true }
     viewModelScope.launch {
@@ -373,10 +391,11 @@ internal constructor(
     draft?.copy(rule = makeCopy(draft.rule))
   }
 
-  private fun draft(rule: Rule) =
+  private fun draft(rule: Rule, schedule: ScheduleId? = null) =
     Draft(
       rule = rule,
       saved = rule,
+      schedule = schedule,
       conditionKeys = rule.conditions.map { nextKey++ }.toPersistentList(),
       actionKeys = rule.actions.map { nextKey++ }.toPersistentList(),
     )
@@ -451,10 +470,12 @@ private fun Rule.toTransactionRule() =
   )
 
 // Keys stay with their condition or action as others are added or removed, so the UI can animate
-// them. Saved is the rule as last loaded or saved, to tell when there are unsaved changes
+// them. Saved is the rule as last loaded or saved, to tell when there are unsaved changes. Schedule
+// is the one that owns the rule
 internal data class Draft(
   val rule: Rule,
   val saved: Rule,
   val conditionKeys: PersistentList<Long>,
   val actionKeys: PersistentList<Long>,
+  val schedule: ScheduleId? = null,
 )

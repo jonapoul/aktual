@@ -12,6 +12,7 @@ import aktual.budget.model.Operator
 import aktual.budget.model.Operator.IsApprox
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
+import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
@@ -68,6 +69,9 @@ class SchedulesLoader(
       .observe(UpcomingScheduledTransactionLength)
       .map { it.toUpcomingLength() ?: DefaultUpcomingLength }
       .distinctUntilChanged()
+
+  // The schedule that owns this rule, if any
+  suspend fun ownerOf(rule: RuleId): ScheduleId? = scheduleDao.idByRule(rule)
 
   suspend fun load(id: ScheduleId): Schedule? {
     val today = calendar.today()

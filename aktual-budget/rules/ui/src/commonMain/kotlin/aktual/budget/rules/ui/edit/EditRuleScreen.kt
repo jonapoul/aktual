@@ -19,6 +19,7 @@ import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.edit.RuleMatchesState
 import aktual.budget.rules.vm.hasUnknownValues
+import aktual.budget.schedules.domain.Schedule
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.Delete
@@ -31,6 +32,7 @@ import aktual.core.l10n.Strings
 import aktual.core.l10n.edit_rule_matches_applied
 import aktual.core.l10n.edit_rule_matches_apply_failed
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
@@ -121,11 +123,13 @@ internal fun EditRuleScreen(
   id: RuleId?,
   payee: PayeeId?,
   back: BackNavigator,
+  editSchedule: EditScheduleNavigator,
   modifier: Modifier = Modifier,
   viewModel: EditRuleViewModel = metroViewModel(id, payee),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val conditionEntities by viewModel.conditionEntities.collectAsStateWithLifecycle()
+  val schedules by viewModel.schedules.collectAsStateWithLifecycle()
   val snackbarHostState = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
@@ -148,18 +152,22 @@ internal fun EditRuleScreen(
       mode = if (id == null) Create else Edit,
       state = state,
       conditionEntities = conditionEntities,
+      schedules = schedules,
       matches = viewModel.matches,
       snackbarHostState = snackbarHostState,
       onAction = { action ->
-        if (action == NavBack) back() else viewModel.handle(action)
+        when (action) {
+          NavBack -> back()
+          is OpenSchedule -> editSchedule(action.id)
+          is ViewModelAction -> viewModel.handle(action)
+        }
       },
     )
   }
 }
 
-private fun EditRuleViewModel.handle(action: EditRuleAction) {
+private fun EditRuleViewModel.handle(action: ViewModelAction) {
   when (action) {
-    NavBack -> Unit
     Delete -> delete()
     Save -> save()
     is SetStage -> setStage(action.value)
@@ -194,6 +202,7 @@ private fun EditRuleScaffold(
   state: EditRuleState,
   mode: Mode,
   conditionEntities: ConditionEntities?,
+  schedules: ImmutableList<Schedule>?,
   matches: StateFlow<RuleMatchesState>,
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
@@ -231,7 +240,7 @@ private fun EditRuleScaffold(
         },
         actions = {
           MoreMenu(
-            mode = mode,
+            canDelete = mode == Edit && state is Success && state.canDelete,
             isEnabled = state is Success && !state.isWorking,
             onShowMatches = { showMatches = true },
             onAction = onAction,
@@ -273,6 +282,8 @@ private fun EditRuleScaffold(
             conditionKeys = state.conditionKeys,
             actionKeys = state.actionKeys,
             conditionEntities = conditionEntities,
+            schedules = schedules,
+            isScheduleRule = state.schedule != null,
             isEnabled = !state.isWorking,
             onAction = onAction,
           )
@@ -344,7 +355,7 @@ private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<Edit
 
 @Composable
 private fun MoreMenu(
-  mode: Mode,
+  canDelete: Boolean,
   isEnabled: Boolean,
   onShowMatches: () -> Unit,
   onAction: OnAction<EditRuleAction>,
@@ -369,7 +380,7 @@ private fun MoreMenu(
       leadingIcon = { Icon(imageVector = AktualIcons.ViewShow, contentDescription = matches) },
     )
 
-    if (mode == Edit) {
+    if (canDelete) {
       val string = Strings.editRuleActionDelete
       val red = colors.errorText
       AktualDropdownMenuItem(
@@ -427,6 +438,8 @@ private fun LoadedContent(
   conditionKeys: ImmutableList<Long>,
   actionKeys: ImmutableList<Long>,
   conditionEntities: ConditionEntities?,
+  schedules: ImmutableList<Schedule>?,
+  isScheduleRule: Boolean,
   isEnabled: Boolean,
   listState: LazyListState,
   contentPadding: PaddingValues,
@@ -477,6 +490,7 @@ private fun LoadedContent(
       onAdd = { split: Int -> addingActionToSplit = split }.takeIf { conditionEntities != null },
       onOpenSplit = { key: Long -> openSplit = key },
       onAction = onAction,
+      schedules = schedules,
     )
 
     item(key = "bottom") {
@@ -494,6 +508,7 @@ private fun LoadedContent(
         entities = conditionEntities,
         onDone = { onAction(SetCondition(key, it)) },
         onDelete = { onAction(RemoveCondition(key)) },
+        canDelete = !isScheduleRule || condition.field != Date,
         onDismiss = { openCondition = null },
       )
     }
@@ -513,6 +528,7 @@ private fun LoadedContent(
       RuleActionSheet(
         initial = action,
         entities = conditionEntities,
+        schedules = schedules,
         onDone = { onAction(SetAction(key, it)) },
         onDelete = { onAction(RemoveAction(key)) },
         onDismiss = { openAction = null },
@@ -523,6 +539,7 @@ private fun LoadedContent(
       RuleActionSheet(
         initial = rule.actions.nextAction(split),
         entities = conditionEntities,
+        schedules = schedules,
         onDone = { onAction(AddAction(it)) },
         onDelete = null,
         onDismiss = { addingActionToSplit = null },
@@ -559,6 +576,7 @@ private fun PreviewEditRuleScaffold(
       state = state,
       mode = mode,
       conditionEntities = PREVIEW_ENTITIES,
+      schedules = persistentListOf(),
       matches = MutableStateFlow(RuleMatchesState.Loaded(0, 0, persistentListOf())),
       onAction = {},
     )

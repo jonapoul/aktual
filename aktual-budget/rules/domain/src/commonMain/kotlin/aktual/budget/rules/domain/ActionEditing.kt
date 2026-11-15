@@ -20,14 +20,18 @@ private val PARENT_ONLY_FIELDS = setOf<Field>(Amount, Cleared, Account, Date)
 val SPLIT_ACTION_FIELDS: ImmutableList<Field> =
   ACTION_FIELDS.filter { it !in PARENT_ONLY_FIELDS }.toImmutableList()
 
-// Linking a schedule is only done from the schedules screen, as upstream does
 val ACTION_OPS =
   persistentListOf(
     RuleAction.Op.Set,
     PrependNotes,
     AppendNotes,
     DeleteTransaction,
+    LinkSchedule,
   )
+
+// A schedule links the whole transaction, not one of its splits
+private val SPLIT_ACTION_OPS: ImmutableList<RuleAction.Op> =
+  ACTION_OPS.filter { it != LinkSchedule }.toImmutableList()
 
 // Zero for the whole transaction, otherwise the 1-based split the action builds
 val RuleAction.splitIndex: Int
@@ -35,6 +39,9 @@ val RuleAction.splitIndex: Int
 
 fun actionFields(splitIndex: Int): ImmutableList<Field> =
   if (splitIndex == 0) ACTION_FIELDS else SPLIT_ACTION_FIELDS
+
+fun actionOps(splitIndex: Int): ImmutableList<RuleAction.Op> =
+  if (splitIndex == 0) ACTION_OPS else SPLIT_ACTION_OPS
 
 fun actionValueKind(field: Field): ConditionValueKind =
   when (field) {
@@ -58,8 +65,9 @@ fun actionValueKind(field: Field): ConditionValueKind =
     Unknown -> Text
   }
 
-// Null when the editor can't show the action, like a template, a formula or a linked schedule.
-// Those are kept as they are, and can only be deleted. Split amounts are edited with their split
+// Null when the editor can't show the action, like a template or a formula. Those are kept as they
+// are, and can only be deleted. Split amounts are edited with their split, and linked schedules
+// with the schedule picker
 fun RuleAction.editableKind(): ConditionValueKind? {
   if (options?.template != null || options?.formula != null) return null
   val kind: ConditionValueKind? =
@@ -115,8 +123,9 @@ fun RuleAction.withOp(op: RuleAction.Op): RuleAction {
     PrependNotes,
     AppendNotes -> copy(op = op, value = JsonPrimitive(""), options = cleared)
     DeleteTransaction -> copy(op = op, value = JsonPrimitive(""), options = cleared)
+    // No schedule until one is picked
+    LinkSchedule -> RuleAction(op = op, value = null)
     SetSplitAmount,
-    LinkSchedule,
     Unknown -> copy(op = op)
   }
 }

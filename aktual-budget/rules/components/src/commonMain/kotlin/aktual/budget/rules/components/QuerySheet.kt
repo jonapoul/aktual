@@ -54,6 +54,7 @@ fun QuerySheetPage(
   onDelete: (() -> Unit)? = null,
   onDone: () -> Unit = {},
   confirm: QuerySheetConfirm = Done,
+  isDoneEnabled: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val focusManager = LocalFocusManager.current
@@ -94,6 +95,7 @@ fun QuerySheetPage(
             QuerySheetConfirm.Add -> AktualIcons.Add
             Update -> AktualIcons.Check
           },
+        isEnabled = isDoneEnabled,
         onClick = {
           // Commits a field still being typed in before Done reads the value
           focusManager.clearFocus()

@@ -1,5 +1,6 @@
 package aktual.budget.rules.vm.edit
 
+import aktual.budget.model.ScheduleId
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.hasUnknownValues
 import androidx.compose.runtime.Immutable
@@ -18,9 +19,14 @@ sealed interface EditRuleState {
     val conditionKeys: ImmutableList<Long> = persistentListOf(),
     val actionKeys: ImmutableList<Long> = persistentListOf(),
     val hasChanges: Boolean = false,
+    // The schedule that owns this rule. Upstream won't delete its rule, or its date condition
+    val schedule: ScheduleId? = null,
   ) : EditRuleState {
     val canSave: Boolean
       get() = hasChanges && !rule.hasUnknownValues
+
+    val canDelete: Boolean
+      get() = schedule == null
   }
 
   sealed interface Failure : EditRuleState
@@ -50,5 +56,6 @@ internal fun editRuleState(
         conditionKeys = draft.conditionKeys,
         actionKeys = draft.actionKeys,
         hasChanges = draft.rule != draft.saved,
+        schedule = draft.schedule,
       )
   }

@@ -15,19 +15,23 @@ import aktual.budget.rules.components.valueLabel
 import aktual.budget.rules.domain.ActionSplit
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.splits
-import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition1
 import aktual.budget.rules.ui.PreviewCondition2
 import aktual.budget.rules.vm.label as resourceLabel
+import aktual.budget.schedules.components.ScheduleStatusBadge
+import aktual.budget.schedules.domain.Schedule
+import aktual.budget.schedules.domain.amountPrefix
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Bolt
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.Filter
 import aktual.core.icons.InformationOutline
+import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -40,10 +44,13 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,17 +69,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
@@ -168,6 +174,7 @@ internal fun RuleConditionSheet(
   onDone: (Condition) -> Unit,
   onDelete: (() -> Unit)?,
   onDismiss: () -> Unit,
+  canDelete: Boolean = true,
 ) {
   var draft by remember { mutableStateOf(initial) }
   ConditionSheet(
@@ -175,7 +182,7 @@ internal fun RuleConditionSheet(
     data = entities,
     schema = RuleConditions,
     onChange = { draft = it },
-    onDelete = onDelete ?: {},
+    onDelete = onDelete?.takeIf { canDelete },
     onDismiss = onDismiss,
     onDone = { onDone(draft) },
     confirm = Update,
@@ -226,6 +233,7 @@ internal fun LazyListScope.actionsNode(
   onAdd: ((splitIndex: Int) -> Unit)?,
   onOpenSplit: (Long) -> Unit,
   onAction: OnAction<EditRuleAction>,
+  schedules: ImmutableList<Schedule>? = persistentListOf(),
 ) {
   item(key = "then") {
     TimelineRow(
@@ -264,11 +272,21 @@ internal fun LazyListScope.actionsNode(
     ) { (index, action) ->
       TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
         val key = actionKeys.getOrNull(index)
-        RuleCard(
-          title = action.title(),
-          value = action.valueText(names),
-          onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
-        )
+        if (action.op == LinkSchedule) {
+          val id = action.value?.contentOrNull?.let(::ScheduleId)
+          ScheduleCard(
+            isLoaded = schedules != null,
+            schedule = id?.let { schedules?.firstOrNull { s -> s.id == it } },
+            onOpen = id?.let { { onAction(OpenSchedule(id)) } },
+            onEdit = clickToOpen(key, onOpen.takeIf { isEnabled }),
+          )
+        } else {
+          RuleCard(
+            title = action.title(),
+            value = action.valueText(names),
+            onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
+          )
+        }
       }
     }
 
@@ -387,6 +405,84 @@ private fun RuleCard(
     }
   }
 
+// Tapping it opens the schedule, and the pencil edits the link. Shows the schedule as upstream's
+// rule editor does: its name, payee, account, amount, next date and status. Until the schedules
+// have loaded it only shows its title
+@Composable
+private fun ScheduleCard(
+  isLoaded: Boolean,
+  schedule: Schedule?,
+  onOpen: (() -> Unit)?,
+  onEdit: (() -> Unit)?,
+  modifier: Modifier = Modifier,
+) =
+  CardColumn(
+    modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Small),
+    onClick = onOpen.takeIf { schedule != null },
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        modifier = Modifier.weight(1f),
+        text = Strings.editRuleOpLinkSchedule.uppercase(),
+        style = typography.labelSmall,
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+      if (schedule != null) ScheduleStatusBadge(schedule.status)
+      if (onEdit != null) {
+        AktualIconButton(
+          modifier = Modifier.size(24.dp),
+          imageVector = AktualIcons.Pencil1,
+          contentDescription = Strings.editRuleEditScheduleLink,
+          onClick = onEdit,
+        )
+      }
+    }
+
+    when {
+      !isLoaded -> Unit
+
+      schedule == null ->
+        Text(
+          text = Strings.editRuleScheduleMissing,
+          style = typography.bodyLarge,
+          color = colors.pageTextSubdued,
+        )
+
+      else -> ScheduleSummary(schedule)
+    }
+  }
+
+@Composable
+private fun ScheduleSummary(schedule: Schedule, modifier: Modifier = Modifier) =
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Small)) {
+    Text(
+      text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
+      style = typography.bodyLarge,
+      color = if (schedule.name == null) colors.pageTextSubdued else colors.pageText,
+      maxLines = 2,
+      overflow = Ellipsis,
+    )
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
+      ScheduleDetail(schedule.payeeName)
+      ScheduleDetail(schedule.accountName)
+      ScheduleDetail(
+        text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
+        color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
+      )
+      ScheduleDetail(schedule.nextDate.formatted())
+    }
+  }
+
+@Composable
+private fun ScheduleDetail(text: String, color: Color = colors.pageTextSubdued) =
+  Text(text = text, style = typography.bodySmall, color = color, maxLines = 1)
+
 @Composable
 internal fun RuleAction.title(): String {
   val opText = stringResource(op.resourceLabel())
@@ -400,7 +496,6 @@ internal fun RuleAction.valueText(names: ImmutableMap<String, String>): String? 
   val value = value
   return when {
     template != null -> template
-    op == LinkSchedule -> scheduleName(value?.contentOrNull)
     op == SetSplitAmount -> splitAmountText()
     op != RuleAction.Op.Set -> value?.contentOrNull
     field.isIdField() ->
@@ -427,15 +522,6 @@ internal fun RuleAction.splitAmountText(): String? =
     Unknown,
     null -> null
   }
-
-@Composable
-private fun scheduleName(id: String?): String? {
-  val nameFetcher = LocalNameFetcher.current
-  val flow =
-    remember(nameFetcher, id) { id?.let { nameFetcher.name(ScheduleId(it)) } ?: flowOf(null) }
-  val name by flow.collectAsStateWithLifecycle(initialValue = null)
-  return name
-}
 
 @Preview
 @Composable

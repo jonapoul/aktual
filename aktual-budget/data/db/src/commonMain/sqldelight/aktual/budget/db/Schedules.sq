@@ -60,7 +60,7 @@ getIdByName: SELECT id FROM schedules WHERE tombstone = 0 AND name = ?;
 
 delete: DELETE FROM schedules WHERE id = ?;
 
-getById: SELECT id FROM schedules WHERE rule = ?;
+getIdByRule: SELECT id FROM schedules WHERE tombstone = 0 AND rule = ?;
 
 getFromVSchedules: SELECT * FROM v_schedules;
 
