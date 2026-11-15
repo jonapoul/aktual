@@ -5,7 +5,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.schedules.components.SchedulePicker
-import aktual.budget.schedules.components.label
 import aktual.budget.transactions.domain.MIN_TRANSACTION_DATE
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.vm.edit.EntityOption
