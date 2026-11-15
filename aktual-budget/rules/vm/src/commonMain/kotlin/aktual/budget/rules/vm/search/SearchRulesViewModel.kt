@@ -9,7 +9,6 @@ import aktual.budget.rules.domain.payeeIds
 import aktual.budget.rules.vm.RuleSearchText
 import aktual.budget.rules.vm.search.SearchRulesState.Failure
 import aktual.budget.rules.vm.search.SearchRulesState.Results
-import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -26,15 +25,17 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 @Stable
 @AssistedInject
@@ -78,34 +79,21 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  private val rules = MutableStateFlow<List<SearchableRule>?>(null)
-  private val failure = MutableStateFlow<String?>(null)
+  private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
   val state: StateFlow<SearchRulesState> =
-    combine(query, payee, rules, failure, ::search)
+    retries
+      .onStart { emit(Unit) }
+      .flatMapLatest {
+        combine(query, payee, searchableRules(), ::search).catch { e ->
+          log.e(e) { "Failed loading rules" }
+          emit(Failure(e.requireMessage()))
+        }
+      }
       .stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
 
-  init {
-    reload()
-  }
-
   fun reload() {
-    failure.update { null }
-    viewModelScope.launch {
-      runCatchingCancellable(
-        attempt = {
-          val loaded =
-            loader.load().map { rule ->
-              SearchableRule(rule, searchText.of(rule), rule.toTransactionRule().payeeIds())
-            }
-          rules.update { loaded }
-        },
-        onFailure = { e ->
-          log.e(e) { "Failed loading rules" }
-          failure.update { e.requireMessage() }
-        },
-      )
-    }
+    retries.tryEmit(Unit)
   }
 
   fun setQuery(query: String) {
@@ -116,13 +104,20 @@ internal constructor(
     savedState[KEY_PAYEE] = null
   }
 
+  // Null until the first load finishes
+  private fun searchableRules(): Flow<List<SearchableRule>?> =
+    loader
+      .observe()
+      .mapLatest<_, List<SearchableRule>?> { rules ->
+        rules.map { SearchableRule(it, searchText.of(it), it.toTransactionRule().payeeIds()) }
+      }
+      .onStart { emit(null) }
+
   private fun search(
     query: String,
     payee: PayeeId?,
     rules: List<SearchableRule>?,
-    failure: String?,
   ): SearchRulesState {
-    if (failure != null) return Failure(failure)
     val trimmed = query.trim()
     if (trimmed.isEmpty() && payee == null) return NoQuery
     if (rules == null) return Loading

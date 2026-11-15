@@ -75,6 +75,24 @@ class SearchSchedulesViewModelTest {
   }
 
   @Test
+  fun `Results update when a schedule is removed`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    insertSchedule(id = "b", name = "Rent share", payee = "Flatmate", account = "Checking")
+    val viewModel = createViewModel(scope)
+
+    viewModel.setQuery("rent")
+
+    viewModel.state.test {
+      assertThat(awaitResults(cancel = false))
+        .extracting(Schedule::name)
+        .containsExactly("Rent", "Rent share")
+
+      schedulesQueries.delete(ScheduleId("a"))
+      assertThat(awaitResults()).extracting(Schedule::name).containsExactly("Rent share")
+    }
+  }
+
+  @Test
   fun `Load failure shows failure, and reload recovers`() = runDatabaseTest { scope ->
     // Pointing the date path at the amount condition makes the date unparseable
     insertSchedule(
@@ -100,10 +118,12 @@ class SearchSchedulesViewModelTest {
     }
   }
 
-  private suspend fun ReceiveTurbine<SearchSchedulesState>.awaitResults(): List<Schedule> {
+  private suspend fun ReceiveTurbine<SearchSchedulesState>.awaitResults(
+    cancel: Boolean = true,
+  ): List<Schedule> {
     var state = awaitItem()
     while (state !is Results) state = awaitItem()
-    cancelAndIgnoreRemainingEvents()
+    if (cancel) cancelAndIgnoreRemainingEvents()
     return state.schedules
   }
 

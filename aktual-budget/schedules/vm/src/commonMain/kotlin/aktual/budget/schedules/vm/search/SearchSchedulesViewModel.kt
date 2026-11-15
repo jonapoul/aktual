@@ -4,7 +4,6 @@ import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Failure
 import aktual.budget.schedules.vm.search.SearchSchedulesState.Results
-import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -23,12 +22,14 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 @Stable
 @AssistedInject
@@ -50,40 +51,32 @@ internal constructor(
 
   val query: StateFlow<String> = savedState.getStateFlow(KEY_QUERY, initialValue = "")
 
-  private val schedules = MutableStateFlow<List<Schedule>?>(null)
-  private val failure = MutableStateFlow<String?>(null)
+  private val retries = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
   val state: StateFlow<SearchSchedulesState> =
-    combine(query, schedules, failure, ::search)
+    retries
+      .onStart { emit(Unit) }
+      .flatMapLatest {
+        combine(query, schedules(), ::search).catch { e ->
+          log.e(e) { "Failed loading schedules" }
+          emit(Failure(e.requireMessage()))
+        }
+      }
       .stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
 
-  init {
-    reload()
-  }
-
   fun reload() {
-    failure.update { null }
-    viewModelScope.launch {
-      runCatchingCancellable(
-        attempt = { schedules.update { loader.load() } },
-        onFailure = { e ->
-          log.e(e) { "Failed loading schedules" }
-          failure.update { e.requireMessage() }
-        },
-      )
-    }
+    retries.tryEmit(Unit)
   }
 
   fun setQuery(query: String) {
     savedState[KEY_QUERY] = query
   }
 
-  private fun search(
-    query: String,
-    schedules: List<Schedule>?,
-    failure: String?,
-  ): SearchSchedulesState {
-    if (failure != null) return Failure(failure)
+  // Null until the first load finishes
+  private fun schedules(): Flow<List<Schedule>?> =
+    loader.observe().onStart<List<Schedule>?> { emit(null) }
+
+  private fun search(query: String, schedules: List<Schedule>?): SearchSchedulesState {
     val trimmed = query.trim()
     if (trimmed.isEmpty()) return NoQuery
     if (schedules == null) return Loading
