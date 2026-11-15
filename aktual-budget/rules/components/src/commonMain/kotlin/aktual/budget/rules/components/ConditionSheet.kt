@@ -32,14 +32,14 @@ import kotlinx.collections.immutable.ImmutableList
  * the sheet before calling [onDone], so a sheet editing a draft can save it then.
  *
  * With [onAdd] set, the condition is a new one that isn't saved yet: there's no delete, and Done
- * closes the whole sheet before calling [onAdd].
+ * closes the whole sheet before calling [onAdd]. Without [onDelete] it can't be deleted either.
  */
 @Composable
 fun ConditionSheet(
   condition: Condition,
   data: ConditionEntities,
   onChange: (Condition) -> Unit,
-  onDelete: () -> Unit,
+  onDelete: (() -> Unit)?,
   onDismiss: () -> Unit,
   schema: ConditionSchema = FilterConditions,
   fields: ImmutableList<Field> = schema.fields,
@@ -67,7 +67,7 @@ fun ConditionSheet(
             Strings.reportsFormulaQueryAddCondition
           },
         close = if (onAdd == null) ::close else ::dismiss,
-        onDelete = onDelete.takeIf { onAdd == null },
+        onDelete = onDelete?.takeIf { onAdd == null },
         onDone = onAdd ?: onDone,
         confirm = if (onAdd == null) confirm else Add,
       ) {

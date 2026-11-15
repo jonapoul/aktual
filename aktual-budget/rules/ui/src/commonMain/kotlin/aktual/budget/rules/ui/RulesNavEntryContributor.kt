@@ -10,6 +10,7 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.CreateRuleNavRoute
 import aktual.core.nav.EditRuleNavRoute
 import aktual.core.nav.EditRuleNavigator
+import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.NavStack
 import aktual.core.nav.SearchRulesNavRoute
@@ -37,11 +38,21 @@ class RulesNavEntryContributor : BudgetNavEntryContributor {
     }
 
     budgetEntry<EditRuleNavRoute> { route ->
-      EditRuleScreen(id = route.id, payee = null, back = BackNavigator(stack))
+      EditRuleScreen(
+        id = route.id,
+        payee = null,
+        back = BackNavigator(stack),
+        editSchedule = EditScheduleNavigator(stack),
+      )
     }
 
     budgetEntry<CreateRuleNavRoute> { route ->
-      EditRuleScreen(id = null, payee = route.payee, back = BackNavigator(stack))
+      EditRuleScreen(
+        id = null,
+        payee = route.payee,
+        back = BackNavigator(stack),
+        editSchedule = EditScheduleNavigator(stack),
+      )
     }
   }
 }

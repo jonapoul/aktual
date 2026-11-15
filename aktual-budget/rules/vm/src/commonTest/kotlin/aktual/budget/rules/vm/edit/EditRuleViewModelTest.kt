@@ -6,9 +6,12 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RuleContextDao
 import aktual.budget.db.dao.RulesDao
+import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.db.withoutResult
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionType
 import aktual.budget.model.Field
@@ -26,11 +29,13 @@ import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Loading
 import aktual.budget.rules.vm.edit.EditRuleState.Success
+import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.transactions.domain.RuleMatcher
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
+import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
@@ -41,6 +46,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
@@ -49,8 +55,10 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
@@ -395,6 +403,49 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `A schedule's rule can't be deleted`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    insertSchedule(id = "s", rule = "a")
+    val sync = TestSyncController()
+    val viewModel = createViewModel(scope, RuleId("a"), sync)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded() as Success).all {
+        prop(Success::schedule).isEqualTo(ScheduleId("s"))
+        prop(Success::canDelete).isFalse()
+      }
+    }
+
+    viewModel.delete()
+    scope.advanceUntilIdle()
+    assertThat(RulesDao(this).getAll()).isNotEmpty()
+    assertThat(sync.changes).isEmpty()
+  }
+
+  @Test
+  fun `Linking a schedule by hand still lets the rule be deleted`() = runDatabaseTest { scope ->
+    insertRule(SAVED.copy(actions = listOf(LINK)))
+    insertSchedule(id = "s", rule = "other")
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      assertThat(awaitLoaded() as Success).all {
+        prop(Success::schedule).isNull()
+        prop(Success::canDelete).isTrue()
+      }
+    }
+  }
+
+  @Test
+  fun `A tombstoned schedule doesn't own its rule`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    insertSchedule(id = "s", rule = "a", tombstone = true)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test { assertThat((awaitLoaded() as Success).canDelete).isTrue() }
+  }
+
+  @Test
   fun `Matches load once the conditions settle`() = runDatabaseTest { scope ->
     val viewModel = createViewModel(scope)
 
@@ -474,7 +525,35 @@ class EditRuleViewModelTest {
         ),
       nameFetcher = FakeNameFetcher,
       conditionEntitiesLoader = ConditionEntitiesLoader(this),
+      schedulesLoader =
+        SchedulesLoader(
+          scheduleDao = ScheduleDao(this),
+          accountDao = AccountDao(this),
+          payeeDao = PayeeDao(this),
+          preferencesDao =
+            PreferencesDao(
+              this,
+              TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)),
+            ),
+          calendar = { LocalDate(2026, 4, 1) },
+        ),
       viewModelContext = scope.viewModelContext,
+    )
+  }
+
+  private suspend fun BudgetDatabase.insertSchedule(
+    id: String,
+    rule: String,
+    tombstone: Boolean = false,
+  ) = schedulesQueries.withoutResult {
+    insert(
+      id = ScheduleId(id),
+      rule = RuleId(rule),
+      active = true,
+      completed = false,
+      posts_transaction = false,
+      tombstone = tombstone,
+      name = id,
     )
   }
 
@@ -491,6 +570,8 @@ class EditRuleViewModelTest {
 
     val CATEGORY =
       RuleAction(value = JsonPrimitive("c"), op = RuleAction.Op.Set, field = Category, type = Id)
+
+    val LINK = RuleAction(value = JsonPrimitive("s"), op = LinkSchedule)
 
     val SAVED =
       Rules(

@@ -3,6 +3,8 @@ package aktual.budget.rules.domain
 import aktual.budget.model.Field
 import aktual.budget.model.RuleAction
 import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
@@ -65,6 +67,18 @@ class ActionEditingTest {
     assertThat(action.field).isEqualTo(Category)
     assertThat(action.value).isEqualTo(JsonPrimitive(""))
     assertThat(action.splitIndex).isEqualTo(1)
+  }
+
+  @Test
+  fun `Linking a schedule starts with none picked`() {
+    val action = set(Category, "food").withOp(LinkSchedule)
+    assertThat(action).isEqualTo(RuleAction(value = null, op = LinkSchedule))
+  }
+
+  @Test
+  fun `Only the whole transaction can link a schedule`() {
+    assertThat(actionOps(0)).contains(RuleAction.Op.LinkSchedule)
+    assertThat(actionOps(1)).doesNotContain(RuleAction.Op.LinkSchedule)
   }
 
   @Test

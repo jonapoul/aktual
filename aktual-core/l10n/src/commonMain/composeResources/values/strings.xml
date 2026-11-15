@@ -1904,6 +1904,11 @@
   <string name="edit_rule_op_prepend_notes">Prepend notes</string>
   <string name="edit_rule_op_append_notes">Append notes</string>
   <string name="edit_rule_op_delete_transaction">Delete transaction</string>
+  <string name="edit_rule_op_link_schedule">Link schedule</string>
+  <string name="edit_rule_action_schedule">Schedule</string>
+  <string name="edit_rule_pick_schedule">Pick a schedule</string>
+  <string name="edit_rule_edit_schedule_link">Change schedule link</string>
+  <string name="edit_rule_schedule_missing">Schedule not found</string>
   <string name="edit_rule_unsupported_action">This action can't be edited in Aktual yet: %1$s</string>
   <string name="edit_rule_add_split">Add split</string>
   <string name="edit_rule_apply_to_all">Apply to all</string>

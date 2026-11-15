@@ -4,12 +4,15 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleStage
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface EditRuleAction
 
 internal data object NavBack : EditRuleAction
+
+@JvmInline internal value class OpenSchedule(val id: ScheduleId) : EditRuleAction
 
 internal data object Delete : EditRuleAction
 
