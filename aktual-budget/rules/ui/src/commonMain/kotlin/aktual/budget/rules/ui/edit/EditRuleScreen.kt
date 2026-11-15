@@ -156,22 +156,18 @@ internal fun EditRuleScreen(
       matches = viewModel.matches,
       snackbarHostState = snackbarHostState,
       onAction = { action ->
-        if (action == NavBack) {
-          back()
-        } else if (action is OpenSchedule) {
-          editSchedule(action.id)
-        } else {
-          viewModel.handle(action)
+        when (action) {
+          NavBack -> back()
+          is OpenSchedule -> editSchedule(action.id)
+          is ViewModelAction -> viewModel.handle(action)
         }
       },
     )
   }
 }
 
-private fun EditRuleViewModel.handle(action: EditRuleAction) {
+private fun EditRuleViewModel.handle(action: ViewModelAction) {
   when (action) {
-    NavBack,
-    is OpenSchedule -> Unit
     Delete -> delete()
     Save -> save()
     is SetStage -> setStage(action.value)

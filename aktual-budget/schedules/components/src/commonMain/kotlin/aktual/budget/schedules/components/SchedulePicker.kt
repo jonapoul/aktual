@@ -124,21 +124,32 @@ private fun SchedulePickerContent(
   val listState = rememberLazyListState()
   LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
     if (onUnlink != null && selected != null && !isFiltering) {
-      item(key = NONE_KEY) {
-        BottomSheetListItem(label = Strings.transactionNone, isSelected = false, onClick = onUnlink)
+      item(key = "none") {
+        BottomSheetListItem(
+          modifier = Modifier.animateItem(),
+          label = Strings.transactionNone,
+          isSelected = false,
+          onClick = onUnlink,
+        )
       }
     }
 
     if (all.isEmpty()) {
-      item { BottomSheetMessage(Strings.transactionScheduleEmpty) }
+      item(key = "empty") {
+        BottomSheetMessage(
+          text = Strings.transactionScheduleEmpty,
+          modifier = Modifier.animateItem(),
+        )
+      }
     } else if (matches.isEmpty() && isFiltering) {
-      item(key = NO_RESULTS_KEY) {
-        BottomSheetMessage(Strings.searchNoResults, Modifier.animateItem())
+      item(key = "no-results") {
+        BottomSheetMessage(text = Strings.searchNoResults, modifier = Modifier.animateItem())
       }
     }
 
     items(matches, key = { it.id.toString() }) { schedule ->
       ScheduleItem(
+        modifier = Modifier.animateItem(),
         schedule = schedule,
         isSelected = schedule.id == selected,
         onClick = { onSelect(schedule.id) },
@@ -188,9 +199,14 @@ private fun StatusChips(
 
 // Its name, payee and account, with its amount, next date and status on the end
 @Composable
-private fun ScheduleItem(schedule: Schedule, isSelected: Boolean, onClick: () -> Unit) =
+private fun ScheduleItem(
+  schedule: Schedule,
+  isSelected: Boolean,
+  modifier: Modifier = Modifier,
+  onClick: () -> Unit,
+) =
   ListItem(
-    modifier = Modifier.clickable(onClick = onClick),
+    modifier = modifier.clickable(onClick = onClick),
     headlineContent = {
       Text(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
@@ -354,5 +370,3 @@ private val PREVIEW_COMPLETED =
 
 private val BalanceSize = textSizes.medium
 private val SearchPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-private const val NONE_KEY = "none"
-private const val NO_RESULTS_KEY = "no-results"

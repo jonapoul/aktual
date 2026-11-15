@@ -14,32 +14,34 @@ internal data object NavBack : EditRuleAction
 
 @JvmInline internal value class OpenSchedule(val id: ScheduleId) : EditRuleAction
 
-internal data object Delete : EditRuleAction
+@Immutable internal sealed interface ViewModelAction : EditRuleAction
 
-internal data object Save : EditRuleAction
+internal data object Delete : ViewModelAction
 
-@JvmInline internal value class SetStage(val value: RuleStage) : EditRuleAction
+internal data object Save : ViewModelAction
 
-@JvmInline internal value class SetConditionsOp(val value: ConditionOp) : EditRuleAction
+@JvmInline internal value class SetStage(val value: RuleStage) : ViewModelAction
 
-internal data class SetCondition(val key: Long, val condition: Condition) : EditRuleAction
+@JvmInline internal value class SetConditionsOp(val value: ConditionOp) : ViewModelAction
 
-@JvmInline internal value class AddCondition(val condition: Condition) : EditRuleAction
+internal data class SetCondition(val key: Long, val condition: Condition) : ViewModelAction
 
-@JvmInline internal value class RemoveCondition(val key: Long) : EditRuleAction
+@JvmInline internal value class AddCondition(val condition: Condition) : ViewModelAction
 
-internal data class SetAction(val key: Long, val action: RuleAction) : EditRuleAction
+@JvmInline internal value class RemoveCondition(val key: Long) : ViewModelAction
 
-@JvmInline internal value class AddAction(val action: RuleAction) : EditRuleAction
+internal data class SetAction(val key: Long, val action: RuleAction) : ViewModelAction
 
-@JvmInline internal value class RemoveAction(val key: Long) : EditRuleAction
+@JvmInline internal value class AddAction(val action: RuleAction) : ViewModelAction
 
-internal data object AddSplit : EditRuleAction
+@JvmInline internal value class RemoveAction(val key: Long) : ViewModelAction
 
-@JvmInline internal value class RemoveSplit(val splitIndex: Int) : EditRuleAction
+internal data object AddSplit : ViewModelAction
 
-internal data object ApplyActions : EditRuleAction
+@JvmInline internal value class RemoveSplit(val splitIndex: Int) : ViewModelAction
 
-@JvmInline internal value class ToggleMatch(val id: TransactionId) : EditRuleAction
+internal data object ApplyActions : ViewModelAction
 
-internal data object ToggleAllMatches : EditRuleAction
+@JvmInline internal value class ToggleMatch(val id: TransactionId) : ViewModelAction
+
+internal data object ToggleAllMatches : ViewModelAction
