@@ -82,6 +82,8 @@ internal fun ReconcilingBanner(
           verticalAlignment = CenterVertically,
         ) {
           AktualButton(
+            kind = Primary,
+            variant = Secondary,
             modifier = Modifier.weight(1f),
             text = Strings.transactionsReconcileCreateAdjustment,
             isEnabled = !reconciling.isBusy,

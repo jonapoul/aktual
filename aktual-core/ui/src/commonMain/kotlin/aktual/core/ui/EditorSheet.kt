@@ -59,6 +59,7 @@ fun EditorSheet(
         AktualButton(
           modifier = Modifier.weight(1f),
           text = cancelText,
+          variant = Secondary,
           onClick = { sheet.close {} },
         )
         AktualButton(

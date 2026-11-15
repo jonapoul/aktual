@@ -246,6 +246,8 @@ private fun CrashReportBottomBar(onReport: () -> Unit, onExport: () -> Unit) =
       horizontalArrangement = spacedBy(Dimens.Large),
     ) {
       AktualButton(
+        kind = Primary,
+        variant = Secondary,
         modifier = Modifier.weight(1f),
         text = Strings.crashesReport,
         onClick = onReport,

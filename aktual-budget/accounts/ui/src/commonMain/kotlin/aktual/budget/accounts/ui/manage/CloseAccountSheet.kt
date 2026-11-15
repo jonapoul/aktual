@@ -97,6 +97,7 @@ private fun CloseAccountContent(
       AktualButton(
         modifier = Modifier.weight(1f),
         text = Strings.accountsManageCancel,
+        variant = Secondary,
         onClick = onCancel,
       )
       AktualButton(
