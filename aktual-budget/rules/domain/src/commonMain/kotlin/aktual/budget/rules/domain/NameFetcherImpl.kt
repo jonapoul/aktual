@@ -30,7 +30,7 @@ class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
   private val schedules = ScheduleDao(database)
 
   // Make sure this stays in sync with aktual.budget.model.FieldKt.FIELDS_WITH_IDS
-  override fun name(field: Field, id: String): Flow<String?> = flow {
+  override fun invoke(field: Field, id: String): Flow<String?> = flow {
     emit(
       when (field) {
         Acct,
@@ -48,9 +48,9 @@ class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
     )
   }
 
-  override fun name(id: ScheduleId): Flow<String?> = flow { emit(schedules.name(id)) }
+  override fun invoke(id: ScheduleId): Flow<String?> = flow { emit(schedules.name(id)) }
 
-  override fun names(field: Field, ids: List<String>): Flow<JsonArray> = flow {
+  override fun invoke(field: Field, ids: List<String>): Flow<JsonArray> = flow {
     emit(
       when (field) {
         Acct,

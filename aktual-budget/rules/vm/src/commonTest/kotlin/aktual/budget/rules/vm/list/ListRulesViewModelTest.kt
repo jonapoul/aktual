@@ -115,10 +115,10 @@ class ListRulesViewModelTest {
     )
 
   private object FakeNameFetcher : NameFetcher {
-    override fun name(field: Field, id: String): Flow<String?> = emptyFlow()
+    override fun invoke(field: Field, id: String): Flow<String?> = emptyFlow()
 
-    override fun name(id: ScheduleId): Flow<String?> = emptyFlow()
+    override fun invoke(id: ScheduleId): Flow<String?> = emptyFlow()
 
-    override fun names(field: Field, ids: List<String>): Flow<JsonArray> = emptyFlow()
+    override fun invoke(field: Field, ids: List<String>): Flow<JsonArray> = emptyFlow()
   }
 }

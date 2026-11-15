@@ -74,7 +74,7 @@ internal constructor(
   val payeeName: StateFlow<String?> =
     payee
       .flatMapLatest { id ->
-        if (id == null) flowOf(null) else nameFetcher.name(Payee, id.value).map { it.orEmpty() }
+        if (id == null) flowOf(null) else nameFetcher(Payee, id.value).map { it.orEmpty() }
       }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
 

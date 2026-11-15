@@ -3,6 +3,9 @@ package aktual.budget.rules.ui.list
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
 import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.ui.DummyNameFetcher
+import aktual.budget.rules.ui.LoadingNameFetcher
+import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.core.icons.AktualIcons
@@ -38,6 +41,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,11 +128,13 @@ private fun ListRulesItemConditions(
     horizontalAlignment = Alignment.Start,
     verticalArrangement = Arrangement.spacedBy(ItemSpacing, Alignment.Top),
   ) {
+    val inlineContent = rememberNameInlineContent()
     conditions.fastForEachIndexed { index, condition ->
       Box(modifier = Modifier.rulePill(colors)) {
         val prefix = if (index != 0) "and " else ""
         Text(
           text = rememberConditionText(prefix, condition, styles, query),
+          inlineContent = inlineContent,
           overflow = Ellipsis,
           maxLines = 1,
         )
@@ -160,9 +166,15 @@ private fun ListRulesItemActions(
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.spacedBy(ItemSpacing, Alignment.Top),
     ) {
+      val inlineContent = rememberNameInlineContent()
       actions.fastForEach { action ->
         Box(modifier = Modifier.rulePill(colors)) {
-          Text(text = rememberActionText(action, styles, query), overflow = Ellipsis, maxLines = 1)
+          Text(
+            text = rememberActionText(action, styles, query),
+            inlineContent = inlineContent,
+            overflow = Ellipsis,
+            maxLines = 1,
+          )
         }
       }
     }
@@ -218,17 +230,21 @@ private fun PreviewListRulesItem(
   @PreviewParameter(ListRulesItemProvider::class) params: ColorParams<ListRulesItemParams>,
 ) =
   PreviewWithColorParams(params) {
-    ListRulesItem(
-      rule = item,
-      isOpen = isOpen,
-      onOpenChange = {},
-      onAction = {},
-    )
+    val nameFetcher = if (isLoadingNames) LoadingNameFetcher else DummyNameFetcher
+    CompositionLocalProvider(LocalNameFetcher provides nameFetcher) {
+      ListRulesItem(
+        rule = item,
+        isOpen = isOpen,
+        onOpenChange = {},
+        onAction = {},
+      )
+    }
   }
 
 private data class ListRulesItemParams(
   val item: Rule,
   val isOpen: Boolean = false,
+  val isLoadingNames: Boolean = false,
 )
 
 private class ListRulesItemProvider :
@@ -236,6 +252,7 @@ private class ListRulesItemProvider :
     ListRulesItemParams(item = PreviewRule1),
     ListRulesItemParams(item = PreviewRule2),
     ListRulesItemParams(item = PreviewRule1, isOpen = true),
+    ListRulesItemParams(item = PreviewRule1, isLoadingNames = true),
   )
 
 @Preview

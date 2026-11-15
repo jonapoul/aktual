@@ -16,6 +16,7 @@ import aktual.budget.model.isIdField
 import aktual.budget.rules.domain.NameFetcher
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
+import aktual.budget.rules.ui.list.Name.Loaded
 import aktual.budget.rules.ui.string
 import aktual.budget.rules.vm.label
 import aktual.budget.schedules.components.description
@@ -24,23 +25,34 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.highlighted
 import aktual.core.ui.redacted
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.int
@@ -72,8 +84,7 @@ internal fun rememberConditionText(
   val privacy = LocalPrivacyEnabled.current
 
   val nameFetcher = LocalNameFetcher.current
-  val fieldNamesFlow = remember(nameFetcher, condition) { fieldNamesFlow(condition, nameFetcher) }
-  val fieldNames by fieldNamesFlow.collectAsStateWithLifecycle(initialValue = null)
+  val fieldNames = rememberName(nameFetcher, condition) { fieldNamesFlow(condition, nameFetcher) }
   val recurConfig = remember(condition) { condition.recurConfig() }
   val recurText = recurConfig?.description(dateFormat)
 
@@ -97,8 +108,11 @@ internal fun rememberConditionText(
             append(opText)
             append(" ")
           }
-          when (val value = fieldNames ?: condition.value) {
-            is JsonPrimitive -> {
+          val value = (fieldNames as? Loaded)?.value ?: condition.value
+          when {
+            fieldNames is Loading -> appendNamePlaceholder(styles)
+
+            value is JsonPrimitive -> {
               withStyle(styles.highlighted) {
                 if (condition.field == Amount) {
                   append(
@@ -116,7 +130,7 @@ internal fun rememberConditionText(
               }
             }
 
-            is JsonArray -> {
+            value is JsonArray -> {
               withStyle(styles.default) { append("[") }
               value.forEachIndexed { index, element ->
                 withStyle(styles.highlighted) { append(element.jsonPrimitive.content) }
@@ -127,9 +141,7 @@ internal fun rememberConditionText(
               withStyle(styles.default) { append("]") }
             }
 
-            JsonNull -> error("Should never see null in a condition's value: $condition")
-
-            is JsonObject -> {
+            value is JsonObject -> {
               if (condition.field != Date || recurText == null) {
                 error("Should only see a JSON object in a condition value for a date: $condition")
               }
@@ -142,7 +154,7 @@ internal fun rememberConditionText(
     .redacted()
 }
 
-private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow<JsonElement?> =
+private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow<JsonElement?>? =
   when (condition.field) {
     Acct,
     Account,
@@ -151,11 +163,11 @@ private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow
     Description,
     Payee ->
       when (val value = condition.value) {
-        is JsonArray -> nameFetcher.names(condition.field, value.toList())
+        is JsonArray -> nameFetcher(condition.field, value.toList())
         is JsonPrimitive ->
-          nameFetcher.name(condition.field, value.content).filterNotNull().map(::JsonPrimitive)
+          nameFetcher(condition.field, value.content).map { it?.let(::JsonPrimitive) }
 
-        else -> flowOf(null)
+        else -> null
       }
 
     Amount,
@@ -169,7 +181,7 @@ private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow
     Reconciled,
     Saved,
     Transfer,
-    Unknown -> flowOf(null)
+    Unknown -> null
   }
 
 @Composable
@@ -187,9 +199,7 @@ internal fun rememberActionText(
   val privacy = LocalPrivacyEnabled.current
 
   val nameFetcher = LocalNameFetcher.current
-  val fieldNameFlow = remember(nameFetcher, action) { actionNameFlow(action, nameFetcher) }
-
-  val fieldName by fieldNameFlow.collectAsStateWithLifecycle(initialValue = "...")
+  val name = rememberName(nameFetcher, action) { actionNameFlow(action, nameFetcher) }
 
   return remember(
       action,
@@ -197,7 +207,7 @@ internal fun rememberActionText(
       opText,
       fieldText,
       setToText,
-      fieldName,
+      name,
       numberFormat,
       currency,
       privacy,
@@ -205,6 +215,7 @@ internal fun rememberActionText(
     ) {
       buildAnnotatedString {
           val content = action.value?.content.orEmpty()
+          val fieldName = (name as? Loaded)?.value
           when (action.op) {
             AppendNotes -> {
               withStyle(styles.default) {
@@ -220,7 +231,11 @@ internal fun rememberActionText(
                 append(opText)
                 append(" ")
               }
-              withStyle(styles.highlighted) { append(fieldName) }
+              if (name is Loading) {
+                appendNamePlaceholder(styles)
+              } else {
+                withStyle(styles.highlighted) { append(fieldName ?: content) }
+              }
             }
             PrependNotes -> {
               withStyle(styles.default) {
@@ -236,13 +251,15 @@ internal fun rememberActionText(
               }
               withStyle(styles.highlighted) { append(fieldText) }
               withStyle(styles.default) { append(setToText) }
-              withStyle(styles.highlighted) {
-                if (action.field == Amount) {
-                  append(formatAmount(action, numberFormat, currency, privacy))
-                } else if (fieldName != null) {
-                  append(fieldName)
-                } else {
-                  append(content)
+              if (name is Loading) {
+                appendNamePlaceholder(styles)
+              } else {
+                withStyle(styles.highlighted) {
+                  if (action.field == Amount) {
+                    append(formatAmount(action, numberFormat, currency, privacy))
+                  } else {
+                    append(fieldName ?: content)
+                  }
                 }
               }
             }
@@ -263,21 +280,21 @@ internal fun rememberActionText(
 }
 
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun actionNameFlow(action: RuleAction, nameFetcher: NameFetcher): Flow<String?> {
+private fun actionNameFlow(action: RuleAction, nameFetcher: NameFetcher): Flow<String?>? {
   val value = action.value
   return when (action.op) {
     Set -> {
       val field = action.field
       if (field.isIdField() && value != null) {
-        nameFetcher.name(field, value.content)
+        nameFetcher(field, value.content)
       } else {
-        flowOf(null)
+        null
       }
     }
 
-    LinkSchedule -> value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
+    LinkSchedule -> value?.let { nameFetcher(ScheduleId(it.content)) }
 
-    else -> flowOf(null)
+    else -> null
   }
 }
 
@@ -296,3 +313,39 @@ private fun formatAmount(
     )
 
 @Composable private fun RuleAction.opString(): String = stringResource(op.label())
+
+private sealed interface Name<out T> {
+  data object Loading : Name<Nothing>
+
+  @JvmInline value class Loaded<T>(val value: T?) : Name<T>
+}
+
+// Loading until the first emission, or loaded with null straight away when there's nothing to fetch
+@Composable
+private fun <T : Any> rememberName(vararg keys: Any?, flow: () -> Flow<T?>?): Name<T> {
+  val names = remember(*keys) { flow()?.map { Loaded(it) } }
+  val initial: Name<T> = if (names == null) Loaded(null) else Loading
+  val name by (names ?: emptyFlow()).collectAsStateWithLifecycle(initialValue = initial)
+  return name
+}
+
+private fun AnnotatedString.Builder.appendNamePlaceholder(styles: RuleSpanStyles) =
+  withStyle(styles.highlighted) { appendInlineContent(NAME_PLACEHOLDER_ID, "...") }
+
+// Pass to any Text showing rememberConditionText or rememberActionText
+@Composable
+internal fun rememberNameInlineContent(): ImmutableMap<String, InlineTextContent> {
+  val shimmer = rememberShimmer(Window)
+  return remember(shimmer) {
+    persistentMapOf(
+      NAME_PLACEHOLDER_ID to
+        InlineTextContent(InlinePillPlaceholder) {
+          ShimmerBlock(modifier = Modifier.fillMaxSize().shimmer(shimmer), shape = InlinePillShape)
+        },
+    )
+  }
+}
+
+private val InlinePillPlaceholder = Placeholder(5.em, 1.em, Center)
+private val InlinePillShape = RoundedCornerShape(2.dp)
+private const val NAME_PLACEHOLDER_ID = "name-placeholder"
