@@ -6,11 +6,11 @@ import aktual.budget.db.dao.DatabaseTables.CATEGORY_GROUPS
 import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 
 // Two on-budget accounts with a transfer between them, plus an off-budget account with a transfer
 // into it, across April and May 2026
-internal suspend fun BudgetSyncController.insertReportBudget() {
+internal suspend fun BudgetSync.insertReportBudget() {
   row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
   row(ACCOUNTS, "savings", "name" to "Savings", "offbudget" to false)
   row(ACCOUNTS, "invest", "name" to "Invest", "offbudget" to true)

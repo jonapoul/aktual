@@ -4,11 +4,11 @@ Everything that works on an open budget: its data, sync, and the screens inside 
 
 ## Modules
 
-- `utils` - shared budget-level types: `BudgetFiles`, `BudgetLocalPreferences`, `BudgetSyncController`, `SyncEvents`, `SyncStateHolder`.
+- `utils` - shared budget-level types: `BudgetFiles`, `BudgetLocalPreferences`, `BudgetSync`, `SyncEvents`, `SyncStateHolder`.
 - `model` - budget model types and ID value classes.
 - `data:db` - SQLDelight schema, DAOs and migrations. See [data/db](data/db/CLAUDE.md).
 - `data:encryption`, `data:proto`, `data:impl` - encryption, sync protobuf encoding, and their implementations. `data:impl` also holds the database migrations and `AndroidxSqlDriverFactory`.
-- `sync` - syncing with the server (`BudgetSyncControllerImpl`).
+- `sync` - syncing with the server (`BudgetSyncImpl`).
 - `formula` - formula parser and evaluator (spreadsheet-style functions), ported from upstream.
 - `demo` - the demo budget, which opens without a server.
 - `list` - picking a budget. It runs before a budget is open, so its VMs live in `LoggedInScope`, not `BudgetScope`.
@@ -21,7 +21,7 @@ Everything that works on an open budget: its data, sync, and the screens inside 
 - Server details come from the `BudgetServer` the graph is created with: `Remote(url, token)` or `None`. Code needing the server injects `BudgetServer` and handles `None`, e.g. by hiding or disabling the feature (see `BankSyncViewModel`).
 - The graph also provides `BudgetId`, `DbMetadata` and the `SqlDriver`, which closes with the graph.
 - VMs needing the open budget use `@ContributesIntoMap(BudgetScope::class)`. Long-running work uses `BudgetCoroutineScope`.
-- Lifecycle hooks use `binding<@ForScope(BudgetScope::class) Initializable>()` / `Closeable`, like `ScheduleAdvancer` and `BudgetSyncControllerImpl`.
+- Lifecycle hooks use `binding<@ForScope(BudgetScope::class) Initializable>()` / `Closeable`, like `ScheduleAdvancer` and `BudgetSyncImpl`.
 
 ## Screens
 

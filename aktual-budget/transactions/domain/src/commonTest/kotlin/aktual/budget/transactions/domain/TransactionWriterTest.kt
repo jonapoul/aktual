@@ -591,7 +591,7 @@ internal class TransactionWriterTest {
   @Test
   fun `New accounts go after the others on or off budget`() = runWriterTest {
     insertAccount(ACCOUNT)
-    syncChanges(listOf(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", number(20000))))
+    invoke(listOf(LocalChange(ACCOUNTS, ACCOUNT.value, "sort_order", number(20000))))
 
     val onBudget = writer.write { insertAccount("On", offBudget = false) }
     val offBudget = writer.write { insertAccount("Off", offBudget = true) }

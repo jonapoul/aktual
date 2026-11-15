@@ -127,7 +127,7 @@ internal class BankAccountLinkerTest {
 
   @Test
   fun `New accounts go after the others on or off budget`() = runBankSyncTest {
-    syncChanges(
+    invoke(
       listOf(localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000)),
     )
     insertAccount(OTHER, offBudget = true)
@@ -145,7 +145,7 @@ internal class BankAccountLinkerTest {
 
   @Test
   fun `New accounts ignore the order of deleted accounts`() = runBankSyncTest {
-    syncChanges(
+    invoke(
       listOf(
         localChange(ACCOUNTS, ACCOUNT.value, "sort_order", 20000),
         localChange(ACCOUNTS, ACCOUNT.value, "tombstone", 1),

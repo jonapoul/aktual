@@ -9,7 +9,7 @@ import aktual.budget.payees.domain.AddressLookup
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.core.model.Coordinates
 import aktual.di.BudgetCoroutineScope
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import kotlin.time.Clock
@@ -22,21 +22,21 @@ import kotlinx.datetime.TimeZone
 
 internal val HERE = Coordinates(latitude = 51.5074, longitude = -0.1278)
 
-internal fun BudgetDatabase.payeeLocations(scope: TestScope, sync: TestSyncController) =
+internal fun BudgetDatabase.payeeLocations(scope: TestScope, sync: TestBudgetSync) =
   PayeeLocations(
     dao = PayeeLocationDao(this, TestCoroutineContexts(scope.standardDispatcher)),
-    syncController = sync,
+    budgetSync = sync,
     uuidGenerator = { "location" },
     clock = Clock.System,
   )
 
 internal fun BudgetDatabase.loader(
   scope: TestScope,
-  sync: TestSyncController,
+  sync: TestBudgetSync,
   addresses: AddressLookup = FakeAddressLookup(),
 ) = PayeeLocationsLoader(payeeLocations(scope, sync), addresses, timeZones = { TimeZone.UTC })
 
-internal fun BudgetDatabase.deleter(scope: TestScope, sync: TestSyncController) =
+internal fun BudgetDatabase.deleter(scope: TestScope, sync: TestBudgetSync) =
   PayeeLocationDeleter(payeeLocations(scope, sync), BudgetCoroutineScope(scope))
 
 internal suspend fun BudgetDatabase.insertPayee(id: String, name: String = id) =

@@ -26,7 +26,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportNotes
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.di.BudgetCoroutineScope
 import aktual.test.inMemoryDriverFactory
 import aktual.test.viewModelContext
@@ -220,13 +220,13 @@ class BankSyncSettingsViewModelTest {
     val scope: TestScope,
     val database: BudgetDatabase,
     val driver: SqlDriver,
-  ) : BudgetSyncController {
+  ) : BudgetSync {
     val syncCalls = mutableListOf<List<LocalChange>>()
     val api = FakeBankSyncApi()
     val preferences = PreferencesDao(database, TestCoroutineContexts(EmptyCoroutineContext))
     private val syncDao = SyncDao(database, driver, Clock.System)
 
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       syncCalls.add(changes)
       syncDao.sendMessages(changes)
     }
@@ -257,7 +257,7 @@ class BankSyncSettingsViewModelTest {
           dao = BankSyncDao(database),
           writer =
             TransactionWriterImpl(
-              syncController = this,
+              budgetSync = this,
               accountDao = AccountDao(database),
               categoryDao = CategoryDao(database),
               payeeDao = PayeeDao(database),
@@ -266,7 +266,7 @@ class BankSyncSettingsViewModelTest {
               uuidGenerator = { Uuid.random().toString() },
               clock = Clock.System,
             ),
-          syncController = this,
+          budgetSync = this,
           bankSync = FakeBankSyncController(),
           uuidGenerator = { Uuid.random().toString() },
           scope = BudgetCoroutineScope(scope.backgroundScope),

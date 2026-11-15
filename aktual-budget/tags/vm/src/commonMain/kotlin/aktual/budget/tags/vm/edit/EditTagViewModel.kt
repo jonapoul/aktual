@@ -9,7 +9,7 @@ import aktual.budget.model.tombstone
 import aktual.budget.tags.domain.toColorOrNull
 import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
@@ -50,7 +50,7 @@ internal constructor(
   @Assisted private val tagId: TagId?,
   private val tagsDao: TagsDao,
   private val uuidGenerator: UuidGenerator,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val preferences: TagPreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -226,7 +226,7 @@ internal constructor(
               color = color,
               description = description,
             )
-            syncController.syncChanges(
+            budgetSync(
               listOf(tombstone(dataset = TAGS, row = tagId.toString())) +
                 insertChanges(tombstonedOwner, tag, color, description),
             )
@@ -236,7 +236,7 @@ internal constructor(
             // (matches createTag)
             val id = tagId ?: owner ?: uuidGenerator(::TagId)
             tagsDao.insert(id = id, tag = tag, color = color, description = description)
-            syncController.syncChanges(insertChanges(id, tag, color, description))
+            budgetSync(insertChanges(id, tag, color, description))
           }
           // remember the colour so the next new tag can default to it
           color?.let { preferences.lastUsedTagColor.set(it) }

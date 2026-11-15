@@ -16,7 +16,7 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
@@ -36,7 +36,7 @@ internal constructor(
   private val learningDao: CategoryLearningDao,
   private val rulesDao: RulesDao,
   private val pref: CategoryLearningPref,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val uuidGenerator: UuidGenerator,
   private val calendar: Calendar,
 ) : CategoryLearner {
@@ -69,7 +69,7 @@ internal constructor(
     val rules = rulesDao.getAll().map { it.toTransactionRule() }
     val changes = learned.flatMap { (payee, category) -> ruleChanges(rules, payee, category) }
     if (changes.isEmpty()) return
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     log.i { "Learned categories for ${learned.size} payees" }
   }
 

@@ -9,7 +9,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.RuleId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.di.BudgetScope
 import aktual.log
 import dev.zacsweers.metro.ContributesBinding
@@ -17,7 +17,7 @@ import dev.zacsweers.metro.ContributesBinding
 @ContributesBinding(BudgetScope::class)
 class RulesWriterImpl(
   private val rulesDao: RulesDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
 ) : RulesWriter {
   override suspend fun save(rule: Rule) {
     val row =
@@ -33,12 +33,12 @@ class RulesWriterImpl(
       }
     rulesDao.insert(row)
     log.i { "Saved $row" }
-    syncController.syncChanges(insertChanges(row))
+    budgetSync(insertChanges(row))
   }
 
   override suspend fun delete(id: RuleId) {
     rulesDao.tombstone(setOf(id))
-    syncController.syncChanges(tombstone(dataset = RULES, row = id.toString()))
+    budgetSync(tombstone(dataset = RULES, row = id.toString()))
     log.d { "Tombstoned rule $id" }
   }
 

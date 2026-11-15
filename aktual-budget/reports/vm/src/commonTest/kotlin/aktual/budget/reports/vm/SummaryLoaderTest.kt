@@ -9,7 +9,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.percent
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts
@@ -151,7 +151,7 @@ class SummaryLoaderTest {
     }
   }
 
-  private suspend fun BudgetSyncController.insertSpending() {
+  private suspend fun BudgetSync.insertSpending() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "investing", "name" to "Investing", "offbudget" to true)
     row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
@@ -187,7 +187,7 @@ class SummaryLoaderTest {
     )
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val loader = chartDataLoader(contexts, calendar = { TODAY })

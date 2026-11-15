@@ -22,7 +22,7 @@ import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.core.model.Coordinates
 import aktual.di.BudgetCoroutineScope
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -146,7 +146,7 @@ class EditPayeeViewModelTest {
       // given
       val payees = PayeeDao(this)
       payees.insert(TESCO.id, TESCO.name)
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, TESCO.id, sync).awaitLoaded()
 
       // when
@@ -192,7 +192,7 @@ class EditPayeeViewModelTest {
   @Test
   fun `Deleting a location tombstones it and offers an undo`() = runDatabaseTest { scope ->
     // given
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, TESCO.id, sync)
 
     viewModel.events.test {
@@ -210,7 +210,7 @@ class EditPayeeViewModelTest {
   fun `Restoring a location untombstones it, even after the screen's closed`() =
     runDatabaseTest { scope ->
       // given
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, TESCO.id, sync)
       viewModel.viewModelScope.cancel()
 
@@ -245,18 +245,18 @@ class EditPayeeViewModelTest {
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     id: PayeeId,
-    sync: TestSyncController = TestSyncController(),
+    sync: TestBudgetSync = TestBudgetSync(),
   ): EditPayeeViewModel {
     val payees = PayeeDao(this)
     return EditPayeeViewModel(
       payeeId = id,
       loader = PayeesLoader(payees, PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
       payeeDao = payees,
-      syncController = sync,
+      budgetSync = sync,
       payeeLocations =
         PayeeLocations(
           dao = PayeeLocationDao(this, TestCoroutineContexts(scope.standardDispatcher)),
-          syncController = sync,
+          budgetSync = sync,
           uuidGenerator = { "location" },
           clock = Clock.System,
         ),

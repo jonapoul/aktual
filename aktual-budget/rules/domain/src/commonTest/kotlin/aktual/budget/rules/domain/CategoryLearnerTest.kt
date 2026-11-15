@@ -23,8 +23,8 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
 import aktual.budget.model.TransactionId
+import aktual.test.TestBudgetSync
 import aktual.test.TestCalendar
-import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
@@ -193,7 +193,7 @@ class CategoryLearnerTest {
   private data class SentRule(val conditions: List<Condition>?, val actions: List<RuleAction>?)
 
   private class LearnerScope(val database: BudgetDatabase, scope: TestScope) {
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val preferences =
       PreferencesDao(database, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
     val payeeDao = PayeeDao(database)
@@ -204,7 +204,7 @@ class CategoryLearnerTest {
         learningDao = CategoryLearningDao(database),
         rulesDao = RulesDao(database),
         pref = CategoryLearningPref(preferences, sync),
-        syncController = sync,
+        budgetSync = sync,
         uuidGenerator = { "new-rule" },
         calendar = TestCalendar(TODAY),
       )

@@ -19,7 +19,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
 import aktual.budget.model.messageValue
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.di.BudgetScope
 import aktual.prefs.CurrencyPreferences
@@ -109,7 +109,7 @@ data class UndoToken(val changes: List<LocalChange>)
 @ContributesBinding(BudgetScope::class)
 class BudgetWriterImpl
 internal constructor(
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val budgetDao: BudgetDao,
   private val preferencesDao: PreferencesDao,
   private val calendar: Calendar,
@@ -122,11 +122,11 @@ internal constructor(
     set(month, category, amount)
   }
 
-  override suspend fun undo(token: UndoToken) = syncController.syncChanges(token.changes)
+  override suspend fun undo(token: UndoToken) = budgetSync(token.changes)
 
   // SidebarCategory.tsx toggle-visibility
   override suspend fun setCategoryHidden(category: CategoryId, hidden: Boolean): UndoToken {
-    syncController.syncChanges(localChange(CATEGORIES, category.value, "hidden", hidden))
+    budgetSync(localChange(CATEGORIES, category.value, "hidden", hidden))
     return UndoToken(listOf(localChange(CATEGORIES, category.value, "hidden", !hidden)))
   }
 
@@ -392,7 +392,7 @@ internal constructor(
     val batch = Batch(known ?: type())
     batch.block()
     if (batch.changes.isEmpty()) return null
-    syncController.syncChanges(batch.changes)
+    budgetSync(batch.changes)
     return UndoToken(batch.previous.values.toList())
   }
 

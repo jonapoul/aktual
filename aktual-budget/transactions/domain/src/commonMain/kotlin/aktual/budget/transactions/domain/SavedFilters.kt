@@ -10,7 +10,7 @@ import aktual.budget.model.ConditionSet
 import aktual.budget.model.TransactionFilterId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.Inject
@@ -45,7 +45,7 @@ sealed interface SaveFilterResult {
 class SavedFilters
 internal constructor(
   private val dao: TransactionFilterDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val uuidGenerator: UuidGenerator,
 ) {
   fun observe(): Flow<ImmutableList<SavedFilter>> =
@@ -55,7 +55,7 @@ internal constructor(
     val id = uuidGenerator(::TransactionFilterId)
     val failure = validate(id = null, name.trim(), conditions)
     if (failure != null) return failure
-    syncController.syncChanges(
+    budgetSync(
       listOf(localChange(TRANSACTION_FILTERS, id.value, "id", id.value)) +
         changes(id, name.trim(), conditions) +
         localChange(TRANSACTION_FILTERS, id.value, "tombstone", false),
@@ -70,12 +70,12 @@ internal constructor(
   ): SaveFilterResult {
     val failure = validate(id, name.trim(), conditions)
     if (failure != null) return failure
-    syncController.syncChanges(changes(id, name.trim(), conditions))
+    budgetSync(changes(id, name.trim(), conditions))
     return SaveFilterResult.Saved(id)
   }
 
   suspend fun delete(id: TransactionFilterId) =
-    syncController.syncChanges(listOf(tombstone(TRANSACTION_FILTERS, id.value)))
+    budgetSync(listOf(tombstone(TRANSACTION_FILTERS, id.value)))
 
   private suspend fun validate(
     id: TransactionFilterId?,

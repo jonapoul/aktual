@@ -27,13 +27,13 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.budget.utils.SyncEvents
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBudgetLocalPreferences
+import aktual.test.TestBudgetSync
 import aktual.test.TestCalendar
-import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
@@ -57,7 +57,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 class ScheduleAdvancerTest {
-  private val syncController = TestSyncController()
+  private val budgetSync = TestBudgetSync()
   private val syncEvents = SyncEvents()
   private val budgetPrefs = TestBudgetLocalPreferences()
   private val calendar = TestCalendar(TODAY)
@@ -69,7 +69,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    assertThat(syncController.changes)
+    assertThat(budgetSync.changes)
       .containsExactly(
         LocalChange(
           SCHEDULES_NEXT_DATE,
@@ -88,7 +88,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    assertThat(syncController.changes)
+    assertThat(budgetSync.changes)
       .containsExactly(LocalChange(SCHEDULES, "a", "completed", MessageValue.Number(1)))
   }
 
@@ -99,7 +99,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    assertThat(syncController.changes).isEmpty()
+    assertThat(budgetSync.changes).isEmpty()
   }
 
   @Test
@@ -109,7 +109,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    assertThat(syncController.changes).isEmpty()
+    assertThat(budgetSync.changes).isEmpty()
   }
 
   @Test
@@ -120,7 +120,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    assertThat(syncController.changes).isEmpty()
+    assertThat(budgetSync.changes).isEmpty()
   }
 
   @Test
@@ -151,7 +151,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    assertThat(syncController.changes).isEmpty()
+    assertThat(budgetSync.changes).isEmpty()
   }
 
   @Test
@@ -162,10 +162,10 @@ class ScheduleAdvancerTest {
 
     advancer.onSyncCompleted(Succeeded)
     assertThat(budgetPrefs[LastScheduleRun]).isEqualTo(TODAY)
-    syncController.changes.clear()
+    budgetSync.changes.clear()
 
     advancer.onSyncCompleted(Succeeded)
-    assertThat(syncController.changes).isEmpty()
+    assertThat(budgetSync.changes).isEmpty()
   }
 
   @Test
@@ -175,7 +175,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Failed)
 
-    assertThat(syncController.changes)
+    assertThat(budgetSync.changes)
       .containsExactly(LocalChange(SCHEDULES, "a", "completed", MessageValue.Number(1)))
     assertThat(budgetPrefs[LastScheduleRun]).isNull()
   }
@@ -198,7 +198,7 @@ class ScheduleAdvancerTest {
       assertThat(posted("schedule")).containsExactly(MessageValue.String("a"))
       assertThat(posted("cleared")).containsExactly(MessageValue.Number(0))
       assertThat(posted("notes")).containsExactly(MessageValue.String("Rent"))
-      assertThat(syncController.changes.filter { it.dataset == SCHEDULES }).isEmpty()
+      assertThat(budgetSync.changes.filter { it.dataset == SCHEDULES }).isEmpty()
     }
 
   @Test
@@ -274,7 +274,7 @@ class ScheduleAdvancerTest {
 
     advancer(scope).onSyncCompleted(Succeeded)
 
-    val payee = syncController.changes.single { it.dataset == PAYEES && it.column == "name" }
+    val payee = budgetSync.changes.single { it.dataset == PAYEES && it.column == "name" }
     assertThat(payee.value).isEqualTo(MessageValue.String("Landlord"))
     assertThat(posted("description")).containsExactly(MessageValue.String(payee.row))
   }
@@ -326,7 +326,7 @@ class ScheduleAdvancerTest {
 
       advancer(scope).onSyncCompleted(Succeeded)
 
-      val rows = syncController.changes.filter { it.dataset == TRANSACTIONS }.groupBy { it.row }
+      val rows = budgetSync.changes.filter { it.dataset == TRANSACTIONS }.groupBy { it.row }
       val children =
         rows.values
           .filter { row -> row.any { it.column == "parent_id" } }
@@ -347,8 +347,8 @@ class ScheduleAdvancerTest {
   fun `Failed posting doesn't count as today's run`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", nextDate = MARCH_15, postsTransaction = true)
     val failingSync =
-      object : BudgetSyncController {
-        override suspend fun syncChanges(changes: List<LocalChange>) = error("Sync failed")
+      object : BudgetSync {
+        override suspend fun invoke(changes: List<LocalChange>) = error("Sync failed")
 
         override fun schedule() = Unit
       }
@@ -364,9 +364,9 @@ class ScheduleAdvancerTest {
     // Only completes once, so posting twice fails the test rather than looping
     var completed = false
     val completingSync =
-      object : BudgetSyncController {
-        override suspend fun syncChanges(changes: List<LocalChange>) {
-          syncController.syncChanges(changes)
+      object : BudgetSync {
+        override suspend fun invoke(changes: List<LocalChange>) {
+          budgetSync(changes)
           if (!completed) {
             completed = true
             syncEvents.complete(Succeeded)
@@ -392,7 +392,7 @@ class ScheduleAdvancerTest {
     syncEvents.complete(Succeeded)
     scope.runCurrent()
 
-    assertThat(syncController.changes)
+    assertThat(budgetSync.changes)
       .containsExactly(LocalChange(SCHEDULES, "a", "completed", MessageValue.Number(1)))
   }
 
@@ -507,12 +507,10 @@ class ScheduleAdvancerTest {
       )
 
   private fun posted(column: String): List<MessageValue> =
-    syncController.changes
-      .filter { it.dataset == TRANSACTIONS && it.column == column }
-      .map { it.value }
+    budgetSync.changes.filter { it.dataset == TRANSACTIONS && it.column == column }.map { it.value }
 
   private fun nextDateChanges(): List<MessageValue> =
-    syncController.changes
+    budgetSync.changes
       .filter { it.dataset == SCHEDULES_NEXT_DATE && it.column == "local_next_date" }
       .map { it.value }
 
@@ -551,7 +549,7 @@ class ScheduleAdvancerTest {
   private fun BudgetDatabase.advancer(
     scope: TestScope,
     coroutineScope: BudgetCoroutineScope = BudgetCoroutineScope(scope),
-    sync: BudgetSyncController = syncController,
+    sync: BudgetSync = budgetSync,
   ): ScheduleAdvancer {
     var nextId = 1
     val uuidGenerator = UuidGenerator { "id-${nextId++}" }
@@ -560,7 +558,7 @@ class ScheduleAdvancerTest {
       accountDao = AccountDao(this),
       preferencesDao =
         PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))),
-      syncController = sync,
+      budgetSync = sync,
       syncEvents = syncEvents,
       budgetPrefs = budgetPrefs,
       poster =
@@ -573,7 +571,7 @@ class ScheduleAdvancerTest {
             ),
           transactionWriter =
             TransactionWriterImpl(
-              syncController = sync,
+              budgetSync = sync,
               accountDao = AccountDao(this),
               categoryDao = CategoryDao(this),
               payeeDao = PayeeDao(this),

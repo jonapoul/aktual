@@ -16,7 +16,7 @@ import aktual.budget.rules.domain.RulesWriterImpl
 import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.inMemoryDriverFactory
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -109,7 +109,7 @@ class ListRulesViewModelTest {
   private fun BudgetDatabase.createViewModel(scope: TestScope) =
     ListRulesViewModel(
       loader = RulesLoaderImpl(RulesDao(this)),
-      writer = RulesWriterImpl(RulesDao(this), TestSyncController()),
+      writer = RulesWriterImpl(RulesDao(this), TestBudgetSync()),
       nameFetcher = FakeNameFetcher,
       viewModelContext = scope.viewModelContext,
     )

@@ -15,9 +15,9 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
+import aktual.test.TestBudgetSync
 import aktual.test.TestCalendar
-import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -92,7 +92,7 @@ class CreateAccountViewModelTest {
 
   @Test
   fun `Creating sends the account with its starting balance`() = runDatabaseTest { scope ->
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
     viewModel.setName(" Credit card ")
     viewModel.setBalance("120.50")
@@ -113,7 +113,7 @@ class CreateAccountViewModelTest {
 
   @Test
   fun `Created waits for the screen, and creating again does nothing`() = runDatabaseTest { scope ->
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
     viewModel.setName("Savings")
 
@@ -131,7 +131,7 @@ class CreateAccountViewModelTest {
 
   @Test
   fun `Creating off budget with no balance adds no transaction`() = runDatabaseTest { scope ->
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
     viewModel.setName("House")
     viewModel.setOffBudget(true)
@@ -188,7 +188,7 @@ class CreateAccountViewModelTest {
 
   @Test
   fun `A failed create shows its error until dismissed`() = runDatabaseTest { scope ->
-    val viewModel = createViewModel(scope, FailingSyncController)
+    val viewModel = createViewModel(scope, FailingBudgetSync)
 
     viewModel.state.test {
       assertThatNextEmissionIsEqualTo(CreateAccountState())
@@ -205,14 +205,14 @@ class CreateAccountViewModelTest {
 
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
-    sync: BudgetSyncController = TestSyncController(),
+    sync: BudgetSync = TestBudgetSync(),
   ): CreateAccountViewModel {
     val accountDao = AccountDao(this)
     var nextId = 1
     return CreateAccountViewModel(
       writer =
         TransactionWriterImpl(
-          syncController = sync,
+          budgetSync = sync,
           accountDao = accountDao,
           categoryDao = CategoryDao(this),
           payeeDao = PayeeDao(this),
@@ -258,8 +258,8 @@ class CreateAccountViewModelTest {
     }
     .map { it.value }
 
-  private object FailingSyncController : BudgetSyncController {
-    override suspend fun syncChanges(changes: List<LocalChange>) = error("Offline")
+  private object FailingBudgetSync : BudgetSync {
+    override suspend fun invoke(changes: List<LocalChange>) = error("Offline")
 
     override fun schedule() = Unit
   }

@@ -4,7 +4,7 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.all
@@ -70,7 +70,7 @@ class CashFlowLoaderTest {
     )
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController, ReportsDao) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync, ReportsDao) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val loader = chartDataLoader(contexts, calendar = { TODAY })

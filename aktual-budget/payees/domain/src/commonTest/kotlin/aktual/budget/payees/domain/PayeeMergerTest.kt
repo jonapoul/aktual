@@ -10,7 +10,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.PayeeId
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.inMemoryDriverFactory
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -119,13 +119,13 @@ class PayeeMergerTest {
   private class MergerTestScope(
     val database: BudgetDatabase,
     private val syncDao: SyncDao,
-  ) : BudgetSyncController {
+  ) : BudgetSync {
     val changes = mutableListOf<LocalChange>()
     val payeeDao = PayeeDao(database)
-    val merger = PayeeMerger(payeeDao, syncController = this)
+    val merger = PayeeMerger(payeeDao, budgetSync = this)
 
     // Applied to the database, as BudgetSyncControllerImpl does
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       this.changes += changes
       syncDao.sendMessages(changes)
     }

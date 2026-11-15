@@ -6,7 +6,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
 import aktual.budget.model.SyncState.SyncFailed
 import aktual.budget.utils.BudgetLocalPreferences
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.budget.utils.SyncEvents
 import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.ForegroundStateHolder
@@ -33,10 +33,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @SingleIn(BudgetScope::class)
-@ContributesBinding(BudgetScope::class, binding<BudgetSyncController>())
+@ContributesBinding(BudgetScope::class, binding<BudgetSync>())
 @ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Initializable>())
 @ContributesIntoSet(BudgetScope::class, binding<@ForScope(BudgetScope::class) Closeable>())
-class BudgetSyncControllerImpl
+class BudgetSyncImpl
 internal constructor(
   private val syncStateHolder: SyncStateHolder,
   private val syncer: IncrementalSyncer,
@@ -46,7 +46,7 @@ internal constructor(
   private val budgetMetadata: BudgetLocalPreferences,
   private val syncEvents: SyncEvents,
   private val foregroundState: ForegroundStateHolder,
-) : BudgetSyncController, Initializable, Closeable {
+) : BudgetSync, Initializable, Closeable {
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
 
@@ -68,7 +68,7 @@ internal constructor(
       },
     )
 
-  override suspend fun syncChanges(changes: List<LocalChange>) {
+  override suspend fun invoke(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)
     schedule()
   }

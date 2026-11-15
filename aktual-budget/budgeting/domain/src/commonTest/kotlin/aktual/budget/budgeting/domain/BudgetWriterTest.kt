@@ -23,7 +23,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.DistanceUnit
 import aktual.core.utils.Calendar
 import aktual.prefs.CurrencyPreferences
@@ -559,7 +559,7 @@ internal class BudgetWriterTest {
     database: BudgetDatabase,
     private val driver: SqlDriver,
     private val syncDao: SyncDao,
-  ) : BudgetSyncController {
+  ) : BudgetSync {
     val syncCalls = mutableListOf<List<LocalChange>>()
     private val contexts = TestCoroutineContexts(EmptyCoroutineContext)
     private val preferences = PreferencesDao(database, contexts)
@@ -570,7 +570,7 @@ internal class BudgetWriterTest {
     val calculator = BudgetMonthCalculatorImpl(budgetDao, preferences, calendar, contexts)
     val writer =
       BudgetWriterImpl(
-        syncController = this,
+        budgetSync = this,
         budgetDao = budgetDao,
         preferencesDao = preferences,
         calendar = calendar,
@@ -580,7 +580,7 @@ internal class BudgetWriterTest {
         currencyPreferences = TestCurrencyPreferences,
       )
 
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       syncCalls.add(changes)
       syncDao.sendMessages(changes)
     }

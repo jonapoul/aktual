@@ -70,6 +70,6 @@ abstract class RootViewModel(
   fun onDestroy() = appLifecycleManager.destroy()
 
   fun startSync() {
-    runLevels[BudgetGraph::class]?.syncController?.schedule()
+    runLevels[BudgetGraph::class]?.budgetSync?.schedule()
   }
 }

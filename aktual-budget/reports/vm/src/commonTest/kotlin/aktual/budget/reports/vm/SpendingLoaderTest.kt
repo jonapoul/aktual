@@ -10,7 +10,7 @@ import aktual.budget.db.dao.DatabaseTables.REFLECT_BUDGETS
 import aktual.budget.db.dao.DatabaseTables.ZERO_BUDGETS
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
@@ -210,7 +210,7 @@ class SpendingLoaderTest {
 
   private fun SpendingData.day(day: Int) = targetOn(day) to comparisonOn(day)
 
-  private suspend fun BudgetSyncController.insertSpending() {
+  private suspend fun BudgetSync.insertSpending() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "invest", "name" to "Invest", "offbudget" to true)
     row(CATEGORY_GROUPS, "income", "name" to "Income", "is_income" to true)
@@ -234,7 +234,7 @@ class SpendingLoaderTest {
     transaction("june-later", -700, category = "food", date = 20260620)
   }
 
-  private suspend fun BudgetSyncController.insertBudgets() {
+  private suspend fun BudgetSync.insertBudgets() {
     budget(ZERO_BUDGETS, 202606, "food", 3000)
     budget(ZERO_BUDGETS, 202606, "fuel", 1500)
     budget(ZERO_BUDGETS, 202606, "salary", 9000)
@@ -242,7 +242,7 @@ class SpendingLoaderTest {
     budget(REFLECT_BUDGETS, 202606, "food", 600)
   }
 
-  private suspend fun BudgetSyncController.budget(
+  private suspend fun BudgetSync.budget(
     dataset: String,
     month: Long,
     category: String,
@@ -250,7 +250,7 @@ class SpendingLoaderTest {
   ) = row(dataset, "$month-$category", "month" to month, "category" to category, "amount" to amount)
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     action(chartDataLoader(contexts, calendar = { TODAY }), sync)

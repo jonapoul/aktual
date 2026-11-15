@@ -9,6 +9,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.localChange
+import aktual.budget.utils.BudgetSync
 import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.all
@@ -218,30 +219,26 @@ class CloseAccountViewModelTest {
       ),
     )
 
-  private suspend fun AccountsTestScope.group(id: String, name: String, hidden: Boolean) =
-    syncChanges(
-      listOf(
-        localChange(CATEGORY_GROUPS, id, "name", name),
-        localChange(CATEGORY_GROUPS, id, "is_income", false),
-        localChange(CATEGORY_GROUPS, id, "hidden", hidden),
-        localChange(CATEGORY_GROUPS, id, "tombstone", false),
-      ),
+  private suspend fun BudgetSync.group(id: String, name: String, hidden: Boolean) =
+    invoke(
+      localChange(CATEGORY_GROUPS, id, "name", name),
+      localChange(CATEGORY_GROUPS, id, "is_income", false),
+      localChange(CATEGORY_GROUPS, id, "hidden", hidden),
+      localChange(CATEGORY_GROUPS, id, "tombstone", false),
     )
 
-  private suspend fun AccountsTestScope.category(
+  private suspend fun BudgetSync.category(
     id: String,
     name: String,
     group: String,
     hidden: Boolean,
   ) =
-    syncChanges(
-      listOf(
-        localChange(CATEGORIES, id, "name", name),
-        localChange(CATEGORIES, id, "cat_group", group),
-        localChange(CATEGORIES, id, "is_income", false),
-        localChange(CATEGORIES, id, "hidden", hidden),
-        localChange(CATEGORIES, id, "tombstone", false),
-      ),
+    invoke(
+      localChange(CATEGORIES, id, "name", name),
+      localChange(CATEGORIES, id, "cat_group", group),
+      localChange(CATEGORIES, id, "is_income", false),
+      localChange(CATEGORIES, id, "hidden", hidden),
+      localChange(CATEGORIES, id, "tombstone", false),
     )
 
   private suspend fun CloseAccountViewModel.ready(): Ready = state.filterIsInstance<Ready>().first()

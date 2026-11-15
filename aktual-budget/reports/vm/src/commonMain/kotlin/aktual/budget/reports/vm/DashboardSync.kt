@@ -12,7 +12,7 @@ import aktual.budget.model.WidgetType
 import aktual.budget.model.localChange
 import aktual.budget.model.sortOrderAfter
 import aktual.budget.model.tombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
@@ -26,7 +26,7 @@ import kotlinx.serialization.json.JsonPrimitive
 @Inject
 internal class DashboardSync(
   private val dao: DashboardDao,
-  private val sync: BudgetSyncController,
+  private val sync: BudgetSync,
 ) {
   // Places the widget after the last one on the page
   suspend fun addWidget(id: WidgetId, page: DashboardPageId, type: WidgetType, meta: JsonObject) {
@@ -42,7 +42,7 @@ internal class DashboardSync(
     y: Long,
     meta: JsonObject,
   ) {
-    sync.syncChanges(
+    sync(
       localChange(DASHBOARD, id.value, "id", id.value),
       localChange(DASHBOARD, id.value, "type", type),
       localChange(DASHBOARD, id.value, "width", DashboardDao.DEFAULT_WIDTH),
@@ -97,7 +97,7 @@ internal class DashboardSync(
     if (changed.isEmpty() && removed.isEmpty()) return
     val meta = dao.meta(id) ?: return
     val patched = JsonObject(meta - removed + changed)
-    sync.syncChanges(
+    sync(
       localChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched)),
     )
   }
@@ -114,7 +114,7 @@ internal class DashboardSync(
   private suspend fun patchMeta(id: WidgetId, values: Map<String, JsonElement>) {
     val meta = dao.meta(id) ?: return
     val patched = JsonObject(meta + values)
-    sync.syncChanges(
+    sync(
       localChange(DASHBOARD, id.value, "meta", DbJson.encodeToString(patched)),
     )
   }
@@ -140,24 +140,23 @@ internal class DashboardSync(
           localChange(DASHBOARD, box.id.value, "y", box.y).takeIf { box.y != old.y },
         )
       }
-    if (changes.isNotEmpty()) sync.syncChanges(changes)
+    if (changes.isNotEmpty()) sync(changes)
   }
 
-  suspend fun deleteWidget(id: WidgetId) = sync.syncChanges(tombstone(DASHBOARD, id.value))
+  suspend fun deleteWidget(id: WidgetId) = sync(tombstone(DASHBOARD, id.value))
 
   suspend fun renameCustomReport(id: CustomReportId, name: String) =
-    sync.syncChanges(localChange(CUSTOM_REPORTS, id.value, "name", name))
+    sync(localChange(CUSTOM_REPORTS, id.value, "name", name))
 
   // packages/loot-core/src/server/reports/app.ts deleteReport(). Other widgets showing the report
   // are left in place, and show it as missing
-  suspend fun deleteCustomReport(id: CustomReportId) =
-    sync.syncChanges(tombstone(CUSTOM_REPORTS, id.value))
+  suspend fun deleteCustomReport(id: CustomReportId) = sync(tombstone(CUSTOM_REPORTS, id.value))
 
   // Appends after the existing pages. packages/loot-core/src/server/dashboard/app.ts
   // createDashboardPage()
   suspend fun insertPage(id: DashboardPageId, name: String) {
     val sortOrder = sortOrderAfter(dao.lastPageSortOrder())
-    sync.syncChanges(
+    sync(
       localChange(DASHBOARD_PAGES, id.value, "id", id.value),
       localChange(DASHBOARD_PAGES, id.value, "name", name),
       localChange(DASHBOARD_PAGES, id.value, "sort_order", sortOrder),
@@ -166,13 +165,13 @@ internal class DashboardSync(
   }
 
   suspend fun renamePage(id: DashboardPageId, name: String) =
-    sync.syncChanges(localChange(DASHBOARD_PAGES, id.value, "name", name))
+    sync(localChange(DASHBOARD_PAGES, id.value, "name", name))
 
   // Refuses to delete the last page, like upstream. Returns whether the page was deleted
   suspend fun deletePage(id: DashboardPageId): Boolean {
     if (dao.countPages() <= 1) return false
     val widgets = dao.widgetIds(id).map { widget -> tombstone(DASHBOARD, widget.value) }
-    sync.syncChanges(listOf(tombstone(DASHBOARD_PAGES, id.value)) + widgets)
+    sync(listOf(tombstone(DASHBOARD_PAGES, id.value)) + widgets)
     return true
   }
 

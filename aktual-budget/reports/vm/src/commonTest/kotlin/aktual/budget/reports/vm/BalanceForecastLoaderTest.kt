@@ -6,7 +6,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.insertSchedule
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
@@ -92,7 +92,7 @@ class BalanceForecastLoaderTest {
     )
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     action(chartDataLoader(contexts, calendar = { TODAY }), sync)

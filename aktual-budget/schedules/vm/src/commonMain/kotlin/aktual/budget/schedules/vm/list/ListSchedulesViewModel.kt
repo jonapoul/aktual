@@ -10,7 +10,7 @@ import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoader
 import aktual.budget.schedules.vm.edit.ScheduleWriter
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
@@ -45,7 +45,7 @@ import kotlinx.datetime.LocalDate
 class ListSchedulesViewModel
 internal constructor(
   loader: SchedulesLoader,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val writer: ScheduleWriter,
   private val poster: ScheduleTransactionPoster,
   private val preferences: SchedulePreferences,
@@ -109,7 +109,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          syncController.syncChanges(schedule.tombstones(::tombstone))
+          budgetSync(schedule.tombstones(::tombstone))
           mutableEvents.tryEmit(ListSchedulesEvent.Deleted(schedule))
           log.i { "Deleted schedule ${schedule.id}" }
         },
@@ -125,7 +125,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          syncController.syncChanges(schedule.tombstones(::untombstone))
+          budgetSync(schedule.tombstones(::untombstone))
           log.i { "Restored schedule ${schedule.id}" }
         },
         onFailure = { e ->

@@ -10,7 +10,7 @@ import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
@@ -101,7 +101,7 @@ class SankeyLoaderTest {
 
   private fun ChartData.nodeKeys() = (this as SankeyData).nodes.map { it.key }
 
-  private suspend fun BudgetSyncController.insertBudget() {
+  private suspend fun BudgetSync.insertBudget() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "savings", "name" to "Savings", "offbudget" to false)
     row(CATEGORY_GROUPS, "income", "name" to "Income", "is_income" to true, "sort_order" to 1L)
@@ -147,7 +147,7 @@ class SankeyLoaderTest {
     )
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController, ReportsDao) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync, ReportsDao) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val loader = chartDataLoader(contexts, calendar = { TODAY })

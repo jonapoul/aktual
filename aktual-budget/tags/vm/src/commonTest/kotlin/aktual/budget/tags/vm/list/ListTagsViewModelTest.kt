@@ -8,11 +8,11 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
 import aktual.budget.tags.vm.insertTag
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.di.BudgetCoroutineScope
 import aktual.prefs.TagPreferences
 import aktual.prefs.TagPreferencesImpl
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import aktual.test.unconfinedViewModelContext
@@ -95,7 +95,7 @@ class ListTagsViewModelTest {
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     // wait for the initial load with both tags
@@ -122,7 +122,7 @@ class ListTagsViewModelTest {
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     // wait for the initial load with both tags
@@ -276,7 +276,7 @@ class ListTagsViewModelTest {
   @Test
   fun `Undo still restores the tag after the screen has gone`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
     viewModel.state.test {
       assertThat(awaitLoaded()).isInstanceOf(Success::class)
@@ -327,20 +327,20 @@ class ListTagsViewModelTest {
 
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
-    sync: BudgetSyncController = TestSyncController(),
+    sync: BudgetSync = TestBudgetSync(),
     preferences: TagPreferences = TagPreferencesImpl(scope.buildPreferences()),
   ) =
     ListTagsViewModel(
       tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher)),
       transactionDao = TransactionDao(database = this),
-      syncController = sync,
+      budgetSync = sync,
       preferences = preferences,
       budgetScope = BudgetCoroutineScope(scope),
       viewModelContext = scope.unconfinedViewModelContext,
     )
 
-  private class FailingSyncController : BudgetSyncController {
-    override suspend fun syncChanges(changes: List<LocalChange>): Unit = error("sync failed")
+  private class FailingSyncController : BudgetSync {
+    override suspend fun invoke(changes: List<LocalChange>): Unit = error("sync failed")
 
     override fun schedule() = Unit
   }

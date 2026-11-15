@@ -10,8 +10,8 @@ import kotlinx.datetime.LocalDate
 
 /**
  * Collects the changes of one [TransactionWriter.write] call, so they all go out in a single
- * BudgetSyncController.syncChanges(). Nothing touches the database until the block returns, so
- * anything added earlier in the same batch (payees, split children) is tracked here.
+ * BudgetSync(). Nothing touches the database until the block returns, so anything added earlier in
+ * the same batch (payees, split children) is tracked here.
  */
 @Suppress("ComplexInterface")
 interface TransactionBatch {
