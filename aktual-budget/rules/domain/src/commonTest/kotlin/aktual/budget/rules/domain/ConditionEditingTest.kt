@@ -3,6 +3,7 @@ package aktual.budget.rules.domain
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOptions
 import aktual.budget.model.ConditionType
+import aktual.budget.model.Operator
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
@@ -80,5 +81,44 @@ class ConditionEditingTest {
       .isEqualTo(TextList)
     assertThat(Condition(Notes, HasTags, JsonPrimitive("#a")).editableKind(RuleConditions))
       .isEqualTo(Text)
+  }
+
+  @Test
+  fun `Recurring dates are editable with is and isapprox`() {
+    val condition = Condition(Date, IsApprox, RECUR, type = Date)
+    assertThat(condition.editableKind(RuleConditions)).isEqualTo(Recurrence)
+    assertThat(condition.operators(RuleConditions)).isEqualTo(listOf<Operator>(Is, IsApprox))
+    assertThat(condition.withOperator(Is, RuleConditions).value).isEqualTo(RECUR)
+    assertThat(condition.copy(operator = GreaterThan).editableKind(RuleConditions)).isNull()
+  }
+
+  @Test
+  fun `Recurring dates round trip through their config`() {
+    val config = RECUR.toRecurConfigOrNull()
+    assertThat(config?.toJsonElement()?.toRecurConfigOrNull()).isEqualTo(config)
+    assertThat(config?.frequency).isEqualTo(Monthly)
+  }
+
+  @Test
+  fun `Recurring dates with an unknown frequency aren't editable`() {
+    val unknown = JsonObject(RECUR + ("frequency" to JsonPrimitive("fortnightly")))
+    assertThat(Condition(Date, Is, unknown).editableKind(RuleConditions)).isNull()
+  }
+
+  private companion object {
+    val RECUR =
+      JsonObject(
+        mapOf(
+          "start" to JsonPrimitive("2025-03-02"),
+          "interval" to JsonPrimitive(1),
+          "frequency" to JsonPrimitive("monthly"),
+          "patterns" to JsonArray(emptyList()),
+          "skipWeekend" to JsonPrimitive(false),
+          "weekendSolveMode" to JsonPrimitive("after"),
+          "endMode" to JsonPrimitive("never"),
+          "endOccurrences" to JsonPrimitive(1),
+          "endDate" to JsonPrimitive("2025-03-06"),
+        ),
+      )
   }
 }

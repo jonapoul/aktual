@@ -25,6 +25,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.longOrNull
@@ -89,6 +90,8 @@ private val COMPARE_OPERATORS =
   )
 
 private val FLAG_OPERATORS = persistentListOf<Operator>(Is)
+
+private val RECUR_OPERATORS = setOf<Operator>(Is, IsApprox)
 
 fun filterOperators(field: Field): ImmutableList<Operator> =
   when (field) {
@@ -204,14 +207,27 @@ private fun idValueKind(op: Operator): ConditionValueKind =
     LessThanOrEquals -> Entity
   }
 
-// Null when the editor can't show the condition, like a recurring date or an amount range. Those
+// Null when the editor can't show the condition, like an amount range or a custom name. Those
 // are kept as they are, and can only be deleted
 fun Condition.editableKind(schema: ConditionSchema = FilterConditions): ConditionValueKind? {
   val flows = options?.inflow == true || options?.outflow == true
-  if (customName != null || flows || operator !in schema.operators(field)) return null
-  val kind = conditionValueKind(field, operator)
+  if (customName != null || flows || operator !in operators(schema)) return null
+  val kind = valueKind()
   return kind.takeIf { value.fits(it) }
 }
+
+// Upstream only offers is and isapprox on a recurring date, which a schedule's rule has
+fun Condition.operators(schema: ConditionSchema = FilterConditions): ImmutableList<Operator> {
+  val operators = schema.operators(field)
+  return if (valueKind() == Recurrence) {
+    operators.filter { it in RECUR_OPERATORS }.toImmutableList()
+  } else {
+    operators
+  }
+}
+
+private fun Condition.valueKind(op: Operator = operator): ConditionValueKind =
+  if (field == Date && value is JsonObject) Recurrence else conditionValueKind(field, op)
 
 private fun JsonElement.fits(kind: ConditionValueKind): Boolean =
   when (kind) {
@@ -221,6 +237,7 @@ private fun JsonElement.fits(kind: ConditionValueKind): Boolean =
     Text -> isString()
     Money -> this is JsonPrimitive && !isString && longOrNull != null
     Day -> isString() && (content().isEmpty() || content().toDayOrNull() != null)
+    Recurrence -> toRecurConfigOrNull() != null
     Flag -> this is JsonPrimitive && !isString && booleanOrNull != null
     NoValue -> true
   }
@@ -237,7 +254,7 @@ fun newCondition(field: Field, schema: ConditionSchema = FilterConditions): Cond
 
 // Keeps the value when the new operator takes the same kind
 fun Condition.withOperator(op: Operator, schema: ConditionSchema = FilterConditions): Condition {
-  val kind = conditionValueKind(field, op)
+  val kind = valueKind(op)
   val value = if (editableKind(schema) == kind) value else defaultValue(kind)
   return copy(operator = op, value = value)
 }
@@ -251,7 +268,8 @@ private fun defaultValue(kind: ConditionValueKind): JsonElement =
     EntityList,
     TextList -> JsonArray(emptyList())
     Text,
-    Day -> JsonPrimitive("")
+    Day,
+    Recurrence -> JsonPrimitive("")
     Money -> JsonPrimitive(0)
     Flag -> JsonPrimitive(true)
   }
@@ -264,7 +282,8 @@ private fun Field.conditionType(): ConditionType =
     Text,
     TextList -> ConditionType.String
     Money -> ConditionType.Number
-    Day -> Date
+    Day,
+    Recurrence -> Date
     Flag -> ConditionType.Boolean
   }
 

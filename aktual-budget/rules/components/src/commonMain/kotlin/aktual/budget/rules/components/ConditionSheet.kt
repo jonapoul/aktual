@@ -7,6 +7,7 @@ import aktual.budget.rules.domain.ConditionSchema
 import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.entities
 import aktual.budget.rules.domain.newCondition
+import aktual.budget.rules.domain.operators
 import aktual.budget.rules.domain.withOperator
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
@@ -119,7 +120,7 @@ private fun ConditionContent(
           modifier = Modifier.fillMaxWidth(),
           value = condition.operator,
           onValueChange = { op -> onChange(condition.withOperator(op, schema)) },
-          options = schema.operators(condition.field),
+          options = condition.operators(schema),
           string = { op -> op.label() },
           textStyle = typography.bodyMedium,
         )

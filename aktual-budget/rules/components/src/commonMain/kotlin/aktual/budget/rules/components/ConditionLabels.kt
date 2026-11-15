@@ -6,7 +6,10 @@ import aktual.budget.model.Field
 import aktual.budget.model.Operator
 import aktual.budget.rules.domain.ConditionSchema
 import aktual.budget.rules.domain.editableKind
+import aktual.budget.rules.domain.toRecurConfigOrNull
+import aktual.budget.schedules.components.description
 import aktual.core.l10n.Strings
+import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.formattedString
 import androidx.compose.runtime.Composable
 import kotlinx.collections.immutable.ImmutableMap
@@ -74,6 +77,7 @@ fun Condition.valueLabel(
     TextList -> (value as JsonArray).joinToString { it.jsonPrimitive.content }
     Text,
     Day -> value.jsonPrimitive.content
+    Recurrence -> value.toRecurConfigOrNull()?.description(LocalDateFormatter.current)
     Money -> Amount(value.jsonPrimitive.long).formattedString()
     Flag ->
       if (value.jsonPrimitive.boolean) {

@@ -1,0 +1,306 @@
+package aktual.budget.schedules.components
+
+import aktual.budget.model.RecurConfig
+import aktual.budget.model.RecurEndMode
+import aktual.budget.model.RecurFrequency
+import aktual.budget.model.WeekendSolveMode
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
+import aktual.core.icons.Subtract
+import aktual.core.l10n.Plurals
+import aktual.core.l10n.Strings
+import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualDatePickerDialog
+import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.DialogTextButton
+import aktual.core.ui.formatted
+import aktual.core.ui.switch
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.getSelectedDate
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toKotlinLocalDate
+
+@Composable
+fun RecurConfigFields(
+  config: RecurConfig,
+  onConfigChange: (RecurConfig) -> Unit,
+  modifier: Modifier = Modifier,
+) =
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(SHEET_SPACING),
+  ) {
+    ScheduleDateField(
+      label = Strings.editScheduleWhenStarts,
+      date = config.start,
+      onDateChange = { onConfigChange(config.copy(start = it)) },
+    )
+
+    AktualSlidingToggleButton(
+      modifier = Modifier.fillMaxWidth(),
+      selected = config.frequency,
+      options = FREQUENCIES,
+      onSelect = { onConfigChange(config.copy(frequency = it)) },
+      string = { it.string() },
+    )
+
+    val interval = (config.interval ?: 1).coerceAtLeast(1)
+    Stepper(
+      text = config.frequency.intervalText(interval),
+      canDecrease = interval > 1,
+      onDecrease = { onConfigChange(config.copy(interval = interval - 1)) },
+      onIncrease = { onConfigChange(config.copy(interval = interval + 1)) },
+    )
+
+    // Specific days of the month can't be edited here yet, but they're kept as they are
+    if (config.frequency == Monthly && !config.patterns.isNullOrEmpty()) {
+      Text(
+        text = Strings.editSchedulePatternsNote(config.frequencyDescription()),
+        style = typography.bodySmall,
+        color = colors.pageTextSubdued,
+      )
+    }
+
+    val skipWeekend = config.skipWeekend == true
+    ScheduleSwitchRow(
+      text = Strings.editScheduleWeekendMove,
+      checked = skipWeekend,
+      onCheckedChange = { onConfigChange(config.copy(skipWeekend = it)) },
+    )
+
+    if (skipWeekend) {
+      AktualSlidingToggleButton(
+        modifier = Modifier.fillMaxWidth(),
+        selected = if (config.weekendSolveMode == Before) Before else After,
+        options = WEEKEND_MODES,
+        onSelect = { onConfigChange(config.copy(weekendSolveMode = it)) },
+        string = { mode ->
+          if (mode == Before) {
+            Strings.editScheduleWeekendBefore
+          } else {
+            Strings.editScheduleWeekendAfter
+          }
+        },
+      )
+    }
+
+    EndFields(config, onConfigChange)
+  }
+
+@Composable
+private fun EndFields(
+  config: RecurConfig,
+  onConfigChange: (RecurConfig) -> Unit,
+  modifier: Modifier = Modifier,
+) =
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(SHEET_SPACING),
+  ) {
+    Text(text = Strings.editScheduleEnds, style = typography.labelLarge)
+
+    val endMode: RecurEndMode =
+      when (config.endMode) {
+        AfterNOccurrences -> AfterNOccurrences
+        OnDate -> OnDate
+        Never,
+        Unknown,
+        null -> Never
+      }
+
+    AktualSlidingToggleButton(
+      modifier = Modifier.fillMaxWidth(),
+      selected = endMode,
+      options = END_MODES,
+      // Saves the count and date shown below, so a limited schedule never ends up unlimited
+      onSelect = { mode ->
+        onConfigChange(
+          config.copy(
+            endMode = mode,
+            endOccurrences = (config.endOccurrences ?: 1).coerceAtLeast(1),
+            endDate = config.endDate ?: config.start,
+          ),
+        )
+      },
+      string = { it.string() },
+    )
+
+    when (endMode) {
+      AfterNOccurrences -> {
+        val count = (config.endOccurrences ?: 1).coerceAtLeast(1)
+        Stepper(
+          text = Plurals.editScheduleSentenceTimes(count, count),
+          canDecrease = count > 1,
+          onDecrease = { onConfigChange(config.copy(endOccurrences = count - 1)) },
+          onIncrease = { onConfigChange(config.copy(endOccurrences = count + 1)) },
+        )
+      }
+
+      OnDate -> {
+        ScheduleDateField(
+          label = Strings.editScheduleEndsDate,
+          date = config.endDate ?: config.start,
+          onDateChange = { onConfigChange(config.copy(endDate = it)) },
+        )
+      }
+
+      Never,
+      Unknown -> {}
+    }
+  }
+
+@Composable
+fun ScheduleSwitchRow(
+  text: String,
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(FIELD_SPACING),
+  ) {
+    Text(modifier = Modifier.weight(1f), text = text, style = typography.bodyLarge)
+    Switch(checked = checked, onCheckedChange = onCheckedChange, colors = colors.switch())
+  }
+}
+
+@Composable
+private fun Stepper(
+  text: String,
+  canDecrease: Boolean,
+  onDecrease: () -> Unit,
+  onIncrease: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(LABEL_SPACING),
+  ) {
+    Text(modifier = Modifier.weight(1f), text = text, style = typography.bodyLarge)
+    AktualIconButton(
+      imageVector = AktualIcons.Subtract,
+      contentDescription = Strings.editScheduleIntervalDecrease,
+      isEnabled = canDecrease,
+      onClick = onDecrease,
+    )
+    AktualIconButton(
+      imageVector = AktualIcons.Add,
+      contentDescription = Strings.editScheduleIntervalIncrease,
+      onClick = onIncrease,
+    )
+  }
+}
+
+@Composable
+fun ScheduleDateField(
+  label: String,
+  date: LocalDate,
+  onDateChange: (LocalDate) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  var showDialog by remember { mutableStateOf(false) }
+
+  Column(
+    modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(LABEL_SPACING),
+  ) {
+    Text(text = label, style = typography.labelLarge)
+    AktualButton(
+      modifier = Modifier.fillMaxWidth(),
+      text = date.formatted(),
+      icon = AktualIcons.Calendar3,
+      onClick = { showDialog = true },
+    )
+  }
+
+  if (showDialog) {
+    val state = rememberDatePickerState(date.toJavaLocalDate())
+    AktualDatePickerDialog(
+      onDismissRequest = { showDialog = false },
+      confirmButton = {
+        DialogTextButton(
+          kind = Primary,
+          text = Strings.editScheduleDatePickerOk,
+          isEnabled = state.selectedDateMillis != null,
+          onClick = {
+            state.getSelectedDate()?.toKotlinLocalDate()?.let(onDateChange)
+            showDialog = false
+          },
+        )
+      },
+      dismissButton = {
+        DialogTextButton(
+          text = Strings.editScheduleDatePickerCancel,
+          onClick = { showDialog = false },
+        )
+      },
+      content = { DatePicker(state = state) },
+    )
+  }
+}
+
+@Composable
+private fun RecurFrequency.string(): String =
+  when (this) {
+    Daily -> Strings.editScheduleFrequencyDaily
+    Weekly -> Strings.editScheduleFrequencyWeekly
+    Yearly -> Strings.editScheduleFrequencyYearly
+    Monthly,
+    Unknown -> Strings.editScheduleFrequencyMonthly
+  }
+
+@Composable
+private fun RecurFrequency.intervalText(interval: Int): String =
+  when (this) {
+    Daily -> Plurals.editScheduleIntervalDays(interval, interval)
+    Weekly -> Plurals.editScheduleIntervalWeeks(interval, interval)
+    Yearly -> Plurals.editScheduleIntervalYears(interval, interval)
+    Monthly,
+    Unknown -> Plurals.editScheduleIntervalMonths(interval, interval)
+  }
+
+@Composable
+private fun RecurEndMode.string(): String =
+  when (this) {
+    AfterNOccurrences -> Strings.editScheduleEndsAfter
+    OnDate -> Strings.editScheduleEndsOnDate
+    Never,
+    Unknown -> Strings.editScheduleEndsNever
+  }
+
+private val FREQUENCIES: PersistentList<RecurFrequency> =
+  persistentListOf(Daily, Weekly, Monthly, Yearly)
+
+private val WEEKEND_MODES: PersistentList<WeekendSolveMode> = persistentListOf(Before, After)
+
+private val END_MODES: PersistentList<RecurEndMode> =
+  persistentListOf(Never, AfterNOccurrences, OnDate)
+
+private val SHEET_SPACING = 16.dp
+private val FIELD_SPACING = 12.dp
+private val LABEL_SPACING = 6.dp
