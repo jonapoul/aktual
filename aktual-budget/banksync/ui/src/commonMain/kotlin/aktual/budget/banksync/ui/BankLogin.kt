@@ -272,6 +272,7 @@ private fun LoginWaiting(
       )
       AktualButton(
         text = Strings.bankSyncLinkLoginCancel,
+        variant = Secondary,
         onClick = { onAction(CancelLogin) },
       )
     }

@@ -209,12 +209,14 @@ private fun TextChartButtons(
           modifier = Modifier.weight(1f),
           text = Strings.reportsTextDiscard,
           kind = Destructive,
+          variant = Secondary,
           onClick = onCancel,
         )
       } else {
         AktualButton(
           modifier = Modifier.weight(1f),
           text = Strings.reportsTextCancel,
+          variant = Secondary,
           onClick = onCancel,
         )
       }

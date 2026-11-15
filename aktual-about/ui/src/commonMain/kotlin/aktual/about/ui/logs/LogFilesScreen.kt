@@ -386,6 +386,7 @@ private fun LogFilesBottomBar(onDelete: () -> Unit, onExport: () -> Unit) =
         modifier = Modifier.weight(1f),
         text = Strings.logsDeleteAll,
         kind = Destructive,
+        variant = Secondary,
         onClick = onDelete,
       )
       AktualButton(

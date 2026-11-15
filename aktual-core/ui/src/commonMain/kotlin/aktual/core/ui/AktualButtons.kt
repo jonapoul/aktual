@@ -70,6 +70,7 @@ fun AktualButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   kind: ButtonKind = Normal,
+  variant: ButtonVariant = Filled,
   isEnabled: Boolean = true,
   isLoading: Boolean = false,
   icon: ImageVector? = null,
@@ -82,8 +83,16 @@ fun AktualButton(
   val themeColors = AktualTheme.colors
   val enabled = isEnabled && !isLoading
   val colors: @Composable (Boolean) -> ButtonColors = { pressed ->
-    themeColors.buttonColors(kind, pressed)
+    when (variant) {
+      Filled -> themeColors.buttonColors(kind, pressed)
+      Secondary -> themeColors.secondaryButtonColors(kind, pressed)
+    }
   }
+  val border =
+    when (variant) {
+      Filled -> themeColors.buttonBorder(kind, enabled)
+      Secondary -> themeColors.secondaryButtonBorder(kind, enabled)
+    }
 
   BasicTextButton(
     text = text,
@@ -93,7 +102,7 @@ fun AktualButton(
     isEnabled = enabled,
     contentPadding = contentPadding,
     shape = shape,
-    border = themeColors.buttonBorder(kind, enabled),
+    border = border,
     interactionSource = interactionSource,
     style = style,
     fontSize = fontSize,
@@ -257,6 +266,41 @@ private fun Colors.buttonBorder(kind: ButtonKind, isEnabled: Boolean): BorderStr
   return BorderStroke(width, color.disabledIf(!isEnabled))
 }
 
+// Filled draws the kind's usual background. Secondary is for the less prominent option next to a
+// filled button: transparent body, with the border and text in the kind's colour
+enum class ButtonVariant {
+  Filled,
+  Secondary,
+}
+
+private fun Colors.secondaryButtonTint(kind: ButtonKind): Color =
+  when (kind) {
+    Primary,
+    Tonal -> pageTextPositive
+    Normal -> buttonNormalText
+    Bare -> buttonBareText
+    Destructive -> errorText
+  }
+
+private fun Colors.secondaryButtonColors(kind: ButtonKind, isPressed: Boolean): ButtonColors {
+  val tint = secondaryButtonTint(kind)
+  return ButtonColors(
+    containerColor = if (isPressed) tint.copy(alpha = SECONDARY_PRESSED_ALPHA) else Transparent,
+    disabledContainerColor = Transparent,
+    contentColor = tint,
+    disabledContentColor = tint.disabled,
+  )
+}
+
+private fun Colors.secondaryButtonBorder(kind: ButtonKind, isEnabled: Boolean): BorderStroke? =
+  if (kind == Bare) {
+    null
+  } else {
+    BorderStroke(SecondaryButtonBorder, secondaryButtonTint(kind).disabledIf(!isEnabled))
+  }
+
+private const val SECONDARY_PRESSED_ALPHA = 0.12f
+private val SecondaryButtonBorder = 1.dp
 private val TonalButtonBorder = 1.dp
 private val LoadingIndicatorSize = 20.dp
 private val LoadingIndicatorStroke = 2.dp
@@ -467,27 +511,31 @@ private fun PreviewButtons(@PreviewParameter(ColorParameters::class) colors: Col
   PreviewWithColors(colors) {
     Column(modifier = Modifier.padding(4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       ButtonKind.entries.fastForEach { kind ->
-        AnimatedFlowRow {
-          for (isEnabled in listOf(true, false)) {
-            for (isLoading in listOf(false, true)) {
-              item {
-                AktualButton(
-                  text = kind.name,
-                  kind = kind,
-                  isEnabled = isEnabled,
-                  isLoading = isLoading,
-                  onClick = {},
-                )
-              }
-              item {
-                AktualButton(
-                  text = kind.name,
-                  kind = kind,
-                  icon = AktualIcons.Add,
-                  isEnabled = isEnabled,
-                  isLoading = isLoading,
-                  onClick = {},
-                )
+        ButtonVariant.entries.fastForEach { variant ->
+          AnimatedFlowRow {
+            for (isEnabled in listOf(true, false)) {
+              for (isLoading in listOf(false, true)) {
+                item {
+                  AktualButton(
+                    text = kind.name,
+                    kind = kind,
+                    variant = variant,
+                    isEnabled = isEnabled,
+                    isLoading = isLoading,
+                    onClick = {},
+                  )
+                }
+                item {
+                  AktualButton(
+                    text = kind.name,
+                    kind = kind,
+                    variant = variant,
+                    icon = AktualIcons.Add,
+                    isEnabled = isEnabled,
+                    isLoading = isLoading,
+                    onClick = {},
+                  )
+                }
               }
             }
           }

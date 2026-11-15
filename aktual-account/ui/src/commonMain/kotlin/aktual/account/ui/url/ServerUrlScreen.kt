@@ -181,6 +181,8 @@ private fun ServerUrlContent(
       )
 
       AktualButton(
+        kind = Primary,
+        variant = Secondary,
         modifier = Modifier.padding(5.dp).fillMaxWidth(),
         text = Strings.serverUrlTryDemo,
         isEnabled = !isLoading,
