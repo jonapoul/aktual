@@ -63,6 +63,13 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -230,7 +237,12 @@ private fun EditRuleScaffold(
       )
     },
     floatingActionButton = {
-      if (state is Success) {
+      AnimatedVisibility(
+        visible = hasChanges,
+        enter = slideInVertically { it } + scaleIn(initialScale = FabInitialScale) + fadeIn(),
+        exit = slideOutVertically { it } + scaleOut(targetScale = FabInitialScale) + fadeOut(),
+      ) {
+        val success = state as? Success ?: return@AnimatedVisibility
         Column {
           AktualButton(
             text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
@@ -238,8 +250,8 @@ private fun EditRuleScaffold(
             kind = Primary,
             shape = CardShape,
             contentPadding = FabPadding,
-            isEnabled = state.canSave,
-            isLoading = state.isWorking,
+            isEnabled = success.canSave,
+            isLoading = success.isWorking,
             onClick = { onAction(Save) },
           )
           BottomSpacing()
@@ -499,6 +511,7 @@ private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
   colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
 }
 
+private const val FabInitialScale = 0.8f
 private val FabPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
 private val FabClearance = 72.dp
 
@@ -524,7 +537,7 @@ private class EditRuleStateProvider :
   ColorParamsProvider<EditRuleStateParams>(
     EditRuleStateParams(Success(PREVIEW_RULE, isWorking = false)),
     EditRuleStateParams(Success(PREVIEW_RULE, isWorking = false, hasChanges = true)),
-    EditRuleStateParams(Success(PREVIEW_RULE, isWorking = true)),
+    EditRuleStateParams(Success(PREVIEW_RULE, isWorking = true, hasChanges = true)),
     EditRuleStateParams(Success(PREVIEW_EMPTY_RULE, isWorking = false), mode = Create),
     EditRuleStateParams(Success(PREVIEW_UNKNOWN_RULE, isWorking = false)),
     EditRuleStateParams(Loading),
