@@ -7,7 +7,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,15 +25,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 
-interface AnimatedFlowRowScope {
-  /**
-   * Adds one item to the row. Pass a stable [key] when items can be added, removed or reordered, so
-   * each one keeps its own animation state. A [weight] shares the row's spare width like
-   * [FlowRowScope.weight], stretching the content to fill it.
-   */
-  fun item(key: Any? = null, weight: Float? = null, content: @Composable () -> Unit)
-}
-
 /**
  * A [FlowRow] with 4.dp spacing that animates its items. Ones added after the first composition
  * fade and scale in, removed ones fade and scale out, the rest slide to their new place, and the
@@ -45,7 +35,7 @@ fun AnimatedFlowRow(
   modifier: Modifier = Modifier,
   horizontalAlignment: Alignment.Horizontal = Alignment.Start,
   itemVerticalAlignment: Alignment.Vertical = Alignment.Top,
-  maxItemsInEachRow: Int = Int.MAX_VALUE,
+  maxItemsInEachRow: Int = MAX_VALUE,
   content: AnimatedFlowRowScope.() -> Unit,
 ) {
   val state = remember { AnimatedFlowRowState() }
@@ -95,7 +85,7 @@ private const val HIDDEN_SCALE = 0.8f
 
 private data class IndexKey(val index: Int)
 
-private class Entry(
+private data class Entry(
   val key: Any,
   val weight: Float?,
   val isRemoved: Boolean,
