@@ -202,8 +202,8 @@ private fun StatusChips(
 private fun ScheduleItem(
   schedule: Schedule,
   isSelected: Boolean,
-  modifier: Modifier = Modifier,
   onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) =
   ListItem(
     modifier = modifier.clickable(onClick = onClick),
