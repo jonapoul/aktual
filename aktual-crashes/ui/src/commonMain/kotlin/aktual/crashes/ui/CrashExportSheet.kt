@@ -12,6 +12,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
@@ -19,7 +20,6 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -72,10 +72,16 @@ private fun CrashExportSheetContent(
         style = typography.labelMedium,
         color = colors.pageTextLight,
       )
-      FlowRow(horizontalArrangement = spacedBy(6.dp), verticalArrangement = spacedBy(6.dp)) {
-        IncludeChip(Strings.crashesExportWithLogs, isSelected = includeLogs) { includeLogs = true }
-        IncludeChip(Strings.crashesExportReportOnly, isSelected = !includeLogs) {
-          includeLogs = false
+      AnimatedFlowRow {
+        item {
+          IncludeChip(Strings.crashesExportWithLogs, isSelected = includeLogs) {
+            includeLogs = true
+          }
+        }
+        item {
+          IncludeChip(Strings.crashesExportReportOnly, isSelected = !includeLogs) {
+            includeLogs = false
+          }
         }
       }
     }

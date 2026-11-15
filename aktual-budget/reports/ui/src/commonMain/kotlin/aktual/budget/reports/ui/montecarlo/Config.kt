@@ -23,13 +23,13 @@ import aktual.budget.reports.vm.surplusPot
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,20 +63,19 @@ internal fun MonteCarloConfiguration(
     val focusManager = LocalFocusManager.current
     val config = state.config
 
-    FlowRow(
-      horizontalArrangement = Arrangement.spacedBy(TAB_SPACING),
-      verticalArrangement = Arrangement.spacedBy(TAB_SPACING),
-    ) {
+    AnimatedFlowRow {
       ConfigTab.entries.fastForEach { entry ->
-        val select = {
-          // Commits the field being edited before it leaves the screen
-          focusManager.clearFocus()
-          tab = entry
-        }
-        if (entry == tab) {
-          AktualButton(kind = Primary, text = entry.string(), onClick = select)
-        } else {
-          AktualButton(text = entry.string(), onClick = select)
+        item(key = entry) {
+          val select = {
+            // Commits the field being edited before it leaves the screen
+            focusManager.clearFocus()
+            tab = entry
+          }
+          if (entry == tab) {
+            AktualButton(kind = Primary, text = entry.string(), onClick = select)
+          } else {
+            AktualButton(text = entry.string(), onClick = select)
+          }
         }
       }
     }

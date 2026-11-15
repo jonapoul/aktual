@@ -15,6 +15,7 @@ import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
@@ -46,7 +47,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -403,12 +403,8 @@ private fun ShimmerEditTag(modifier: Modifier = Modifier) {
           repeat(times = 2) { Box(bar.size(EditTagDS.shimmerIconButtonSize)) }
         }
 
-        FlowRow(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
-          verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
-        ) {
-          repeat(TAG_COLOR_PRESETS.size) { Box(bar.size(EditTagDS.colorPresetSize)) }
+        AnimatedFlowRow(modifier = Modifier.fillMaxWidth()) {
+          repeat(TAG_COLOR_PRESETS.size) { item { Box(bar.size(EditTagDS.colorPresetSize)) } }
         }
       }
     }

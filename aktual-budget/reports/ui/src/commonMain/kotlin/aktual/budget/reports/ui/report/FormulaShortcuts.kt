@@ -5,13 +5,13 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.attributes
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
+import aktual.core.ui.AnimatedFlowRowScope
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.disambiguated
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.TextFieldState
@@ -39,33 +39,39 @@ internal fun FormulaShortcuts(
         if (queryNames.isNotEmpty()) {
           ShortcutGroup(label = Strings.reportsFormulaQueries) {
             queryNames.fastForEach { name ->
-              ShortcutChip(
-                text = "\"$name\"",
-                highlight = true,
-                onClick = { text.insert("\"$name\"") },
-              )
+              item(key = name) {
+                ShortcutChip(
+                  text = "\"$name\"",
+                  highlight = true,
+                  onClick = { text.insert("\"$name\"") },
+                )
+              }
             }
           }
         }
         ShortcutGroup(label = Strings.reportsFormulaEditorFunctions) {
           FUNCTIONS.fastForEach { function ->
-            // Leaves the cursor between the brackets, ready for the arguments
-            ShortcutChip(
-              text = "$function()",
-              onClick = { text.insert("$function()", cursor = function.length + 1) },
-            )
+            item(key = function) {
+              // Leaves the cursor between the brackets, ready for the arguments
+              ShortcutChip(
+                text = "$function()",
+                onClick = { text.insert("$function()", cursor = function.length + 1) },
+              )
+            }
           }
         }
       }
       ColorRule -> {
         ShortcutGroup(label = Strings.reportsFormulaEditorVariables) {
-          ShortcutChip(text = RESULT, highlight = true, onClick = { text.insert(RESULT) })
+          item { ShortcutChip(text = RESULT, highlight = true, onClick = { text.insert(RESULT) }) }
         }
+        val theme = colors.attributes()
         ShortcutGroup(label = Strings.reportsFormulaEditorThemeColors) {
-          val theme = colors.attributes()
           THEME_COLORS.fastForEach { name ->
-            val variable = "$FORMULA_THEME_PREFIX$name"
-            ShortcutChip(text = variable, tint = theme[name], onClick = { text.insert(variable) })
+            item(key = name) {
+              val variable = "$FORMULA_THEME_PREFIX$name"
+              ShortcutChip(text = variable, tint = theme[name], onClick = { text.insert(variable) })
+            }
           }
         }
       }
@@ -73,7 +79,7 @@ internal fun FormulaShortcuts(
   }
 
 @Composable
-private fun ShortcutGroup(label: String, content: @Composable FlowRowScope.() -> Unit) =
+private fun ShortcutGroup(label: String, content: AnimatedFlowRowScope.() -> Unit) =
   Column(verticalArrangement = spacedBy(8.dp)) {
     Text(
       modifier = Modifier.padding(horizontal = 4.dp),
@@ -81,11 +87,7 @@ private fun ShortcutGroup(label: String, content: @Composable FlowRowScope.() ->
       style = typography.labelSmall.copy(fontWeight = SemiBold, letterSpacing = 0.08.em),
       color = colors.tableHeaderText,
     )
-    FlowRow(
-      horizontalArrangement = spacedBy(4.dp),
-      verticalArrangement = spacedBy(4.dp),
-      content = content,
-    )
+    AnimatedFlowRow(content = content)
   }
 
 @Composable

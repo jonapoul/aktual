@@ -16,6 +16,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.BottomSheetMessage
@@ -30,7 +31,6 @@ import aktual.core.ui.scrollbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -180,19 +180,17 @@ private fun StatusChips(
   val statuses = remember(options) { options.mapTo(mutableSetOf()) { it.status }.sorted() }
   if (statuses.size < 2) return
 
-  FlowRow(
-    modifier = Modifier.fillMaxWidth().padding(SearchPadding),
-    horizontalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
-    verticalArrangement = Arrangement.spacedBy(ChipDefaults.Spacing),
-  ) {
+  AnimatedFlowRow(modifier = Modifier.fillMaxWidth().padding(SearchPadding)) {
     statuses.fastForEach { status ->
-      val isSelected = status in selected
-      Chip(
-        modifier = Modifier.semantics { this.selected = isSelected },
-        text = status.label(),
-        colors = ChipDefaults.selectableColors(isSelected),
-        onClick = { onToggle(status) },
-      )
+      item(key = status) {
+        val isSelected = status in selected
+        Chip(
+          modifier = Modifier.semantics { this.selected = isSelected },
+          text = status.label(),
+          colors = ChipDefaults.selectableColors(isSelected),
+          onClick = { onToggle(status) },
+        )
+      }
     }
   }
 }

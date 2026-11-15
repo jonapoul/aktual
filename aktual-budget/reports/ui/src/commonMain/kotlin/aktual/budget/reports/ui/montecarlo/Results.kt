@@ -15,13 +15,13 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.OnAction
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,24 +80,29 @@ private fun HeadlineStats(
     collapsed = state.collapsedSections,
     onAction = onAction,
   ) {
-    FlowRow(
-      horizontalArrangement = Arrangement.spacedBy(32.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      Stat(
-        heading = Strings.monteCarloStatSuccess,
-        value = results.successRate.toString(decimalPlaces = 1),
-        color = successColor(results.successRate),
-        isLarge = true,
-      )
-      Stat(Strings.monteCarloStatMedianEnding, results.medianEndingBalance.formattedString())
-      Stat(Strings.monteCarloStatMedianWithdrawn, results.medianTotalWithdrawn.formattedString())
-      Stat(
-        Strings.monteCarloStatDepletionChance,
-        results.depletionChance.toString(decimalPlaces = 1),
-      )
+    AnimatedFlowRow {
+      item {
+        Stat(
+          heading = Strings.monteCarloStatSuccess,
+          value = results.successRate.toString(decimalPlaces = 1),
+          color = successColor(results.successRate),
+          isLarge = true,
+        )
+      }
+      item {
+        Stat(Strings.monteCarloStatMedianEnding, results.medianEndingBalance.formattedString())
+      }
+      item {
+        Stat(Strings.monteCarloStatMedianWithdrawn, results.medianTotalWithdrawn.formattedString())
+      }
+      item {
+        Stat(
+          Strings.monteCarloStatDepletionChance,
+          results.depletionChance.toString(decimalPlaces = 1),
+        )
+      }
       results.medianDepletionAge?.let { age ->
-        Stat(Strings.monteCarloStatTypicalFailure, Strings.monteCarloAge(age))
+        item { Stat(Strings.monteCarloStatTypicalFailure, Strings.monteCarloAge(age)) }
       }
     }
 

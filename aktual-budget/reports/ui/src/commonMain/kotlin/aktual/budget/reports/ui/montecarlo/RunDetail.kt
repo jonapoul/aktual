@@ -14,13 +14,13 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.redacted
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -70,49 +70,50 @@ internal fun RunDetailView(
     val hasSurvived = lastRow != null && lastRow.endBalance > 0
     val allExpanded = rows.isNotEmpty() && expanded.size == rows.size
 
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      itemVerticalAlignment = CenterVertically,
-    ) {
-      AktualButton(text = Strings.monteCarloDetailBack, onClick = onBack)
-      Text(
-        text =
-          if (hasSurvived) {
-            Strings.monteCarloDetailSurvived(
-              detail.index + 1,
-              simulationCount,
-              startAge + lastRow.year,
-            )
-          } else {
-            Strings.monteCarloDetailRanOut(
-              detail.index + 1,
-              simulationCount,
-              // The failure row's own age: the year that couldn't be funded
-              startAge + (lastRow?.year ?: 1) - 1,
-            )
+    AnimatedFlowRow(modifier = Modifier.fillMaxWidth(), itemVerticalAlignment = CenterVertically) {
+      item {
+        AktualButton(text = Strings.monteCarloDetailBack, onClick = onBack)
+      }
+      item {
+        Text(
+          text =
+            if (hasSurvived) {
+              Strings.monteCarloDetailSurvived(
+                detail.index + 1,
+                simulationCount,
+                startAge + lastRow.year,
+              )
+            } else {
+              Strings.monteCarloDetailRanOut(
+                detail.index + 1,
+                simulationCount,
+                // The failure row's own age: the year that couldn't be funded
+                startAge + (lastRow?.year ?: 1) - 1,
+              )
+            },
+          style = typography.bodyMedium,
+          fontWeight = SemiBold,
+        )
+      }
+      item {
+        AktualButton(
+          kind = Bare,
+          text =
+            if (allExpanded) {
+              Strings.monteCarloDetailCollapseAll
+            } else {
+              Strings.monteCarloDetailExpandAll
+            },
+          onClick = {
+            if (allExpanded) {
+              expanded = emptySet()
+              working = emptySet()
+            } else {
+              expanded = rows.map { it.year }.toSet()
+            }
           },
-        style = typography.bodyMedium,
-        fontWeight = SemiBold,
-      )
-      AktualButton(
-        kind = Bare,
-        text =
-          if (allExpanded) {
-            Strings.monteCarloDetailCollapseAll
-          } else {
-            Strings.monteCarloDetailExpandAll
-          },
-        onClick = {
-          if (allExpanded) {
-            expanded = emptySet()
-            working = emptySet()
-          } else {
-            expanded = rows.map { it.year }.toSet()
-          }
-        },
-      )
+        )
+      }
     }
 
     RunCharts(detail, config)

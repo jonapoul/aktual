@@ -53,7 +53,7 @@ enum class ChipSize(val radius: Dp, val contentPadding: PaddingValues) {
 }
 
 object ChipDefaults {
-  val Spacing = 4.dp
+  val Spacing = AnimatedFlowRowSpacing
   val IconSize = 16.dp
 
   @Composable

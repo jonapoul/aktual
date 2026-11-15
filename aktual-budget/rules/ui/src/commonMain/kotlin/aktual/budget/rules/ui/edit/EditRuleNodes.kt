@@ -37,6 +37,7 @@ import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AktualTooltip
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
@@ -52,7 +53,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -512,14 +512,16 @@ private fun ScheduleSummary(schedule: Schedule, modifier: Modifier = Modifier) =
       maxLines = 2,
       overflow = Ellipsis,
     )
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(Dimens.Large)) {
-      ScheduleDetail(schedule.payeeName)
-      ScheduleDetail(schedule.accountName)
-      ScheduleDetail(
-        text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
-        color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
-      )
-      ScheduleDetail(schedule.nextDate.formatted())
+    AnimatedFlowRow {
+      item { ScheduleDetail(schedule.payeeName) }
+      item { ScheduleDetail(schedule.accountName) }
+      item {
+        ScheduleDetail(
+          text = schedule.amountOp.amountPrefix() + schedule.amount.formattedString(),
+          color = if (schedule.amount > Zero) colors.numberPositive else colors.numberNegative,
+        )
+      }
+      item { ScheduleDetail(schedule.nextDate.formatted()) }
     }
   }
 

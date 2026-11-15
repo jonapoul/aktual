@@ -11,6 +11,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
@@ -21,7 +22,6 @@ import aktual.core.ui.slider
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
@@ -84,17 +84,16 @@ private fun ColumnScope.SplitContent(action: RuleAction, onChange: (RuleAction) 
   } else {
     Column {
       SectionLabel(Strings.editRuleSplitAllocate)
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
-      ) {
+      AnimatedFlowRow {
         SPLIT_METHODS.fastForEach { method ->
-          Chip(
-            text = method.string(),
-            colors = ChipDefaults.selectableColors(isSelected = method == action.options?.method),
-            role = RadioButton,
-            onClick = { onChange(action.withSplitMethod(method)) },
-          )
+          item(key = method) {
+            Chip(
+              text = method.string(),
+              colors = ChipDefaults.selectableColors(isSelected = method == action.options?.method),
+              role = RadioButton,
+              onClick = { onChange(action.withSplitMethod(method)) },
+            )
+          }
         }
       }
     }

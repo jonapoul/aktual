@@ -7,6 +7,7 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
@@ -111,42 +112,47 @@ internal fun RunsTable(
       }
     }
 
-    FlowRow(
+    AnimatedFlowRow(
       modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
+      horizontalAlignment = Alignment.End,
       itemVerticalAlignment = CenterVertically,
     ) {
-      // An action picker rather than a setting, so it always reads "Jump to…" at rest
-      AktualExposedDropDownMenu(
-        value = null,
-        onValueChange = { percentile: RunPercentile? ->
-          if (percentile != null) {
-            val worstFirstRank = (percentile.fraction * (count - 1)).roundToInt()
-            val rank = if (sortOrder == WorstFirst) worstFirstRank else count - 1 - worstFirstRank
-            page = rank / PAGE_SIZE
-            highlightedRank = rank
-          }
-        },
-        options = RunPercentile.entries.toImmutableList<RunPercentile?>(),
-        string = { it?.string() ?: Strings.monteCarloRunsJump },
-      )
-      AktualButton(
-        text = Strings.monteCarloRunsPrevious,
-        isEnabled = currentPage > 0,
-        onClick = {
-          page = currentPage - 1
-          highlightedRank = null
-        },
-      )
-      AktualButton(
-        text = Strings.monteCarloRunsNext,
-        isEnabled = currentPage < pageCount - 1,
-        onClick = {
-          page = currentPage + 1
-          highlightedRank = null
-        },
-      )
+      item {
+        // An action picker rather than a setting, so it always reads "Jump to…" at rest
+        AktualExposedDropDownMenu(
+          value = null,
+          onValueChange = { percentile: RunPercentile? ->
+            if (percentile != null) {
+              val worstFirstRank = (percentile.fraction * (count - 1)).roundToInt()
+              val rank = if (sortOrder == WorstFirst) worstFirstRank else count - 1 - worstFirstRank
+              page = rank / PAGE_SIZE
+              highlightedRank = rank
+            }
+          },
+          options = RunPercentile.entries.toImmutableList<RunPercentile?>(),
+          string = { it?.string() ?: Strings.monteCarloRunsJump },
+        )
+      }
+      item {
+        AktualButton(
+          text = Strings.monteCarloRunsPrevious,
+          isEnabled = currentPage > 0,
+          onClick = {
+            page = currentPage - 1
+            highlightedRank = null
+          },
+        )
+      }
+      item {
+        AktualButton(
+          text = Strings.monteCarloRunsNext,
+          isEnabled = currentPage < pageCount - 1,
+          onClick = {
+            page = currentPage + 1
+            highlightedRank = null
+          },
+        )
+      }
     }
   }
 

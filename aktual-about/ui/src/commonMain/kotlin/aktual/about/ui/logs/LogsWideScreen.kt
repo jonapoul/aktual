@@ -21,6 +21,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
@@ -38,7 +39,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -227,19 +227,17 @@ private fun WideSidebar(
           color = colors.pageTextSubdued,
         )
       } else {
-        FlowRow(
-          modifier = Modifier.padding(horizontal = 4.dp),
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
+        AnimatedFlowRow(modifier = Modifier.padding(horizontal = 4.dp)) {
           for (tag in filters.tags) {
-            Chip(
-              text = tag,
-              colors = ChipDefaults.selectableColors(isSelected = true),
-              trailingIcon = AktualIcons.Delete,
-              trailingIconDescription = Strings.logsTagRemove(tag),
-              onClick = { onAction(RemoveTag(tag)) },
-            )
+            item(key = tag) {
+              Chip(
+                text = tag,
+                colors = ChipDefaults.selectableColors(isSelected = true),
+                trailingIcon = AktualIcons.Delete,
+                trailingIconDescription = Strings.logsTagRemove(tag),
+                onClick = { onAction(RemoveTag(tag)) },
+              )
+            }
           }
         }
       }

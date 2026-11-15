@@ -7,6 +7,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -24,7 +25,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -83,36 +83,44 @@ internal fun ListSchedulesItem(
         overflow = Ellipsis,
       )
 
-      FlowRow(horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemMetaGroupSpacing)) {
-        LabelValue(
-          label = Strings.listSchedulesLabelPayee,
-          value = schedule.payeeName,
-          valueColor = textColor,
-          query = query,
-        )
-        LabelValue(
-          label = Strings.listSchedulesLabelAccount,
-          value = schedule.accountName,
-          valueColor = textColor,
-          query = query,
-        )
+      AnimatedFlowRow {
+        item {
+          LabelValue(
+            label = Strings.listSchedulesLabelPayee,
+            value = schedule.payeeName,
+            valueColor = textColor,
+            query = query,
+          )
+        }
+        item {
+          LabelValue(
+            label = Strings.listSchedulesLabelAccount,
+            value = schedule.accountName,
+            valueColor = textColor,
+            query = query,
+          )
+        }
 
-        LabelValue(
-          label = Strings.listSchedulesLabelAmount,
-          value = amountStr,
-          valueColor =
-            when {
-              schedule.isCompleted -> textColor
-              schedule.amount.isPositive() -> colors.budgetNumberPositive
-              else -> colors.budgetNumberNegative
-            },
-        )
+        item {
+          LabelValue(
+            label = Strings.listSchedulesLabelAmount,
+            value = amountStr,
+            valueColor =
+              when {
+                schedule.isCompleted -> textColor
+                schedule.amount.isPositive() -> colors.budgetNumberPositive
+                else -> colors.budgetNumberNegative
+              },
+          )
+        }
 
-        LabelValue(
-          label = Strings.listSchedulesLabelNext,
-          value = schedule.nextDate.formatted(),
-          valueColor = textColor,
-        )
+        item {
+          LabelValue(
+            label = Strings.listSchedulesLabelNext,
+            value = schedule.nextDate.formatted(),
+            valueColor = textColor,
+          )
+        }
       }
     }
 

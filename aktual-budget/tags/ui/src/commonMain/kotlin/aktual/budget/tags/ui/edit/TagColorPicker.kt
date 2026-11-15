@@ -10,6 +10,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
@@ -30,7 +31,6 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -200,17 +200,15 @@ internal fun TagColorPicker(
           )
         }
       } else {
-        FlowRow(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
-          verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPresetSpacing),
-        ) {
+        AnimatedFlowRow(modifier = Modifier.fillMaxWidth()) {
           TAG_COLOR_PRESETS.fastForEach { preset ->
-            PresetSwatch(
-              color = preset,
-              selected = preset == color,
-              onClick = { onColorChange(preset) },
-            )
+            item(key = preset) {
+              PresetSwatch(
+                color = preset,
+                selected = preset == color,
+                onClick = { onColorChange(preset) },
+              )
+            }
           }
         }
       }
