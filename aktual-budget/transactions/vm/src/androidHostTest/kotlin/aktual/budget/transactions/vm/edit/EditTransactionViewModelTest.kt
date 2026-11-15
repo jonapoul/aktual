@@ -40,18 +40,19 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.budget.payees.domain.PayeeLocations
+import aktual.budget.payees.domain.PayeeLocationsImpl
 import aktual.budget.rules.domain.CategoryLearner
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
-import aktual.budget.tags.domain.TagCreator
+import aktual.budget.tags.domain.TagCreatorImpl
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.LastTransaction
+import aktual.budget.transactions.domain.LastTransactionImpl
 import aktual.budget.transactions.domain.SplitPart
 import aktual.budget.transactions.domain.TransactionDraft
 import aktual.budget.transactions.domain.TransactionFields
-import aktual.budget.transactions.domain.TransactionLoader
+import aktual.budget.transactions.domain.TransactionLoaderImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.transactions.vm.edit.EditTransactionState.Loaded
 import aktual.budget.transactions.vm.edit.TransactionEditMode.Edit
@@ -1227,7 +1228,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `A new transaction follows the last one added`() = runDatabaseTest { scope ->
     insertEntities()
-    val last = LastTransaction()
+    val last = LastTransactionImpl()
     last.set(SAVED.copy(account = AccountId("c"), date = DATE_2))
     val viewModel =
       createViewModel(scope, target = EditTransactionTarget.New(), lastTransaction = last)
@@ -1421,7 +1422,7 @@ class EditTransactionViewModelTest {
   fun `Saving a new transaction inserts it and closes`() = runDatabaseTest { scope ->
     insertEntities()
     val sync = FakeBudgetSync()
-    val last = LastTransaction()
+    val last = LastTransactionImpl()
     val target = EditTransactionTarget.New(AccountId("a"))
     val viewModel = createViewModel(scope, sync = sync, target = target, lastTransaction = last)
 
@@ -1913,7 +1914,7 @@ class EditTransactionViewModelTest {
     id: String = "t",
     sync: FakeBudgetSync = FakeBudgetSync(),
     target: EditTransactionTarget = EditTransactionTarget.Existing(TransactionId(id)),
-    lastTransaction: LastTransaction = LastTransaction(),
+    lastTransaction: LastTransaction = LastTransactionImpl(),
     savedUuid: String = "uuid",
     savedState: SavedStateHandle = SavedStateHandle(),
     prefs: TestBudgetLocalPreferences = TestBudgetLocalPreferences(),
@@ -1931,7 +1932,7 @@ class EditTransactionViewModelTest {
     return EditTransactionViewModel(
       target = target,
       savedState = savedState,
-      loader = TransactionLoader(transactionDao),
+      loader = TransactionLoaderImpl(transactionDao),
       writer =
         TransactionWriterImpl(
           budgetSync = sync,
@@ -1955,10 +1956,10 @@ class EditTransactionViewModelTest {
       payeeDao = payeeDao,
       categoryDao = categoryDao,
       uuidGenerator = { "part-${nextPart++}" },
-      tagCreator = TagCreator(tagsDao = tags, uuidGenerator = { "tag" }, budgetSync = sync),
+      tagCreator = TagCreatorImpl(tagsDao = tags, uuidGenerator = { "tag" }, budgetSync = sync),
       localPreferences = prefs,
       payeeLocations =
-        PayeeLocations(
+        PayeeLocationsImpl(
           dao = PayeeLocationDao(this, contexts),
           budgetSync = sync,
           uuidGenerator = { "location" },

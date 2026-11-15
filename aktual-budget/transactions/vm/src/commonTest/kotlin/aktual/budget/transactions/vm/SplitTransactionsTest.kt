@@ -6,6 +6,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.transactions.domain.TransactionMatcherImpl
 import aktual.budget.transactions.vm.test.DATED_D
 import aktual.budget.transactions.vm.test.DATE_1
 import aktual.budget.transactions.vm.test.DATE_2
@@ -137,12 +138,14 @@ internal class SplitTransactionsTest : TransactionsViewModelTestBase() {
     val uncategorised =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(categorySpec = Uncategorised),
       )
     val uncategorisedWithTag =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec =
           TransactionsSpec(
@@ -189,6 +192,7 @@ internal class SplitTransactionsTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))),
       )
@@ -238,6 +242,7 @@ internal class SplitTransactionsTest : TransactionsViewModelTestBase() {
     val source =
       TransactionsPagingSource(
         transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
         tagsDao = tags,
         spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))),
       )

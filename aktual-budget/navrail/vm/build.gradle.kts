@@ -5,8 +5,8 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:banksync:domain"))
-    api(project(":aktual-budget:schedules:domain"))
+    api(project(":aktual-budget:banksync:impl"))
+    api(project(":aktual-budget:schedules:impl"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-prefs"))
     implementation(project(":aktual-core:logging"))

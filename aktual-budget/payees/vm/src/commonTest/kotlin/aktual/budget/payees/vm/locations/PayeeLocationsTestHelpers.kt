@@ -6,7 +6,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.payees.domain.AddressBook
 import aktual.budget.payees.domain.AddressLookup
-import aktual.budget.payees.domain.PayeeLocations
+import aktual.budget.payees.domain.PayeeLocationsImpl
 import aktual.core.model.Coordinates
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBudgetSync
@@ -23,7 +23,7 @@ import kotlinx.datetime.TimeZone
 internal val HERE = Coordinates(latitude = 51.5074, longitude = -0.1278)
 
 internal fun BudgetDatabase.payeeLocations(scope: TestScope, sync: TestBudgetSync) =
-  PayeeLocations(
+  PayeeLocationsImpl(
     dao = PayeeLocationDao(this, TestCoroutineContexts(scope.standardDispatcher)),
     budgetSync = sync,
     uuidGenerator = { "location" },

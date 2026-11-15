@@ -14,7 +14,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
-import aktual.budget.payees.domain.PayeeLocations
+import aktual.budget.payees.domain.PayeeLocationsImpl
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.locations.FakeAddressLookup
@@ -254,7 +254,7 @@ class EditPayeeViewModelTest {
       payeeDao = payees,
       budgetSync = sync,
       payeeLocations =
-        PayeeLocations(
+        PayeeLocationsImpl(
           dao = PayeeLocationDao(this, TestCoroutineContexts(scope.standardDispatcher)),
           budgetSync = sync,
           uuidGenerator = { "location" },

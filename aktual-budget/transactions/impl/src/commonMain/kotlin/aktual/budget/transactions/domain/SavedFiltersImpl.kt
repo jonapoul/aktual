@@ -1,0 +1,109 @@
+package aktual.budget.transactions.domain
+
+import aktual.budget.db.DbJson
+import aktual.budget.db.Transaction_filters
+import aktual.budget.db.dao.DatabaseTables.TRANSACTION_FILTERS
+import aktual.budget.db.dao.TransactionFilterDao
+import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOptions
+import aktual.budget.model.ConditionSet
+import aktual.budget.model.TransactionFilterId
+import aktual.budget.model.localChange
+import aktual.budget.model.tombstone
+import aktual.budget.utils.BudgetSync
+import aktual.core.utils.UuidGenerator
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+
+@Inject
+@ContributesBinding(BudgetScope::class)
+class SavedFiltersImpl
+internal constructor(
+  private val dao: TransactionFilterDao,
+  private val budgetSync: BudgetSync,
+  private val uuidGenerator: UuidGenerator,
+) : SavedFilters {
+  override fun observe(): Flow<ImmutableList<SavedFilter>> =
+    dao.observeAllActive().map { rows -> rows.map { it.toSavedFilter() }.toImmutableList() }
+
+  override suspend fun create(name: String, conditions: ConditionSet): SaveFilterResult {
+    val id = uuidGenerator(::TransactionFilterId)
+    val failure = validate(id = null, name.trim(), conditions)
+    if (failure != null) return failure
+    budgetSync(
+      listOf(localChange(TRANSACTION_FILTERS, id.value, "id", id.value)) +
+        changes(id, name.trim(), conditions) +
+        localChange(TRANSACTION_FILTERS, id.value, "tombstone", false),
+    )
+    return SaveFilterResult.Saved(id)
+  }
+
+  override suspend fun update(
+    id: TransactionFilterId,
+    name: String,
+    conditions: ConditionSet,
+  ): SaveFilterResult {
+    val failure = validate(id, name.trim(), conditions)
+    if (failure != null) return failure
+    budgetSync(changes(id, name.trim(), conditions))
+    return SaveFilterResult.Saved(id)
+  }
+
+  override suspend fun delete(id: TransactionFilterId) =
+    budgetSync(listOf(tombstone(TRANSACTION_FILTERS, id.value)))
+
+  private suspend fun validate(
+    id: TransactionFilterId?,
+    name: String,
+    conditions: ConditionSet,
+  ): SaveFilterResult? {
+    if (name.isEmpty()) return NameRequired
+    val others = dao.getAllActive().map { it.toSavedFilter() }.filter { it.id != id }
+    if (others.any { it.name == name }) return SaveFilterResult.NameTaken(name)
+    val same = others.firstOrNull { it.conditions.sameAs(conditions) }
+    return same?.let { SaveFilterResult.ConditionsTaken(it.name) }
+  }
+
+  private fun changes(id: TransactionFilterId, name: String, conditions: ConditionSet) =
+    listOf(
+      localChange(TRANSACTION_FILTERS, id.value, "name", name),
+      localChange(
+        TRANSACTION_FILTERS,
+        id.value,
+        "conditions",
+        DbJson.encodeToString(conditions.conditions),
+      ),
+      localChange(TRANSACTION_FILTERS, id.value, "conditions_op", conditions.op),
+    )
+
+  private fun Transaction_filters.toSavedFilter() =
+    SavedFilter(
+      id = id,
+      name = name.orEmpty(),
+      conditions = ConditionSet(conditions.orEmpty(), conditions_op ?: And),
+    )
+
+  // conditionExists in upstream's filters app. Values are compared with ===, so a list or object
+  // value never matches another
+  private fun ConditionSet.sameAs(other: ConditionSet): Boolean =
+    (other.conditions.size == 1 || op == other.op) &&
+      conditions.size == other.conditions.size &&
+      other.conditions.all { condition -> conditions.any { it.sameAs(condition) } }
+
+  private fun Condition.sameAs(other: Condition): Boolean =
+    value !is JsonArray &&
+      value !is JsonObject &&
+      value == other.value &&
+      operator == other.operator &&
+      field == other.field &&
+      options.orEmpty() == other.options.orEmpty()
+
+  private fun ConditionOptions?.orEmpty() = this ?: ConditionOptions()
+}

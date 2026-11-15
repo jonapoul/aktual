@@ -1,24 +1,18 @@
 package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.KnownBalance
-import aktual.budget.db.dao.RowBounds
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.dao.TransactionNotes
 import aktual.budget.db.dao.TransactionRow
-import aktual.budget.model.AccountId
-import aktual.budget.model.CategoryId
 import aktual.budget.model.FilteredSpec
-import aktual.budget.model.PayeeId
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
-import aktual.budget.rules.domain.ConditionsMatcher
-import aktual.budget.rules.domain.FilterBounds
-import aktual.budget.transactions.domain.TransactionSearchMatcher
-import aktual.budget.transactions.domain.toFilterRow
+import aktual.budget.transactions.domain.SearchMatches
+import aktual.budget.transactions.domain.TransactionMatcher
 import aktual.core.utils.runCatchingCancellable
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -26,6 +20,7 @@ import androidx.paging.PagingState
 internal class TransactionsPagingSource(
   private val transactionDao: TransactionDao,
   private val tagsDao: TagsDao,
+  private val matcher: TransactionMatcher,
   private val spec: TransactionsSpec,
   // Only applies to a single account's list
   private val hideReconciled: Boolean = false,
@@ -35,14 +30,14 @@ internal class TransactionsPagingSource(
   // A #tag match can't be expressed as a SQL offset query, so for tag-filtered specs we resolve the
   // full ordered id list once and page over it in memory. Cached for this source's lifetime - a new
   // source is created whenever the data is invalidated.
-  private var filteredIds: FilteredIds? = null
+  private var filteredIds: SearchMatches? = null
 
   // The same for a report's drilled down list, whose conditions are matched in memory, and a
   // schedule's linked transactions
   private var filterIds: List<TransactionId>? = null
 
   // And for a searched account list, matched in memory too
-  private var searchIds: FilteredIds? = null
+  private var searchIds: SearchMatches? = null
 
   private val accountId = (spec.accountSpec as? SpecificAccount)?.id
 
@@ -76,7 +71,11 @@ internal class TransactionsPagingSource(
 
             // As tag lists, a search has no balance and shows splits with their matching parts
             search != null -> {
-              val found = searchIds ?: loadSearchIds(search).also { searchIds = it }
+              val found =
+                searchIds
+                  ?: matcher.search(spec.accountSpec, search, hideReconciled).also {
+                    searchIds = it
+                  }
               val rows = transactionDao.getByIds(found.ids.page(offset, limit))
               val children = childrenOf(rows)
               rows.map { row ->
@@ -173,8 +172,8 @@ internal class TransactionsPagingSource(
     return if (parents.isEmpty()) emptyMap() else transactionDao.childrenOf(parents)
   }
 
-  private suspend fun loadFilteredIds(id: TagId): FilteredIds {
-    val tagName = tagsDao.getTag(id)?.tag ?: return FilteredIds()
+  private suspend fun loadFilteredIds(id: TagId): SearchMatches {
+    val tagName = tagsDao.getTag(id)?.tag ?: return SearchMatches()
     val matches = { row: TransactionNotes ->
       val notes = row.notes
       notes != null && notesContainTag(notes, tagName)
@@ -192,64 +191,22 @@ internal class TransactionsPagingSource(
 
       Uncategorised -> {
         val rows = transactionDao.getUncategorisedIdsAndNotes(accountId)
-        FilteredIds(ids = rows.filter(matches).map { it.id })
+        SearchMatches(ids = rows.filter(matches).map { it.id })
       }
 
       is SpecificCategory -> {
         val rows =
           transactionDao.getIdsAndNotesByCategory(categorySpec.id, categorySpec.dates, accountId)
-        FilteredIds(ids = rows.filter(matches).map { it.id })
+        SearchMatches(ids = rows.filter(matches).map { it.id })
       }
     }
   }
 
   private suspend fun loadFilterIds(filtered: FilteredSpec): List<TransactionId> =
     when (filtered) {
-      is Conditions -> {
-        val matcher = ConditionsMatcher(filtered.filter)
-        transactionDao
-          .getFilterRows(skipDeleted = false)
-          .filter { it.is_parent == false && matcher.matches(it.toFilterRow()) }
-          .map { it.id }
-      }
+      is Conditions -> matcher.matching(filtered.filter)
       is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
     }
-
-  // A split takes one slot, as its parent, if the parent or any of its children match
-  private suspend fun loadSearchIds(search: TransactionSearch): FilteredIds {
-    val matcher = TransactionSearchMatcher(search)
-    val text = matcher.text
-    val cents = matcher.amount
-    val bounds = matcher.bounds.toRowBounds()
-    val rows =
-      when (val accountSpec = spec.accountSpec) {
-        AllAccounts -> transactionDao.getFilterRows(text = text, cents = cents, bounds = bounds)
-        is SpecificAccount ->
-          transactionDao.getFilterRows(
-            account = accountSpec.id,
-            text = text,
-            cents = cents,
-            bounds = bounds,
-          )
-        is Group ->
-          transactionDao.getFilterRows(
-            group = accountSpec.group,
-            text = text,
-            cents = cents,
-            bounds = bounds,
-          )
-      }
-    val matching = rows.filter { row ->
-      !(hideReconciled && row.reconciled == true) && matcher.matches(row.toFilterRow())
-    }
-    val (children, topLevel) = matching.partition { it.is_child == true }
-    val ids = topLevel.mapTo(mutableSetOf()) { it.id }
-    children.mapNotNullTo(ids) { it.parent_id }
-    return FilteredIds(
-      ids = rows.filter { it.is_child != true && it.id in ids }.map { it.id },
-      children = children.mapTo(mutableSetOf()) { it.id },
-    )
-  }
 
   private fun List<TransactionId>.page(offset: Long, limit: Long): List<TransactionId> {
     val from = offset.toInt().coerceIn(0, size)
@@ -261,21 +218,15 @@ internal class TransactionsPagingSource(
   private fun groupSplits(
     rows: List<TransactionNotes>,
     matching: List<TransactionNotes>,
-  ): FilteredIds {
+  ): SearchMatches {
     val (topLevel, children) = matching.partition { it.parent == null }
     val ids = topLevel.mapTo(mutableSetOf()) { it.id }
     children.mapNotNullTo(ids) { it.parent }
-    return FilteredIds(
+    return SearchMatches(
       ids = rows.filter { it.parent == null && it.id in ids }.map { it.id },
       children = children.mapTo(mutableSetOf()) { it.id },
     )
   }
-
-  // The ids to page over, in list order, with the split children to show under them
-  private data class FilteredIds(
-    val ids: List<TransactionId> = emptyList(),
-    val children: Set<TransactionId> = emptySet(),
-  )
 
   // Reload from the page nearest the scroll position, so a refresh keeps the user roughly in place
   override fun getRefreshKey(state: PagingState<PageKey, Transaction>): PageKey? =
@@ -287,12 +238,3 @@ internal class TransactionsPagingSource(
 
 // The row offset a page starts at, or a prepend's ends at, with the balance its neighbour knows
 internal data class PageKey(val offset: Int, val balance: KnownBalance? = null)
-
-private fun FilterBounds.toRowBounds() =
-  RowBounds(
-    from = from,
-    to = to,
-    accounts = accounts?.mapTo(mutableSetOf(), ::AccountId),
-    categories = categories?.mapTo(mutableSetOf(), ::CategoryId),
-    payees = payees?.mapTo(mutableSetOf(), ::PayeeId),
-  )

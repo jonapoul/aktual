@@ -8,12 +8,12 @@ Everything that works on an open budget: its data, sync, and the screens inside 
 - `model` - budget model types and ID value classes.
 - `data:db` - SQLDelight schema, DAOs and migrations. See [data/db](data/db/CLAUDE.md).
 - `data:encryption`, `data:proto`, `data:impl` - encryption, sync protobuf encoding, and their implementations. `data:impl` also holds the database migrations and `AndroidxSqlDriverFactory`.
-- `sync` - syncing with the server (`BudgetSyncImpl`).
+- `sync` - syncing with the server (`BudgetSyncImpl`), the implementation of `BudgetSync` in `utils`.
 - `formula` - formula parser and evaluator (spreadsheet-style functions), ported from upstream.
 - `demo` - the demo budget, which opens without a server.
 - `list` - picking a budget. It runs before a budget is open, so its VMs live in `LoggedInScope`, not `BudgetScope`.
 - The rest (`accounts`, `transactions`, `schedules`, `rules`, ...) are feature modules following the usual `domain` / `vm` / `ui` / `components` split.
-- `rules`, `transactions` and `schedules` also have an `api` module with the models and interfaces (`TransactionRulesLoader`, `TransactionWriter`, `RulesLoader`, `SchedulesLoader`, ...) that VMs and other domain modules use, so they don't depend on the implementations in `domain`. Keep `api` modules free of `data:db`. `rules:vm` only depends on `api` modules; its tests pull in the `domain` ones to build the real implementations.
+- `banksync`, `budgeting`, `payees`, `rules`, `schedules`, `tags` and `transactions` instead split their domain layer in two. The feature's root module (e.g. `:aktual-budget:rules`) holds the models and interfaces (`TransactionRulesLoader`, `TransactionWriter`, `RulesLoader`, `SchedulesLoader`, ...) that VMs and other modules use, and `:impl` holds the implementations, so callers don't depend on them. Keep the root modules free of `data:db` where possible; only `transactions` and `tags` use it, for models built from db rows. `rules:vm` and `transactions:vm` only depend on root modules; their tests pull in the `impl` ones to build the real implementations. The app gets each `impl` through some other module's `api` chain, or `aktual-app:di` if nothing else exports it, so Metro sees its bindings.
 
 ## DI
 

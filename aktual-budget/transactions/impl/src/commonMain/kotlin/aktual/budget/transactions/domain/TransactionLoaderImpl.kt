@@ -1,0 +1,53 @@
+package aktual.budget.transactions.domain
+
+import aktual.budget.db.dao.TransactionDao
+import aktual.budget.db.dao.TransactionRow
+import aktual.budget.model.Amount
+import aktual.budget.model.TransactionId
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+
+@Inject
+@ContributesBinding(BudgetScope::class)
+class TransactionLoaderImpl(private val transactionDao: TransactionDao) : TransactionLoader {
+  override suspend fun load(id: TransactionId): LoadedTransaction? {
+    val opened = transactionDao.detail(id) ?: return null
+    val detail = opened.parent?.let { transactionDao.detail(it) } ?: opened
+    val row = detail.row
+    val children =
+      if (row.isParent) transactionDao.childrenOf(listOf(row.id))[row.id].orEmpty() else emptyList()
+    return LoadedTransaction(
+      detail = detail,
+      children = children,
+      balanceAfter = transactionDao.balanceAfter(row.id),
+      parts = parts(row.id, children),
+      hasReconciledTransfer = transactionDao.hasReconciledTransfer(row.id),
+    )
+  }
+
+  private suspend fun parts(
+    parent: TransactionId,
+    children: List<TransactionRow>,
+  ): List<SplitPart> {
+    if (children.isEmpty()) return emptyList()
+    val fields = transactionDao.childFields(parent)
+    return children.map { child ->
+      val ids = fields[child.id]
+      SplitPart(
+        id = child.id,
+        amount = Amount(child.amount),
+        payee = ids?.payee,
+        category = ids?.category,
+        notes = child.notes,
+        sortOrder = ids?.sortOrder,
+      )
+    }
+  }
+
+  override fun observe(id: TransactionId): Flow<LoadedTransaction?> =
+    transactionDao.observeChanges().map { load(id) }.distinctUntilChanged()
+}
