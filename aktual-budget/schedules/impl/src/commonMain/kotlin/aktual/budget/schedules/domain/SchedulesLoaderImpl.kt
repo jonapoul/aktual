@@ -190,13 +190,3 @@ val DefaultUpcomingLength: UpcomingLength = UpcomingLength.Days(count = 7)
 
 internal fun String?.toUpcomingLength(): UpcomingLength? =
   this?.let { runCatching { UpcomingLength.decode(it) }.getOrNull() }
-
-// Missed, due and upcoming schedules up to the end of the window, soonest first
-fun List<Schedule>.upcoming(today: LocalDate, length: UpcomingLength): ImmutableList<Schedule> {
-  val end = today.plus(value = length.upcomingDays(today), unit = DAY)
-  return filter { it.status in UpcomingStatuses && it.nextDate <= end }
-    .sortedBy { it.nextDate }
-    .toImmutableList()
-}
-
-private val UpcomingStatuses = setOf<ScheduleStatus>(Missed, Due, Upcoming)
