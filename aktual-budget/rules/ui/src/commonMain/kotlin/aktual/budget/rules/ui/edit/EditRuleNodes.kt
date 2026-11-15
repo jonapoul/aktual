@@ -47,6 +47,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,6 +70,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -153,6 +155,7 @@ internal fun LazyListScope.conditionsNode(
         title = "${condition.field.label()} ${condition.operator.label()}",
         value = condition.valueLabel(names, RuleConditions).takeUnless { condition.isEmpty() },
         hasValue = condition.editableKind(RuleConditions) != NoValue,
+        isEnabled = isEnabled,
         onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
       )
     }
@@ -203,6 +206,7 @@ private fun ConditionsOpChip(
   var showMenu by remember { mutableStateOf(false) }
   Box {
     Chip(
+      modifier = Modifier.alpha(enabledAlpha(isEnabled)),
       text = op.string(),
       size = Small,
       textStyle = typography.bodySmall,
@@ -264,6 +268,7 @@ internal fun LazyListScope.actionsNode(
         TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           SplitHeader(
             split = split,
+            isEnabled = isEnabled,
             onClick = clickToOpen(amountKey, onOpenSplit.takeIf { isEnabled }),
           )
         }
@@ -280,6 +285,7 @@ internal fun LazyListScope.actionsNode(
           val id = action.value?.contentOrNull?.let(::ScheduleId)
           ScheduleCard(
             isLoaded = schedules != null,
+            isEnabled = isEnabled,
             schedule = id?.let { schedules?.firstOrNull { s -> s.id == it } },
             onOpen = id?.let { { onAction(OpenSchedule(id)) } },
             onEdit = clickToOpen(key, onOpen.takeIf { isEnabled }),
@@ -289,6 +295,7 @@ internal fun LazyListScope.actionsNode(
             title = action.title(),
             value = action.valueText(names),
             hasValue = action.op != DeleteTransaction && action.op != Unknown,
+            isEnabled = isEnabled,
             onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
           )
         }
@@ -339,11 +346,17 @@ private fun clickToOpen(key: Long?, onOpen: ((Long) -> Unit)?): (() -> Unit)? {
 }
 
 @Composable
-private fun SplitHeader(split: ActionSplit, onClick: (() -> Unit)?, modifier: Modifier = Modifier) =
+private fun SplitHeader(
+  split: ActionSplit,
+  isEnabled: Boolean,
+  onClick: (() -> Unit)?,
+  modifier: Modifier = Modifier,
+) =
   Row(
     modifier =
       modifier
         .fillMaxWidth()
+        .alpha(enabledAlpha(isEnabled))
         .clip(CardShape)
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(vertical = Dimens.Medium),
@@ -385,11 +398,12 @@ private fun RuleCard(
   title: String,
   value: String?,
   hasValue: Boolean,
+  isEnabled: Boolean,
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) =
   CardColumn(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().alpha(enabledAlpha(isEnabled)),
     verticalArrangement = Arrangement.spacedBy(Dimens.Small),
     onClick = onClick,
   ) {
@@ -418,6 +432,15 @@ private fun RuleCard(
     }
   }
 
+// Fades things out while the rule is saving, to match the stage toggle and add buttons
+@Composable
+private fun enabledAlpha(isEnabled: Boolean): Float {
+  val alpha by animateFloatAsState(if (isEnabled) 1f else DisabledAlpha)
+  return alpha
+}
+
+private const val DisabledAlpha = 0.5f
+
 private fun Condition.isEmpty(): Boolean =
   when (val value = value) {
     is JsonArray -> value.isEmpty()
@@ -431,15 +454,16 @@ private fun Condition.isEmpty(): Boolean =
 @Composable
 private fun ScheduleCard(
   isLoaded: Boolean,
+  isEnabled: Boolean,
   schedule: Schedule?,
   onOpen: (() -> Unit)?,
   onEdit: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) =
   CardColumn(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().alpha(enabledAlpha(isEnabled)),
     verticalArrangement = Arrangement.spacedBy(Dimens.Small),
-    onClick = onOpen.takeIf { schedule != null },
+    onClick = onOpen.takeIf { schedule != null && isEnabled },
   ) {
     Row(
       horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
