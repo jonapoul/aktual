@@ -11,7 +11,7 @@ import kotlin.test.Test
 internal class BankSyncSettingsLoaderTest {
   @Test
   fun `Unset preferences take their defaults`() = runBankSyncTest {
-    assertThat(BankSyncSettingsLoader(preferences).load(ACCOUNT)).isEqualTo(BankSyncSettings())
+    assertThat(BankSyncSettingsLoaderImpl(preferences).load(ACCOUNT)).isEqualTo(BankSyncSettings())
   }
 
   @Test
@@ -21,7 +21,7 @@ internal class BankSyncSettingsLoaderTest {
     preferences[SyncUpdateDates(ACCOUNT)] = "true"
     preferences[CustomSyncMappings(ACCOUNT)] = ""
 
-    assertThat(BankSyncSettingsLoader(preferences).load(ACCOUNT))
+    assertThat(BankSyncSettingsLoaderImpl(preferences).load(ACCOUNT))
       .isEqualTo(BankSyncSettings(importNotes = false, importPending = false, updateDates = true))
   }
 }

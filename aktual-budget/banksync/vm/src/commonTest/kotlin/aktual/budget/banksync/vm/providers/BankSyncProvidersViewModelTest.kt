@@ -3,7 +3,7 @@ package aktual.budget.banksync.vm.providers
 import aktual.api.model.banksync.BankSyncSecret
 import aktual.api.model.banksync.BankSyncStatusResponse.Success
 import aktual.api.model.banksync.SecretResponse
-import aktual.budget.banksync.domain.BankSyncProviderSetup
+import aktual.budget.banksync.domain.BankSyncProviderSetupImpl
 import aktual.budget.banksync.vm.BankSyncProviderStatus
 import aktual.budget.banksync.vm.FakeBankSyncApi
 import aktual.budget.banksync.vm.FakeEnableBankingApi
@@ -121,7 +121,7 @@ class BankSyncProvidersViewModelTest {
           AccountSyncSource.PluggyAi to unconfigured,
           AccountSyncSource.Akahu to unconfigured,
         ),
-      setup = BankSyncProviderSetup(secrets, FakeEnableBankingApi()),
+      setup = BankSyncProviderSetupImpl(secrets, FakeEnableBankingApi()),
       server = server,
       viewModelContext = viewModelContext,
     )

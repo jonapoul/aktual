@@ -12,23 +12,14 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncReimportDeleted
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
 import aktual.budget.model.localChange
 import aktual.budget.utils.BudgetSync
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 
-/**
- * An account's bank sync preferences, as packages/loot-core/src/server/accounts/sync.ts reads them.
- */
-data class BankSyncSettings(
-  val importNotes: Boolean = true,
-  val importPending: Boolean = true,
-  val importTransactions: Boolean = true,
-  val reimportDeleted: Boolean = true,
-  val updateDates: Boolean = false,
-  val mappings: SyncMappings = Default,
-)
-
 @Inject
-class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
-  suspend fun load(account: AccountId): BankSyncSettings =
+@ContributesBinding(BudgetScope::class)
+class BankSyncSettingsLoaderImpl(private val preferences: PreferencesDao) : BankSyncSettingsLoader {
+  override suspend fun load(account: AccountId): BankSyncSettings =
     BankSyncSettings(
       importNotes = flag(SyncImportNotes(account), default = true),
       importPending = flag(SyncImportPending(account), default = true),
@@ -38,7 +29,7 @@ class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
       mappings =
         preferences[CustomSyncMappings(account)]
           ?.takeIf { it.isNotEmpty() }
-          ?.let(SyncMappings::parse) ?: Default,
+          ?.let { SyncMappings.parse(it) } ?: Default,
     )
 
   // String(value ?? default) === 'true'
@@ -47,8 +38,9 @@ class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
 }
 
 @Inject
-class BankSyncSettingsWriter(private val budgetSync: BudgetSync) {
-  suspend fun save(account: AccountId, settings: BankSyncSettings) =
+@ContributesBinding(BudgetScope::class)
+class BankSyncSettingsWriterImpl(private val budgetSync: BudgetSync) : BankSyncSettingsWriter {
+  override suspend fun save(account: AccountId, settings: BankSyncSettings) {
     budgetSync(
       listOf(
         change(CustomSyncMappings(account), settings.mappings.encode()),
@@ -59,6 +51,7 @@ class BankSyncSettingsWriter(private val budgetSync: BudgetSync) {
         change(SyncUpdateDates(account), settings.updateDates),
       ),
     )
+  }
 
   private fun change(key: PerAccount, value: Boolean) = change(key, value.toString())
 

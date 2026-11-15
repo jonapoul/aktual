@@ -15,7 +15,7 @@ import kotlinx.coroutines.test.runTest
 
 internal class GoCardlessLoginWaiterTest {
   private val api = FakeBankSyncApi()
-  private val waiter = GoCardlessLoginWaiter(api)
+  private val waiter = GoCardlessLoginWaiterImpl(api)
 
   @Test
   fun `Polls until the login finishes`() = runTest {

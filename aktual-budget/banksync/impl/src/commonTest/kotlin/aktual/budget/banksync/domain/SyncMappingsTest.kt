@@ -1,6 +1,5 @@
 package aktual.budget.banksync.domain
 
-import aktual.budget.banksync.domain.SyncMappings.Companion.parse
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage

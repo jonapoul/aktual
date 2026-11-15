@@ -60,7 +60,7 @@ internal class MappableFieldsTest {
 
   @Test
   fun `The newest synced transaction in each direction is the example`() = runBankSyncTest {
-    val loader = MappableFieldsLoader(dao)
+    val loader = MappableFieldsLoaderImpl(dao)
     assertThat(loader.load(ACCOUNT, Payment)).isNull()
 
     import(

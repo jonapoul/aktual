@@ -2,6 +2,8 @@ package aktual.budget.banksync.domain
 
 import aktual.budget.db.dao.BankSyncDao
 import aktual.budget.model.AccountId
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -11,11 +13,10 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-data class FieldExample(val field: String, val example: String)
-
 @Inject
-class MappableFieldsLoader(private val dao: BankSyncDao) {
-  suspend fun load(
+@ContributesBinding(BudgetScope::class)
+class MappableFieldsLoaderImpl(private val dao: BankSyncDao) : MappableFieldsLoader {
+  override suspend fun load(
     account: AccountId,
     direction: TransactionDirection,
   ): Map<MappedField, List<FieldExample>>? {

@@ -22,13 +22,9 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-/**
- * Links budget accounts to accounts at a bank, or unlinks them. See linkSimpleFinAccount() and
- * unlinkAccount() in packages/loot-core/src/server/accounts/app.ts.
- */
 @Inject
 @ContributesBinding(BudgetScope::class)
-class BankAccountLinker(
+class BankAccountLinkerImpl(
   private val api: BankSyncApi,
   private val accountDao: AccountDao,
   private val dao: BankSyncDao,
@@ -37,12 +33,12 @@ class BankAccountLinker(
   private val bankSync: BankSyncController,
   private val uuidGenerator: UuidGenerator,
   private val scope: BudgetCoroutineScope,
-) : BankAccountUnlinker {
-  /**
-   * Links [account] to [external], which [source] listed, then starts its first sync in the
-   * budget's scope, after any sync already running.
-   */
-  suspend fun link(account: AccountId, source: AccountSyncSource, external: ExternalBankAccount) {
+) : BankAccountLinker {
+  override suspend fun link(
+    account: AccountId,
+    source: AccountSyncSource,
+    external: ExternalBankAccount,
+  ) {
     checkNotNull(accountDao[account]) { "Account $account not found" }
     val changes = mutableListOf<LocalChange>()
     changes.addLink(account, source, external)
@@ -50,12 +46,7 @@ class BankAccountLinker(
     scope.launch { bankSync.sync(setOf(account)) }
   }
 
-  /**
-   * Adds a budget account named after [external], which [source] listed, at the end of the on or
-   * [offBudget] list with its transfer payee, then syncs it as [link] does. Its first sync adds the
-   * starting balance. See linkGoCardlessAccount() without an upgradingId.
-   */
-  suspend fun create(
+  override suspend fun create(
     source: AccountSyncSource,
     external: ExternalBankAccount,
     offBudget: Boolean,

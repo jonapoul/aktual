@@ -14,8 +14,8 @@ import aktual.api.model.banksync.GoCardlessAccountsResponse
 import aktual.api.model.banksync.GoCardlessBank
 import aktual.api.model.banksync.GoCardlessBanksResponse
 import aktual.api.model.banksync.GoCardlessLoginResponse
-import aktual.budget.banksync.domain.BankAccountLinker
-import aktual.budget.banksync.domain.GoCardlessLoginWaiter
+import aktual.budget.banksync.domain.BankAccountLinkerImpl
+import aktual.budget.banksync.domain.GoCardlessLoginWaiterImpl
 import aktual.budget.banksync.vm.FakeBankSyncApi
 import aktual.budget.banksync.vm.FakeBankSyncController
 import aktual.budget.banksync.vm.FakeEnableBankingApi
@@ -460,7 +460,7 @@ class LinkBankAccountViewModelTest {
       accountDao = AccountDao(database),
       api = api,
       linker =
-        BankAccountLinker(
+        BankAccountLinkerImpl(
           api = api,
           accountDao = AccountDao(database),
           dao = BankSyncDao(database),
@@ -481,7 +481,7 @@ class LinkBankAccountViewModelTest {
           scope = BudgetCoroutineScope(scope.backgroundScope),
         ),
       server = server,
-      waiter = GoCardlessLoginWaiter(api),
+      waiter = GoCardlessLoginWaiterImpl(api),
       enableBanking = enableBankingApi,
       buildConfig = TestBuildConfig,
       viewModelContext = scope.viewModelContext,

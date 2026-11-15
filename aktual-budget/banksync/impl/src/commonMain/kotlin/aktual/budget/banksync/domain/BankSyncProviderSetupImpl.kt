@@ -5,43 +5,17 @@ import aktual.api.client.SecretsApi
 import aktual.api.model.banksync.BankSyncSecret
 import aktual.api.model.banksync.SecretResponse
 import aktual.budget.model.AccountSyncSource
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 
-enum class ProviderCredential(val source: AccountSyncSource, internal val secret: BankSyncSecret) {
-  GoCardlessSecretId(GoCardless, BankSyncSecret.GoCardlessSecretId),
-  GoCardlessSecretKey(GoCardless, BankSyncSecret.GoCardlessSecretKey),
-  SimpleFinToken(SimpleFin, BankSyncSecret.SimpleFinToken),
-  PluggyAiClientId(PluggyAi, BankSyncSecret.PluggyAiClientId),
-  PluggyAiClientSecret(PluggyAi, BankSyncSecret.PluggyAiClientSecret),
-  PluggyAiItemIds(PluggyAi, BankSyncSecret.PluggyAiItemIds),
-  AkahuAppToken(Akahu, BankSyncSecret.AkahuAppToken),
-  AkahuUserToken(Akahu, BankSyncSecret.AkahuUserToken),
-  EnableBankingApplicationId(
-    EnableBanking,
-    BankSyncSecret.EnableBankingApplicationId,
-  ),
-  EnableBankingSecretKey(EnableBanking, BankSyncSecret.EnableBankingSecretKey);
-
-  companion object {
-    fun of(source: AccountSyncSource): List<ProviderCredential> = entries.filter {
-      it.source == source
-    }
-  }
-}
-
-/**
- * Saves the credentials the server uses to reach a bank sync provider, or clears them. They apply
- * to every budget on the server, so only admins can.
- *
- * See packages/desktop-client/src/components/modals/GoCardlessInitialiseModal.tsx and the other
- * providers' initialise modals
- */
 @Inject
-class BankSyncProviderSetup(
+@ContributesBinding(BudgetScope::class)
+class BankSyncProviderSetupImpl(
   private val secrets: SecretsApi,
   private val enableBanking: EnableBankingApi,
-) {
-  suspend fun save(
+) : BankSyncProviderSetup {
+  override suspend fun save(
     source: AccountSyncSource,
     values: Map<ProviderCredential, String>,
   ): SecretResponse {
@@ -64,7 +38,7 @@ class BankSyncProviderSetup(
     return setAll(changes + cleared.map { it to null })
   }
 
-  suspend fun reset(source: AccountSyncSource): SecretResponse {
+  override suspend fun reset(source: AccountSyncSource): SecretResponse {
     val derived = if (source == SimpleFin) SIMPLEFIN_DERIVED else emptyList()
     val all = ProviderCredential.of(source).map { it.secret } + derived
     return setAll(all.map { it to null })
@@ -82,3 +56,18 @@ class BankSyncProviderSetup(
     val SIMPLEFIN_DERIVED = listOf(BankSyncSecret.SimpleFinAccessKey)
   }
 }
+
+private val ProviderCredential.secret: BankSyncSecret
+  get() =
+    when (this) {
+      GoCardlessSecretId -> BankSyncSecret.GoCardlessSecretId
+      GoCardlessSecretKey -> BankSyncSecret.GoCardlessSecretKey
+      SimpleFinToken -> BankSyncSecret.SimpleFinToken
+      PluggyAiClientId -> BankSyncSecret.PluggyAiClientId
+      PluggyAiClientSecret -> BankSyncSecret.PluggyAiClientSecret
+      PluggyAiItemIds -> BankSyncSecret.PluggyAiItemIds
+      AkahuAppToken -> BankSyncSecret.AkahuAppToken
+      AkahuUserToken -> BankSyncSecret.AkahuUserToken
+      EnableBankingApplicationId -> BankSyncSecret.EnableBankingApplicationId
+      EnableBankingSecretKey -> BankSyncSecret.EnableBankingSecretKey
+    }
