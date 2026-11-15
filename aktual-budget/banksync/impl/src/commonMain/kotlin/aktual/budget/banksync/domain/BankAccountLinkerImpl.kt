@@ -20,10 +20,12 @@ import aktual.di.BudgetScope
 import aktual.log
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.launch
 
 @Inject
-@ContributesBinding(BudgetScope::class)
+@ContributesBinding(BudgetScope::class, binding<BankAccountLinker>())
+@ContributesBinding(BudgetScope::class, binding<BankAccountUnlinker>())
 class BankAccountLinkerImpl(
   private val api: BankSyncApi,
   private val accountDao: AccountDao,
