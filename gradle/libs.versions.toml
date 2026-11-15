@@ -19,7 +19,6 @@ kotlinx-serialization = "1.12.0"
 ktor = "3.6.1"
 markdown = "0.46.0"
 metro = "1.5.2"
-redacted = "1.18.0"
 sqldelight = "2.4.1"
 
 [libraries]
@@ -152,7 +151,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.1" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
-redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
+redacted = { id = "dev.zacsweers.redacted", version = "1.18.0" }
 sortDependencies = { id = "com.squareup.sort-dependencies", version = "0.21.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 straitjacket = { id = "dev.jonpoulton.straitjacket", version = "0.1.0" }
