@@ -95,7 +95,7 @@ class PayeeRulesTest {
     actions: List<RuleAction> = emptyList(),
   ) = TransactionRule(id = RuleId("rule"), conditions = conditions, actions = actions)
 
-  private fun BudgetDatabase.counter() = PayeeRuleCounter(RulesDao(this), RuleContextDao(this))
+  private fun BudgetDatabase.counter() = PayeeRuleCounterImpl(RulesDao(this), RuleContextDao(this))
 
   private suspend fun BudgetDatabase.insertRule(
     id: String,

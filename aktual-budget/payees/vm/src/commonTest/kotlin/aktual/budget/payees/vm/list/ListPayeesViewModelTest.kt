@@ -15,10 +15,10 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleId
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
 import aktual.budget.payees.domain.PayeeMerge
-import aktual.budget.payees.domain.PayeeMerger
+import aktual.budget.payees.domain.PayeeMergerImpl
 import aktual.budget.payees.vm.PayeesLoader
-import aktual.budget.rules.domain.CategoryLearningPref
-import aktual.budget.rules.domain.PayeeRuleCounter
+import aktual.budget.rules.domain.CategoryLearningPrefImpl
+import aktual.budget.rules.domain.PayeeRuleCounterImpl
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -356,10 +356,11 @@ class ListPayeesViewModelTest {
   ): ListPayeesViewModel {
     val preferences = PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher))
     return ListPayeesViewModel(
-      loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
+      loader =
+        PayeesLoader(PayeeDao(this), PayeeRuleCounterImpl(RulesDao(this), RuleContextDao(this))),
       budgetSync = sync,
-      merger = PayeeMerger(PayeeDao(this), sync),
-      learning = CategoryLearningPref(preferences, sync),
+      merger = PayeeMergerImpl(PayeeDao(this), sync),
+      learning = CategoryLearningPrefImpl(preferences, sync),
       budgetScope = BudgetCoroutineScope(scope),
       viewModelContext = scope.viewModelContext,
     )

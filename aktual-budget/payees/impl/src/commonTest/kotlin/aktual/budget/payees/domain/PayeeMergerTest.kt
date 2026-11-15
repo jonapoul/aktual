@@ -122,7 +122,7 @@ class PayeeMergerTest {
   ) : BudgetSync {
     val changes = mutableListOf<LocalChange>()
     val payeeDao = PayeeDao(database)
-    val merger = PayeeMerger(payeeDao, budgetSync = this)
+    val merger = PayeeMergerImpl(payeeDao, budgetSync = this)
 
     // Applied to the database, as BudgetSyncControllerImpl does
     override suspend fun invoke(changes: List<LocalChange>) {

@@ -25,17 +25,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nominatim.api.NominatimApi
 
-interface AddressLookup {
-  val isEnabled: Flow<Boolean>
-
-  // Empty while lookups are turned off
-  val addresses: Flow<AddressBook>
-
-  suspend fun setEnabled(enabled: Boolean)
-
-  fun request(coordinates: Coordinates)
-}
-
 // Looks up addresses of payee locations one at a time, at most once a second as Nominatim's usage
 // policy asks. Results are only kept in memory.
 @SingleIn(BudgetScope::class)

@@ -5,24 +5,27 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
 import aktual.budget.model.localChange
 import aktual.budget.utils.BudgetSync
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-// The global learn-categories synced pref, read as upstream's String(value ?? 'true') === 'true'
 @Inject
-class CategoryLearningPref(
+@ContributesBinding(BudgetScope::class)
+class CategoryLearningPrefImpl(
   private val preferences: PreferencesDao,
   private val budgetSync: BudgetSync,
-) {
-  fun observe(): Flow<Boolean> = preferences.observe(LearnCategories).map(::isEnabled)
+) : CategoryLearningPref {
+  override fun observe(): Flow<Boolean> = preferences.observe(LearnCategories).map(::isEnabled)
 
-  suspend fun isEnabled(): Boolean = isEnabled(preferences[LearnCategories])
+  override suspend fun isEnabled(): Boolean = isEnabled(preferences[LearnCategories])
 
-  suspend fun set(enabled: Boolean) =
+  override suspend fun set(enabled: Boolean) {
     budgetSync(
       localChange(PREFERENCES, LearnCategories.key, column = "value", enabled.toString()),
     )
+  }
 }
 
 private fun isEnabled(value: String?): Boolean = value == null || value == "true"

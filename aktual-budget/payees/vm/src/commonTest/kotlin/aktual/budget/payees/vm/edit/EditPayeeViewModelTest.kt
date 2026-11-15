@@ -18,8 +18,8 @@ import aktual.budget.payees.domain.PayeeLocationsImpl
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.locations.FakeAddressLookup
-import aktual.budget.rules.domain.CategoryLearningPref
-import aktual.budget.rules.domain.PayeeRuleCounter
+import aktual.budget.rules.domain.CategoryLearningPrefImpl
+import aktual.budget.rules.domain.PayeeRuleCounterImpl
 import aktual.core.model.Coordinates
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestBudgetSync
@@ -250,7 +250,7 @@ class EditPayeeViewModelTest {
     val payees = PayeeDao(this)
     return EditPayeeViewModel(
       payeeId = id,
-      loader = PayeesLoader(payees, PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
+      loader = PayeesLoader(payees, PayeeRuleCounterImpl(RulesDao(this), RuleContextDao(this))),
       payeeDao = payees,
       budgetSync = sync,
       payeeLocations =
@@ -264,7 +264,7 @@ class EditPayeeViewModelTest {
       budgetScope = BudgetCoroutineScope(scope),
       timeZones = { TimeZone.UTC },
       learning =
-        CategoryLearningPref(
+        CategoryLearningPrefImpl(
           PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher)),
           sync,
         ),

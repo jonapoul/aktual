@@ -8,7 +8,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.payees.vm.search.SearchPayeesState.Results
-import aktual.budget.rules.domain.PayeeRuleCounter
+import aktual.budget.rules.domain.PayeeRuleCounterImpl
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -111,7 +111,8 @@ class SearchPayeesViewModelTest {
   ): SearchPayeesViewModel {
     return SearchPayeesViewModel(
       savedState = savedState,
-      loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
+      loader =
+        PayeesLoader(PayeeDao(this), PayeeRuleCounterImpl(RulesDao(this), RuleContextDao(this))),
       viewModelContext = scope.viewModelContext,
     )
   }
