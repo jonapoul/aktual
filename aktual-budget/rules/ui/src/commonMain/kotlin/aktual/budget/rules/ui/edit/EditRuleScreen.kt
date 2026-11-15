@@ -40,6 +40,7 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -103,6 +104,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -226,7 +230,6 @@ private fun EditRuleScaffold(
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
-    snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
@@ -256,7 +259,6 @@ private fun EditRuleScaffold(
         },
       )
     },
-    floatingActionButton = { SaveButton(state = state, mode = mode, onAction = onAction) },
   ) { innerPadding ->
     Box {
       PageBackground()
@@ -295,6 +297,18 @@ private fun EditRuleScaffold(
             isEnabled = !state.isWorking,
             onAction = onAction,
           )
+      }
+
+      // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
+      // when the button hides after saving
+      Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
+        SaveButton(state = state, mode = mode, onAction = onAction)
+        SnackbarHost(
+          hostState = snackbarHostState,
+          modifier = Modifier.align(CenterHorizontally),
+          snackbar = ::AktualSnackbar,
+        )
+        BottomSpacing()
       }
     }
   }
@@ -345,19 +359,17 @@ private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<Edit
     exit = slideOutVertically { it } + scaleOut(targetScale = FabInitialScale) + fadeOut(),
   ) {
     val success = state as? Success ?: return@AnimatedVisibility
-    Column {
-      AktualButton(
-        text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-        icon = AktualIcons.Check,
-        kind = Primary,
-        shape = CardShape,
-        contentPadding = FabPadding,
-        isEnabled = success.canSave,
-        isLoading = success.isWorking,
-        onClick = { onAction(Save) },
-      )
-      BottomSpacing()
-    }
+    AktualButton(
+      modifier = Modifier.padding(end = Dimens.Huge, bottom = Dimens.Huge),
+      text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+      icon = AktualIcons.Check,
+      kind = Primary,
+      shape = CardShape,
+      contentPadding = FabPadding,
+      isEnabled = success.canSave,
+      isLoading = success.isWorking,
+      onClick = { onAction(Save) },
+    )
   }
 }
 
