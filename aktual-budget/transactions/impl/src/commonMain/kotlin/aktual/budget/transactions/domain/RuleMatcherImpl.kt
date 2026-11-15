@@ -9,10 +9,10 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
+import aktual.budget.rules.domain.CompiledTransactionFilter
 import aktual.budget.rules.domain.FilterBounds
 import aktual.budget.rules.domain.RuleActions
 import aktual.budget.rules.domain.RuleTransaction
-import aktual.budget.rules.domain.TransactionFilter
 import aktual.budget.rules.domain.TransactionRule
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.rules.domain.splitIndex
@@ -33,7 +33,7 @@ class RuleMatcherImpl(
 ) : RuleMatcher {
   override suspend fun find(rule: TransactionRule): RuleMatches? {
     val actions = RuleActions.compile(rule.id, rule.actions) ?: return null
-    val filter = TransactionFilter.compile(rule.conditions, rule.conditionsOp)
+    val filter = CompiledTransactionFilter.compile(rule.conditions, rule.conditionsOp)
     if (filter.isEmpty) return RuleMatches(emptyList(), emptyMap(), emptyMap())
 
     val makesSplits = rule.actions.any { it.splitIndex > 0 }

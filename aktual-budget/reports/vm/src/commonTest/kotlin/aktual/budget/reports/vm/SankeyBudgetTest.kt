@@ -7,6 +7,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.rules.domain.TransactionFilterCompilerImpl
 import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEqualTo
@@ -112,6 +113,7 @@ class SankeyBudgetTest {
         next = month(MARCH_24, toBudget = 0, fromLastMonth = 90, overspent = 0),
         conditions = listOf(NOT_FUEL),
         op = null,
+        compiler = TransactionFilterCompilerImpl(),
       )
 
     assertThat(budget)

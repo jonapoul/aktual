@@ -1,56 +1,20 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
-import aktual.budget.model.CategoryGroupId
-import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator
-import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.occurrences
+import aktual.di.BudgetScope
 import aktual.log
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
-
-/** A transaction as a report filter sees it, with the names that id conditions can match */
-data class FilterRow(
-  val date: LocalDate,
-  val amount: Amount,
-  val account: AccountId,
-  val accountName: String? = null,
-  val offBudget: Boolean = false,
-  val payee: PayeeId? = null,
-  val payeeName: String? = null,
-  // The other side of a transfer, whose payee has no name of its own
-  val transferAccountName: String? = null,
-  val importedPayee: String? = null,
-  val category: CategoryId? = null,
-  val categoryName: String? = null,
-  val categoryGroup: CategoryGroupId? = null,
-  val categoryGroupName: String? = null,
-  val notes: String? = null,
-  val cleared: Boolean = false,
-  val reconciled: Boolean = false,
-  val isTransfer: Boolean = false,
-  val isParent: Boolean = false,
-)
-
-/**
- * Ids and dates that every transaction a [TransactionFilter] matches is within. A null set or date
- * doesn't narrow anything
- */
-data class FilterBounds(
-  val from: LocalDate? = null,
-  val to: LocalDate? = null,
-  val accounts: Set<String>? = null,
-  val categories: Set<String>? = null,
-  val payees: Set<String>? = null,
-)
 
 /**
  * Matches transactions against a report's filter conditions, the way upstream queries them:
@@ -62,17 +26,13 @@ data class FilterBounds(
  * Invalid conditions are skipped, as are references to saved filters (conditions with a
  * `customName`), which the report spreadsheets drop.
  */
-class TransactionFilter
-private constructor(private val conditions: List<FilterCondition>, private val op: ConditionOp) {
-  /** True when there's nothing to filter by, so every transaction matches */
-  val isEmpty: Boolean
+class CompiledTransactionFilter
+private constructor(private val conditions: List<FilterCondition>, private val op: ConditionOp) :
+  TransactionFilter {
+  override val isEmpty: Boolean
     get() = conditions.isEmpty()
 
-  /**
-   * What every matching transaction has, for narrowing a query before [matches] runs. Only all
-   * conditions together narrow it, since any one of them could match on its own
-   */
-  val bounds: FilterBounds by lazy {
+  override val bounds: FilterBounds by lazy {
     if (op == Or && conditions.size > 1) {
       FilterBounds()
     } else {
@@ -80,7 +40,7 @@ private constructor(private val conditions: List<FilterCondition>, private val o
     }
   }
 
-  fun matches(row: FilterRow): Boolean =
+  override fun matches(row: FilterRow): Boolean =
     when {
       conditions.isEmpty() -> true
       op == Or -> conditions.any { it.matches(row) }
@@ -88,7 +48,7 @@ private constructor(private val conditions: List<FilterCondition>, private val o
     }
 
   companion object {
-    fun compile(conditions: List<Condition>, op: ConditionOp): TransactionFilter {
+    fun compile(conditions: List<Condition>, op: ConditionOp): CompiledTransactionFilter {
       val compiled =
         conditions
           .filter { it.customName == null }
@@ -100,7 +60,7 @@ private constructor(private val conditions: List<FilterCondition>, private val o
               null
             }
           }
-      return TransactionFilter(compiled, op)
+      return CompiledTransactionFilter(compiled, op)
     }
   }
 }
@@ -456,37 +416,9 @@ private class FilterCondition(private val condition: CompiledCondition) {
   }
 }
 
-// likePatternToRegex in packages/loot-core/src/platform/server/sqlite/unicodeLike.ts: % is any
-// run of characters, ? is any one character, and a backslash escapes either
-@Suppress("UnnecessaryParentheses")
-fun likePatternToRegex(pattern: String): Regex {
-  val regex = StringBuilder()
-  var i = 0
-  while (i < pattern.length) {
-    val ch = pattern[i]
-    val next = pattern.getOrNull(i + 1)
-    when (ch) {
-      '\\' if (next == '%' || next == '?' || next == '\\') -> {
-        regex.append(Regex.escape(next.toString()))
-        i++
-      }
-      '%' -> regex.append(".*")
-      '?' -> regex.append('.')
-      else -> regex.append(Regex.escape(ch.toString()))
-    }
-    i++
-  }
-  return Regex(regex.toString(), RegexOption.IGNORE_CASE)
+@Inject
+@ContributesBinding(BudgetScope::class)
+class TransactionFilterCompilerImpl : TransactionFilterCompiler {
+  override fun compile(conditions: List<Condition>, op: ConditionOp): TransactionFilter =
+    CompiledTransactionFilter.compile(conditions, op)
 }
-
-// getNormalisedString in packages/loot-core/src/shared/normalisation.ts
-fun normalise(value: String): String {
-  var lower = value.lowercase()
-  for ((from, to) in LETTER_REPLACEMENTS) lower = lower.replace(from, to)
-  return stripDiacritics(lower)
-}
-
-private val LETTER_REPLACEMENTS = listOf("ł" to "l", "ø" to "o", "ß" to "ss", "œ" to "oe")
-
-/** Decomposes [value] and drops the combining marks, so "é" becomes "e" */
-internal expect fun stripDiacritics(value: String): String

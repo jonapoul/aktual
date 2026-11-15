@@ -18,6 +18,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
+import aktual.budget.rules.domain.TransactionFilterCompilerImpl
 import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
@@ -192,7 +193,13 @@ class FormulaQueriesTest {
         calendar = { TODAY },
         contexts = contexts,
       )
-    return FormulaQueries(queries.toMap(), FormulaDao(this), budgets, calendar = { TODAY })
+    return FormulaQueries(
+      queries.toMap(),
+      FormulaDao(this),
+      budgets,
+      calendar = { TODAY },
+      compiler = TransactionFilterCompilerImpl(),
+    )
   }
 
   private fun query(

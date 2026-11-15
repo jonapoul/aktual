@@ -40,6 +40,7 @@ import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.budget.model.parseScheduleAmount
 import aktual.budget.rules.domain.TransactionFilter
+import aktual.budget.rules.domain.TransactionFilterCompiler
 import aktual.core.model.Percent
 import aktual.core.utils.Calendar
 import aktual.log
@@ -86,6 +87,7 @@ internal class ChartDataLoader(
   private val currencyPreferences: CurrencyPreferences,
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
+  private val compiler: TransactionFilterCompiler,
 ) {
   fun load(meta: ReportMeta): Flow<ChartData> =
     when (meta) {
@@ -155,7 +157,7 @@ internal class ChartDataLoader(
     val accounts =
       if (config.groupBy == Account) customReports.observeAccounts() else flowOf(emptyList())
 
-    val filter = TransactionFilter.compile(config.conditions, config.conditionsOp)
+    val filter = compiler.compile(config.conditions, config.conditionsOp)
     val isTagSplit = config.groupBy == Tag && config.balanceType != Budgeted
     val amounts =
       when {
@@ -279,7 +281,7 @@ internal class ChartDataLoader(
     val evaluator =
       FormulaEvaluator(
         calendar,
-        FormulaQueries(meta.queries, formulaDao, budgets, calendar),
+        FormulaQueries(meta.queries, formulaDao, budgets, calendar, compiler),
         format,
       )
     val result = evaluator.evaluate(meta.formula.orEmpty().ifEmpty { DEFAULT_FORMULA })
@@ -359,7 +361,7 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx
   // cashFlowByDate()
   fun cashFlow(meta: CashFlowReportMeta): Flow<ChartData> {
-    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val filter = compiler.reportFilter(meta.conditions, meta.conditionsOp)
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
       val range =
@@ -416,7 +418,7 @@ internal class ChartDataLoader(
   // summarySpreadsheet()
   fun summary(meta: SummaryReportMeta): Flow<ChartData> {
     val content = parseSummaryContent(meta.content)
-    val filter = TransactionFilter.compile(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    val filter = compiler.compile(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
     return dao
       .observeTransactionDateBounds()
       .flatMapLatest { bounds ->
@@ -435,7 +437,7 @@ internal class ChartDataLoader(
         val divisorAmounts =
           if (content.type == Percentage) {
             val divisorFilter =
-              TransactionFilter.compile(content.divisorConditions.orEmpty(), content.divisorOp)
+              compiler.compile(content.divisorConditions.orEmpty(), content.divisorOp)
             val allTime = content.divisorAllTimeDateRange == true
             customReports
               .observeTransactions(
@@ -458,7 +460,7 @@ internal class ChartDataLoader(
   // calendarSpreadsheet()
   fun calendar(meta: CalendarReportMeta): Flow<ChartData> {
     val conditions = ConditionSet(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
-    val filter = TransactionFilter.compile(conditions.conditions, conditions.op)
+    val filter = compiler.compile(conditions.conditions, conditions.op)
     return combine(dao.observeTransactionDateBounds(), formatPreferences.firstDayOfWeek.asFlow()) {
         bounds,
         firstDayOfWeek ->
@@ -488,7 +490,7 @@ internal class ChartDataLoader(
 
   // packages/desktop-client/src/components/reports/reports/SpendingCard.tsx
   fun spending(meta: SpendingReportMeta): Flow<ChartData> {
-    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val filter = compiler.reportFilter(meta.conditions, meta.conditionsOp)
     val mode = meta.spendingMode
     return dao
       .observeTransactionDateBounds()
@@ -584,7 +586,7 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
   // createSpreadsheet()
   fun netWorth(meta: NetWorthReportMeta): Flow<ChartData> {
-    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val filter = compiler.reportFilter(meta.conditions, meta.conditionsOp)
     val interval = meta.interval?.takeIf { it != Unknown } ?: Monthly
     return combine(
         dao.observeTransactionDateBounds(),
@@ -647,7 +649,7 @@ internal class ChartDataLoader(
   // packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreadsheet.ts
   // createAgeOfMoneySpreadsheet()
   fun ageOfMoney(meta: AgeOfMoneyReportMeta): Flow<ChartData> {
-    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val filter = compiler.reportFilter(meta.conditions, meta.conditionsOp)
     val granularity = meta.granularity?.takeIf { it != Unknown } ?: Monthly
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
@@ -692,7 +694,7 @@ internal class ChartDataLoader(
     } else {
       dao
         .observeFilteredTransactions(filter, ALL_TIME_START, end)
-        .map { rows -> ageOfMoneyTransactions(rows, meta.conditions, meta.conditionsOp) }
+        .map { rows -> ageOfMoneyTransactions(rows, meta.conditions, meta.conditionsOp, compiler) }
         .flowOn(contexts.default)
     }
 
@@ -776,7 +778,7 @@ internal class ChartDataLoader(
         showPercentages = meta.showPercentages == true,
       )
     val showTransfers = meta.showTransfers == true && !params.groupAccounts
-    val filter = reportFilter(meta.conditions, meta.conditionsOp)
+    val filter = compiler.reportFilter(meta.conditions, meta.conditionsOp)
 
     return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
       val today = calendar.today()
@@ -804,6 +806,7 @@ internal class ChartDataLoader(
                 months.lastOrNull(),
                 meta.conditions,
                 meta.conditionsOp,
+                compiler,
               ),
             categoryOrder = budgetCategoryOrder(months.firstOrNull()),
             params = params,
@@ -937,7 +940,7 @@ internal class ChartDataLoader(
     val start = params.firstDay
     val end = params.lastDay
     val firstForecastDate = if (end < params.today) start else maxOf(start, params.today)
-    val filters = ForecastFilters(conditions, op)
+    val filters = ForecastFilters(compiler, conditions, op)
 
     val scheduleInputs =
       combine(
