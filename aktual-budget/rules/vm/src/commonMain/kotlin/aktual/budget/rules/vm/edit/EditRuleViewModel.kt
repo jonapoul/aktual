@@ -232,6 +232,7 @@ internal constructor(
               }
             rulesDao.insert(rule)
             log.i { "Saved $rule" }
+            mutableDraft.update { draft -> draft?.copy(saved = model) }
             syncController.syncChanges(insertChanges(rule))
           }
         },
@@ -373,6 +374,7 @@ internal constructor(
   private fun draft(rule: Rule) =
     Draft(
       rule = rule,
+      saved = rule,
       conditionKeys = rule.conditions.map { nextKey++ }.toPersistentList(),
       actionKeys = rule.actions.map { nextKey++ }.toPersistentList(),
     )
@@ -444,9 +446,10 @@ private fun Rule.toTransactionRule() =
   )
 
 // Keys stay with their condition or action as others are added or removed, so the UI can animate
-// them
+// them. Saved is the rule as last loaded or saved, to tell when there are unsaved changes
 internal data class Draft(
   val rule: Rule,
+  val saved: Rule,
   val conditionKeys: PersistentList<Long>,
   val actionKeys: PersistentList<Long>,
 )
