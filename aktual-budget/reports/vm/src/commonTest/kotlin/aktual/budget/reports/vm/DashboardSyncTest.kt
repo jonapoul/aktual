@@ -12,7 +12,7 @@ import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
@@ -258,7 +258,7 @@ class DashboardSyncTest {
 
   @Test
   fun `Rename a custom report`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = DashboardSync(dao(scope.testScheduler), controller)
 
     sync.renameCustomReport(CustomReportId("report"), "new")
@@ -269,7 +269,7 @@ class DashboardSyncTest {
 
   @Test
   fun `Delete a custom report`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = DashboardSync(dao(scope.testScheduler), controller)
 
     sync.deleteCustomReport(CustomReportId("report"))

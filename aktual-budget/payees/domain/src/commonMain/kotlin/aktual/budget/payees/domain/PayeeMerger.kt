@@ -7,7 +7,7 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import dev.zacsweers.metro.Inject
 
 // What a merge changed, so it can be undone. Each repointed payee_mapping row maps to its old
@@ -23,7 +23,7 @@ data class PayeeMerge(
 @Inject
 class PayeeMerger(
   private val payeeDao: PayeeDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
 ) {
   // Null when there's nothing to merge. Transfer payees are skipped, as upstream
   suspend fun merge(target: PayeeId, ids: Collection<PayeeId>): PayeeMerge? {
@@ -37,7 +37,7 @@ class PayeeMerger(
       if (id !in oldTargets) oldTargets[id] = payeeDao.mappingTarget(id) ?: id
     }
 
-    syncController.syncChanges(
+    budgetSync(
       oldTargets.keys.map { localChange(PAYEE_MAPPING, it.value, "targetId", target.value) } +
         merged.map { tombstone(PAYEES, it.value) },
     )
@@ -45,7 +45,7 @@ class PayeeMerger(
   }
 
   suspend fun undo(merge: PayeeMerge) {
-    syncController.syncChanges(
+    budgetSync(
       merge.merged.map { untombstone(PAYEES, it.value) } +
         merge.oldTargets.map { (id, old) ->
           localChange(PAYEE_MAPPING, id.value, "targetId", old.value)

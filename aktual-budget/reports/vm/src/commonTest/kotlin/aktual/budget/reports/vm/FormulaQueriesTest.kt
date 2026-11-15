@@ -18,7 +18,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -210,7 +210,7 @@ class FormulaQueriesTest {
 
   private fun may() = TimeFrame(YearMonth(2026, 5), YearMonth(2026, 5), Static)
 
-  private suspend fun BudgetSyncController.insertBudget() {
+  private suspend fun BudgetSync.insertBudget() {
     row(ACCOUNTS, "checking", "name" to "Checking", "sort_order" to 1L)
     row(ACCOUNTS, "savings", "name" to "Savings", "sort_order" to 2L)
     row(ACCOUNTS, "gone", "name" to "Gone", "tombstone" to true)
@@ -252,7 +252,7 @@ class FormulaQueriesTest {
     )
   }
 
-  private suspend fun BudgetSyncController.category(
+  private suspend fun BudgetSync.category(
     id: String,
     name: String,
     group: String,

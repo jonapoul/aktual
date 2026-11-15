@@ -8,7 +8,7 @@ import aktual.budget.model.TagSort
 import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -43,7 +43,7 @@ class ListTagsViewModel
 internal constructor(
   private val tagsDao: TagsDao,
   private val transactionDao: TransactionDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val preferences: TagPreferences,
   private val budgetScope: BudgetCoroutineScope,
   viewModelContext: ViewModelContext,
@@ -110,8 +110,8 @@ internal constructor(
       val item = (state.value as? Success)?.tags?.firstOrNull { it.id == id }
       runCatchingCancellable(
         attempt = {
-          // syncChanges applies the tombstone to the local db and queues it for sync
-          syncController.syncChanges(tombstone(dataset = TAGS, row = id.toString()))
+          // applies the tombstone to the local db and queues it for sync
+          budgetSync(tombstone(dataset = TAGS, row = id.toString()))
           if (item != null) {
             mutableEvents.tryEmit(ListTagsEvent.Deleted(item))
           }
@@ -132,7 +132,7 @@ internal constructor(
         attempt = {
           // reverse the tombstone in the local db and queue the reversal for sync. The row's other
           // columns were never touched by the delete, so clearing the tombstone fully restores it
-          syncController.syncChanges(untombstone(dataset = TAGS, row = item.id.toString()))
+          budgetSync(untombstone(dataset = TAGS, row = item.id.toString()))
           log.d { "Restored tag ${item.id}" }
         },
         onFailure = { e ->

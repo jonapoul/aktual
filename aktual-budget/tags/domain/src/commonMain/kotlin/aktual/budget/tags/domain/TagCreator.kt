@@ -5,7 +5,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.untombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
 
@@ -15,7 +15,7 @@ import dev.zacsweers.metro.Inject
 class TagCreator(
   private val tagsDao: TagsDao,
   private val uuidGenerator: UuidGenerator,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
 ) {
   suspend fun create(tag: String): TagId {
     val owner = tagsDao.getTagIdByName(tag)
@@ -25,7 +25,7 @@ class TagCreator(
     val none: String? = null
     tagsDao.insert(id = id, tag = tag, color = none, description = none)
     val row = id.toString()
-    syncController.syncChanges(
+    budgetSync(
       localChange(TAGS, row, "id", row),
       localChange(TAGS, row, "tag", tag),
       localChange(TAGS, row, "color", none),

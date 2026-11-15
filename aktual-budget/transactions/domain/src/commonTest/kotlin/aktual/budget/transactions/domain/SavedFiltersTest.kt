@@ -8,7 +8,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.LocalChange
 import aktual.budget.model.TransactionFilterId
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.inMemoryDriverFactory
 import app.cash.turbine.test
 import assertk.assertThat
@@ -96,8 +96,8 @@ class SavedFiltersTest {
       val database = buildDatabase(driver)
       val syncDao = SyncDao(database, driver, Clock.System)
       val sync =
-        object : BudgetSyncController {
-          override suspend fun syncChanges(changes: List<LocalChange>) {
+        object : BudgetSync {
+          override suspend fun invoke(changes: List<LocalChange>) {
             syncDao.sendMessages(changes)
           }
 

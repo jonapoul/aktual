@@ -8,7 +8,7 @@ import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.budget.utils.BudgetLocalPreferences
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.utils.runCatchingCancellable
@@ -44,7 +44,7 @@ internal constructor(
   private val localPreferences: BudgetLocalPreferences,
   private val server: BudgetServer,
   private val syncApi: BudgetSyncApi,
-  private val sync: BudgetSyncController,
+  private val sync: BudgetSync,
   accountDao: AccountDao,
   newTransactions: NewTransactions,
   private val appPreferences: AppPreferences,
@@ -96,7 +96,7 @@ internal constructor(
             syncApi.renameBudget(cloudFileId, name)
           }
           localPreferences.update { metadata -> metadata.set(BudgetName, name) }
-          sync.syncChanges(budgetNameChange(name))
+          sync(budgetNameChange(name))
         },
         onFailure = { e -> log.e(e) { "Failed renaming budget" } },
       )

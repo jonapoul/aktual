@@ -21,7 +21,7 @@ import aktual.core.model.Token
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBudgetLocalPreferences
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
@@ -48,7 +48,7 @@ import okio.IOException
 class BudgetNavRailViewModelTest {
   private val prefs =
     TestBudgetLocalPreferences(DbMetadata(budgetName = "Household", cloudFileId = BUDGET_ID))
-  private val sync = TestSyncController()
+  private val sync = TestBudgetSync()
   private val api = TestBudgetSyncApi()
   private val unpostedSchedules = TestUnpostedSchedules()
   private val newTransactions = FakeNewTransactions()

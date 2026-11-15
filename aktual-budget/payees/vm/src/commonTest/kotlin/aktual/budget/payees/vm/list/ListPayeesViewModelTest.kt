@@ -20,7 +20,7 @@ import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.CategoryLearningPref
 import aktual.budget.rules.domain.PayeeRuleCounter
 import aktual.di.BudgetCoroutineScope
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -179,7 +179,7 @@ class ListPayeesViewModelTest {
   fun `Deleting tombstones the payee and undo restores it`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync).awaitLoaded()
 
     // when
@@ -206,7 +206,7 @@ class ListPayeesViewModelTest {
   fun `Toggling favourite flips the payee's flag`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync).awaitLoaded()
 
     // when
@@ -226,7 +226,7 @@ class ListPayeesViewModelTest {
   fun `Merging moves the payee into the target and undo restores it`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync).awaitLoaded()
     val tesco = ARGOS.copy(id = TESCO, name = "Tesco")
     val merged =
@@ -267,7 +267,7 @@ class ListPayeesViewModelTest {
   fun `A merge with nothing to merge reports a failure`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync).awaitLoaded()
     val transfer = ARGOS.copy(id = TRANSFER, isTransfer = true)
 
@@ -304,7 +304,7 @@ class ListPayeesViewModelTest {
   fun `Setting category learning syncs the pref`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync).awaitLoaded()
 
     // when
@@ -320,7 +320,7 @@ class ListPayeesViewModelTest {
   fun `Transfer payees can't be deleted or favourited`() = runDatabaseTest { scope ->
     // given
     insertPayees()
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync).awaitLoaded()
     val transfer = ARGOS.copy(id = TRANSFER, isTransfer = true)
 
@@ -352,12 +352,12 @@ class ListPayeesViewModelTest {
 
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
-    sync: TestSyncController = TestSyncController(),
+    sync: TestBudgetSync = TestBudgetSync(),
   ): ListPayeesViewModel {
     val preferences = PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher))
     return ListPayeesViewModel(
       loader = PayeesLoader(PayeeDao(this), PayeeRuleCounter(RulesDao(this), RuleContextDao(this))),
-      syncController = sync,
+      budgetSync = sync,
       merger = PayeeMerger(PayeeDao(this), sync),
       learning = CategoryLearningPref(preferences, sync),
       budgetScope = BudgetCoroutineScope(scope),

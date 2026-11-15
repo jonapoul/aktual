@@ -40,7 +40,7 @@ import aktual.budget.rules.vm.edit.EditRuleState.Success
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.budget.transactions.domain.RuleMatcherImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
@@ -336,7 +336,7 @@ class EditRuleViewModelTest {
   @Test
   fun `Saving writes the rule and syncs it`() = runDatabaseTest { scope ->
     insertRule(SAVED)
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, RuleId("a"), sync)
 
     viewModel.state.test {
@@ -430,7 +430,7 @@ class EditRuleViewModelTest {
   @Test
   fun `Deleting tombstones the rule and says so`() = runDatabaseTest { scope ->
     insertRule(SAVED)
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, RuleId("a"), sync)
 
     viewModel.events.test {
@@ -447,7 +447,7 @@ class EditRuleViewModelTest {
   fun `A schedule's rule can't be deleted`() = runDatabaseTest { scope ->
     insertRule(SAVED)
     insertSchedule(id = "s", rule = "a")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, RuleId("a"), sync)
 
     viewModel.state.test {
@@ -593,7 +593,7 @@ class EditRuleViewModelTest {
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     ruleId: RuleId? = null,
-    sync: TestSyncController = TestSyncController(),
+    sync: TestBudgetSync = TestBudgetSync(),
     payee: PayeeId? = null,
   ): EditRuleViewModel {
     var nextId = 1
@@ -613,7 +613,7 @@ class EditRuleViewModelTest {
             TransactionRulesLoaderImpl(RulesDao(this), RuleContextDao(this)) { "id-${nextId++}" },
           writer =
             TransactionWriterImpl(
-              syncController = sync,
+              budgetSync = sync,
               accountDao = AccountDao(this),
               categoryDao = CategoryDao(this),
               payeeDao = PayeeDao(this),

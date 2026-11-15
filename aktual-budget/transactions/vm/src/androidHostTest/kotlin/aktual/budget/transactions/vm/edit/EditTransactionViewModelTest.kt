@@ -63,7 +63,7 @@ import aktual.budget.transactions.vm.test.insertCategory
 import aktual.budget.transactions.vm.test.insertPayee
 import aktual.budget.transactions.vm.test.insertTransaction
 import aktual.budget.transactions.vm.test.transaction
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.Coordinates
 import aktual.core.utils.LocationProvider
 import aktual.di.BudgetCoroutineScope
@@ -192,7 +192,7 @@ class EditTransactionViewModelTest {
   fun `Saving a location writes it against the payee`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.events.test {
@@ -213,7 +213,7 @@ class EditTransactionViewModelTest {
     insertEntities()
     insertLocation("near", payee = "a", north = 20.0)
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.events.test {
@@ -246,7 +246,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `A new transaction saves where the user is against its payee`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = PERMITTED)
 
     viewModel.saveNew(payee = PayeeId("a"))
@@ -260,7 +260,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `No location is saved without permission`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET)
 
     viewModel.saveNew(payee = PayeeId("a"))
@@ -272,7 +272,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `No location is saved when the setting's off`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val security = FakeSecurityPreferences(autoSave = false)
     val viewModel =
       createViewModel(
@@ -293,7 +293,7 @@ class EditTransactionViewModelTest {
   fun `No location is saved for edits`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync, location = PERMITTED)
 
     viewModel.events.test {
@@ -314,7 +314,7 @@ class EditTransactionViewModelTest {
   fun `No location is saved for a transfer`() = runDatabaseTest { scope ->
     insertEntities()
     PayeeDao(this).insert(PayeeId("transfer"), name = null, transferAccount = AccountId("b"))
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = PERMITTED)
 
     viewModel.saveNew(payee = PayeeId("transfer"))
@@ -327,7 +327,7 @@ class EditTransactionViewModelTest {
   fun `No location is saved near one the payee already has`() = runDatabaseTest { scope ->
     insertEntities()
     insertLocation("near", payee = "a", north = 20.0)
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = PERMITTED)
 
     viewModel.saveNew(payee = PayeeId("a"))
@@ -339,7 +339,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `A slow location doesn't hold up saving`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val gate = CompletableDeferred<Unit>()
     val location = FakeLocationProvider(hasPermission = true, gate = gate)
     val viewModel = createViewModel(scope, sync = sync, target = NEW_TARGET, location = location)
@@ -524,7 +524,7 @@ class EditTransactionViewModelTest {
   fun `Saving writes the changed fields and leaves nothing unsaved`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
@@ -583,7 +583,7 @@ class EditTransactionViewModelTest {
     insertSchedule(id = "rent", name = "Rent", payee = "Landlord", account = "Current")
     insertSchedule(id = "old", name = "Old", payee = "Gym", account = "Current", completed = true)
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
@@ -636,7 +636,7 @@ class EditTransactionViewModelTest {
       insertEntities()
       TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
       val gate = CompletableDeferred<Unit>()
-      val sync = FakeSyncController(gate = gate)
+      val sync = FakeBudgetSync(gate = gate)
       val viewModel = createViewModel(scope, id = "t", sync = sync)
 
       viewModel.state.test {
@@ -667,7 +667,7 @@ class EditTransactionViewModelTest {
   fun `Saving without changes writes nothing`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
@@ -686,7 +686,7 @@ class EditTransactionViewModelTest {
   fun `A failed save is reported and keeps the edits`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController(failure = IllegalStateException("Offline"))
+    val sync = FakeBudgetSync(failure = IllegalStateException("Offline"))
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
@@ -723,7 +723,7 @@ class EditTransactionViewModelTest {
   fun `Deleting tombstones the transaction and reports it`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.events.test {
@@ -743,7 +743,7 @@ class EditTransactionViewModelTest {
     runSyncedTest { scope, elsewhere ->
       insertEntities()
       TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-      val sync = FakeSyncController()
+      val sync = FakeBudgetSync()
       val viewModel = createViewModel(scope, id = "t", sync = sync)
 
       viewModel.state.test {
@@ -815,7 +815,7 @@ class EditTransactionViewModelTest {
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
     // Holds the save open once it's written, so what it wrote is seen before it finishes
     val gate = CompletableDeferred<Unit>()
-    val sync = FakeSyncController(gate = gate, appliedTo = database)
+    val sync = FakeBudgetSync(gate = gate, appliedTo = database)
     val viewModel = createViewModel(scope, id = "t", sync = sync, savedUuid = "saved")
 
     viewModel.state.test {
@@ -845,7 +845,7 @@ class EditTransactionViewModelTest {
     runSyncedTest { scope, elsewhere ->
       insertEntities()
       TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-      val sync = FakeSyncController()
+      val sync = FakeBudgetSync()
       val viewModel = createViewModel(scope, id = "t", sync = sync)
 
       viewModel.state.test {
@@ -927,7 +927,7 @@ class EditTransactionViewModelTest {
   fun `Splitting moves the payee to two empty parts`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
@@ -979,7 +979,7 @@ class EditTransactionViewModelTest {
   fun `An added part can take what's left to assign`() = runDatabaseTest { scope ->
     insertEntities()
     insertSplit()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "p", sync = sync)
 
     viewModel.state.test {
@@ -1032,7 +1032,7 @@ class EditTransactionViewModelTest {
       insertTransaction("p", "a", null, "a", amount = 100.0, isParent = true)
       insertTransaction("p1", "a", "b", "b", amount = 100.0, parent = "p")
     }
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "p", sync = sync)
 
     viewModel.state.test {
@@ -1089,7 +1089,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `Saving a new split inserts the parent and its parts`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val target = EditTransactionTarget.New(AccountId("a"))
     val viewModel = createViewModel(scope, sync = sync, target = target)
 
@@ -1184,7 +1184,7 @@ class EditTransactionViewModelTest {
       insert("t", "a", null, "to-b", DATE_1, amount = -10.0, transferId = "o")
       insert("o", "b", null, "to-a", DATE_1, amount = 10.0, transferId = "t")
     }
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.events.test {
@@ -1342,7 +1342,7 @@ class EditTransactionViewModelTest {
   fun `Editing a split made by a rule keeps its parts`() = runDatabaseTest { scope ->
     insertEntities()
     insertSplitRule(category = "b")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val target = EditTransactionTarget.New(AccountId("a"))
     val viewModel = createViewModel(scope, sync = sync, target = target)
 
@@ -1420,7 +1420,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `Saving a new transaction inserts it and closes`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val last = LastTransaction()
     val target = EditTransactionTarget.New(AccountId("a"))
     val viewModel = createViewModel(scope, sync = sync, target = target, lastTransaction = last)
@@ -1455,7 +1455,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `A payee added by name is created with the transaction`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val target = EditTransactionTarget.New(AccountId("a"))
     val viewModel = createViewModel(scope, sync = sync, target = target)
 
@@ -1487,7 +1487,7 @@ class EditTransactionViewModelTest {
   @Test
   fun `Discarding a new transaction closes without writing`() = runDatabaseTest { scope ->
     insertEntities()
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val target = EditTransactionTarget.New(AccountId("a"))
     val viewModel = createViewModel(scope, sync = sync, target = target)
 
@@ -1508,7 +1508,7 @@ class EditTransactionViewModelTest {
   fun `Discarding a saved transaction's edits closes without writing`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.events.test {
@@ -1548,7 +1548,7 @@ class EditTransactionViewModelTest {
   fun `A tag created from the notes is synced and offered`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.state.test {
@@ -1578,7 +1578,7 @@ class EditTransactionViewModelTest {
     val tags = tagsDao(scope)
     tags.insert(id = TagId("f"), tag = "food", color = "#FF0000", description = "Meals")
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController()
+    val sync = FakeBudgetSync()
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.createTag("food")
@@ -1592,7 +1592,7 @@ class EditTransactionViewModelTest {
   fun `A tag that fails to sync shows an error`() = runDatabaseTest { scope ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
-    val sync = FakeSyncController(failure = IllegalStateException("Offline"))
+    val sync = FakeBudgetSync(failure = IllegalStateException("Offline"))
     val viewModel = createViewModel(scope, id = "t", sync = sync)
 
     viewModel.error.test {
@@ -1911,7 +1911,7 @@ class EditTransactionViewModelTest {
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     id: String = "t",
-    sync: FakeSyncController = FakeSyncController(),
+    sync: FakeBudgetSync = FakeBudgetSync(),
     target: EditTransactionTarget = EditTransactionTarget.Existing(TransactionId(id)),
     lastTransaction: LastTransaction = LastTransaction(),
     savedUuid: String = "uuid",
@@ -1934,7 +1934,7 @@ class EditTransactionViewModelTest {
       loader = TransactionLoader(transactionDao),
       writer =
         TransactionWriterImpl(
-          syncController = sync,
+          budgetSync = sync,
           accountDao = accountDao,
           categoryDao = categoryDao,
           payeeDao = payeeDao,
@@ -1955,12 +1955,12 @@ class EditTransactionViewModelTest {
       payeeDao = payeeDao,
       categoryDao = categoryDao,
       uuidGenerator = { "part-${nextPart++}" },
-      tagCreator = TagCreator(tagsDao = tags, uuidGenerator = { "tag" }, syncController = sync),
+      tagCreator = TagCreator(tagsDao = tags, uuidGenerator = { "tag" }, budgetSync = sync),
       localPreferences = prefs,
       payeeLocations =
         PayeeLocations(
           dao = PayeeLocationDao(this, contexts),
-          syncController = sync,
+          budgetSync = sync,
           uuidGenerator = { "location" },
           clock = Clock.System,
         ),
@@ -2030,7 +2030,7 @@ class EditTransactionViewModelTest {
     assertThatNextEmissionIsEqualTo(Saved)
   }
 
-  private fun FakeSyncController.locationChanges() =
+  private fun FakeBudgetSync.locationChanges() =
     calls.flatten().filter { it.dataset == PAYEE_LOCATIONS }
 
   private suspend fun BudgetDatabase.insertLocation(id: String, payee: String, north: Double) =
@@ -2047,14 +2047,14 @@ class EditTransactionViewModelTest {
     TagsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
 
   // Records the changes it's sent, without applying them to the database unless it's given one
-  private class FakeSyncController(
+  private class FakeBudgetSync(
     private val failure: Exception? = null,
     private val gate: CompletableDeferred<Unit>? = null,
     private val appliedTo: SyncDao? = null,
-  ) : BudgetSyncController {
+  ) : BudgetSync {
     val calls = mutableListOf<List<LocalChange>>()
 
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       appliedTo?.sendMessages(changes)
       gate?.await()
       failure?.let { throw it }

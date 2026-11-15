@@ -11,7 +11,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncReimportDeleted
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import dev.zacsweers.metro.Inject
 
 /**
@@ -47,9 +47,9 @@ class BankSyncSettingsLoader(private val preferences: PreferencesDao) {
 }
 
 @Inject
-class BankSyncSettingsWriter(private val syncController: BudgetSyncController) {
+class BankSyncSettingsWriter(private val budgetSync: BudgetSync) {
   suspend fun save(account: AccountId, settings: BankSyncSettings) =
-    syncController.syncChanges(
+    budgetSync(
       listOf(
         change(CustomSyncMappings(account), settings.mappings.encode()),
         change(SyncImportPending(account), settings.importPending),

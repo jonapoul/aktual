@@ -25,7 +25,7 @@ import aktual.budget.model.ReportDate
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts
@@ -179,10 +179,10 @@ class CustomReportLoaderTest {
     loader.custom(CustomReportMeta(ID)).test {
       assertThatNextEmission().transform { (it as CustomData).title }.isEqualTo("Before")
 
-      sync.syncChanges(localChange(CUSTOM_REPORTS, ID.value, "name", "After"))
+      sync(localChange(CUSTOM_REPORTS, ID.value, "name", "After"))
       assertThatNextEmission().transform { (it as CustomData).title }.isEqualTo("After")
 
-      sync.syncChanges(tombstone(CUSTOM_REPORTS, ID.value))
+      sync(tombstone(CUSTOM_REPORTS, ID.value))
       assertThatNextEmissionIsEqualTo(MISSING)
     }
   }
@@ -300,7 +300,7 @@ class CustomReportLoaderTest {
     }
   }
 
-  private suspend fun BudgetSyncController.insertSpending() {
+  private suspend fun BudgetSync.insertSpending() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "investing", "name" to "Investing", "offbudget" to true)
     row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
@@ -324,7 +324,7 @@ class CustomReportLoaderTest {
   }
 
   // A negative budget is unusual, but upstream counts it as debts
-  private suspend fun BudgetSyncController.insertBudgets() {
+  private suspend fun BudgetSync.insertBudgets() {
     row(CATEGORY_GROUPS, "income", "name" to "Income", "is_income" to true, "sort_order" to 2L)
     row(CATEGORIES, "salary", "name" to "Salary", "cat_group" to "income", "is_income" to true)
     row(CATEGORY_MAPPING, "salary", "transferId" to "salary")
@@ -335,7 +335,7 @@ class CustomReportLoaderTest {
     budget(REFLECT_BUDGETS, 202605, "food", 1111)
   }
 
-  private suspend fun BudgetSyncController.budget(
+  private suspend fun BudgetSync.budget(
     dataset: String,
     month: Long,
     category: String,
@@ -366,7 +366,7 @@ class CustomReportLoaderTest {
     }
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val loader = chartDataLoader(contexts, calendar = { TODAY })

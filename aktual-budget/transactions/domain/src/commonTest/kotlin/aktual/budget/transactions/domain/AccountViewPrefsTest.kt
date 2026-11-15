@@ -4,7 +4,7 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncedPrefKey.PerAccount.HideReconciled
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
@@ -20,7 +20,7 @@ class AccountViewPrefsTest {
     // given
     val preferences =
       PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-    val prefs = AccountViewPrefs(preferences, TestSyncController())
+    val prefs = AccountViewPrefs(preferences, TestBudgetSync())
     val key = HideReconciled(ACCOUNT)
 
     prefs.observe(key).test {
@@ -44,7 +44,7 @@ class AccountViewPrefsTest {
   @Test
   fun `Setting an option syncs it as a string`() = runDatabaseTest { scope ->
     // given
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val preferences =
       PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
     val prefs = AccountViewPrefs(preferences, sync)

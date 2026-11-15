@@ -28,7 +28,7 @@ import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -67,12 +67,12 @@ internal class BankSyncTestScope(
   private val driver: SqlDriver,
   private val syncDao: SyncDao,
   private val testScope: TestScope,
-) : BudgetSyncController {
+) : BudgetSync {
   private val backgroundScope = testScope.backgroundScope
 
   val syncCalls = mutableListOf<List<LocalChange>>()
   var syncError: Exception? = null
-  // How many syncChanges() calls succeed before [syncError] is thrown
+  // How many invoke() calls succeed before [syncError] is thrown
   var syncErrorAfter = 0
   val transactionDao = TransactionDao(database)
   val payeeDao = PayeeDao(database)
@@ -91,7 +91,7 @@ internal class BankSyncTestScope(
 
   val writer =
     TransactionWriterImpl(
-      syncController = this,
+      budgetSync = this,
       accountDao = accountDao,
       categoryDao = CategoryDao(database),
       payeeDao = payeeDao,
@@ -139,7 +139,7 @@ internal class BankSyncTestScope(
       accountDao = accountDao,
       dao = BankSyncDao(database),
       writer = writer,
-      syncController = this,
+      budgetSync = this,
       bankSync = controller(api),
       uuidGenerator = { Uuid.random().toString() },
       scope = BudgetCoroutineScope(backgroundScope),
@@ -148,7 +148,7 @@ internal class BankSyncTestScope(
   // Runs whatever's been launched in the background
   fun runBackground() = testScope.runCurrent()
 
-  override suspend fun syncChanges(changes: List<LocalChange>) {
+  override suspend fun invoke(changes: List<LocalChange>) {
     syncError?.takeIf { syncCalls.size >= syncErrorAfter }?.let { throw it }
     syncCalls.add(changes)
     syncDao.sendMessages(changes)
@@ -162,7 +162,7 @@ internal class BankSyncTestScope(
       Change(m.dataset, m.row, m.column, m.value)
     }
 
-  // What the last syncChanges() call sent
+  // What the last invoke() call sent
   fun lastSync(): List<Change> =
     syncCalls.last().map { c -> Change(c.dataset, c.row, c.column, c.value) }
 

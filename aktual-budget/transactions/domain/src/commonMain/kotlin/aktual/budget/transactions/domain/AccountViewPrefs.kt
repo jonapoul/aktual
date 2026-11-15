@@ -4,7 +4,7 @@ import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.map
 class AccountViewPrefs
 internal constructor(
   private val preferences: PreferencesDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
 ) {
   fun observe(key: SyncedPrefKey.PerAccount): Flow<Boolean> =
     preferences.observe(key).map { it == "true" }
 
   suspend fun set(key: SyncedPrefKey.PerAccount, enabled: Boolean) =
-    syncController.syncChanges(
+    budgetSync(
       localChange(PREFERENCES, key.key, column = "value", enabled.toString()),
     )
 }

@@ -15,7 +15,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionId
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestClock
 import kotlin.time.Clock
@@ -39,7 +39,7 @@ internal class WriterTestScope(
   val categoryDao: CategoryDao,
   val payeeDao: PayeeDao,
   val transactionDao: TransactionDao,
-) : BudgetSyncController {
+) : BudgetSync {
   val syncCalls = mutableListOf<List<LocalChange>>()
 
   // The ids of each CategoryLearner.learn() call
@@ -49,7 +49,7 @@ internal class WriterTestScope(
 
   val writer =
     TransactionWriterImpl(
-      syncController = this,
+      budgetSync = this,
       accountDao = accountDao,
       categoryDao = categoryDao,
       payeeDao = payeeDao,
@@ -59,14 +59,14 @@ internal class WriterTestScope(
       clock = TestClock(NOW),
     )
 
-  override suspend fun syncChanges(changes: List<LocalChange>) {
+  override suspend fun invoke(changes: List<LocalChange>) {
     syncCalls.add(changes)
     syncDao.sendMessages(changes)
   }
 
   override fun schedule() = Unit
 
-  // What the last syncChanges() call sent, after checking it all reached messages_crdt
+  // What the last invoke() call sent, after checking it all reached messages_crdt
   suspend fun lastSync(): List<Change> {
     val sent = syncCalls.last().map { c -> Change(c.dataset, c.row, c.column, c.value) }
     val recorded = messages()

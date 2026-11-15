@@ -11,7 +11,7 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
@@ -134,15 +134,15 @@ internal class CategoryOrderTest {
     )
 
   private class OrderTestScope(database: BudgetDatabase, private val syncDao: SyncDao) :
-    BudgetSyncController {
+    BudgetSync {
     val syncCalls = mutableListOf<List<LocalChange>>()
     val order =
       CategoryOrderImpl(
         budgetDao = BudgetDao(database, TestCoroutineContexts(EmptyCoroutineContext)),
-        syncController = this,
+        budgetSync = this,
       )
 
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       syncCalls.add(changes)
       syncDao.sendMessages(changes)
     }

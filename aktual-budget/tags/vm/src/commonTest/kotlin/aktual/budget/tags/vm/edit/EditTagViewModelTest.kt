@@ -8,11 +8,11 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import aktual.prefs.TagPreferences
 import aktual.prefs.TagPreferencesImpl
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
@@ -173,7 +173,7 @@ class EditTagViewModelTest {
   @Test
   fun `Saving a new tag persists it, syncs the change and emits the saved event`() =
     runDatabaseTest { scope ->
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, id = null, sync = sync)
       viewModel.awaitLoaded()
 
@@ -224,7 +224,7 @@ class EditTagViewModelTest {
         description = "Weekly food shopping",
       )
 
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, id = TagId("groceries-id"), sync = sync)
       viewModel.awaitLoaded()
 
@@ -257,7 +257,7 @@ class EditTagViewModelTest {
       // tombstone it, as a delete-sync would
       tombstoneTag("old-id")
 
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, id = null, sync = sync)
       viewModel.awaitLoaded()
 
@@ -280,7 +280,7 @@ class EditTagViewModelTest {
       tombstoneTag("old-id")
       insertTag(id = "food-id", tag = "food")
 
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, id = TagId("food-id"), sync = sync)
       viewModel.awaitLoaded()
 
@@ -357,7 +357,7 @@ class EditTagViewModelTest {
     scope: TestScope,
     id: TagId?,
     uuid: UuidGenerator = UuidGenerator { GENERATED_ID },
-    sync: BudgetSyncController = TestSyncController(),
+    sync: BudgetSync = TestBudgetSync(),
     preferences: TagPreferences = TagPreferencesImpl(scope.buildPreferences()),
   ): EditTagViewModel {
     tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher))
@@ -365,7 +365,7 @@ class EditTagViewModelTest {
       tagId = id,
       tagsDao = tagsDao,
       uuidGenerator = uuid,
-      syncController = sync,
+      budgetSync = sync,
       preferences = preferences,
       viewModelContext = scope.viewModelContext,
     )

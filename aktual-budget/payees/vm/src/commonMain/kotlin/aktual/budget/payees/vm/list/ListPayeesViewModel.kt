@@ -7,7 +7,7 @@ import aktual.budget.model.untombstone
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.rules.domain.CategoryLearningPref
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -40,7 +40,7 @@ import kotlinx.coroutines.launch
 class ListPayeesViewModel
 internal constructor(
   loader: PayeesLoader,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val merger: PayeeMerger,
   private val learning: CategoryLearningPref,
   private val budgetScope: BudgetCoroutineScope,
@@ -102,7 +102,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          syncController.syncChanges(tombstone(PAYEES, payee.id.value))
+          budgetSync(tombstone(PAYEES, payee.id.value))
           mutableEvents.tryEmit(ListPayeesEvent.Deleted(payee))
         },
         onFailure = { e ->
@@ -117,7 +117,7 @@ internal constructor(
   fun undoDelete(payee: PayeeItem) {
     budgetScope.launch {
       runCatchingCancellable(
-        attempt = { syncController.syncChanges(untombstone(PAYEES, payee.id.value)) },
+        attempt = { budgetSync(untombstone(PAYEES, payee.id.value)) },
         onFailure = { e ->
           log.e(e) { "Failed restoring payee ${payee.id}" }
           mutableEvents.tryEmit(RestoreFailed)
@@ -164,7 +164,7 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          syncController.syncChanges(localChange(PAYEES, payee.id.value, "favorite", favorite))
+          budgetSync(localChange(PAYEES, payee.id.value, "favorite", favorite))
         },
         onFailure = { e ->
           log.e(e) { "Failed setting favorite=$favorite on ${payee.id}" }

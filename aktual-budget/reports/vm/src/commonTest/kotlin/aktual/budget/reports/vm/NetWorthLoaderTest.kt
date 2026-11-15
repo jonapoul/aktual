@@ -6,7 +6,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.Interval
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
@@ -159,7 +159,7 @@ class NetWorthLoaderTest {
     }
   }
 
-  private suspend fun BudgetSyncController.insertAccounts() {
+  private suspend fun BudgetSync.insertAccounts() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(ACCOUNTS, "card", "name" to "Card", "offbudget" to false)
   }
@@ -190,7 +190,7 @@ class NetWorthLoaderTest {
     )
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val loader = chartDataLoader(contexts, calendar = { TODAY })

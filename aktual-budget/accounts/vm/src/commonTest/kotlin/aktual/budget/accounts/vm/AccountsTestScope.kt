@@ -29,7 +29,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.di.BudgetCoroutineScope
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
@@ -46,9 +46,9 @@ import kotlinx.datetime.LocalDate
 // Changes sent to the sync controller are applied to the database, as the real one does
 internal class AccountsTestScope(
   val scope: TestScope,
-  val database: BudgetDatabase,
+  database: BudgetDatabase,
   private val syncDao: SyncDao,
-) : BudgetSyncController {
+) : BudgetSync {
   val accountDao = AccountDao(database)
   val groupDao = AccountGroupDao(database)
   val categoryDao = CategoryDao(database)
@@ -59,7 +59,7 @@ internal class AccountsTestScope(
 
   val transactions =
     TransactionWriterImpl(
-      syncController = this,
+      budgetSync = this,
       accountDao = accountDao,
       categoryDao = categoryDao,
       payeeDao = payeeDao,
@@ -72,7 +72,7 @@ internal class AccountsTestScope(
   val writer =
     AccountWriter(
       writer = transactions,
-      syncController = this,
+      budgetSync = this,
       accountDao = accountDao,
       groupDao = groupDao,
       payeeDao = payeeDao,
@@ -87,7 +87,7 @@ internal class AccountsTestScope(
       accountDao = accountDao,
       dao = BankSyncDao(database),
       writer = transactions,
-      syncController = this,
+      budgetSync = this,
       bankSync = UnusedBankSyncController,
       uuidGenerator = ::uuid,
       scope = BudgetCoroutineScope(scope),
@@ -116,7 +116,7 @@ internal class AccountsTestScope(
 
   // Linked through SimpleFIN, so unlinking never calls the bank sync API
   suspend fun link(id: AccountId) =
-    syncChanges(
+    invoke(
       listOf(
         localChange(ACCOUNTS, id.value, "account_id", "ACT-1"),
         localChange(ACCOUNTS, id.value, "bank", uuid()),
@@ -126,7 +126,7 @@ internal class AccountsTestScope(
 
   fun close() = viewModels.forEach { it.viewModelScope.cancel() }
 
-  override suspend fun syncChanges(changes: List<LocalChange>) {
+  override suspend fun invoke(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)
   }
 

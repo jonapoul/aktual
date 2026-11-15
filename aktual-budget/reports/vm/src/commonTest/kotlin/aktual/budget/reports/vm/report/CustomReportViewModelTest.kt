@@ -26,7 +26,7 @@ import aktual.budget.reports.vm.report.CustomReportState.Loaded
 import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.reports.vm.withMode
 import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
@@ -154,7 +154,7 @@ class CustomReportViewModelTest {
   fun `Follows changes to the saved report`() = runCustomTest {
     viewModel.state.test {
       awaitLoaded { it.preview != null }
-      sync.syncChanges(localChange(CUSTOM_REPORTS, REPORT.value, "mode", "time"))
+      sync(localChange(CUSTOM_REPORTS, REPORT.value, "mode", "time"))
 
       val updated = awaitLoaded { it.draft?.mode == Time }
       assertThat(updated.hasChanges).isFalse()
@@ -226,7 +226,7 @@ class CustomReportViewModelTest {
   private data class Harness(
     val viewModel: CustomReportViewModel,
     val customReports: CustomReportsDao,
-    val sync: BudgetSyncController,
+    val sync: BudgetSync,
     val scope: TestScope,
   )
 

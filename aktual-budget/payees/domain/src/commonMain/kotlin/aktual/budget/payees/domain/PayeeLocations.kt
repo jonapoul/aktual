@@ -9,7 +9,7 @@ import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.Coordinates
 import aktual.core.model.Coordinates.Companion.MAX_LONGITUDE
 import aktual.core.model.Distance
@@ -44,13 +44,13 @@ data class NearbyPayee(val payee: PayeeId, val location: PayeeLocationId, val di
 @Inject
 class PayeeLocations(
   private val dao: PayeeLocationDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val uuidGenerator: UuidGenerator,
   private val clock: Clock,
 ) {
   suspend fun save(payee: PayeeId, coordinates: Coordinates): PayeeLocationId {
     val id = uuidGenerator(::PayeeLocationId)
-    syncController.syncChanges(
+    budgetSync(
       listOf(
         localChange(PAYEE_LOCATIONS, id.value, "payee_id", payee.value),
         localChange(PAYEE_LOCATIONS, id.value, "latitude", coordinates.latitude),
@@ -67,11 +67,11 @@ class PayeeLocations(
   }
 
   suspend fun delete(id: PayeeLocationId) {
-    syncController.syncChanges(listOf(tombstone(PAYEE_LOCATIONS, id.value)))
+    budgetSync(listOf(tombstone(PAYEE_LOCATIONS, id.value)))
   }
 
   suspend fun restore(id: PayeeLocationId) {
-    syncController.syncChanges(listOf(untombstone(PAYEE_LOCATIONS, id.value)))
+    budgetSync(listOf(untombstone(PAYEE_LOCATIONS, id.value)))
   }
 
   // Newest first

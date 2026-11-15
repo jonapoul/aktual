@@ -23,7 +23,7 @@ import aktual.budget.transactions.domain.Patch
 import aktual.budget.transactions.domain.Patch.Keep
 import aktual.budget.transactions.domain.Patch.To
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import dev.zacsweers.metro.Inject
@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.first
 @Inject
 class AccountWriter(
   private val writer: TransactionWriter,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val accountDao: AccountDao,
   private val groupDao: AccountGroupDao,
   private val payeeDao: PayeeDao,
@@ -268,7 +268,7 @@ class AccountWriter(
 
   private suspend fun sync(change: LocalChange) = sync(listOf(change))
 
-  private suspend fun sync(changes: List<LocalChange>) = syncController.syncChanges(changes)
+  private suspend fun sync(changes: List<LocalChange>) = budgetSync(changes)
 
   private fun notesId(id: AccountId) = "account-${id.value}"
 

@@ -12,7 +12,7 @@ import aktual.budget.model.BankId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionWriter
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
@@ -30,7 +30,7 @@ class BankAccountLinker(
   private val accountDao: AccountDao,
   private val dao: BankSyncDao,
   private val writer: TransactionWriter,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val bankSync: BankSyncController,
   private val uuidGenerator: UuidGenerator,
   private val scope: BudgetCoroutineScope,
@@ -43,7 +43,7 @@ class BankAccountLinker(
     checkNotNull(accountDao[account]) { "Account $account not found" }
     val changes = mutableListOf<LocalChange>()
     changes.addLink(account, source, external)
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     scope.launch { bankSync.sync(setOf(account)) }
   }
 
@@ -84,7 +84,7 @@ class BankAccountLinker(
         "account_sync_source",
         "bank_sync_status",
       )
-    syncController.syncChanges(columns.map { LocalChange(ACCOUNTS, account.value, it, Null) })
+    budgetSync(columns.map { LocalChange(ACCOUNTS, account.value, it, Null) })
 
     if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return true
     val requisition = dao.bankId(bank) ?: return true

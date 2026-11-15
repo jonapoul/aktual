@@ -8,8 +8,8 @@ import aktual.budget.model.DbMetadataKey.Companion.LastScheduleRun
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.test.TestBudgetLocalPreferences
+import aktual.test.TestBudgetSync
 import aktual.test.TestCalendar
-import aktual.test.TestSyncController
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
 import alakazam.test.TestClock
@@ -49,7 +49,7 @@ class ScheduleWriterTest {
   private fun BudgetDatabase.writer() =
     ScheduleWriter(
       scheduleDao = ScheduleDao(this),
-      syncController = TestSyncController(),
+      budgetSync = TestBudgetSync(),
       budgetPrefs = budgetPrefs,
       uuidGenerator = { "id" },
       calendar = TestCalendar(TODAY),

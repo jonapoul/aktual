@@ -7,7 +7,7 @@ import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.inMemoryDriverFactory
 import kotlin.time.Clock
 import kotlinx.coroutines.test.TestScope
@@ -15,15 +15,15 @@ import kotlinx.coroutines.test.runTest
 
 // Like runDatabaseTest, but changes sent to the sync controller are applied to the database
 internal fun runSyncedDatabaseTest(
-  action: suspend BudgetDatabase.(TestScope, BudgetSyncController) -> Unit,
+  action: suspend BudgetDatabase.(TestScope, BudgetSync) -> Unit,
 ) = runTest {
   val driver = inMemoryDriverFactory().create(BudgetId("abc-123"))
   driver.use {
     val database = buildDatabase(driver)
     val syncDao = SyncDao(database, driver, Clock.System)
     val controller =
-      object : BudgetSyncController {
-        override suspend fun syncChanges(changes: List<LocalChange>) {
+      object : BudgetSync {
+        override suspend fun invoke(changes: List<LocalChange>) {
           syncDao.sendMessages(changes)
         }
 
@@ -33,7 +33,7 @@ internal fun runSyncedDatabaseTest(
   }
 }
 
-internal suspend fun BudgetSyncController.transaction(
+internal suspend fun BudgetSync.transaction(
   id: String,
   amount: Long,
   category: String? = null,
@@ -62,12 +62,12 @@ internal suspend fun BudgetSyncController.transaction(
     "schedule" to schedule,
   )
 
-internal suspend fun BudgetSyncController.row(
+internal suspend fun BudgetSync.row(
   dataset: String,
   id: String,
   vararg values: Pair<String, Any?>,
 ) =
-  syncChanges(
+  invoke(
     values.map { (column, value) ->
       when (value) {
         is Long -> localChange(dataset, id, column, value)

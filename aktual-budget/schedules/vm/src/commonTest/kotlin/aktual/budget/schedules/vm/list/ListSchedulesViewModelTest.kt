@@ -26,13 +26,13 @@ import aktual.budget.schedules.domain.ScheduleTransactionPoster
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
 import aktual.prefs.SchedulePreferences
 import aktual.prefs.SchedulePreferencesImpl
 import aktual.test.TestBudgetLocalPreferences
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.buildPreferences
 import aktual.test.insertSchedule
 import aktual.test.runDatabaseTest
@@ -70,7 +70,7 @@ class ListSchedulesViewModelTest {
       account = "Checking",
       nextDate = LocalDate(2026, 5, 2),
     )
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     viewModel.events.test {
@@ -94,7 +94,7 @@ class ListSchedulesViewModelTest {
       account = "Checking",
       nextDate = LocalDate(2026, 5, 2),
     )
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     val rent = viewModel.state.awaitSchedules().first { it.name == "Rent" }
@@ -112,7 +112,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Schedules written to the database show up without a reload`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val viewModel = createViewModel(scope, TestSyncController())
+    val viewModel = createViewModel(scope, TestBudgetSync())
     assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
 
     insertSchedule(
@@ -132,7 +132,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Failed delete keeps the schedule and reports it`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val viewModel = createViewModel(scope, FailingSyncController)
+    val viewModel = createViewModel(scope, FailingBudgetSync)
 
     viewModel.events.test {
       val rent = viewModel.state.awaitSchedules().single()
@@ -147,7 +147,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Complete marks the schedule completed`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     viewModel.events.test {
@@ -164,7 +164,7 @@ class ListSchedulesViewModelTest {
   fun `Undo complete uncompletes the schedule without moving its next date`() =
     runDatabaseTest { scope ->
       insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, sync)
 
       val rent = viewModel.state.awaitSchedules().single()
@@ -191,7 +191,7 @@ class ListSchedulesViewModelTest {
         date =
           """{"start": "2026-01-15", "frequency": "monthly", "interval": 1, "endMode": "never"}""",
       )
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val preferences = SchedulePreferencesImpl(scope.buildPreferences())
       preferences.showCompleted.set(true)
       val viewModel = createViewModel(scope, sync, preferences)
@@ -220,7 +220,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Failed complete reports it`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val viewModel = createViewModel(scope, FailingSyncController)
+    val viewModel = createViewModel(scope, FailingBudgetSync)
 
     viewModel.events.test {
       val rent = viewModel.state.awaitSchedules().single()
@@ -234,7 +234,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Post adds the schedule's transaction on the chosen date`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     viewModel.events.test {
@@ -258,7 +258,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Undo post deletes the posted transaction`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     viewModel.events.test {
@@ -280,7 +280,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Failed post reports it`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
-    val viewModel = createViewModel(scope, FailingSyncController)
+    val viewModel = createViewModel(scope, FailingBudgetSync)
 
     viewModel.events.test {
       val rent = viewModel.state.awaitSchedules().single()
@@ -295,7 +295,7 @@ class ListSchedulesViewModelTest {
   fun `Completed schedules are hidden by default`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
     insertSchedule(id = "b", name = "Old", payee = "Gym", account = "Checking", completed = true)
-    val viewModel = createViewModel(scope, TestSyncController())
+    val viewModel = createViewModel(scope, TestBudgetSync())
 
     assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
   }
@@ -312,7 +312,7 @@ class ListSchedulesViewModelTest {
       completed = true,
     )
     val preferences = SchedulePreferencesImpl(scope.buildPreferences())
-    val viewModel = createViewModel(scope, TestSyncController(), preferences)
+    val viewModel = createViewModel(scope, TestBudgetSync(), preferences)
     assertThat(viewModel.state.awaitSchedules()).extracting(Schedule::name).containsExactly("Rent")
 
     preferences.showCompleted.set(true)
@@ -326,7 +326,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `setShowCompleted persists the choice`() = runDatabaseTest { scope ->
     val preferences = SchedulePreferencesImpl(scope.buildPreferences())
-    val viewModel = createViewModel(scope, TestSyncController(), preferences)
+    val viewModel = createViewModel(scope, TestBudgetSync(), preferences)
 
     viewModel.showCompleted.test {
       assertThat(awaitItem()).isFalse()
@@ -342,7 +342,7 @@ class ListSchedulesViewModelTest {
   @Test
   fun `Only completed schedules shows empty when hidden`() = runDatabaseTest { scope ->
     insertSchedule(id = "a", name = "Old", payee = "Gym", account = "Checking", completed = true)
-    val viewModel = createViewModel(scope, TestSyncController())
+    val viewModel = createViewModel(scope, TestBudgetSync())
 
     viewModel.state.test {
       var state = awaitItem()
@@ -368,7 +368,7 @@ class ListSchedulesViewModelTest {
       account = "Checking",
       nextDate = LocalDate(2026, 5, 2),
     )
-    val viewModel = createViewModel(scope, TestSyncController())
+    val viewModel = createViewModel(scope, TestBudgetSync())
 
     viewModel.state.test {
       assertThat(awaitSuccess()).all {
@@ -384,7 +384,7 @@ class ListSchedulesViewModelTest {
     insertSchedule(id = "b", name = "Power", payee = "Energy", account = "Checking", amount = -10)
     insertSchedule(id = "c", name = null, payee = "Gym", account = "Checking", amount = -30)
     val preferences = SchedulePreferencesImpl(scope.buildPreferences())
-    val viewModel = createViewModel(scope, TestSyncController(), preferences)
+    val viewModel = createViewModel(scope, TestBudgetSync(), preferences)
     viewModel.state.awaitSchedules()
 
     viewModel.setSort(ScheduleSort(Payee, Descending))
@@ -423,7 +423,7 @@ class ListSchedulesViewModelTest {
 
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
-    sync: BudgetSyncController,
+    sync: BudgetSync,
     preferences: SchedulePreferences = SchedulePreferencesImpl(scope.buildPreferences()),
   ): ListSchedulesViewModel {
     val dispatcher = StandardTestDispatcher(scope.testScheduler)
@@ -438,7 +438,7 @@ class ListSchedulesViewModelTest {
     val writer =
       ScheduleWriter(
         scheduleDao = ScheduleDao(this),
-        syncController = sync,
+        budgetSync = sync,
         budgetPrefs = TestBudgetLocalPreferences(),
         uuidGenerator = UuidGenerator { error("unused") },
         calendar = TODAY,
@@ -451,7 +451,7 @@ class ListSchedulesViewModelTest {
         scheduleDao = ScheduleDao(this),
         transactionWriter =
           TransactionWriterImpl(
-            syncController = sync,
+            budgetSync = sync,
             accountDao = AccountDao(this),
             categoryDao = CategoryDao(this),
             payeeDao = PayeeDao(this),
@@ -470,7 +470,7 @@ class ListSchedulesViewModelTest {
       )
     return ListSchedulesViewModel(
       loader = loader,
-      syncController = sync,
+      budgetSync = sync,
       writer = writer,
       poster = poster,
       preferences = preferences,
@@ -479,7 +479,7 @@ class ListSchedulesViewModelTest {
     )
   }
 
-  private fun TestSyncController.posted(column: String): List<MessageValue> =
+  private fun TestBudgetSync.posted(column: String): List<MessageValue> =
     changes.filter { it.dataset == TRANSACTIONS && it.column == column }.map { it.value }
 
   private companion object {
@@ -487,8 +487,8 @@ class ListSchedulesViewModelTest {
     val NOW = Instant.parse("2026-04-01T12:00:00Z")
   }
 
-  private object FailingSyncController : BudgetSyncController {
-    override suspend fun syncChanges(changes: List<LocalChange>): Unit = error("sync failed")
+  private object FailingBudgetSync : BudgetSync {
+    override suspend fun invoke(changes: List<LocalChange>): Unit = error("sync failed")
 
     override fun schedule() = Unit
   }

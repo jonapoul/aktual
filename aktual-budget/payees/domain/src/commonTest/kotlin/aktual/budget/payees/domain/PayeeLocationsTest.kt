@@ -8,7 +8,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.core.model.Coordinates
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
@@ -27,7 +27,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 class PayeeLocationsTest {
   @Test
   fun `Saving writes each column`() = runDatabaseTest {
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
 
     val id = locations(sync).save(PayeeId(SHOP), Coordinates(51.5074, -0.1278))
 
@@ -43,7 +43,7 @@ class PayeeLocationsTest {
 
   @Test
   fun `Deleting tombstones the location`() = runDatabaseTest {
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
 
     locations(sync).delete(PayeeLocationId("loc"))
 
@@ -100,7 +100,7 @@ class PayeeLocationsTest {
 
   @Test
   fun `Restoring untombstones the location`() = runDatabaseTest {
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
 
     locations(sync).restore(PayeeLocationId("loc"))
 
@@ -159,10 +159,10 @@ class PayeeLocationsTest {
     assertThat(locations().hasNearby(PayeeId(SHOP), HERE)).isFalse()
   }
 
-  private fun BudgetDatabase.locations(sync: TestSyncController = TestSyncController()) =
+  private fun BudgetDatabase.locations(sync: TestBudgetSync = TestBudgetSync()) =
     PayeeLocations(
       dao = PayeeLocationDao(this, TestCoroutineContexts(UnconfinedTestDispatcher())),
-      syncController = sync,
+      budgetSync = sync,
       uuidGenerator = { GENERATED_ID },
       clock =
         object : Clock {

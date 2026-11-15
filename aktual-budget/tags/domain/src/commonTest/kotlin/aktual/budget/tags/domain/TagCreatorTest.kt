@@ -6,7 +6,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
@@ -19,7 +19,7 @@ import kotlinx.coroutines.test.TestScope
 class TagCreatorTest {
   @Test
   fun `A new tag gets a new id`() = runDatabaseTest { scope ->
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
 
     assertThat(creator(scope, sync).create("food")).isEqualTo(TagId(GENERATED_ID))
     assertThat(sync.changes).isEqualTo(changes(GENERATED_ID, "food"))
@@ -29,7 +29,7 @@ class TagCreatorTest {
   fun `A deleted tag with the name is brought back under its old id`() = runDatabaseTest { scope ->
     insertTag(id = "old-id", tag = "food", color = "#FF0000", description = "Meals")
     tombstoneTag("old-id")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
 
     assertThat(creator(scope, sync).create("food")).isEqualTo(TagId("old-id"))
     assertThat(sync.changes).isEqualTo(changes("old-id", "food"))
@@ -38,7 +38,7 @@ class TagCreatorTest {
   @Test
   fun `A tag with the name is kept as it is`() = runDatabaseTest { scope ->
     insertTag(id = "old-id", tag = "food", color = "#FF0000", description = "Meals")
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
 
     assertThat(creator(scope, sync).create("food")).isEqualTo(TagId("old-id"))
     assertThat(sync.changes).isEmpty()
@@ -57,8 +57,8 @@ class TagCreatorTest {
   private fun BudgetDatabase.tagsDao(scope: TestScope) =
     TagsDao(this, TestCoroutineContexts(scope.standardDispatcher))
 
-  private fun BudgetDatabase.creator(scope: TestScope, sync: TestSyncController) =
-    TagCreator(tagsDao = tagsDao(scope), uuidGenerator = { GENERATED_ID }, syncController = sync)
+  private fun BudgetDatabase.creator(scope: TestScope, sync: TestBudgetSync) =
+    TagCreator(tagsDao = tagsDao(scope), uuidGenerator = { GENERATED_ID }, budgetSync = sync)
 
   private suspend fun BudgetDatabase.insertTag(
     id: String,

@@ -10,7 +10,7 @@ import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.vm.PayeesLoader
 import aktual.budget.payees.vm.list.PayeeItem
 import aktual.budget.rules.domain.CategoryLearningPref
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.Coordinates
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
@@ -53,7 +53,7 @@ internal constructor(
   @Assisted private val payeeId: PayeeId,
   loader: PayeesLoader,
   private val payeeDao: PayeeDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val payeeLocations: PayeeLocations,
   private val addressLookup: AddressLookup,
   private val budgetScope: BudgetCoroutineScope,
@@ -196,7 +196,7 @@ internal constructor(
           val learn = mutableLearnCategories.value
           val row = payeeId.value
           payeeDao.update(payeeId, name, favorite, learn)
-          syncController.syncChanges(
+          budgetSync(
             localChange(PAYEES, row, "name", name),
             localChange(PAYEES, row, "favorite", favorite),
             localChange(PAYEES, row, "learn_categories", learn),

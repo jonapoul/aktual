@@ -19,7 +19,7 @@ import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.tombstone
 import aktual.budget.utils.BudgetLocalPreferences
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.unaryPlus
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
@@ -35,13 +35,13 @@ internal class DuplicateScheduleNameException(name: String) :
 
 /**
  * Writes schedules the way packages/loot-core/src/server/schedules/app.ts does. Everything synced
- * goes through [BudgetSyncController], which also applies the changes to the local database. As
- * upstream, a new row's id is the message row, so there's no message for the id column itself.
+ * goes through [BudgetSync], which also applies the changes to the local database. As upstream, a
+ * new row's id is the message row, so there's no message for the id column itself.
  */
 @Inject
 internal class ScheduleWriter(
   private val scheduleDao: ScheduleDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val budgetPrefs: BudgetLocalPreferences,
   private val uuidGenerator: UuidGenerator,
   private val calendar: Calendar,
@@ -85,7 +85,7 @@ internal class ScheduleWriter(
     }
 
     allowPostingAgainToday(form)
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     scheduleDao.setJsonPaths(scheduleId, conditions.jsonPaths())
     log.i { "Created schedule $scheduleId" }
     return scheduleId
@@ -124,7 +124,7 @@ internal class ScheduleWriter(
     }
 
     allowPostingAgainToday(form)
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     scheduleDao.setJsonPaths(id, conditions.jsonPaths())
     log.i { "Updated schedule $id" }
   }
@@ -136,7 +136,7 @@ internal class ScheduleWriter(
         ruleId?.let { tombstone(dataset = RULES, row = it.toString()) },
         tombstone(dataset = SCHEDULES, row = id.toString()),
       )
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     log.i { "Deleted schedule $id" }
   }
 
@@ -153,7 +153,7 @@ internal class ScheduleWriter(
   }
 
   private suspend fun setCompleted(id: ScheduleId, completed: Boolean) =
-    syncController.syncChanges(
+    budgetSync(
       listOf(localChange(SCHEDULES, id.toString(), COMPLETED, completed)),
     )
 
@@ -166,7 +166,7 @@ internal class ScheduleWriter(
       if (date != null) addAll(resetNextDate(id, date))
       +localChange(SCHEDULES, id.toString(), COMPLETED, false)
     }
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     log.i { "Restarted schedule $id" }
   }
 

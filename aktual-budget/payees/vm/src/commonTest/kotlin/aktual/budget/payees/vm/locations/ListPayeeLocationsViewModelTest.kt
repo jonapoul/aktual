@@ -13,7 +13,7 @@ import aktual.budget.payees.domain.AddressResult.Found
 import aktual.budget.payees.vm.locations.ListPayeeLocationsState.Success
 import aktual.prefs.PayeeLocationPreferences
 import aktual.prefs.PayeeLocationPreferencesImpl
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
@@ -70,7 +70,7 @@ class ListPayeeLocationsViewModelTest {
   @Test
   fun `Deleting a location tombstones it and offers an undo`() = runDatabaseTest { scope ->
     // given
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val viewModel = createViewModel(scope, sync)
 
     viewModel.events.test {
@@ -88,7 +88,7 @@ class ListPayeeLocationsViewModelTest {
   fun `Undoing a delete untombstones it, even after the screen's closed`() =
     runDatabaseTest { scope ->
       // given
-      val sync = TestSyncController()
+      val sync = TestBudgetSync()
       val viewModel = createViewModel(scope, sync)
       viewModel.viewModelScope.cancel()
 
@@ -205,7 +205,7 @@ class ListPayeeLocationsViewModelTest {
 
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
-    sync: TestSyncController = TestSyncController(),
+    sync: TestBudgetSync = TestBudgetSync(),
     addresses: FakeAddressLookup = FakeAddressLookup(),
     preferences: PayeeLocationPreferences = PayeeLocationPreferencesImpl(scope.buildPreferences()),
   ) =

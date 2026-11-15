@@ -4,7 +4,7 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.containsExactly
@@ -60,7 +60,7 @@ class AgeOfMoneyLoaderTest {
   }
 
   private fun runLoaderTest(
-    action: suspend BudgetDatabase.(BudgetSyncController, ReportsDao) -> Unit,
+    action: suspend BudgetDatabase.(BudgetSync, ReportsDao) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     action(sync, ReportsDao(this, contexts))

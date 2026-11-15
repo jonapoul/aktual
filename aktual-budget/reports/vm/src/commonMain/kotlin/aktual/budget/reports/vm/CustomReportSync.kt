@@ -17,7 +17,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.ReportDate
 import aktual.budget.model.SortBy
 import aktual.budget.model.messageValue
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.minus
@@ -40,7 +40,7 @@ enum class ReportNameError {
 @Inject
 internal class CustomReportSync(
   private val dao: CustomReportsDao,
-  private val sync: BudgetSyncController,
+  private val sync: BudgetSync,
   private val calendar: Calendar,
 ) {
   // reportNameExists(): a report can keep its own name, but can't take another's
@@ -64,7 +64,7 @@ internal class CustomReportSync(
         dates +
         config.toColumns(metadata = null) +
         ("tombstone" to false.messageValue())
-    sync.syncChanges(columns.toChanges(id))
+    sync(columns.toChanges(id))
   }
 
   // Only writes the columns that changed, so it doesn't overwrite changes made elsewhere
@@ -72,7 +72,7 @@ internal class CustomReportSync(
     val metadata = dao[id]?.metadata
     val old = saved.toColumns(metadata)
     val changes = config.toColumns(metadata).filter { (column, value) -> old[column] != value }
-    if (changes.isNotEmpty()) sync.syncChanges(changes.toChanges(id))
+    if (changes.isNotEmpty()) sync(changes.toChanges(id))
   }
 
   private fun Map<String, MessageValue>.toChanges(id: CustomReportId): List<LocalChange> =

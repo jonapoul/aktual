@@ -3,7 +3,7 @@ package aktual.budget.rules.domain
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
@@ -19,7 +19,7 @@ class CategoryLearningPrefTest {
     // given
     val preferences =
       PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-    val pref = CategoryLearningPref(preferences, TestSyncController())
+    val pref = CategoryLearningPref(preferences, TestBudgetSync())
 
     pref.observe().test {
       // then
@@ -42,7 +42,7 @@ class CategoryLearningPrefTest {
   @Test
   fun `Setting the pref syncs it as a string`() = runDatabaseTest { scope ->
     // given
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     val preferences =
       PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
     val pref = CategoryLearningPref(preferences, sync)

@@ -18,7 +18,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
-class BudgetSyncControllerImplTest {
+class BudgetSyncImplTest {
   private val syncEvents = SyncEvents()
   private val foregroundState = ForegroundStateHolder()
 
@@ -43,7 +43,7 @@ class BudgetSyncControllerImplTest {
 
   // A local-only budget, so each sync completes without reaching the server
   private fun TestScope.controller() =
-    BudgetSyncControllerImpl(
+    BudgetSyncImpl(
       syncStateHolder = SyncStateHolder(),
       syncer = mockk(),
       scope = BudgetCoroutineScope(backgroundScope),

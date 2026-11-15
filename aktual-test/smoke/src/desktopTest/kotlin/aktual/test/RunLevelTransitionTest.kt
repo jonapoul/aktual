@@ -87,7 +87,7 @@ class RunLevelTransitionTest {
   fun openingLocalOnlyBudget() {
     val id = BudgetId("local-only")
     val budget = appGraph.runLevelController.onBudget(id, DbMetadata(budgetName = "Local"))
-    budget.syncController.schedule()
+    budget.budgetSync.schedule()
     assertThat(budget.id).isEqualTo(id)
     assertThat(appGraph.runLevelState[BudgetGraph::class]).isEqualTo(budget)
   }

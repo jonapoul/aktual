@@ -6,7 +6,7 @@ import aktual.budget.payees.domain.Address
 import aktual.budget.payees.domain.AddressBook
 import aktual.budget.payees.domain.AddressResult.Found
 import aktual.budget.payees.vm.locations.SearchPayeeLocationsState.Results
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
@@ -129,7 +129,7 @@ class SearchPayeeLocationsViewModelTest {
     savedState: SavedStateHandle = SavedStateHandle(),
     addresses: FakeAddressLookup = FakeAddressLookup(),
   ): SearchPayeeLocationsViewModel {
-    val sync = TestSyncController()
+    val sync = TestBudgetSync()
     return SearchPayeeLocationsViewModel(
       savedState = savedState,
       loader = loader(scope, sync, addresses),

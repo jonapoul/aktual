@@ -5,7 +5,7 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.rules.domain.CategoryLearner
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.log
@@ -20,7 +20,7 @@ import kotlinx.coroutines.sync.withLock
 @SingleIn(BudgetScope::class)
 @ContributesBinding(BudgetScope::class)
 class TransactionWriterImpl(
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val accountDao: AccountDao,
   private val categoryDao: CategoryDao,
   private val payeeDao: PayeeDao,
@@ -61,7 +61,7 @@ class TransactionWriterImpl(
   private suspend fun send(batch: TransactionBatchImpl) {
     val changes = batch.changes()
     if (changes.isEmpty()) return
-    syncController.syncChanges(changes)
+    budgetSync(changes)
     log.i { "Wrote ${changes.size} transaction changes" }
   }
 }

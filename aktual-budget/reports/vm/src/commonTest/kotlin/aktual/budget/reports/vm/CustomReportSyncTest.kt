@@ -11,9 +11,9 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
-import aktual.test.TestSyncController
+import aktual.test.TestBudgetSync
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
@@ -41,7 +41,7 @@ import kotlinx.serialization.json.longOrNull
 class CustomReportSyncTest {
   @Test
   fun `Insert the default report like upstream`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = customReportSync(scope.testScheduler, controller)
 
     sync.insert(ID, "Spending", Default)
@@ -51,7 +51,7 @@ class CustomReportSyncTest {
 
   @Test
   fun `Insert a static report like upstream`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = customReportSync(scope.testScheduler, controller)
 
     sync.insert(ID, "Tags", STATIC_CONFIG)
@@ -66,8 +66,8 @@ class CustomReportSyncTest {
   @Test
   fun `Upstream's rows read back as the config they were written from`() =
     runSyncedDatabaseTest { scope, controller ->
-      controller.syncChanges(UPSTREAM_DEFAULT.toChanges("default"))
-      controller.syncChanges(UPSTREAM_STATIC.toChanges("static"))
+      controller(UPSTREAM_DEFAULT.toChanges("default"))
+      controller(UPSTREAM_STATIC.toChanges("static"))
       val dao = dao(scope.testScheduler)
 
       assertThat(dao[CustomReportId("default")]?.toConfig()).isEqualTo(Default)
@@ -89,7 +89,7 @@ class CustomReportSyncTest {
 
   @Test
   fun `Update only writes the changed columns`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = customReportSync(scope.testScheduler, controller)
     val saved = CustomReportConfig.Default
 
@@ -104,7 +104,7 @@ class CustomReportSyncTest {
 
   @Test
   fun `Update with no changes writes nothing`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = customReportSync(scope.testScheduler, controller)
 
     sync.update(ID, Default, Default)
@@ -114,7 +114,7 @@ class CustomReportSyncTest {
 
   @Test
   fun `Switching to static dates writes the dates`() = runDatabaseTest { scope ->
-    val controller = TestSyncController()
+    val controller = TestBudgetSync()
     val sync = customReportSync(scope.testScheduler, controller)
     val saved = CustomReportConfig.Default
     val dates = CustomReportDates.Static(LocalDate(2025, 1, 1), LocalDate(2025, 12, 31))
@@ -131,7 +131,7 @@ class CustomReportSyncTest {
 
   @Test
   fun `Changing the tag scope keeps other metadata`() = runSyncedDatabaseTest { scope, controller ->
-    controller.syncChanges(
+    controller(
       listOf(
         localChange(CUSTOM_REPORTS, ID.value, "id", ID.value),
         localChange(
@@ -155,7 +155,7 @@ class CustomReportSyncTest {
 
   @Test
   fun `Names must be set`() = runDatabaseTest { scope ->
-    val sync = customReportSync(scope.testScheduler, TestSyncController())
+    val sync = customReportSync(scope.testScheduler, TestBudgetSync())
 
     assertThat(sync.validateName("")).isEqualTo(Blank)
     assertThat(sync.validateName("  ")).isEqualTo(Blank)
@@ -178,7 +178,7 @@ class CustomReportSyncTest {
     val dao = dao(scope.testScheduler)
     val sync = CustomReportSync(dao, controller, CALENDAR)
     sync.insert(ID, "Spending", Default)
-    controller.syncChanges(listOf(tombstone(CUSTOM_REPORTS, ID.value)))
+    controller(listOf(tombstone(CUSTOM_REPORTS, ID.value)))
 
     assertThat(sync.validateName("Spending")).isNull()
   }
@@ -190,7 +190,7 @@ class CustomReportSyncTest {
 
   private fun BudgetDatabase.customReportSync(
     scheduler: TestCoroutineScheduler,
-    controller: BudgetSyncController,
+    controller: BudgetSync,
   ) = CustomReportSync(dao(scheduler), controller, CALENDAR)
 
   // JSON columns are parsed, so they compare regardless of key order

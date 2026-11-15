@@ -8,7 +8,7 @@ import aktual.budget.db.dao.DatabaseTables.CATEGORY_MAPPING
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.FirstDayOfWeek
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.prefs.FormatPreferences
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
@@ -98,7 +98,7 @@ class CalendarLoaderTest {
 
   private fun CalendarMonth.day(day: Int) = days.single { it.day == day }
 
-  private suspend fun BudgetSyncController.insertSpending() {
+  private suspend fun BudgetSync.insertSpending() {
     row(ACCOUNTS, "checking", "name" to "Checking", "offbudget" to false)
     row(CATEGORY_GROUPS, "spending", "name" to "Spending", "sort_order" to 1L)
     for ((id, name) in listOf("food" to "Food", "fuel" to "Fuel")) {
@@ -125,7 +125,7 @@ class CalendarLoaderTest {
 
   private fun runLoaderTest(
     firstDayOfWeek: FirstDayOfWeek = Monday,
-    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSyncController) -> Unit,
+    action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val formatPreferences =

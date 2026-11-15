@@ -7,7 +7,7 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 
@@ -35,7 +35,7 @@ interface CategoryOrder {
 class CategoryOrderImpl
 internal constructor(
   private val budgetDao: BudgetDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
 ) : CategoryOrder {
   override suspend fun load(): List<OrderedGroup> {
     val categories = budgetDao.categoryOrder().groupBy { it.group_id }
@@ -81,7 +81,7 @@ internal constructor(
       }
     }
 
-    if (changes.isNotEmpty()) syncController.syncChanges(changes)
+    if (changes.isNotEmpty()) budgetSync(changes)
   }
 }
 

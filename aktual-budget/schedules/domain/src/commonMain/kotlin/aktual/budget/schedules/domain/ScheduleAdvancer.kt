@@ -19,7 +19,7 @@ import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.nextDateAfter
 import aktual.budget.utils.BudgetLocalPreferences
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.budget.utils.SyncEvents
 import aktual.budget.utils.SyncOutcome
 import aktual.core.utils.Calendar
@@ -62,7 +62,7 @@ internal constructor(
   private val scheduleDao: ScheduleDao,
   private val accountDao: AccountDao,
   private val preferencesDao: PreferencesDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
   private val syncEvents: SyncEvents,
   private val budgetPrefs: BudgetLocalPreferences,
   private val poster: SchedulePoster,
@@ -128,7 +128,7 @@ internal constructor(
     val changes = rows.flatMap { row -> advance(row, run) }
     run.posting.post()
     if (changes.isNotEmpty()) {
-      syncController.syncChanges(changes)
+      budgetSync(changes)
       log.i { "Advanced schedules: ${changes.map { it.row }.distinct()}" }
     }
     return run

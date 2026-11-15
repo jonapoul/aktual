@@ -21,7 +21,7 @@ import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.Patch.To
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.test.inMemoryDriverFactory
 import assertk.assertFailure
 import assertk.assertThat
@@ -366,7 +366,7 @@ internal class AccountWriterTest {
   }
 
   private class WriterTestScope(val database: BudgetDatabase, private val syncDao: SyncDao) :
-    BudgetSyncController {
+    BudgetSync {
     val syncCalls = mutableListOf<List<LocalChange>>()
     val accountDao = AccountDao(database)
     val groupDao = AccountGroupDao(database)
@@ -374,7 +374,7 @@ internal class AccountWriterTest {
 
     val transactions =
       TransactionWriterImpl(
-        syncController = this,
+        budgetSync = this,
         accountDao = accountDao,
         categoryDao = CategoryDao(database),
         payeeDao = PayeeDao(database),
@@ -387,7 +387,7 @@ internal class AccountWriterTest {
     val writer =
       AccountWriter(
         writer = transactions,
-        syncController = this,
+        budgetSync = this,
         accountDao = accountDao,
         groupDao = groupDao,
         payeeDao = PayeeDao(database),
@@ -413,12 +413,12 @@ internal class AccountWriterTest {
       accountDao.observeManageList().first().filter { it.offbudget == offBudget }.map { it.id }
 
     suspend fun setSortOrder(id: AccountId, order: Double) =
-      syncChanges(listOf(localChange(ACCOUNTS, id.value, "sort_order", order)))
+      invoke(listOf(localChange(ACCOUNTS, id.value, "sort_order", order)))
 
     suspend fun sortOrders(): Map<AccountId, Double?> =
       accountDao.observeManageList().first().associate { it.id to it.sort_order }
 
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       syncCalls.add(changes)
       syncDao.sendMessages(changes)
     }

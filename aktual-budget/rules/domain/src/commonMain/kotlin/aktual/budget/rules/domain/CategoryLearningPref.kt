@@ -4,7 +4,7 @@ import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.SyncedPrefKey.Global.LearnCategories
 import aktual.budget.model.localChange
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.map
 @Inject
 class CategoryLearningPref(
   private val preferences: PreferencesDao,
-  private val syncController: BudgetSyncController,
+  private val budgetSync: BudgetSync,
 ) {
   fun observe(): Flow<Boolean> = preferences.observe(LearnCategories).map(::isEnabled)
 
   suspend fun isEnabled(): Boolean = isEnabled(preferences[LearnCategories])
 
   suspend fun set(enabled: Boolean) =
-    syncController.syncChanges(
+    budgetSync(
       localChange(PREFERENCES, LearnCategories.key, column = "value", enabled.toString()),
     )
 }

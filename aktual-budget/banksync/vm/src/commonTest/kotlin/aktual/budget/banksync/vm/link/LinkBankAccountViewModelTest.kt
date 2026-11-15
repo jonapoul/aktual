@@ -35,7 +35,7 @@ import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
 import aktual.budget.transactions.domain.TransactionWriterImpl
-import aktual.budget.utils.BudgetSyncController
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -416,7 +416,7 @@ class LinkBankAccountViewModelTest {
     driver: SqlDriver,
     goCardless: Boolean,
     enableBanking: Boolean,
-  ) : BudgetSyncController {
+  ) : BudgetSync {
     val api =
       FakeBankSyncApi(
         AccountSyncSource.SimpleFin to BankSyncStatusResponse.Success(configured = false),
@@ -430,7 +430,7 @@ class LinkBankAccountViewModelTest {
     val enableBankingApi = FakeEnableBankingApi()
     private val syncDao = SyncDao(database, driver, Clock.System)
 
-    override suspend fun syncChanges(changes: List<LocalChange>) {
+    override suspend fun invoke(changes: List<LocalChange>) {
       syncDao.sendMessages(changes)
     }
 
@@ -466,7 +466,7 @@ class LinkBankAccountViewModelTest {
           dao = BankSyncDao(database),
           writer =
             TransactionWriterImpl(
-              syncController = this,
+              budgetSync = this,
               accountDao = AccountDao(database),
               categoryDao = CategoryDao(database),
               payeeDao = PayeeDao(database),
@@ -475,7 +475,7 @@ class LinkBankAccountViewModelTest {
               uuidGenerator = { Uuid.random().toString() },
               clock = Clock.System,
             ),
-          syncController = this,
+          budgetSync = this,
           bankSync = controller,
           uuidGenerator = { Uuid.random().toString() },
           scope = BudgetCoroutineScope(scope.backgroundScope),
