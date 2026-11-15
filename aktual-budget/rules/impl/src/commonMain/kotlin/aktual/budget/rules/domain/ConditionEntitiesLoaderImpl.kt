@@ -6,25 +6,14 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.CategoryGroupDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.di.BudgetScope
-import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.ContributesBinding
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
-
-@Immutable
-data class ConditionEntityLists(
-  override val accounts: ImmutableList<ConditionEntity>,
-  override val categories: ImmutableList<ConditionEntity>,
-  override val categoryGroups: ImmutableList<ConditionEntity>,
-  override val payees: ImmutableList<ConditionEntity>,
-  override val names: ImmutableMap<String, String>,
-) : ConditionEntities
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @ContributesBinding(BudgetScope::class)

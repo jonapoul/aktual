@@ -3,7 +3,7 @@ plugins { id("aktual.module.compose") }
 kotlin {
   commonMainDependencies {
     api(libs.compose.foundation)
-    api(project(":aktual-budget:rules:impl"))
+    api(project(":aktual-budget:rules"))
     implementation(project(":aktual-budget:schedules:components"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))

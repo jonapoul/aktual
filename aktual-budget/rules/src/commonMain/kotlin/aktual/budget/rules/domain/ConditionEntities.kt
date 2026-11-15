@@ -51,3 +51,12 @@ fun ConditionEntities.entities(field: Field): ImmutableList<ConditionEntity> =
     Reconciled,
     Unknown -> persistentListOf()
   }
+
+@Immutable
+data class ConditionEntityLists(
+  override val accounts: ImmutableList<ConditionEntity>,
+  override val categories: ImmutableList<ConditionEntity>,
+  override val categoryGroups: ImmutableList<ConditionEntity>,
+  override val payees: ImmutableList<ConditionEntity>,
+  override val names: ImmutableMap<String, String>,
+) : ConditionEntities
