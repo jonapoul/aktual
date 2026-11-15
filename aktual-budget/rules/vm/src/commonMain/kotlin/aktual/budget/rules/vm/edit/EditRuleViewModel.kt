@@ -234,7 +234,7 @@ internal constructor(
           } else {
             rulesWriter.save(model)
             mutableDraft.update { draft -> draft?.copy(saved = model) }
-            mutableEvents.tryEmit(Saved)
+            mutableEvents.tryEmit(if (ruleId == null) Created else Saved)
           }
         },
         onFailure = { e ->

@@ -368,6 +368,23 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Saving a new rule creates it`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope, payee = PayeeId("p"))
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.setStage(Pre)
+      viewModel.events.test {
+        viewModel.save()
+        assertThat(awaitItem()).isEqualTo(Created)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    assertThat(RulesDao(this)[RuleId("id-1")]).isNotNull().prop(Rules::stage).isEqualTo(Pre)
+  }
+
+  @Test
   fun `Changes are tracked against the saved rule`() = runDatabaseTest { scope ->
     insertRule(SAVED)
     val viewModel = createViewModel(scope, RuleId("a"))

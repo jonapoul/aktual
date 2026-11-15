@@ -9,5 +9,7 @@ sealed interface EditRuleEvent {
 
   data object Saved : EditRuleEvent
 
+  data object Created : EditRuleEvent
+
   @JvmInline value class SaveFailed(val reason: String) : EditRuleEvent
 }

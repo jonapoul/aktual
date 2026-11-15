@@ -11,6 +11,12 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import alakazam.compose.HorizontalSpacer
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +29,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -98,6 +105,57 @@ fun AktualButton(
     }
   }
 }
+
+// Floating action button. Collapsing hides the text and fades it a little, e.g. while scrolling
+// down a list
+@Composable
+fun AktualFab(
+  text: String,
+  icon: ImageVector,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  kind: ButtonKind = Primary,
+  isExpanded: Boolean = true,
+) {
+  val themeColors = AktualTheme.colors
+  val alpha by animateFloatAsState(if (isExpanded) 1f else FAB_COLLAPSED_ALPHA)
+
+  BasicTextButton(
+    text = text,
+    colors = { pressed -> themeColors.buttonColors(kind, pressed) },
+    onClick = onClick,
+    modifier = modifier.alpha(alpha),
+    contentPadding = FabPadding,
+    shape = RounderCardShape,
+    border = themeColors.buttonBorder(kind, isEnabled = true),
+  ) {
+    Row(modifier = Modifier.height(FabContentHeight), verticalAlignment = CenterVertically) {
+      Icon(
+        imageVector = icon,
+        contentDescription = text.takeUnless { isExpanded },
+        modifier = Modifier.size(FabIconSize),
+      )
+      AnimatedVisibility(
+        visible = isExpanded,
+        enter = expandHorizontally() + fadeIn(),
+        exit = shrinkHorizontally() + fadeOut(),
+      ) {
+        Text(
+          modifier = Modifier.padding(start = ButtonIconSpacing, end = FabTextEndPadding),
+          text = text,
+          style = typography.buttonTextStyle,
+          maxLines = 1,
+        )
+      }
+    }
+  }
+}
+
+private const val FAB_COLLAPSED_ALPHA = 0.6f
+private val FabPadding = PaddingValues(16.dp)
+private val FabContentHeight = 24.dp
+private val FabIconSize = 24.dp
+private val FabTextEndPadding = 4.dp
 
 // For dialog actions: tinted text with no background or border
 @Composable

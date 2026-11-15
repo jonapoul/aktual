@@ -1800,6 +1800,7 @@
   <string name="rules_toolbar">Rules</string>
 
   <string name="rules_toolbar_search">Search</string>
+  <string name="rules_create">Create rule</string>
   <string name="rules_search_placeholder">Search rules</string>
   <string name="rules_search_prompt">Enter some text to search rule conditions and actions</string>
   <string name="rules_search_no_results">No rules match “%1$s”</string>
