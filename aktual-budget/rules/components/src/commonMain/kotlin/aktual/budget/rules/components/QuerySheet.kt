@@ -5,14 +5,9 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
-import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BasicTextButton
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.buttonTextStyle
-import aktual.core.ui.errorButton
 import aktual.core.ui.verticalScrollWithBar
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -71,12 +66,11 @@ fun QuerySheetPage(
       horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       if (onDelete != null) {
-        BasicTextButton(
+        AktualButton(
+          kind = Destructive,
+          variant = Secondary,
           modifier = Modifier.testTag(ConditionTags.QuerySheetDelete),
           text = Strings.reportsFormulaQueryDeleteConditionConfirm,
-          style = typography.buttonTextStyle,
-          colors = { pressed -> colors.errorButton(pressed) },
-          border = BorderStroke(Hairline, colors.errorBorder),
           onClick = { close(onDelete) },
         )
       }
