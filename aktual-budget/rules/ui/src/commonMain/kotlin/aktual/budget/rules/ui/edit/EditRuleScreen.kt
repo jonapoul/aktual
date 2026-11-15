@@ -467,7 +467,7 @@ private fun LoadedContent(
   onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
-  val names: ImmutableMap<String, String> = conditionEntities?.names ?: persistentMapOf()
+  val names: ImmutableMap<String, String>? = conditionEntities?.names
   // Sheets open on a key, so they stay on their condition or action as others come and go
   var openCondition by rememberSaveable { mutableStateOf<Long?>(null) }
   var isAddingCondition by rememberSaveable { mutableStateOf(false) }

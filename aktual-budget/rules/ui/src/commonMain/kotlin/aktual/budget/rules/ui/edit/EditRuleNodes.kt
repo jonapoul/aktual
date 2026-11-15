@@ -46,6 +46,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.ShimmerLine
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import androidx.compose.animation.core.animateFloatAsState
@@ -78,6 +79,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
@@ -127,7 +130,8 @@ internal fun LazyListScope.conditionsNode(
   conditions: ImmutableList<Condition>,
   conditionKeys: ImmutableList<Long>,
   conditionsOp: ConditionOp,
-  names: ImmutableMap<String, String>,
+  // Null while loading
+  names: ImmutableMap<String, String>?,
   isEnabled: Boolean,
   onOpen: ((Long) -> Unit)?,
   onAdd: (() -> Unit)?,
@@ -153,8 +157,12 @@ internal fun LazyListScope.conditionsNode(
       val key = conditionKeys.getOrNull(index)
       RuleCard(
         title = "${condition.field.label()} ${condition.operator.label()}",
-        value = condition.valueLabel(names, RuleConditions).takeUnless { condition.isEmpty() },
+        value =
+          condition.valueLabel(names ?: persistentMapOf(), RuleConditions).takeUnless {
+            condition.isEmpty()
+          },
         hasValue = condition.editableKind(RuleConditions) != NoValue,
+        isLoading = names == null && condition.needsNames(),
         isEnabled = isEnabled,
         onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
       )
@@ -235,7 +243,8 @@ private fun ConditionOp.string(): String =
 internal fun LazyListScope.actionsNode(
   actions: ImmutableList<RuleAction>,
   actionKeys: ImmutableList<Long>,
-  names: ImmutableMap<String, String>,
+  // Null while loading
+  names: ImmutableMap<String, String>?,
   isEnabled: Boolean,
   onOpen: ((Long) -> Unit)?,
   onAdd: ((splitIndex: Int) -> Unit)?,
@@ -293,8 +302,9 @@ internal fun LazyListScope.actionsNode(
         } else {
           RuleCard(
             title = action.title(),
-            value = action.valueText(names),
+            value = action.valueText(names ?: persistentMapOf()),
             hasValue = action.op != DeleteTransaction && action.op != Unknown,
+            isLoading = names == null && action.needsNames(),
             isEnabled = isEnabled,
             onClick = clickToOpen(key, onOpen.takeIf { isEnabled }),
           )
@@ -401,6 +411,7 @@ private fun RuleCard(
   isEnabled: Boolean,
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
+  isLoading: Boolean = false,
 ) =
   CardColumn(
     modifier = modifier.fillMaxWidth().alpha(enabledAlpha(isEnabled)),
@@ -414,7 +425,9 @@ private fun RuleCard(
       maxLines = 1,
       overflow = Ellipsis,
     )
-    if (!value.isNullOrEmpty()) {
+    if (isLoading) {
+      ShimmerValue(fraction = 0.4f)
+    } else if (!value.isNullOrEmpty()) {
       Text(
         text = value,
         style = typography.bodyLarge,
@@ -431,6 +444,23 @@ private fun RuleCard(
       )
     }
   }
+
+@Composable
+private fun ShimmerValue(fraction: Float) =
+  ShimmerLine(
+    style = typography.bodyLarge,
+    modifier = Modifier.fillMaxWidth(fraction).shimmer(rememberShimmer(Window)),
+  )
+
+private fun Condition.needsNames(): Boolean =
+  !isEmpty() && editableKind(RuleConditions).let { it == Entity || it == EntityList }
+
+private fun RuleAction.needsNames(): Boolean =
+  options?.template == null &&
+    options?.formula == null &&
+    op == RuleAction.Op.Set &&
+    field.isIdField() &&
+    value?.contentOrNull != null
 
 // Fades things out while the rule is saving, to match the stage toggle and add buttons
 @Composable
@@ -489,7 +519,7 @@ private fun ScheduleCard(
     }
 
     when {
-      !isLoaded -> Unit
+      !isLoaded -> ShimmerValue(fraction = 0.5f)
 
       schedule == null ->
         Text(
