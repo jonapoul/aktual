@@ -1,0 +1,113 @@
+package aktual.budget.banksync.domain
+
+import aktual.api.client.BankSyncApi
+import aktual.api.model.banksync.ExternalBankAccount
+import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.BankSyncDao
+import aktual.budget.db.dao.DatabaseTables.ACCOUNTS
+import aktual.budget.db.dao.DatabaseTables.BANKS
+import aktual.budget.model.AccountId
+import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.BankId
+import aktual.budget.model.LocalChange
+import aktual.budget.model.localChange
+import aktual.budget.transactions.domain.TransactionWriter
+import aktual.budget.utils.BudgetSync
+import aktual.core.utils.UuidGenerator
+import aktual.core.utils.runCatchingCancellable
+import aktual.di.BudgetCoroutineScope
+import aktual.di.BudgetScope
+import aktual.log
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import kotlinx.coroutines.launch
+
+@Inject
+@ContributesBinding(BudgetScope::class, binding<BankAccountLinker>())
+@ContributesBinding(BudgetScope::class, binding<BankAccountUnlinker>())
+class BankAccountLinkerImpl(
+  private val api: BankSyncApi,
+  private val accountDao: AccountDao,
+  private val dao: BankSyncDao,
+  private val writer: TransactionWriter,
+  private val budgetSync: BudgetSync,
+  private val bankSync: BankSyncController,
+  private val uuidGenerator: UuidGenerator,
+  private val scope: BudgetCoroutineScope,
+) : BankAccountLinker {
+  override suspend fun link(
+    account: AccountId,
+    source: AccountSyncSource,
+    external: ExternalBankAccount,
+  ) {
+    checkNotNull(accountDao[account]) { "Account $account not found" }
+    val changes = mutableListOf<LocalChange>()
+    changes.addLink(account, source, external)
+    budgetSync(changes)
+    scope.launch { bankSync.sync(setOf(account)) }
+  }
+
+  override suspend fun create(
+    source: AccountSyncSource,
+    external: ExternalBankAccount,
+    offBudget: Boolean,
+  ): AccountId {
+    val account = writer.write {
+      val id = insertAccount(external.name, offBudget)
+      insertPayee(name = "", transferAccount = id)
+      add(buildList { addLink(id, source, external) })
+      id
+    }
+    scope.launch { bankSync.sync(setOf(account)) }
+    return account
+  }
+
+  override suspend fun unlink(account: AccountId): Boolean {
+    val row = checkNotNull(accountDao[account]) { "Account $account not found" }
+    val bank = row.bank ?: return true
+    val columns =
+      listOf(
+        "account_id",
+        "bank",
+        "balance_current",
+        "balance_available",
+        "balance_limit",
+        "account_sync_source",
+        "bank_sync_status",
+      )
+    budgetSync(columns.map { LocalChange(ACCOUNTS, account.value, it, Null) })
+
+    if (row.account_sync_source != GoCardless || dao.bankUsers(bank) > 0) return true
+    val requisition = dao.bankId(bank) ?: return true
+    return runCatchingCancellable(
+      attempt = {
+        api.removeGoCardlessRequisition(requisition.value).also { removed ->
+          if (!removed) log.w { "GoCardless refused to delete requisition $requisition" }
+        }
+      },
+      onFailure = { e ->
+        log.w(e) { "Failed deleting GoCardless requisition $requisition" }
+        false
+      },
+    )
+  }
+
+  // Links [account] to [external], adding its bank first unless there already is one
+  private suspend fun MutableList<LocalChange>.addLink(
+    account: AccountId,
+    source: AccountSyncSource,
+    external: ExternalBankAccount,
+  ) {
+    val bankId = (external.orgDomain ?: external.orgId)?.let(::BankId)
+    val bank =
+      dao.findBank(bankId, external.institution)?.toString()
+        ?: uuidGenerator().also { id ->
+          bankId?.let { this += localChange(BANKS, id, "bank_id", it.value) }
+          this += localChange(BANKS, id, "name", external.institution)
+        }
+    this += localChange(ACCOUNTS, account.value, "account_id", external.accountId)
+    this += localChange(ACCOUNTS, account.value, "bank", bank)
+    this += localChange(ACCOUNTS, account.value, "account_sync_source", source.value)
+  }
+}

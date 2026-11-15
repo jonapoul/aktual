@@ -6,7 +6,6 @@ import aktual.about.vm.SearchLicensesViewModel
 import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
-import aktual.budget.accounts.vm.AddAccountViewModel
 import aktual.budget.accounts.vm.CreateAccountViewModel
 import aktual.budget.apikeys.vm.ApiKeysViewModel
 import aktual.budget.banksync.vm.BankSyncViewModel
@@ -152,8 +151,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     }
 
   @Test fun budgetList() = testVm<ListBudgetsViewModel>()
-
-  @Test fun addAccount() = testVm<AddAccountViewModel>()
 
   @Test fun createAccount() = testVm<CreateAccountViewModel>()
 

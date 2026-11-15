@@ -26,7 +26,7 @@ import kotlinx.coroutines.test.runTest
 internal class BankSyncProviderSetupTest {
   private val secrets = FakeSecretsApi()
   private val enableBanking = FakeEnableBankingApi()
-  private val setup = BankSyncProviderSetup(secrets, enableBanking)
+  private val setup = BankSyncProviderSetupImpl(secrets, enableBanking)
 
   @Test
   fun `Saves each credential trimmed`() = runTest {

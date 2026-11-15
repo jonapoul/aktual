@@ -5,6 +5,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator
 import aktual.budget.rules.domain.TransactionFilter
+import aktual.budget.rules.domain.TransactionFilterCompiler
 
 // The ageOfMoneyTransactions query run over transactions that matched a report's conditions.
 // Filtered by account, transfers to an on-budget account outside the filter count as money in or
@@ -14,8 +15,9 @@ internal fun ageOfMoneyTransactions(
   rows: List<ReportTransactions>,
   conditions: List<Condition>?,
   op: ConditionOp?,
+  compiler: TransactionFilterCompiler,
 ): List<AgeOfMoneyTransaction> {
-  val counterparts = counterpartFilter(conditions.orEmpty(), op ?: And)
+  val counterparts = compiler.counterpartFilter(conditions.orEmpty(), op ?: And)
   return rows
     .asSequence()
     .filter { row ->
@@ -38,12 +40,15 @@ private fun ReportTransactions.countsTowardsAge(counterparts: TransactionFilter?
 
 // Matches counterpart accounts inside the filtered set. Null when there are no account conditions,
 // or one upstream can't invert, so on-budget transfers are left out as usual
-private fun counterpartFilter(conditions: List<Condition>, op: ConditionOp): TransactionFilter? {
+private fun TransactionFilterCompiler.counterpartFilter(
+  conditions: List<Condition>,
+  op: ConditionOp,
+): TransactionFilter? {
   val accountConditions = conditions.filter { it.customName == null && it.field == Account }
   if (accountConditions.isEmpty() || accountConditions.any { it.operator !in INVERTIBLE }) {
     return null
   }
-  return TransactionFilter.compile(accountConditions, op)
+  return compile(accountConditions, op)
 }
 
 private val INVERTIBLE =

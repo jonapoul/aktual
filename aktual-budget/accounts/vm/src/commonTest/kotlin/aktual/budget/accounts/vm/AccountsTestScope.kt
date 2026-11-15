@@ -5,7 +5,7 @@ import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.SimpleFinBatchRequest
 import aktual.budget.accounts.domain.AccountWriter
 import aktual.budget.banksync.domain.AccountDeleterImpl
-import aktual.budget.banksync.domain.BankAccountLinker
+import aktual.budget.banksync.domain.BankAccountLinkerImpl
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncProgress
 import aktual.budget.banksync.domain.BankSyncResult
@@ -82,7 +82,7 @@ internal class AccountsTestScope(
     )
 
   val linker =
-    BankAccountLinker(
+    BankAccountLinkerImpl(
       api = UnusedBankSyncApi,
       accountDao = accountDao,
       dao = BankSyncDao(database),

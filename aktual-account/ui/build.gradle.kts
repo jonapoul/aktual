@@ -11,4 +11,8 @@ kotlin {
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:ui"))
   }
+
+  androidHostTestDependencies {
+    implementation(project(":aktual-prefs:impl"))
+  }
 }

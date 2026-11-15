@@ -8,12 +8,17 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.rules.domain.TransactionFilter
+import aktual.budget.rules.domain.TransactionFilterCompiler
 
 // packages/loot-core/src/server/forecast/forecast-filters.ts buildFilterInfo()
-internal class ForecastFilters(conditions: List<Condition>?, op: ConditionOp?) {
+internal class ForecastFilters(
+  compiler: TransactionFilterCompiler,
+  conditions: List<Condition>?,
+  op: ConditionOp?,
+) {
   private val plain = conditions.orEmpty().filter { it.customName == null }
   private val op = op ?: And
-  val transactions: TransactionFilter = TransactionFilter.compile(plain, this.op)
+  val transactions: TransactionFilter = compiler.compile(plain, this.op)
 
   // forecast-accounts.ts getAccountRestrictionMode(): account conditions can only narrow the
   // accounts when nothing else could match a transaction in another account
@@ -21,7 +26,7 @@ internal class ForecastFilters(conditions: List<Condition>?, op: ConditionOp?) {
     plain
       .filter { it.field == Account }
       .takeIf { it.isNotEmpty() && (this.op == And || it.size == plain.size) }
-      ?.let { TransactionFilter.compile(it, this.op) }
+      ?.let { compiler.compile(it, this.op) }
 
   // resolveForecastAccounts()
   fun accounts(live: List<ForecastAccounts>, selected: Set<AccountId>?): Set<AccountId> =

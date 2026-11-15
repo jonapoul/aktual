@@ -8,6 +8,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.rules.domain.TransactionFilter
+import aktual.budget.rules.domain.TransactionFilterCompiler
 
 // packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts
 // createBudgetSpreadsheet(), over the range's months and the month after it. Tracking budgets have
@@ -17,8 +18,9 @@ internal fun sankeyBudget(
   next: BudgetMonth?,
   conditions: List<Condition>?,
   op: ConditionOp?,
+  compiler: TransactionFilterCompiler,
 ): SankeyBudget {
-  val filter = categoryFilter(conditions.orEmpty(), op ?: And)
+  val filter = compiler.categoryFilter(conditions.orEmpty(), op ?: And)
   val totals = LinkedHashMap<String, SankeyBudgetEntry>()
   for (month in months) {
     for (group in month.groups) {
@@ -62,8 +64,11 @@ internal fun budgetCategoryOrder(month: BudgetMonth?): List<String> =
 
 // Budget amounts aren't transactions, so only the category and category group conditions apply,
 // like upstream's filterCategoryGroups()
-private fun categoryFilter(conditions: List<Condition>, op: ConditionOp): TransactionFilter =
-  TransactionFilter.compile(
+private fun TransactionFilterCompiler.categoryFilter(
+  conditions: List<Condition>,
+  op: ConditionOp,
+): TransactionFilter =
+  compile(
     conditions.filter {
       it.customName == null && (it.field == Category || it.field == CategoryGroup)
     },

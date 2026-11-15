@@ -19,7 +19,7 @@ class CategoryLearningPrefTest {
     // given
     val preferences =
       PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-    val pref = CategoryLearningPref(preferences, TestBudgetSync())
+    val pref = CategoryLearningPrefImpl(preferences, TestBudgetSync())
 
     pref.observe().test {
       // then
@@ -45,7 +45,7 @@ class CategoryLearningPrefTest {
     val sync = TestBudgetSync()
     val preferences =
       PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-    val pref = CategoryLearningPref(preferences, sync)
+    val pref = CategoryLearningPrefImpl(preferences, sync)
 
     // when
     pref.set(enabled = false)

@@ -1,6 +1,5 @@
 package aktual.budget.banksync.domain
 
-import aktual.budget.banksync.domain.SyncMappings.Companion.parse
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasMessage
@@ -20,7 +19,7 @@ internal class SyncMappingsTest {
       """
         .trimIndent()
 
-    assertThat(parse(json))
+    assertThat(SyncMappings.parse(json))
       .isEqualTo(
         SyncMappings(
           payment =
@@ -32,17 +31,17 @@ internal class SyncMappingsTest {
 
   @Test
   fun `A missing direction falls back to the default`() {
-    val mappings = parse("""{"payment":{"date":"a","payee":"b","notes":"c"}}""")
+    val mappings = SyncMappings.parse("""{"payment":{"date":"a","payee":"b","notes":"c"}}""")
 
     assertThat(mappings.deposit).isEqualTo(SyncMappings.Default.deposit)
   }
 
   @Test
   fun `Anything but a JSON object fails`() {
-    assertFailure { parse("[]") }
+    assertFailure { SyncMappings.parse("[]") }
       .isInstanceOf<IllegalArgumentException>()
       .hasMessage("Failed to parse mapping: Invalid mapping format")
-    assertFailure { parse("{") }.isInstanceOf<IllegalArgumentException>()
+    assertFailure { SyncMappings.parse("{") }.isInstanceOf<IllegalArgumentException>()
   }
 
   @Test
@@ -59,7 +58,7 @@ internal class SyncMappingsTest {
           .trimIndent()
           .replace("\n", ""),
       )
-    assertThat(parse(mappings.encode())).isEqualTo(mappings)
+    assertThat(SyncMappings.parse(mappings.encode())).isEqualTo(mappings)
   }
 
   @Test

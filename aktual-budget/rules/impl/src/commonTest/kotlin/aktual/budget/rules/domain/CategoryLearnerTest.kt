@@ -203,7 +203,7 @@ class CategoryLearnerTest {
       CategoryLearnerImpl(
         learningDao = CategoryLearningDao(database),
         rulesDao = RulesDao(database),
-        pref = CategoryLearningPref(preferences, sync),
+        pref = CategoryLearningPrefImpl(preferences, sync),
         budgetSync = sync,
         uuidGenerator = { "new-rule" },
         calendar = TestCalendar(TODAY),

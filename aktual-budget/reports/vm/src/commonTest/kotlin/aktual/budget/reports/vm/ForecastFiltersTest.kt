@@ -6,6 +6,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
+import aktual.budget.rules.domain.TransactionFilterCompilerImpl
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsOnly
@@ -23,21 +24,23 @@ import kotlinx.serialization.json.JsonPrimitive
 class ForecastFiltersTest {
   @Test
   fun `Account conditions narrow the accounts`() {
-    val filters = ForecastFilters(listOf(IS_CHECKING), op = null)
+    val filters = ForecastFilters(TransactionFilterCompilerImpl(), listOf(IS_CHECKING), op = null)
 
     assertThat(filters.accounts(ACCOUNTS, selected = null)).containsOnly(CHECKING)
   }
 
   @Test
   fun `Account conditions don't narrow the accounts when any condition can match`() {
-    val filters = ForecastFilters(listOf(IS_CHECKING, IS_EMPLOYER), op = Or)
+    val filters =
+      ForecastFilters(TransactionFilterCompilerImpl(), listOf(IS_CHECKING, IS_EMPLOYER), op = Or)
 
     assertThat(filters.accounts(ACCOUNTS, selected = setOf(SAVINGS))).containsOnly(SAVINGS)
   }
 
   @Test
   fun `Account conditions narrow the chosen accounts when all conditions must match`() {
-    val filters = ForecastFilters(listOf(IS_CHECKING, IS_EMPLOYER), op = null)
+    val filters =
+      ForecastFilters(TransactionFilterCompilerImpl(), listOf(IS_CHECKING, IS_EMPLOYER), op = null)
 
     assertThat(filters.accounts(ACCOUNTS, selected = setOf(CHECKING, SAVINGS)))
       .containsOnly(CHECKING)
@@ -45,7 +48,7 @@ class ForecastFiltersTest {
 
   @Test
   fun `Schedule occurrences have to match the conditions`() {
-    val filters = ForecastFilters(listOf(IS_EMPLOYER), op = null)
+    val filters = ForecastFilters(TransactionFilterCompilerImpl(), listOf(IS_EMPLOYER), op = null)
 
     assertThat(filters.matches(occurrence(payee = EMPLOYER), ACCOUNTS, PAYEES)).isTrue()
     assertThat(filters.matches(occurrence(payee = LANDLORD), ACCOUNTS, PAYEES)).isFalse()

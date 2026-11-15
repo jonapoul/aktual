@@ -7,10 +7,11 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:accounts:domain"))
     implementation(libs.metrox.viewmodel)
-    implementation(project(":aktual-budget:banksync:impl"))
+    implementation(project(":aktual-budget:banksync"))
   }
 
   commonTestDependencies {
+    implementation(project(":aktual-budget:banksync:impl"))
     implementation(project(":aktual-budget:transactions:impl"))
   }
 }

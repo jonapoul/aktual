@@ -19,7 +19,7 @@ internal class BankSyncSettingsWriterTest {
         mappings = SyncMappings.Default.with(Deposit, Date, "valueDate"),
       )
 
-    BankSyncSettingsWriter(this).save(ACCOUNT, settings)
+    BankSyncSettingsWriterImpl(this).save(ACCOUNT, settings)
 
     fun pref(key: String, value: String) =
       Change(PREFERENCES, "$key-account-1", "value", string(value))
@@ -43,8 +43,8 @@ internal class BankSyncSettingsWriterTest {
         mappings = SyncMappings.Default.with(Payment, Payee, "creditorName"),
       )
 
-    BankSyncSettingsWriter(this).save(ACCOUNT, settings)
+    BankSyncSettingsWriterImpl(this).save(ACCOUNT, settings)
 
-    assertThat(BankSyncSettingsLoader(preferences).load(ACCOUNT)).isEqualTo(settings)
+    assertThat(BankSyncSettingsLoaderImpl(preferences).load(ACCOUNT)).isEqualTo(settings)
   }
 }

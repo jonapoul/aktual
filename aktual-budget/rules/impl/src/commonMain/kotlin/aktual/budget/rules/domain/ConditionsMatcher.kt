@@ -6,7 +6,7 @@ import aktual.budget.model.tagNamesInNotes
 
 /** Matches transactions against a [ConditionsFilter] */
 class ConditionsMatcher(filter: ConditionsFilter) {
-  private val sets = filter.sets.map { TransactionFilter.compile(it.conditions, it.op) }
+  private val sets = filter.sets.map { CompiledTransactionFilter.compile(it.conditions, it.op) }
   private val tags = filter.tags
 
   fun matches(row: FilterRow): Boolean =

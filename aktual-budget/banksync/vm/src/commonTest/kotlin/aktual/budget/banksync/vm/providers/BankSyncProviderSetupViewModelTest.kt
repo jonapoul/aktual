@@ -3,7 +3,7 @@ package aktual.budget.banksync.vm.providers
 import aktual.api.model.banksync.BankSyncSecret
 import aktual.api.model.banksync.SecretResponse
 import aktual.api.model.banksync.SecretResponse.Failed
-import aktual.budget.banksync.domain.BankSyncProviderSetup
+import aktual.budget.banksync.domain.BankSyncProviderSetupImpl
 import aktual.budget.banksync.vm.FakeEnableBankingApi
 import aktual.budget.banksync.vm.FakeSecretsApi
 import aktual.budget.banksync.vm.providers.SetupError.Other
@@ -109,7 +109,7 @@ class BankSyncProviderSetupViewModelTest {
   private fun TestScope.createViewModel(source: AccountSyncSource): BankSyncProviderSetupViewModel {
     return BankSyncProviderSetupViewModel(
       source = source,
-      setup = BankSyncProviderSetup(secrets, enableBanking),
+      setup = BankSyncProviderSetupImpl(secrets, enableBanking),
       server = BudgetServer.Remote(ServerUrl(Https, "test.server.com"), Token("token")),
       viewModelContext = viewModelContext,
     )

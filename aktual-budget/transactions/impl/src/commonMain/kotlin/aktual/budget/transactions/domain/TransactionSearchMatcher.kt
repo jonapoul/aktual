@@ -2,9 +2,9 @@ package aktual.budget.transactions.domain
 
 import aktual.budget.model.TransactionSearch
 import aktual.budget.model.parseAmountInput
+import aktual.budget.rules.domain.CompiledTransactionFilter
 import aktual.budget.rules.domain.FilterBounds
 import aktual.budget.rules.domain.FilterRow
-import aktual.budget.rules.domain.TransactionFilter
 import kotlin.math.abs
 
 /**
@@ -16,7 +16,8 @@ import kotlin.math.abs
  */
 class TransactionSearchMatcher(search: TransactionSearch) {
   val text = search.text.trim()
-  private val filter = TransactionFilter.compile(search.conditions.conditions, search.conditions.op)
+  private val filter =
+    CompiledTransactionFilter.compile(search.conditions.conditions, search.conditions.op)
 
   // The amount the text reads as, in cents, unsigned
   val amount: Long? =

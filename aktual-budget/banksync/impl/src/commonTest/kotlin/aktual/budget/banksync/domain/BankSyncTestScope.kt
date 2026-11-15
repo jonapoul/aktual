@@ -110,7 +110,7 @@ internal class BankSyncTestScope(
           contextDao = RuleContextDao(database),
           uuidGenerator = ::uuid,
         ),
-      settingsLoader = BankSyncSettingsLoader(preferences),
+      settingsLoader = BankSyncSettingsLoaderImpl(preferences),
       dao = BankSyncDao(database),
       uuidGenerator = ::uuid,
       calendar = { TODAY },
@@ -134,7 +134,7 @@ internal class BankSyncTestScope(
 
   // Bank ids are read back as UUIDs, so they can't be [uuid]s
   fun linker(api: FakeBankSyncApi) =
-    BankAccountLinker(
+    BankAccountLinkerImpl(
       api = api,
       accountDao = accountDao,
       dao = BankSyncDao(database),

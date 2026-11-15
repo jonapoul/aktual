@@ -22,7 +22,7 @@ import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
-import aktual.budget.schedules.domain.ScheduleTransactionPoster
+import aktual.budget.schedules.domain.ScheduleTransactionPosterImpl
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.budget.schedules.vm.edit.ScheduleWriter
 import aktual.budget.transactions.domain.TransactionWriterImpl
@@ -447,7 +447,7 @@ class ListSchedulesViewModelTest {
     var nextId = 1
     val uuidGenerator = UuidGenerator { "id-${nextId++}" }
     val poster =
-      ScheduleTransactionPoster(
+      ScheduleTransactionPosterImpl(
         scheduleDao = ScheduleDao(this),
         transactionWriter =
           TransactionWriterImpl(

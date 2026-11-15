@@ -186,7 +186,7 @@ class TransactionFilterTest {
   }
 
   private fun filter(vararg conditions: Condition, op: ConditionOp = And) =
-    TransactionFilter.compile(conditions.toList(), op)
+    CompiledTransactionFilter.compile(conditions.toList(), op)
 
   private fun row(
     date: String = "2020-01-01",

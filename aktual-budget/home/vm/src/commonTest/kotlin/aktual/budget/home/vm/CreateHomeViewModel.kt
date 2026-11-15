@@ -14,6 +14,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.reports.vm.pinned.PinnedReports
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
+import aktual.core.model.BudgetServer
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
 import aktual.test.inMemoryDriverFactory
@@ -30,6 +31,7 @@ internal fun BudgetDatabase.createHomeViewModel(
   accountsCard: BudgetDatabase = this,
   pinnedReports: PinnedReports = FakePinnedReports(),
   newTransactions: NewTransactions = FakeNewTransactions(),
+  server: BudgetServer = None,
 ): HomeViewModel {
   val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
   val calculator =
@@ -63,6 +65,7 @@ internal fun BudgetDatabase.createHomeViewModel(
     upcomingSchedulesLoader = UpcomingSchedulesLoader(schedulesLoader, calendar),
     recentTransactionsLoader = RecentTransactionsLoader(TransactionDao(this)),
     pinnedReports = pinnedReports,
+    server = server,
     viewModelContext = scope.viewModelContext,
   )
 }

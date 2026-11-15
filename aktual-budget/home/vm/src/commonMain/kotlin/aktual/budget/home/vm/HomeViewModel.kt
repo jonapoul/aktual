@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.pinned.PinnedReports
 import aktual.budget.reports.vm.pinned.PinnedReports.Companion.MAX_PINNED_REPORTS
 import aktual.budget.reports.vm.pinned.ReportPage
 import aktual.budget.utils.BudgetLocalPreferences
+import aktual.core.model.BudgetServer
 import aktual.core.model.unaryPlus
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -47,8 +48,12 @@ internal constructor(
   upcomingSchedulesLoader: UpcomingSchedulesLoader,
   recentTransactionsLoader: RecentTransactionsLoader,
   private val pinnedReports: PinnedReports,
+  server: BudgetServer,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
+  // Bank sync goes through the server, so without one there's nothing to choose between
+  val canBankSync: Boolean = server is Remote
+
   private var retries by mutableIntStateOf(0)
 
   val state: StateFlow<HomeState> =

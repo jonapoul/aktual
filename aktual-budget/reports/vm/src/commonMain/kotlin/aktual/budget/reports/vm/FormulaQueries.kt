@@ -12,7 +12,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Field
 import aktual.budget.rules.domain.FilterRow
-import aktual.budget.rules.domain.TransactionFilter
+import aktual.budget.rules.domain.TransactionFilterCompiler
 import aktual.core.utils.Calendar
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
@@ -30,6 +30,7 @@ internal class FormulaQueries(
   private val dao: FormulaDao,
   private val budgets: BudgetMonthCalculator,
   private val calendar: Calendar,
+  private val compiler: TransactionFilterCompiler,
 ) : FormulaDataSource {
   private val transactions = hashMapOf<String, List<FormulaTransactions>>()
   private val budgetMonths = hashMapOf<YearMonth, Map<String, CategoryBudget>>()
@@ -95,7 +96,7 @@ internal class FormulaQueries(
       } else {
         dao.transactions(months.start.firstDay, months.endInclusive.lastDay)
       }
-    val filter = TransactionFilter.compile(query.conditions, query.conditionsOp ?: And)
+    val filter = compiler.compile(query.conditions, query.conditionsOp ?: And)
     return rows.filter { filter.matches(it.toFilterRow()) }.also { transactions[name] = it }
   }
 

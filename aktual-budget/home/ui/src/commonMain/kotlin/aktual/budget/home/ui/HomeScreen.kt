@@ -2,7 +2,6 @@ package aktual.budget.home.ui
 
 import aktual.budget.accounts.components.AddAccountSheet
 import aktual.budget.accounts.components.addAccount
-import aktual.budget.accounts.vm.AddAccountViewModel
 import aktual.budget.home.vm.AccountsCardState
 import aktual.budget.home.vm.AttentionCardState
 import aktual.budget.home.vm.HomeCardType
@@ -94,7 +93,6 @@ internal fun HomeScreen(
   report: ReportNavigator,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = metroViewModel(),
-  addAccountViewModel: AddAccountViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   var showAddAccount by rememberSaveable { mutableStateOf(false) }
@@ -108,7 +106,7 @@ internal fun HomeScreen(
         OpenBankSync -> bankSync()
         AddAccount ->
           addAccount(
-            canBankSync = addAccountViewModel.canBankSync,
+            canBankSync = viewModel.canBankSync,
             showSheet = { showAddAccount = true },
             createLocal = { createAccount() },
           )

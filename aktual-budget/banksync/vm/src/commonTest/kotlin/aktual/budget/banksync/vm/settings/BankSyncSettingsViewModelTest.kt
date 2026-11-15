@@ -1,9 +1,9 @@
 package aktual.budget.banksync.vm.settings
 
-import aktual.budget.banksync.domain.BankAccountLinker
-import aktual.budget.banksync.domain.BankSyncSettingsLoader
-import aktual.budget.banksync.domain.BankSyncSettingsWriter
-import aktual.budget.banksync.domain.MappableFieldsLoader
+import aktual.budget.banksync.domain.BankAccountLinkerImpl
+import aktual.budget.banksync.domain.BankSyncSettingsLoaderImpl
+import aktual.budget.banksync.domain.BankSyncSettingsWriterImpl
+import aktual.budget.banksync.domain.MappableFieldsLoaderImpl
 import aktual.budget.banksync.domain.MappedField
 import aktual.budget.banksync.vm.FakeBankSyncApi
 import aktual.budget.banksync.vm.FakeBankSyncController
@@ -247,11 +247,11 @@ class BankSyncSettingsViewModelTest {
     return BankSyncSettingsViewModel(
       account = account,
       accountDao = AccountDao(database),
-      loader = BankSyncSettingsLoader(preferences),
-      writer = BankSyncSettingsWriter(this),
-      fieldsLoader = MappableFieldsLoader(BankSyncDao(database)),
+      loader = BankSyncSettingsLoaderImpl(preferences),
+      writer = BankSyncSettingsWriterImpl(this),
+      fieldsLoader = MappableFieldsLoaderImpl(BankSyncDao(database)),
       linker =
-        BankAccountLinker(
+        BankAccountLinkerImpl(
           api = api,
           accountDao = AccountDao(database),
           dao = BankSyncDao(database),

@@ -7,8 +7,6 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.Interval
 import aktual.budget.model.sum
 import aktual.budget.model.sumOf
-import androidx.compose.runtime.Immutable
-import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DatePeriod
@@ -19,14 +17,6 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.plus
 import kotlinx.datetime.yearMonth
-
-// Keyed by the first day of each period
-@Immutable
-data class NetWorthAccount(
-  val id: AccountId,
-  val name: String,
-  val balances: ImmutableMap<LocalDate, Amount>,
-)
 
 // One account's change in a period, or its balance before the range when period is null
 internal data class NetWorthRow(

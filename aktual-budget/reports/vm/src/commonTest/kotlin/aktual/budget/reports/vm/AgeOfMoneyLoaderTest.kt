@@ -4,6 +4,7 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.rules.domain.TransactionFilterCompilerImpl
 import aktual.budget.utils.BudgetSync
 import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
@@ -55,8 +56,9 @@ class AgeOfMoneyLoaderTest {
     conditions: List<Condition>,
     op: ConditionOp = And,
   ): List<Long> {
-    val rows = dao.observeFilteredTransactions(reportFilter(conditions, op), ALL_TIME_START, END)
-    return ageOfMoneyTransactions(rows.first(), conditions, op).map { it.amount }
+    val rows =
+      dao.observeFilteredTransactions(COMPILER.reportFilter(conditions, op), ALL_TIME_START, END)
+    return ageOfMoneyTransactions(rows.first(), conditions, op, COMPILER).map { it.amount }
   }
 
   private fun runLoaderTest(
@@ -68,6 +70,7 @@ class AgeOfMoneyLoaderTest {
 
   private companion object {
     val END = LocalDate(2026, 5, 31)
+    val COMPILER = TransactionFilterCompilerImpl()
     val CHECKING = Condition(field = Account, operator = Is, value = JsonPrimitive("checking"))
     val NOT_FOOD = Condition(field = Category, operator = IsNot, value = JsonPrimitive("food"))
   }

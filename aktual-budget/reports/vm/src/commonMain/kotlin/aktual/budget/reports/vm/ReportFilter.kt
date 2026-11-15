@@ -7,13 +7,16 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.rules.domain.FilterRow
 import aktual.budget.rules.domain.TransactionFilter
+import aktual.budget.rules.domain.TransactionFilterCompiler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 
 // A report's conditions, matched the way upstream's spreadsheets match them. Unset means all
-internal fun reportFilter(conditions: List<Condition>?, op: ConditionOp?): TransactionFilter =
-  TransactionFilter.compile(conditions.orEmpty(), op ?: And)
+internal fun TransactionFilterCompiler.reportFilter(
+  conditions: List<Condition>?,
+  op: ConditionOp?,
+): TransactionFilter = compile(conditions.orEmpty(), op ?: And)
 
 // The transactions between [start] and [end] that match [filter]. Reports with no conditions total
 // in SQL instead, so they only need this when the filter isn't empty
