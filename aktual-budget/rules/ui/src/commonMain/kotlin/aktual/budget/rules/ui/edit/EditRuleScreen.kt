@@ -236,28 +236,7 @@ private fun EditRuleScaffold(
         },
       )
     },
-    floatingActionButton = {
-      AnimatedVisibility(
-        visible = hasChanges,
-        enter = slideInVertically { it } + scaleIn(initialScale = FabInitialScale) + fadeIn(),
-        exit = slideOutVertically { it } + scaleOut(targetScale = FabInitialScale) + fadeOut(),
-      ) {
-        val success = state as? Success ?: return@AnimatedVisibility
-        Column {
-          AktualButton(
-            text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-            icon = AktualIcons.Check,
-            kind = Primary,
-            shape = CardShape,
-            contentPadding = FabPadding,
-            isEnabled = success.canSave,
-            isLoading = success.isWorking,
-            onClick = { onAction(Save) },
-          )
-          BottomSpacing()
-        }
-      }
-    },
+    floatingActionButton = { SaveButton(state = state, mode = mode, onAction = onAction) },
   ) { innerPadding ->
     Box {
       PageBackground()
@@ -333,6 +312,31 @@ private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
     },
     content = { Text(Strings.editRuleDiscardMessage) },
   )
+}
+
+// Only shown once there's something to save
+@Composable
+private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<EditRuleAction>) {
+  AnimatedVisibility(
+    visible = state is Success && state.hasChanges,
+    enter = slideInVertically { it } + scaleIn(initialScale = FabInitialScale) + fadeIn(),
+    exit = slideOutVertically { it } + scaleOut(targetScale = FabInitialScale) + fadeOut(),
+  ) {
+    val success = state as? Success ?: return@AnimatedVisibility
+    Column {
+      AktualButton(
+        text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+        icon = AktualIcons.Check,
+        kind = Primary,
+        shape = CardShape,
+        contentPadding = FabPadding,
+        isEnabled = success.canSave,
+        isLoading = success.isWorking,
+        onClick = { onAction(Save) },
+      )
+      BottomSpacing()
+    }
+  }
 }
 
 @Composable
