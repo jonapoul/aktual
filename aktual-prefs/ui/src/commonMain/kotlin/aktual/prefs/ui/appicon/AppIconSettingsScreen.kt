@@ -84,7 +84,8 @@ private fun AppIconSettingsScaffold(
           LauncherShapes.forEach { shape ->
             AppIconImage(
               icon = selected,
-              modifier = Modifier.size(PreviewSize).border(HairlineWidth, colors.cardBorder, shape),
+              modifier =
+                Modifier.size(PreviewSize).border(HairlineWidth, colors.tableBorder, shape),
               shape = shape,
             )
           }
@@ -127,7 +128,7 @@ private fun IconOption(icon: AppIcon, isSelected: Boolean, onClick: () -> Unit) 
         Modifier.border(width = 3.dp, color = ringColor, shape = AppIconShape)
           .padding(5.dp)
           .size(OptionIconSize)
-          .border(HairlineWidth, colors.cardBorder, AppIconShape),
+          .border(HairlineWidth, colors.tableBorder, AppIconShape),
     )
     Text(
       text = icon.label(),
