@@ -17,8 +17,10 @@ import kotlinx.coroutines.launch
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class AppIconSettingsViewModel
-internal constructor(private val controller: AppIconController, viewModelContext: ViewModelContext) :
-  ViewModel(viewModelContext.newScope()) {
+internal constructor(
+  private val controller: AppIconController,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
   val selected: StateFlow<AppIcon> = controller.current
 
   fun select(icon: AppIcon) {

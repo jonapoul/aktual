@@ -149,7 +149,12 @@ private val LauncherShapes: ImmutableList<Shape> =
     CircleShape,
     AppIconShape,
     RoundedCornerShape(percent = 12),
-    RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomEndPercent = 12, bottomStartPercent = 50),
+    RoundedCornerShape(
+      topStartPercent = 50,
+      topEndPercent = 50,
+      bottomEndPercent = 12,
+      bottomStartPercent = 50,
+    ),
   )
 
 private val PreviewSize = 64.dp

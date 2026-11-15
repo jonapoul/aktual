@@ -43,6 +43,14 @@ main:
   exports:
     activity:
     - aktual.app.android.AktualActivity
+    activity-alias:
+    - aktual.app.android.LauncherAurora
+    - aktual.app.android.LauncherDark
+    - aktual.app.android.LauncherDefault
+    - aktual.app.android.LauncherInk
+    - aktual.app.android.LauncherLight
+    - aktual.app.android.LauncherSunset
+    - aktual.app.android.LauncherViolet
     receiver:
     - androidx.profileinstaller.ProfileInstallReceiver
 variants:
@@ -62,4 +70,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 56a4b49f3e97076021687a9839635f28
+fingerprint: e77603dda10c39139c19a4c29c8dfa62

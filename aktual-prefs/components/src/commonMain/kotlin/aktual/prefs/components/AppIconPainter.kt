@@ -45,7 +45,7 @@ fun rememberAppIconPainter(icon: AppIcon, cornerFraction: Float = 0f): Painter =
 
 private class AppIconPainter(private val icon: AppIcon, private val cornerFraction: Float) :
   Painter() {
-  override val intrinsicSize: Size = Size.Unspecified
+  override val intrinsicSize: Size = Unspecified
 
   override fun DrawScope.onDraw() {
     if (cornerFraction <= 0f) {
@@ -61,7 +61,7 @@ private class AppIconPainter(private val icon: AppIcon, private val cornerFracti
               right = size.width,
               bottom = size.height,
               cornerRadius = CornerRadius(radius),
-            )
+            ),
           )
         }
       clipPath(clip) { drawAppIcon(icon) }
@@ -73,11 +73,11 @@ fun DrawScope.drawAppIcon(icon: AppIcon) {
   val scale = size.minDimension / VIEWPORT
   withTransform(
     transformBlock = {
-      scale(scale, scale, pivot = Offset.Zero)
+      scale(scale, scale, pivot = Zero)
       translate(-INSET, -INSET)
     },
   ) {
-    drawRect(icon.background(), topLeft = Offset.Zero, size = Size(CANVAS, CANVAS))
+    drawRect(icon.background(), topLeft = Zero, size = Size(CANVAS, CANVAS))
     drawPath(LetterA, icon.foreground())
   }
 }
@@ -85,32 +85,44 @@ fun DrawScope.drawAppIcon(icon: AppIcon) {
 private fun AppIcon.background(): Brush =
   when (this) {
     Default -> CornerGradient
-    Light -> SolidColor(Color(0xFFF7F3FF))
-    Dark -> SolidColor(Color(0xFF14111C))
-    Violet -> SolidColor(Color(0xFF7B2FF7))
-    Sunset -> Brush.linearGradient(
-      colors = listOf(Color(0xFFFFB443), Color(0xFFFF4F7B)),
-      start = Offset.Zero,
-      end = Offset(CANVAS, CANVAS),
-    )
-    Aurora -> Brush.linearGradient(
-      colors = listOf(Color(0xFF12C2A9), Color(0xFF7B2FF7)),
-      start = Offset(0f, CANVAS),
-      end = Offset(CANVAS, 0f),
-    )
-    Ink -> SolidColor(Color.White)
+    Light -> LightBackground
+    Dark -> DarkBackground
+    Violet -> VioletBackground
+    Sunset -> SunsetGradient
+    Aurora -> AuroraGradient
+    Ink -> WhiteBrush
   }
 
 private fun AppIcon.foreground(): Brush =
   when (this) {
     Light,
     Dark -> LetterGradient
-    Ink -> SolidColor(Color(0xFF1B1726))
+    Ink -> InkLetter
     Default,
     Violet,
     Sunset,
-    Aurora -> SolidColor(Color.White)
+    Aurora -> WhiteBrush
   }
+
+private val WhiteBrush = SolidColor(White)
+private val LightBackground = SolidColor(Color(0xFFF7F3FF))
+private val DarkBackground = SolidColor(Color(0xFF14111C))
+private val VioletBackground = SolidColor(Color(0xFF7B2FF7))
+private val InkLetter = SolidColor(Color(0xFF1B1726))
+
+private val SunsetGradient =
+  Brush.linearGradient(
+    colors = listOf(Color(0xFFFFB443), Color(0xFFFF4F7B)),
+    start = Zero,
+    end = Offset(CANVAS, CANVAS),
+  )
+
+private val AuroraGradient =
+  Brush.linearGradient(
+    colors = listOf(Color(0xFF12C2A9), Color(0xFF7B2FF7)),
+    start = Offset(0f, CANVAS),
+    end = Offset(CANVAS, 0f),
+  )
 
 private val GradientStops =
   arrayOf(0f to Color(0xFFEF5A4C), 0.45f to Color(0xFFC216D6), 1f to Color(0xFF7B2FF7))
@@ -139,14 +151,13 @@ private const val INSET = (CANVAS - VIEWPORT) / 2
 
 @Preview
 @Composable
-private fun PreviewAppIcons() =
-  Column {
-    FlowRow {
-      AppIcon.entries.forEach { AppIconImage(it, Modifier.size(PreviewSize)) }
-    }
-    FlowRow {
-      AppIcon.entries.forEach { AppIconImage(it, Modifier.size(PreviewSize), CircleShape) }
-    }
+private fun PreviewAppIcons() = Column {
+  FlowRow {
+    AppIcon.entries.forEach { AppIconImage(it, Modifier.size(PreviewSize)) }
   }
+  FlowRow {
+    AppIcon.entries.forEach { AppIconImage(it, Modifier.size(PreviewSize), CircleShape) }
+  }
+}
 
 private val PreviewSize: Dp = 64.dp

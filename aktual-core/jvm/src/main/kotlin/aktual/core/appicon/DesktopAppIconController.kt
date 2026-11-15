@@ -26,7 +26,11 @@ internal constructor(dataStore: DataStore<Preferences>, scope: AppCoroutineScope
   AppIconController {
   private val preference: Preference<AppIcon> =
     dataStore
-      .translated(key = stringPreferencesKey("appIcon"), default = AppIcon.Default, translator = Names)
+      .translated(
+        key = stringPreferencesKey("appIcon"),
+        default = AppIcon.Default,
+        translator = Names,
+      )
       .required()
 
   override val current: StateFlow<AppIcon> =
