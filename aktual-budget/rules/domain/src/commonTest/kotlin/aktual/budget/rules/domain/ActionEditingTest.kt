@@ -1,6 +1,5 @@
 package aktual.budget.rules.domain
 
-import aktual.budget.model.Field
 import aktual.budget.model.RuleAction
 import assertk.assertThat
 import assertk.assertions.contains
@@ -34,7 +33,7 @@ class ActionEditingTest {
   @Test
   fun `Splits can't set the whole transaction's fields`() {
     assertThat(actionFields(0)).isEqualTo(ACTION_FIELDS)
-    assertThat(actionFields(1)).isEqualTo(listOf<Field>(Category, Payee, PayeeName, Notes))
+    assertThat(actionFields(1)).isEqualTo(listOf(Category, Payee, PayeeName, Notes))
   }
 
   @Test
