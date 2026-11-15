@@ -6,6 +6,7 @@ import aktual.prefs.AppIcon
 import aktual.prefs.AppIconController
 import aktual.prefs.Preference
 import aktual.prefs.Translator
+import aktual.prefs.required
 import aktual.prefs.translated
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
