@@ -18,6 +18,7 @@ import aktual.budget.rules.vm.edit.RuleMatchesState
 import aktual.budget.rules.vm.hasUnknownValues
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
+import aktual.core.icons.Delete
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.ViewShow
 import aktual.core.icons.material.DeleteForever
@@ -27,19 +28,24 @@ import aktual.core.l10n.Strings
 import aktual.core.l10n.edit_rule_matches_applied
 import aktual.core.l10n.edit_rule_matches_apply_failed
 import aktual.core.nav.BackNavigator
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BackHandler
+import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HostedSheet
+import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
@@ -48,6 +54,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
+import aktual.core.ui.bareIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -185,6 +192,10 @@ private fun EditRuleScaffold(
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
   var showMatches by rememberSaveable { mutableStateOf(false) }
+  var showDiscardDialog by remember { mutableStateOf(false) }
+  val hasChanges = state is Success && state.hasChanges
+
+  BackHandler(enabled = hasChanges) { showDiscardDialog = true }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -193,7 +204,18 @@ private fun EditRuleScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
+        navigationIcon = {
+          if (hasChanges) {
+            BasicIconButton(
+              imageVector = AktualIcons.Delete,
+              contentDescription = Strings.editRuleDiscardConfirm,
+              colors = DiscardColors,
+              onClick = { showDiscardDialog = true },
+            )
+          } else {
+            NavBackIconButton { onAction(NavBack) }
+          }
+        },
         title = {
           Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
         },
@@ -271,6 +293,34 @@ private fun EditRuleScaffold(
       MatchesSheetContent(state = matchesState, isEnabled = !state.isWorking, onAction = onAction)
     }
   }
+
+  if (showDiscardDialog) {
+    DiscardChangesDialog(
+      onDiscard = {
+        showDiscardDialog = false
+        onAction(NavBack)
+      },
+      onCancel = { showDiscardDialog = false },
+    )
+  }
+}
+
+@Composable
+private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
+  AktualAlertDialog(
+    title = Strings.editRuleDiscardTitle,
+    highlight = colors.warningText,
+    onDismissRequest = onCancel,
+    buttons = {
+      DialogTextButton(text = Strings.editRuleDiscardCancel, onClick = onCancel)
+      DialogTextButton(
+        kind = Destructive,
+        text = Strings.editRuleDiscardConfirm,
+        onClick = onDiscard,
+      )
+    },
+    content = { Text(Strings.editRuleDiscardMessage) },
+  )
 }
 
 @Composable
@@ -445,6 +495,10 @@ private fun LoadedContent(
   }
 }
 
+private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
+  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
+}
+
 private val FabPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
 private val FabClearance = 72.dp
 
@@ -469,6 +523,7 @@ private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode 
 private class EditRuleStateProvider :
   ColorParamsProvider<EditRuleStateParams>(
     EditRuleStateParams(Success(PREVIEW_RULE, isWorking = false)),
+    EditRuleStateParams(Success(PREVIEW_RULE, isWorking = false, hasChanges = true)),
     EditRuleStateParams(Success(PREVIEW_RULE, isWorking = true)),
     EditRuleStateParams(Success(PREVIEW_EMPTY_RULE, isWorking = false), mode = Create),
     EditRuleStateParams(Success(PREVIEW_UNKNOWN_RULE, isWorking = false)),

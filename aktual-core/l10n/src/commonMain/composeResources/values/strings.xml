@@ -1928,6 +1928,10 @@
   <string name="edit_rule_matches_deleted">Deleted</string>
   <string name="edit_rule_matches_cleared">Marked cleared</string>
   <string name="edit_rule_matches_uncleared">Marked uncleared</string>
+  <string name="edit_rule_discard_title">Discard changes?</string>
+  <string name="edit_rule_discard_message">Your changes to this rule will be lost.</string>
+  <string name="edit_rule_discard_cancel">Keep editing</string>
+  <string name="edit_rule_discard_confirm">Discard</string>
 
 
   <!-- budget-schedules -->

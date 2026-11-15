@@ -336,6 +336,35 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Changes are tracked against the saved rule`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      assertThat(awaitLoaded() as Success).all {
+        prop(Success::hasChanges).isFalse()
+        prop(Success::canSave).isFalse()
+      }
+
+      viewModel.setStage(Pre)
+      assertThat(awaitItem() as Success).all {
+        prop(Success::hasChanges).isTrue()
+        prop(Success::canSave).isTrue()
+      }
+
+      viewModel.setStage(Default)
+      assertThat((awaitItem() as Success).hasChanges).isFalse()
+
+      viewModel.setStage(Post)
+      assertThat((awaitItem() as Success).hasChanges).isTrue()
+
+      viewModel.save()
+      scope.advanceUntilIdle()
+      assertThat((expectMostRecentItem() as Success).hasChanges).isFalse()
+    }
+  }
+
+  @Test
   fun `Rules with unknown values can't be saved`() = runDatabaseTest { scope ->
     insertRule(SAVED.copy(stage = Unknown))
     val viewModel = createViewModel(scope, RuleId("a"))
