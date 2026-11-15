@@ -56,6 +56,7 @@ import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.json.JsonPrimitive
 
 // One chip per condition, tapped to edit and removed by its icon
@@ -73,7 +74,7 @@ internal fun TransactionFilterChips(
   var naming by rememberSaveable { mutableStateOf<FilterNaming?>(null) }
   val hasConditions = conditions.conditions.isNotEmpty()
   val names = entities?.names ?: persistentMapOf()
-  val conditionKeys = rememberStableKeys(conditions.conditions)
+  val conditionKeys = rememberStableKeys(conditions.conditions.toImmutableList())
 
   CardColumn(
     modifier = modifier.fillMaxWidth(),

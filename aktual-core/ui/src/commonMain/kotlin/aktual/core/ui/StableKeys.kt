@@ -11,7 +11,7 @@ import kotlinx.collections.immutable.toImmutableList
  * equal items still get distinct keys.
  */
 @Composable
-fun <T> rememberStableKeys(items: List<T>): ImmutableList<Int> {
+fun <T> rememberStableKeys(items: ImmutableList<T>): ImmutableList<Int> {
   val keys = remember { StableKeys<T>() }
   return remember(items) { keys.update(items) }
 }
@@ -22,13 +22,13 @@ internal class StableKeys<T> {
   private var nextKey = 0
 
   fun update(newItems: List<T>): ImmutableList<Int> {
-    val isUsed = BooleanArray(items.size)
+    val claimed = BooleanArray(items.size)
     val result = arrayOfNulls<Int>(newItems.size)
 
     // Unchanged at the same index
     for (i in newItems.indices) {
       if (i < items.size && items[i] == newItems[i]) {
-        isUsed[i] = true
+        claimed[i] = true
         result[i] = keys[i]
       }
     }
@@ -36,9 +36,9 @@ internal class StableKeys<T> {
     // Moved, or shifted by an add or remove
     for (i in newItems.indices) {
       if (result[i] != null) continue
-      val match = items.indices.firstOrNull { j -> !isUsed[j] && items[j] == newItems[i] }
+      val match = items.indices.firstOrNull { j -> !claimed[j] && items[j] == newItems[i] }
       if (match != null) {
-        isUsed[match] = true
+        claimed[match] = true
         result[i] = keys[match]
       }
     }
@@ -46,8 +46,8 @@ internal class StableKeys<T> {
     // Same count, so a leftover item was edited where it stands
     if (newItems.size == items.size) {
       for (i in newItems.indices) {
-        if (result[i] == null && !isUsed[i]) {
-          isUsed[i] = true
+        if (result[i] == null && !claimed[i]) {
+          claimed[i] = true
           result[i] = keys[i]
         }
       }
