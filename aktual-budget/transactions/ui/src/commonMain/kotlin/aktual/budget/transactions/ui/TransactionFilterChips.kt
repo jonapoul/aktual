@@ -30,6 +30,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.Rectangle
 import aktual.core.ui.SheetHost
+import aktual.core.ui.rememberStableKeys
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -72,6 +73,7 @@ internal fun TransactionFilterChips(
   var naming by rememberSaveable { mutableStateOf<FilterNaming?>(null) }
   val hasConditions = conditions.conditions.isNotEmpty()
   val names = entities?.names ?: persistentMapOf()
+  val conditionKeys = rememberStableKeys(conditions.conditions)
 
   CardColumn(
     modifier = modifier.fillMaxWidth(),
@@ -100,7 +102,7 @@ internal fun TransactionFilterChips(
       }
 
       conditions.conditions.fastForEachIndexed { index, condition ->
-        item(key = condition) {
+        item(key = conditionKeys[index]) {
           ConditionChip(
             condition = condition,
             names = names,

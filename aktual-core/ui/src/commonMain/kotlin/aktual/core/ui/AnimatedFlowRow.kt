@@ -19,7 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LookaheadScope
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -62,6 +65,7 @@ fun AnimatedFlowRow(
             propagateMinConstraints = entry.weight != null,
             modifier =
               Modifier.then(if (entry.weight != null) Modifier.weight(entry.weight) else Modifier)
+                .then(if (entry.isRemoved) Modifier.clearAndSetSemantics {} else Modifier)
                 .animateBounds(this@LookaheadScope)
                 .graphicsLayer {
                   val value = visibility.value
@@ -72,6 +76,8 @@ fun AnimatedFlowRow(
                 },
           ) {
             entry.content()
+            // Its callbacks may be stale, so taps on it stop here
+            if (entry.isRemoved) Box(Modifier.matchParentSize().pointerInput(Unit) { consumeAll() })
           }
         }
       }
@@ -85,6 +91,12 @@ private const val HIDDEN_SCALE = 0.8f
 
 private data class IndexKey(val index: Int)
 
+private data class RepeatedKey(val key: Any, val occurrence: Int)
+
+private suspend fun PointerInputScope.consumeAll() = awaitPointerEventScope {
+  while (true) awaitPointerEvent().changes.fastForEach { it.consume() }
+}
+
 private data class Entry(
   val key: Any,
   val weight: Float?,
@@ -94,9 +106,16 @@ private data class Entry(
 
 private class AnimatedFlowRowScopeImpl : AnimatedFlowRowScope {
   val entries = mutableListOf<Entry>()
+  private val occurrences = HashMap<Any, Int>()
 
   override fun item(key: Any?, weight: Float?, content: @Composable () -> Unit) {
-    entries += Entry(key ?: IndexKey(entries.size), weight, isRemoved = false, content)
+    entries += Entry(uniqueKey(key ?: IndexKey(entries.size)), weight, isRemoved = false, content)
+  }
+
+  private fun uniqueKey(key: Any): Any {
+    val occurrence = occurrences.getOrElse(key) { 0 }
+    occurrences[key] = occurrence + 1
+    return if (occurrence == 0) key else RepeatedKey(key, occurrence)
   }
 }
 
