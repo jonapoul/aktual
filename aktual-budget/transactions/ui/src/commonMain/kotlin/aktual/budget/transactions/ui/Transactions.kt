@@ -5,6 +5,7 @@ import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
+import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -16,6 +17,9 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SearchMessage
+import aktual.core.ui.SwipeAction
+import aktual.core.ui.SwipeToReveal
+import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.scrollbar
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
@@ -33,7 +37,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -41,6 +51,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.coroutines.flow.Flow
 
@@ -151,6 +162,8 @@ private fun TransactionsFilled(
 ) {
   val dimens = LocalLedgerDimens.current
   val density = dimens.density
+  // Only one row's delete action shows at a time
+  var openId by remember { mutableStateOf<TransactionId?>(null) }
 
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
@@ -191,26 +204,43 @@ private fun TransactionsFilled(
             )
           }
 
-          when (density) {
-            Comfortable,
-            Compact ->
-              LedgerRow(
-                transaction = transaction,
-                showDate = showDate,
-                parts = parts,
-                onToggleSplit = onToggleSplit,
-                onOpen = onOpen,
-                onTagClick = { id -> onAction(Action.OpenTag(id)) },
-                onToggleClearedState = onToggleCleared,
-              )
-            Dense ->
-              LedgerTableRow(
-                transaction = transaction,
-                parts = parts,
-                onToggleSplit = onToggleSplit,
-                onOpen = onOpen,
-                onToggleClearedState = onToggleCleared,
-              )
+          SwipeToDelete(
+            isOpen = openId == transaction.id,
+            onOpenChange = { open ->
+              openId =
+                when {
+                  open -> transaction.id
+                  openId == transaction.id -> null
+                  else -> openId
+                }
+            },
+            background = background,
+            onDelete = {
+              openId = null
+              onAction(Action.DeleteTransaction(transaction.id, transaction.reconciled))
+            },
+          ) {
+            when (density) {
+              Comfortable,
+              Compact ->
+                LedgerRow(
+                  transaction = transaction,
+                  showDate = showDate,
+                  parts = parts,
+                  onToggleSplit = onToggleSplit,
+                  onOpen = onOpen,
+                  onTagClick = { id -> onAction(Action.OpenTag(id)) },
+                  onToggleClearedState = onToggleCleared,
+                )
+              Dense ->
+                LedgerTableRow(
+                  transaction = transaction,
+                  parts = parts,
+                  onToggleSplit = onToggleSplit,
+                  onOpen = onOpen,
+                  onToggleClearedState = onToggleCleared,
+                )
+            }
           }
 
           if (transaction.children.isNotEmpty()) {
@@ -226,6 +256,34 @@ private fun TransactionsFilled(
     }
 
     item { BottomSpacing() }
+  }
+}
+
+@Composable
+private fun SwipeToDelete(
+  isOpen: Boolean,
+  onOpenChange: (Boolean) -> Unit,
+  background: Color,
+  onDelete: () -> Unit,
+  content: @Composable () -> Unit,
+) {
+  val deleteBackground = colors.errorText
+  SwipeToReveal(
+    actions =
+      persistentListOf(
+        SwipeAction(
+          text = Strings.transactionDelete,
+          icon = AktualIcons.Trash,
+          background = deleteBackground,
+          foreground = deleteBackground.contrastingTextColor(),
+          onClick = onDelete,
+        ),
+      ),
+    isOpen = isOpen,
+    onOpenChange = onOpenChange,
+    shape = RectangleShape,
+  ) {
+    Box(modifier = Modifier.background(background)) { content() }
   }
 }
 

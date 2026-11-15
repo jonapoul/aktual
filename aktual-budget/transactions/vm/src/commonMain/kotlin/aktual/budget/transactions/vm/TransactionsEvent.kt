@@ -11,6 +11,10 @@ sealed interface TransactionsEvent {
 
   data object DeleteAccountFailed : TransactionsEvent
 
+  data object TransactionDeleted : TransactionsEvent
+
+  data object DeleteTransactionFailed : TransactionsEvent
+
   data object ReconcileFailed : TransactionsEvent
 
   @JvmInline value class FilterNameTaken(val name: String) : TransactionsEvent

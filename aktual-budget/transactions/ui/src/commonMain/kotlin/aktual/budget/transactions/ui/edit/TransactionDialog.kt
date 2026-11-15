@@ -34,12 +34,7 @@ internal fun EditTransactionDialogs(
   val dismiss = { onShow(null) }
   when (dialog) {
     ConfirmDelete ->
-      ConfirmDialog(
-        title = Strings.transactionDeleteTitle,
-        message = Strings.transactionDeleteMessage,
-        confirm = Strings.transactionDeleteConfirm,
-        cancel = Strings.transactionSheetCancel,
-        highlight = colors.errorText,
+      ConfirmDeleteDialog(
         onConfirm = {
           dismiss()
           onAction(DeleteTransaction)
@@ -128,6 +123,18 @@ internal fun EditTransactionDialogs(
     null -> Unit
   }
 }
+
+@Composable
+internal fun ConfirmDeleteDialog(onConfirm: () -> Unit, onCancel: () -> Unit) =
+  ConfirmDialog(
+    title = Strings.transactionDeleteTitle,
+    message = Strings.transactionDeleteMessage,
+    confirm = Strings.transactionDeleteConfirm,
+    cancel = Strings.transactionSheetCancel,
+    highlight = colors.errorText,
+    onConfirm = onConfirm,
+    onCancel = onCancel,
+  )
 
 @Composable
 internal fun ReconciledDialog(message: String, onConfirm: () -> Unit, onCancel: () -> Unit) =

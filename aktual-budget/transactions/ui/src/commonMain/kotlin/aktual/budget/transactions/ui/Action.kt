@@ -37,6 +37,9 @@ internal sealed interface Action {
 
   data class OpenTransaction(val id: TransactionId) : Action
 
+  // Swiped on a row. reconciled asks first, as the editor does
+  data class DeleteTransaction(val id: TransactionId, val reconciled: Boolean) : Action
+
   @JvmInline value class OpenTag(val id: TagId) : Action
 
   data object CreateTransaction : Action
