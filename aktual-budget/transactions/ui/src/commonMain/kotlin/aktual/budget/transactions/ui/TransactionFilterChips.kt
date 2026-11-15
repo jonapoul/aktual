@@ -188,7 +188,8 @@ private fun AddFilterSheet(
         onChange = { changed -> draft = changed },
         onDelete = {},
         onDismiss = { draft = null },
-        onAdd = { onAdd(condition) },
+        // Read at Done, after a field still being typed in has committed
+        onAdd = { draft?.let(onAdd) },
       )
     }
   }

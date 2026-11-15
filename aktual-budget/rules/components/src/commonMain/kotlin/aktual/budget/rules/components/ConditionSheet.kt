@@ -28,7 +28,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 
 /**
- * Edits one condition of a query in place. Conditions the editor can't show can only be deleted.
+ * Edits one condition of a query. Conditions the editor can't show can only be deleted. Done closes
+ * the sheet before calling [onDone], so a sheet editing a draft can save it then.
  *
  * With [onAdd] set, the condition is a new one that isn't saved yet: there's no delete, and Done
  * closes the whole sheet before calling [onAdd].
@@ -42,6 +43,7 @@ fun ConditionSheet(
   onDismiss: () -> Unit,
   schema: ConditionSchema = FilterConditions,
   fields: ImmutableList<Field> = schema.fields,
+  onDone: () -> Unit = {},
   onAdd: (() -> Unit)? = null,
 ) =
   HostedSheet(onDismiss = onDismiss) {
@@ -63,18 +65,9 @@ fun ConditionSheet(
           } else {
             Strings.reportsFormulaQueryAddCondition
           },
-        close =
-          if (onAdd == null) {
-            ::close
-          } else {
-            { then ->
-              dismiss {
-                then()
-                onAdd()
-              }
-            }
-          },
+        close = if (onAdd == null) ::close else ::dismiss,
         onDelete = onDelete.takeIf { onAdd == null },
+        onDone = onAdd ?: onDone,
       ) {
         ConditionContent(
           condition = condition,

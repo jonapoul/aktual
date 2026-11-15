@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
@@ -48,8 +49,10 @@ fun QuerySheetPage(
   close: (then: () -> Unit) -> Unit,
   modifier: Modifier = Modifier,
   onDelete: (() -> Unit)? = null,
+  onDone: () -> Unit = {},
   content: @Composable ColumnScope.() -> Unit,
-) =
+) {
+  val focusManager = LocalFocusManager.current
   Column(
     modifier = modifier.verticalScrollWithBar().padding(horizontal = 20.dp).padding(bottom = 20.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -76,7 +79,12 @@ fun QuerySheetPage(
         kind = Primary,
         modifier = Modifier.weight(1f).testTag(ConditionTags.QuerySheetDone),
         text = Strings.reportsFormulaEditorDone,
-        onClick = { close {} },
+        onClick = {
+          // Commits a field still being typed in before Done reads the value
+          focusManager.clearFocus()
+          close(onDone)
+        },
       )
     }
   }
+}

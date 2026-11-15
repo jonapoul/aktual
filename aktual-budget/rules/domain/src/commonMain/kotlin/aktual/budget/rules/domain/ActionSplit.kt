@@ -33,10 +33,12 @@ fun List<RuleAction>.splits(): ImmutableList<ActionSplit> {
 }
 
 // Goes after the split's last action, so the list stays grouped by split
-fun List<RuleAction>.addAction(splitIndex: Int): List<RuleAction> {
-  val action = newAction(nextActionField(splitIndex), splitIndex)
-  return toMutableList().apply { add(newActionIndex(splitIndex), action) }
-}
+fun List<RuleAction>.addAction(action: RuleAction): List<RuleAction> =
+  toMutableList().apply { add(newActionIndex(action.splitIndex), action) }
+
+// A new action for the split, setting the first field it doesn't set yet
+fun List<RuleAction>.nextAction(splitIndex: Int): RuleAction =
+  newAction(nextActionField(splitIndex), splitIndex)
 
 // Where [addAction] puts the split's new action
 fun List<RuleAction>.newActionIndex(splitIndex: Int): Int {
@@ -53,7 +55,7 @@ fun List<RuleAction>.addSplit(): List<RuleAction> {
       value = null,
       options = RuleAction.Options(method = Remainder, splitIndex = index),
     )
-  return this + amount + newAction(nextActionField(index), index)
+  return this + amount + nextAction(index)
 }
 
 // Later splits move down one to fill the gap

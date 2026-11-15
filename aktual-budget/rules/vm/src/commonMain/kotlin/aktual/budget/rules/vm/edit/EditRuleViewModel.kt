@@ -296,51 +296,53 @@ internal constructor(
 
   fun setConditionsOp(op: ConditionOp) = updateRule { r -> r.copy(conditionsOp = op) }
 
-  // Late edits from a closing sheet can name an index that's since been removed
-  fun setCondition(index: Int, condition: Condition) = updateRule { r ->
-    if (index !in r.conditions.indices) return@updateRule r
-    r.copy(conditions = r.conditions.toPersistentList().replacingAt(index, condition))
+  fun setCondition(key: Long, condition: Condition) = mutableDraft.update { draft ->
+    val index = draft?.conditionKeys?.indexOfOrNull(key) ?: return@update draft
+    draft.copy(
+      rule =
+        draft.rule.copy(
+          conditions = draft.rule.conditions.toPersistentList().replacingAt(index, condition),
+        ),
+    )
   }
 
-  fun addCondition() {
-    val key = nextKey++
-    mutableDraft.update { draft ->
-      draft?.copy(
-        rule =
-          draft.rule.copy(
-            conditions = draft.rule.conditions.toPersistentList().adding(emptyCondition()),
-          ),
-        conditionKeys = draft.conditionKeys.adding(key),
-      )
-    }
-  }
-
-  fun removeCondition(index: Int) = mutableDraft.update { draft ->
+  fun addCondition(condition: Condition) = mutableDraft.update { draft ->
     draft?.copy(
+      rule =
+        draft.rule.copy(conditions = draft.rule.conditions.toPersistentList().adding(condition)),
+      conditionKeys = draft.conditionKeys.adding(nextKey++),
+    )
+  }
+
+  fun removeCondition(key: Long) = mutableDraft.update { draft ->
+    val index = draft?.conditionKeys?.indexOfOrNull(key) ?: return@update draft
+    draft.copy(
       rule =
         draft.rule.copy(conditions = draft.rule.conditions.toPersistentList().removingAt(index)),
       conditionKeys = draft.conditionKeys.removingAt(index),
     )
   }
 
-  fun setAction(index: Int, action: RuleAction) = updateRule { r ->
-    if (index !in r.actions.indices) return@updateRule r
-    r.copy(actions = r.actions.toPersistentList().replacingAt(index, action))
+  fun setAction(key: Long, action: RuleAction) = mutableDraft.update { draft ->
+    val index = draft?.actionKeys?.indexOfOrNull(key) ?: return@update draft
+    draft.copy(
+      rule =
+        draft.rule.copy(actions = draft.rule.actions.toPersistentList().replacingAt(index, action)),
+    )
   }
 
-  fun addAction(splitIndex: Int = 0) {
-    val key = nextKey++
-    mutableDraft.update { draft ->
-      val actions = draft?.rule?.actions ?: return@update draft
-      draft.copy(
-        rule = draft.rule.copy(actions = actions.addAction(splitIndex).toImmutableList()),
-        actionKeys = draft.actionKeys.addingAt(actions.newActionIndex(splitIndex), key),
-      )
-    }
+  // Goes after the last action of its split
+  fun addAction(action: RuleAction) = mutableDraft.update { draft ->
+    val actions = draft?.rule?.actions ?: return@update draft
+    draft.copy(
+      rule = draft.rule.copy(actions = actions.addAction(action).toImmutableList()),
+      actionKeys = draft.actionKeys.addingAt(actions.newActionIndex(action.splitIndex), nextKey++),
+    )
   }
 
-  fun removeAction(index: Int) = mutableDraft.update { draft ->
-    draft?.copy(
+  fun removeAction(key: Long) = mutableDraft.update { draft ->
+    val index = draft?.actionKeys?.indexOfOrNull(key) ?: return@update draft
+    draft.copy(
       rule = draft.rule.copy(actions = draft.rule.actions.toPersistentList().removingAt(index)),
       actionKeys = draft.actionKeys.removingAt(index),
     )
@@ -435,6 +437,9 @@ internal constructor(
 
 private const val STOP_TIMEOUT_MS = 5_000L
 private const val MATCHES_DEBOUNCE_MS = 300L
+
+// Late edits can name a key that's since been removed
+private fun List<Long>.indexOfOrNull(key: Long): Int? = indexOf(key).takeIf { it >= 0 }
 
 private fun Rule.toTransactionRule() =
   TransactionRule(

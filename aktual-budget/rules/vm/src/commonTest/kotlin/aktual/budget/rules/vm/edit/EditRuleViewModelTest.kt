@@ -110,17 +110,17 @@ class EditRuleViewModelTest {
     viewModel.state.test {
       awaitLoaded()
 
-      viewModel.addCondition()
+      viewModel.addCondition(Condition(Payee, Is, JsonNull, type = Id))
       val added = awaitItem() as Success
       assertThat(added.rule.conditions)
         .isEqualTo(persistentListOf(NOTES, Condition(Payee, Is, JsonNull, type = Id)))
       assertThat(added.conditionKeys).isEqualTo(persistentListOf(0L, 2L))
 
       val payee = Condition(Payee, Is, JsonPrimitive("p"), type = Id)
-      viewModel.setCondition(1, payee)
+      viewModel.setCondition(2L, payee)
       assertThat(awaitItem().rule().conditions).isEqualTo(persistentListOf(NOTES, payee))
 
-      viewModel.removeCondition(0)
+      viewModel.removeCondition(0L)
       val removed = awaitItem() as Success
       assertThat(removed.rule.conditions).isEqualTo(persistentListOf(payee))
       assertThat(removed.conditionKeys).isEqualTo(persistentListOf(2L))
@@ -141,14 +141,13 @@ class EditRuleViewModelTest {
     viewModel.state.test {
       awaitLoaded()
 
-      // Category is already set, so the next free field is picked
-      viewModel.addAction()
-      val added = awaitItem() as Success
       val payee = RuleAction(value = null, op = RuleAction.Op.Set, field = Payee, type = Id)
+      viewModel.addAction(payee)
+      val added = awaitItem() as Success
       assertThat(added.rule.actions).isEqualTo(persistentListOf(CATEGORY, payee))
       assertThat(added.actionKeys).isEqualTo(persistentListOf(1L, 2L))
 
-      viewModel.removeAction(0)
+      viewModel.removeAction(1L)
       val removed = awaitItem() as Success
       assertThat(removed.rule.actions).isEqualTo(persistentListOf(payee))
       assertThat(removed.actionKeys).isEqualTo(persistentListOf(2L))
@@ -167,7 +166,7 @@ class EditRuleViewModelTest {
       var action = CATEGORY
       ACTION_OPS.reversed().forEach { op ->
         action = action.withOp(op)
-        viewModel.setAction(0, action)
+        viewModel.setAction(1L, action)
         assertThat(awaitItem().rule().actions).isEqualTo(persistentListOf(action))
       }
     }
@@ -182,7 +181,7 @@ class EditRuleViewModelTest {
       awaitLoaded()
 
       val notes = CATEGORY.withField(Notes).copy(value = JsonPrimitive("hello"))
-      viewModel.setAction(0, notes)
+      viewModel.setAction(1L, notes)
       assertThat(awaitItem().rule().actions)
         .isEqualTo(
           persistentListOf(
@@ -205,17 +204,16 @@ class EditRuleViewModelTest {
     viewModel.state.test {
       awaitLoaded()
 
-      viewModel.addAction(splitIndex = 1)
-      assertThat(awaitItem().rule().actions[1])
-        .isEqualTo(
-          RuleAction(
-            value = null,
-            op = RuleAction.Op.Set,
-            field = Category,
-            type = Id,
-            options = RuleAction.Options(splitIndex = 1),
-          ),
+      val action =
+        RuleAction(
+          value = null,
+          op = RuleAction.Op.Set,
+          field = Category,
+          type = Id,
+          options = RuleAction.Options(splitIndex = 1),
         )
+      viewModel.addAction(action)
+      assertThat(awaitItem().rule().actions[1]).isEqualTo(action)
     }
   }
 
@@ -236,7 +234,7 @@ class EditRuleViewModelTest {
       }
 
       val fixed = remainder(1).withSplitMethod(FixedAmount).copy(value = JsonPrimitive(2000))
-      viewModel.setAction(1, fixed)
+      viewModel.setAction(2L, fixed)
       assertThat(awaitItem().rule().actions)
         .isEqualTo(persistentListOf(CATEGORY, fixed, splitCategory(1)))
     }
@@ -252,8 +250,8 @@ class EditRuleViewModelTest {
       viewModel.addSplit()
       awaitItem()
 
-      viewModel.addAction(splitIndex = 0)
       val payee = RuleAction(value = null, op = RuleAction.Op.Set, field = Payee, type = Id)
+      viewModel.addAction(payee)
       assertThat(awaitItem() as Success).all {
         prop(Success::rule)
           .prop(Rule::actions)
@@ -297,8 +295,10 @@ class EditRuleViewModelTest {
     viewModel.state.test {
       awaitLoaded()
 
-      viewModel.setAction(1, CATEGORY)
-      viewModel.setCondition(1, NOTES)
+      viewModel.setAction(99L, CATEGORY)
+      viewModel.setCondition(99L, NOTES)
+      viewModel.removeAction(99L)
+      viewModel.removeCondition(99L)
       expectNoEvents()
     }
   }
@@ -411,7 +411,7 @@ class EditRuleViewModelTest {
     viewModel.matches.test {
       assertThat(awaitItem()).isEqualTo(RuleMatchesState.Loading)
       skipItems(1)
-      viewModel.setAction(0, CATEGORY.copy(field = Account, value = JsonPrimitive("")))
+      viewModel.setAction(1L, CATEGORY.copy(field = Account, value = JsonPrimitive("")))
       assertThat(awaitItem()).isEqualTo(Invalid)
     }
   }

@@ -48,11 +48,12 @@ class ActionSplitTest {
 
   @Test
   fun `Adding an action keeps the list grouped by split`() {
-    val added = actions.addAction(1)
+    val added = actions.addAction(actions.nextAction(1))
     assertThat(added[3]).isEqualTo(newAction(Payee, splitIndex = 1))
     assertThat(added.splits()[1].actions.map { it.value.field })
       .isEqualTo(listOf<Field?>(Category, Payee))
-    assertThat(listOf(payee).addAction(0).last().field).isEqualTo(Category)
+    assertThat(listOf(payee).addAction(listOf(payee).nextAction(0)).last().field)
+      .isEqualTo(Category)
   }
 
   @Test

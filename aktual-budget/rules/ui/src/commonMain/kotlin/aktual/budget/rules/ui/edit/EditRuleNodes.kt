@@ -14,7 +14,6 @@ import aktual.budget.rules.components.nameOf
 import aktual.budget.rules.components.valueLabel
 import aktual.budget.rules.domain.ActionSplit
 import aktual.budget.rules.domain.ConditionEntities
-import aktual.budget.rules.domain.newActionIndex
 import aktual.budget.rules.domain.splits
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition1
@@ -86,7 +85,12 @@ internal fun LazyListScope.stageNode(
   onAction: OnAction<EditRuleAction>,
 ) =
   item(key = "stage") {
-    TimelineRow(hasRail = true, node = { DotNode() }, isEndOfStep = true) {
+    TimelineRow(
+      modifier = Modifier.animateItem(),
+      hasRail = true,
+      node = { DotNode() },
+      isEndOfStep = true,
+    ) {
       NodeHeading(Strings.editRuleStage) {
         AktualTooltip(
           modifier = Modifier.size(24.dp),
@@ -114,11 +118,13 @@ internal fun LazyListScope.conditionsNode(
   conditionsOp: ConditionOp,
   names: ImmutableMap<String, String>,
   isEnabled: Boolean,
-  onOpen: ((Int) -> Unit)?,
+  onOpen: ((Long) -> Unit)?,
+  onAdd: (() -> Unit)?,
   onAction: OnAction<EditRuleAction>,
 ) {
   item(key = "when") {
     TimelineRow(
+      modifier = Modifier.animateItem(),
       hasRail = true,
       node = { IconNode(AktualIcons.Filter, colors.pillBackground, colors.pillText) },
     ) {
@@ -133,10 +139,11 @@ internal fun LazyListScope.conditionsNode(
     key = { index, _ -> "condition-${conditionKeys.getOrNull(index) ?: "at-$index"}" },
   ) { index, condition ->
     TimelineRow(modifier = Modifier.animateItem(), hasRail = true) {
+      val key = conditionKeys.getOrNull(index)
       RuleCard(
         title = "${condition.field.label()} ${condition.operator.label()}",
         value = condition.valueLabel(names, RuleConditions),
-        onClick = onOpen?.let { open -> { open(index) } }?.takeIf { isEnabled },
+        onClick = if (onOpen != null && key != null && isEnabled) ({ onOpen(key) }) else null,
       )
     }
   }
@@ -145,33 +152,33 @@ internal fun LazyListScope.conditionsNode(
     TimelineRow(modifier = Modifier.animateItem(), hasRail = true, isEndOfStep = true) {
       AddCard(
         text = Strings.reportsFormulaQueryAddCondition,
-        isEnabled = isEnabled,
-        onClick = {
-          onOpen?.invoke(conditions.size)
-          onAction(AddCondition)
-        },
+        isEnabled = isEnabled && onAdd != null,
+        onClick = { onAdd?.invoke() },
       )
     }
   }
 }
 
-// Shows nothing until the condition at [index] exists, e.g. straight after adding it
+// Edits a copy of the condition, passed to [onDone] when Done is pressed. Without [onDelete] it's a
+// new condition, so it can't be deleted
 @Composable
 internal fun RuleConditionSheet(
-  index: Int,
-  conditions: ImmutableList<Condition>,
+  initial: Condition,
   entities: ConditionEntities,
-  onAction: OnAction<EditRuleAction>,
+  onDone: (Condition) -> Unit,
+  onDelete: (() -> Unit)?,
   onDismiss: () -> Unit,
 ) {
-  val condition = conditions.getOrNull(index) ?: return
+  var draft by remember { mutableStateOf(initial) }
   ConditionSheet(
-    condition = condition,
+    condition = draft,
     data = entities,
     schema = RuleConditions,
-    onChange = { onAction(SetCondition(index, it)) },
-    onDelete = { onAction(RemoveCondition(index)) },
+    onChange = { draft = it },
+    onDelete = onDelete ?: {},
     onDismiss = onDismiss,
+    onDone = { onDone(draft) },
+    onAdd = { onDone(draft) }.takeIf { onDelete == null },
   )
 }
 
@@ -214,12 +221,14 @@ internal fun LazyListScope.actionsNode(
   actionKeys: ImmutableList<Long>,
   names: ImmutableMap<String, String>,
   isEnabled: Boolean,
-  onOpen: ((Int) -> Unit)?,
-  onOpenSplit: (Int) -> Unit,
+  onOpen: ((Long) -> Unit)?,
+  onAdd: ((splitIndex: Int) -> Unit)?,
+  onOpenSplit: (Long) -> Unit,
   onAction: OnAction<EditRuleAction>,
 ) {
   item(key = "then") {
     TimelineRow(
+      modifier = Modifier.animateItem(),
       hasRail = false,
       node = {
         IconNode(AktualIcons.Bolt, colors.buttonPrimaryBackground, colors.buttonPrimaryText)
@@ -231,22 +240,18 @@ internal fun LazyListScope.actionsNode(
 
   val splits = actions.splits()
   val isSplit = splits.size > 1
-  fun addAction(splitIndex: Int) {
-    onOpen?.invoke(actions.newActionIndex(splitIndex))
-    onAction(AddAction(splitIndex))
-  }
 
   splits.fastForEach { split ->
     // A split's amount action keeps its key as other splits come and go
-    val splitKey =
-      split.amount?.let { actionKeys.getOrNull(it.index) }?.toString() ?: "at-${split.index}"
+    val amountKey = split.amount?.let { actionKeys.getOrNull(it.index) }
+    val splitKey = amountKey?.toString() ?: "at-${split.index}"
 
     if (isSplit) {
       item(key = "split-$splitKey") {
         TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           SplitHeader(
             split = split,
-            onClick = { onOpenSplit(split.index) }.takeIf { isEnabled && split.amount != null },
+            onClick = if (amountKey != null && isEnabled) ({ onOpenSplit(amountKey) }) else null,
           )
         }
       }
@@ -257,10 +262,11 @@ internal fun LazyListScope.actionsNode(
       key = { (index, _) -> "action-${actionKeys.getOrNull(index) ?: "at-$index"}" },
     ) { (index, action) ->
       TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
+        val key = actionKeys.getOrNull(index)
         RuleCard(
           title = action.title(),
           value = action.valueText(names),
-          onClick = onOpen?.let { open -> { open(index) } }?.takeIf { isEnabled },
+          onClick = if (onOpen != null && key != null && isEnabled) ({ onOpen(key) }) else null,
         )
       }
     }
@@ -270,8 +276,8 @@ internal fun LazyListScope.actionsNode(
         TimelineRow(modifier = Modifier.animateItem(), hasRail = false) {
           AddCard(
             text = Strings.editRuleAddAction,
-            isEnabled = isEnabled,
-            onClick = { addAction(split.index) },
+            isEnabled = isEnabled && onAdd != null,
+            onClick = { onAdd?.invoke(split.index) },
           )
         }
       }
@@ -285,8 +291,8 @@ internal fun LazyListScope.actionsNode(
           AddCard(
             modifier = Modifier.weight(1f),
             text = Strings.editRuleAddAction,
-            isEnabled = isEnabled,
-            onClick = { addAction(0) },
+            isEnabled = isEnabled && onAdd != null,
+            onClick = { onAdd?.invoke(0) },
           )
         }
         if (actions.isNotEmpty()) {
@@ -443,6 +449,7 @@ private fun PreviewConditionsNode(@PreviewParameter(ColorParameters::class) colo
         names = PREVIEW_NAMES,
         isEnabled = true,
         onOpen = {},
+        onAdd = {},
         onAction = {},
       )
     }
@@ -470,6 +477,7 @@ private fun PreviewActionsNode(@PreviewParameter(ColorParameters::class) colors:
         names = PREVIEW_NAMES,
         isEnabled = true,
         onOpen = {},
+        onAdd = {},
         onOpenSplit = {},
         onAction = {},
       )
@@ -507,6 +515,7 @@ private fun PreviewSplitActionsNode(@PreviewParameter(ColorParameters::class) co
         names = PREVIEW_NAMES,
         isEnabled = true,
         onOpen = {},
+        onAdd = {},
         onOpenSplit = {},
         onAction = {},
       )
@@ -524,6 +533,7 @@ private fun PreviewEmptyActionsNode(@PreviewParameter(ColorParameters::class) co
         names = PREVIEW_NAMES,
         isEnabled = true,
         onOpen = {},
+        onAdd = {},
         onOpenSplit = {},
         onAction = {},
       )
