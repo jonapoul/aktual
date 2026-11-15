@@ -121,7 +121,7 @@ fun BottomSheetListItem(
   trailingContent: (@Composable () -> Unit)? = null,
   labelColor: Color = Unspecified,
 ) {
-  val contentColor = if (enabled) colors.pageText else colors.pageText.copy(alpha = DISABLED_ALPHA)
+  val contentColor = if (enabled) colors.pageText else colors.pageText.disabled
   CompositionLocalProvider(LocalContentColor provides contentColor) {
     Row(
       modifier =
@@ -153,8 +153,6 @@ fun BottomSheetListItem(
     }
   }
 }
-
-private const val DISABLED_ALPHA = 0.38f
 
 @Composable
 fun BottomSheetMessage(text: String, modifier: Modifier = Modifier) =
