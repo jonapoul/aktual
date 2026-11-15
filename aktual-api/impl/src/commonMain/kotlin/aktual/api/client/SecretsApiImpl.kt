@@ -54,7 +54,7 @@ internal constructor(
   private fun HttpRequestBuilder.request(vararg segments: String) {
     val remote = server.remote()
     url(remote.url, *segments)
-    header(AktualHeaders.TOKEN, remote.token)
+    header(AktualHeaders.TOKEN, remote.token.value)
     // Refusals like a user who isn't an admin come back as 4xx with the usual JSON envelope
     expectSuccess = false
   }

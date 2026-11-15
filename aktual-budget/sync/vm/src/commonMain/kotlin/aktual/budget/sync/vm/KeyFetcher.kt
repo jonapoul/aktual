@@ -31,7 +31,7 @@ internal constructor(
   private val decrypter: BufferDecrypter,
 ) {
   suspend operator fun invoke(budgetId: BudgetId, keyPassword: Password): FetchKeyResult {
-    log.d { "KeyFetcher $budgetId $token $keyPassword" }
+    log.d { "Fetching key for $budgetId" }
     val response =
       runCatchingCancellable(
         attempt = {
@@ -44,7 +44,7 @@ internal constructor(
             log.e(e) { "Failure = $failure" }
             return FetchKeyResult.ResponseFailure(failure.reason)
           }
-          log.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
+          log.e(e) { "Failed fetching key for $budgetId" }
           return FetchKeyResult.IOFailure(e.requireMessage())
         },
       )
@@ -58,16 +58,14 @@ internal constructor(
       buffer.write(test.value)
       val decrypted = decrypter(test.meta, buffer)
       if (decrypted is Failure) {
-        error("Invalid password ${keyPassword.value}: $decrypted")
+        error("Invalid password: $decrypted")
       }
 
       log.i { "Decrypted data successfully with test!" }
-      log.v { "testBuffer = $buffer" }
-      log.v { "decrypted = $decrypted" }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      log.e(e) { "Failed decrypting buffer from $response with key $key" }
+      log.e(e) { "Failed decrypting test buffer for $budgetId with keyId=$keyId" }
       return TestFailure
     } finally {
       // This is only inserted for the sake of the decryption test

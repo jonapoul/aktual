@@ -19,7 +19,6 @@ kotlinx-serialization = "1.12.0"
 ktor = "3.6.1"
 markdown = "0.46.0"
 metro = "1.5.2"
-redacted = "1.18.0"
 sqldelight = "2.4.1"
 
 [libraries]
@@ -119,7 +118,6 @@ mockk = { module = "io.mockk:mockk", version = "1.14.12" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.18.2" }
 proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.10.0" }
-redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.17" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0" }
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
@@ -153,7 +151,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.1" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
-redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
+redacted = { id = "dev.zacsweers.redacted", version = "1.18.0" }
 sortDependencies = { id = "com.squareup.sort-dependencies", version = "0.21.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 straitjacket = { id = "dev.jonpoulton.straitjacket", version = "0.1.0" }

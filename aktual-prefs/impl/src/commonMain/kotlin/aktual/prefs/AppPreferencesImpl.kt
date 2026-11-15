@@ -18,7 +18,7 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
     dataStore.translated(
       key = stringPreferencesKey("token"),
       default = null,
-      translator = toStringTranslator(::Token),
+      translator = toStringTranslator(::Token, Token::value),
     )
 
   override val serverUrl: NullablePreference<ServerUrl> =

@@ -84,7 +84,7 @@ class AccountApiImpl(
       client
         .post {
           url(serverUrl, "/account/login")
-          header(AktualHeaders.PASSWORD, password)
+          header(AktualHeaders.PASSWORD, password.value)
           contentType(ContentType.Application.Json)
           setBody(body)
         }
@@ -100,7 +100,7 @@ class AccountApiImpl(
     client
       .post {
         url(serverUrl, "/account/change-password")
-        header(AktualHeaders.TOKEN, token)
+        header(AktualHeaders.TOKEN, token.value)
         contentType(ContentType.Application.Json)
         setBody(body)
       }
@@ -111,7 +111,7 @@ class AccountApiImpl(
       client
         .get {
           url(serverUrl, "/account/validate")
-          header(AktualHeaders.TOKEN, token)
+          header(AktualHeaders.TOKEN, token.value)
         }
         .body<ValidateResponse.Success>()
     } catch (e: ResponseException) {

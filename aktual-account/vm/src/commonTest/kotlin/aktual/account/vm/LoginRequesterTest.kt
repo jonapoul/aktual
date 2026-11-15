@@ -86,7 +86,7 @@ internal class LoginRequesterTest {
       assertThatNextEmission().isNull()
 
       // When we log in with a successful response
-      val body = """{ "status": "ok", "data": { "token": "$EXAMPLE_TOKEN" } } """
+      val body = """{ "status": "ok", "data": { "token": "${EXAMPLE_TOKEN.value}" } } """
       mockEngine += { respondJson(body) }
       val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 

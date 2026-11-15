@@ -36,7 +36,7 @@ internal constructor(
       try {
         client.post {
           url(remote.url, "/sync/sync")
-          header(AktualHeaders.TOKEN, remote.token)
+          header(AktualHeaders.TOKEN, remote.token.value)
           setBody(requestBody.toByteArray())
 
           // Required by the Actual sync server's express.raw() middleware.

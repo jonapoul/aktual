@@ -1,5 +1,6 @@
 package aktual.api
 
+import aktual.api.client.AktualHeaders
 import aktual.log
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -32,6 +33,7 @@ fun buildKtorClient(
         logger = AktualKtorLogger(tag)
         level = HEADERS
         format = OkHttp
+        sanitizeHeader { it == AktualHeaders.TOKEN || it == AktualHeaders.PASSWORD }
       }
     }
 

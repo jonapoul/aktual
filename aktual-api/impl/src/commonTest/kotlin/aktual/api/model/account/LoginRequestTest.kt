@@ -11,7 +11,7 @@ class LoginRequestTest {
   @Test
   fun `Convert to string with blocked out password`() {
     assertThat(LoginRequest.Password(password).toString())
-      .isEqualTo("Password(password=██, loginMethod=Password)")
+      .isEqualTo("Password(password=Password(██), loginMethod=Password)")
   }
 
   @Test

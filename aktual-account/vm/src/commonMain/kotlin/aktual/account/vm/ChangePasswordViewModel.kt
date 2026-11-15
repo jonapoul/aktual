@@ -65,7 +65,6 @@ internal constructor(
   fun submit() {
     val password = mutablePassword1.value
     val password2 = mutablePassword2.value
-    log.d { "submit $password $password2" }
     if (password2 != password) {
       mutableState.update { PasswordsDontMatch }
       return

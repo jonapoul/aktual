@@ -45,7 +45,7 @@ class SyncApiImpl(
   ): Flow<SyncDownloadState> = channelFlow {
     val statement = client.prepareGet {
       url(serverUrl, "/sync/download-user-file")
-      header(AktualHeaders.TOKEN, token)
+      header(AktualHeaders.TOKEN, token.value)
       header(AktualHeaders.FILE_ID, budgetId)
     }
 
@@ -71,7 +71,7 @@ class SyncApiImpl(
     client
       .get {
         url(serverUrl, "/sync/list-user-files")
-        header(AktualHeaders.TOKEN, token)
+        header(AktualHeaders.TOKEN, token.value)
       }
       .body<ListUserFilesResponse.Success>()
 
@@ -82,7 +82,7 @@ class SyncApiImpl(
     client
       .get {
         url(serverUrl, "/sync/get-user-file-info")
-        header(AktualHeaders.TOKEN, token)
+        header(AktualHeaders.TOKEN, token.value)
         header(AktualHeaders.FILE_ID, budgetId)
       }
       .body<GetUserFileInfoResponse.Success>()

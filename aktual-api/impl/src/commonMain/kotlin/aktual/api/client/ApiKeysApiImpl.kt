@@ -68,7 +68,7 @@ internal constructor(
   private fun HttpRequestBuilder.request(vararg segments: String) {
     val remote = server.remote()
     url(remote.url, API_KEYS, *segments)
-    header(AktualHeaders.TOKEN, remote.token)
+    header(AktualHeaders.TOKEN, remote.token.value)
     // Refusals like an invalid name come back as 4xx with the usual JSON envelope
     expectSuccess = false
   }
