@@ -78,6 +78,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -163,7 +164,16 @@ internal constructor(
           matches
         }
       }
-      .stateIn(viewModelScope, WhileSubscribed(STOP_TIMEOUT_MS), initialValue = Loading)
+      // Starts each opening of the sheet with nothing ticked, so applying can't change a match
+      // ticked last time and forgotten
+      .onStart { mutableSelected.update { persistentSetOf() } }
+      // Stops and forgets the matches as soon as the sheet closes, so they're searched for again
+      // when it opens rather than showing old results
+      .stateIn(
+        viewModelScope,
+        WhileSubscribed(stopTimeoutMillis = 0, replayExpirationMillis = 0),
+        initialValue = Loading,
+      )
 
   init {
     loadData()
