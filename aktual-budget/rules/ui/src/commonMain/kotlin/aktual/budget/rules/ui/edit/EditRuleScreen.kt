@@ -29,8 +29,10 @@ import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.edit_rule_failed_saving
 import aktual.core.l10n.edit_rule_matches_applied
 import aktual.core.l10n.edit_rule_matches_apply_failed
+import aktual.core.l10n.edit_rule_saved
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.AktualAlertDialog
@@ -66,6 +68,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
@@ -142,6 +145,11 @@ internal fun EditRuleScreen(
           )
         ApplyFailed ->
           snackbarHostState.showErrorSnackbar(getString(Res.string.edit_rule_matches_apply_failed))
+        Saved -> snackbarHostState.showSuccessSnackbar(getString(Res.string.edit_rule_saved))
+        is SaveFailed ->
+          snackbarHostState.showErrorSnackbar(
+            getString(Res.string.edit_rule_failed_saving, event.reason),
+          )
       }
     }
   }
@@ -402,7 +410,6 @@ private val Failure.reason: String
   get() =
     when (this) {
       NotFound -> Strings.editRuleFailedNoMatch
-      is SaveFailed -> Strings.editRuleFailedSaving(reason)
       is OtherFailure -> Strings.editRuleFailedOther(reason)
     }
 

@@ -251,12 +251,13 @@ internal constructor(
             rulesDao.insert(rule)
             log.i { "Saved $rule" }
             mutableDraft.update { draft -> draft?.copy(saved = model) }
+            mutableEvents.tryEmit(Saved)
             syncController.syncChanges(insertChanges(rule))
           }
         },
         onFailure = { e ->
           log.e(e) { "Failed saving $ruleId" }
-          mutableFailure.update { EditRuleState.SaveFailed(e.requireMessage()) }
+          mutableEvents.tryEmit(EditRuleEvent.SaveFailed(e.requireMessage()))
         },
         finally = { mutableIsWorking.update { false } },
       )

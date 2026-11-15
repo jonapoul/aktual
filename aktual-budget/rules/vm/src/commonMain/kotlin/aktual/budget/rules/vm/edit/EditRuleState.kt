@@ -33,8 +33,6 @@ sealed interface EditRuleState {
 
   data object NotFound : Failure
 
-  @JvmInline value class SaveFailed(val reason: String) : Failure
-
   @JvmInline value class OtherFailure(val reason: String) : Failure
 }
 

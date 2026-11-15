@@ -1885,7 +1885,8 @@
   <string name="edit_rule_action_delete">Delete Rule</string>
   <string name="edit_rule_failed_title">Error</string>
   <string name="edit_rule_failed_no_match">No rule found!</string>
-  <string name="edit_rule_failed_saving">Failed while trying to save: %1$s</string>
+  <string name="edit_rule_failed_saving">Couldn't save the rule: %1$s</string>
+  <string name="edit_rule_saved">Saved the rule</string>
   <string name="edit_rule_failed_other">Unexpected failure: %1$s</string>
   <string name="edit_rule_stage_desc">The stage of a rule allows you to force a specific order. Pre rules always run first, and post rules always run last. Within each stage rules are automatically ordered from least to most specific.</string>
   <string name="edit_rule_stage">Rule stage</string>

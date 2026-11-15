@@ -344,6 +344,22 @@ class EditRuleViewModelTest {
   }
 
   @Test
+  fun `Saving says so`() = runDatabaseTest { scope ->
+    insertRule(SAVED)
+    val viewModel = createViewModel(scope, RuleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+      viewModel.setStage(Pre)
+      viewModel.events.test {
+        viewModel.save()
+        assertThat(awaitItem()).isEqualTo(Saved)
+      }
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Changes are tracked against the saved rule`() = runDatabaseTest { scope ->
     insertRule(SAVED)
     val viewModel = createViewModel(scope, RuleId("a"))
