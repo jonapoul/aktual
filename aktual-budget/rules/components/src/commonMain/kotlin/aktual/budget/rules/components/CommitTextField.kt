@@ -28,6 +28,8 @@ fun CommitTextField(
   isEnabled: Boolean = true,
   keyboardType: KeyboardType = Text,
   capitalization: KeyboardCapitalization = None,
+  leadingIcon: (@Composable () -> Unit)? = null,
+  trailingIcon: (@Composable () -> Unit)? = null,
 ) {
   val state = rememberTextFieldState(text)
   var isFocused by remember { mutableStateOf(false) }
@@ -54,5 +56,7 @@ fun CommitTextField(
         imeAction = Done,
       ),
     onKeyboardAction = { focusManager.clearFocus() },
+    leadingIcon = leadingIcon,
+    trailingIcon = trailingIcon,
   )
 }

@@ -17,9 +17,12 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.Chip
 import aktual.core.ui.HostedSheet
+import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +36,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text as MaterialText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -82,7 +86,16 @@ fun ConditionValue(
       )
 
     // Number keyboards don't all offer a minus sign
-    Money ->
+    Money -> {
+      val currency = LocalCurrencyConfig.current
+      val symbol: (@Composable () -> Unit)? =
+        currency.currency.symbol
+          .takeIf { it.isNotEmpty() }
+          ?.let {
+            {
+              MaterialText(text = it, style = typography.bodyLarge, color = colors.pageTextSubdued)
+            }
+          }
       CommitTextField(
         modifier = modifier.fillMaxWidth(),
         text = Amount(value.jsonPrimitive.long).toSignedInputText(),
@@ -90,7 +103,10 @@ fun ConditionValue(
         onCommit = { text ->
           evaluateAmountInput(text)?.let { amount -> onChange(JsonPrimitive(amount.toLong())) }
         },
+        leadingIcon = symbol.takeIf { currency.position == BeforeAmount },
+        trailingIcon = symbol.takeIf { currency.position == AfterAmount },
       )
+    }
 
     Day ->
       CommitTextField(
