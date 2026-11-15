@@ -89,17 +89,11 @@ fun ConditionValue(
     Money -> {
       val currency = LocalCurrencyConfig.current
       val symbol: (@Composable () -> Unit)? =
-        currency.currency.symbol
-          .takeIf { it.isNotEmpty() }
-          ?.let {
-            {
-              MaterialText(text = it, style = typography.bodyLarge, color = colors.pageTextSubdued)
-            }
-          }
+        currency.currency.symbol.takeIf { it.isNotEmpty() }?.let { { CurrencySymbol(it) } }
       CommitTextField(
         modifier = modifier.fillMaxWidth(),
         text = Amount(value.jsonPrimitive.long).toSignedInputText(),
-        keyboardType = Text,
+        keyboardType = Decimal,
         onCommit = { text ->
           evaluateAmountInput(text)?.let { amount -> onChange(JsonPrimitive(amount.toLong())) }
         },
@@ -141,6 +135,16 @@ fun ConditionValue(
 
     NoValue -> Unit
   }
+}
+
+@Composable
+private fun CurrencySymbol(string: String, modifier: Modifier = Modifier) {
+  MaterialText(
+    modifier = modifier,
+    text = string,
+    style = typography.bodyLarge,
+    color = colors.pageTextSubdued,
+  )
 }
 
 @Composable
