@@ -128,8 +128,8 @@ fun BottomSheetListItem(
         modifier
           .fillMaxWidth()
           .clickable(enabled, onClick = onClick)
-          .padding(horizontal = 16.dp, vertical = 12.dp),
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
+          .padding(horizontal = Dimens.Huge, vertical = Dimens.Large),
+      horizontalArrangement = Arrangement.spacedBy(Dimens.Huge),
       verticalAlignment = CenterVertically,
     ) {
       leadingContent?.invoke()
@@ -143,7 +143,7 @@ fun BottomSheetListItem(
 
       if (isSelected || trailingContent != null) {
         Row(
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
           verticalAlignment = CenterVertically,
         ) {
           if (isSelected) BottomSheetIcon(AktualIcons.Check)
