@@ -3,7 +3,7 @@ name: Nightly
 on:
   # 2am daily
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '23 19 * * *'
   workflow_dispatch:
 
 permissions:
