@@ -131,7 +131,12 @@ fun BottomSheetListItem(
   labelColor: Color = Unspecified,
 ) {
   val isChosen = isSelected == true && enabled
-  val contentColor = if (enabled) colors.pageText else colors.pageText.disabled
+  val contentColor =
+    when {
+      !enabled -> colors.pageText.disabled
+      isChosen -> colors.settingsNavItemTextSelected
+      else -> colors.pageText
+    }
   val background by
     animateColorAsState(if (isChosen) colors.settingsNavItemBackgroundSelected else Transparent)
   CompositionLocalProvider(LocalContentColor provides contentColor) {
