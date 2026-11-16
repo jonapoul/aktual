@@ -126,7 +126,7 @@ private fun HazedBars(
           .height(barHeight)
           .hazedTopBar(
             state = HazedTopBarState(hazeState, config.appBarEffect),
-            scrollOffset = { Float.MAX_VALUE },
+            scrollOffset = { MAX_VALUE },
             config = config,
           ),
       verticalAlignment = CenterVertically,

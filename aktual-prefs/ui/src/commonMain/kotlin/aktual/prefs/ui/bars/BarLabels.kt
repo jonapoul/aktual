@@ -11,6 +11,7 @@ import aktual.core.icons.material.Window
 import aktual.core.l10n.Strings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
@@ -44,5 +45,6 @@ internal val BarGlassStyle.icon: ImageVector
     }
 
 @Composable
+@NonRestartableComposable
 internal fun OptionIcon(imageVector: ImageVector) =
   Icon(imageVector = imageVector, contentDescription = null)

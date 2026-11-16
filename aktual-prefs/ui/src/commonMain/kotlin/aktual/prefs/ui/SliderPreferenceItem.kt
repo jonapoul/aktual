@@ -82,9 +82,9 @@ internal fun SliderPreferenceItem(
         Slider(
           modifier = Modifier.weight(1f),
           value = currentValue,
-          onValueChange = {
-            currentValue = it
-            onValueChanging(it)
+          onValueChange = { newValue ->
+            currentValue = newValue
+            onValueChanging(newValue)
           },
           valueRange = range,
           onValueChangeFinished = { onValueChange(currentValue) },

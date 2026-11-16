@@ -24,6 +24,7 @@ import aktual.prefs.vm.systemui.BlurAlphaPreference
 import aktual.prefs.vm.systemui.BlurRadiusPreference
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -80,7 +81,7 @@ private fun BarSettingsScaffold(
     item {
       DraftSlider(
         preference = state.blurRadius,
-        draft = blurRadius,
+        onValueChanging = { blurRadius.floatValue = it },
         title = Strings.settingsUiBlurRadius,
         icon = MaterialIcons.BlurCircular,
       )
@@ -88,7 +89,7 @@ private fun BarSettingsScaffold(
     item {
       DraftSlider(
         preference = state.blurAlpha,
-        draft = blurAlpha,
+        onValueChanging = { blurAlpha.floatValue = it },
         title = Strings.settingsUiBlurAlpha,
         icon = MaterialIcons.Opacity,
       )
@@ -104,7 +105,7 @@ private fun BarSettingsScaffold(
     item {
       DraftSlider(
         preference = state.glassCornerRadiusDp,
-        draft = cornerRadius,
+        onValueChanging = { cornerRadius.floatValue = it },
         title = Strings.settingsUiGlassCornerRadius,
         icon = MaterialIcons.RoundedCorner,
       )
@@ -117,18 +118,19 @@ private fun rememberDraft(preference: SliderPreference): MutableFloatState =
   remember(preference.value) { mutableFloatStateOf(preference.value) }
 
 @Composable
+@NonRestartableComposable
 private fun DraftSlider(
   preference: SliderPreference,
-  draft: MutableFloatState,
   title: String,
   icon: ImageVector,
+  onValueChanging: (Float) -> Unit,
 ) =
   SliderPreferenceItem(
     preference = preference,
     title = title,
     subtitle = null,
     icon = icon,
-    onValueChanging = { draft.floatValue = it },
+    onValueChanging = onValueChanging,
   )
 
 @PortraitPreview
