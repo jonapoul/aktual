@@ -2504,11 +2504,12 @@
   <string name="settings_theme_local_empty">Duplicate any theme from its preview screen to make a copy you can edit</string>
 
   <string name="settings_format_group">Formatting</string>
-  <string name="settings_format_numbers_group">Numbers</string>
   <string name="settings_format_dates_group">Dates</string>
   <string name="settings_format_distance_group">Distance</string>
   <string name="settings_format_desc">Formatting does not affect how budget data is stored, and can be changed at any time.</string>
   <string name="settings_format_numbers">Number format</string>
+  <string name="settings_amounts">Amounts</string>
+  <string name="settings_amounts_desc">Choose how amounts look throughout the app.</string>
   <string name="settings_format_decimal">Hide decimal places</string>
   <string name="settings_format_dates">Date format</string>
   <string name="settings_date_format_mm_dd_yyyy">MM/DD/YYYY</string>

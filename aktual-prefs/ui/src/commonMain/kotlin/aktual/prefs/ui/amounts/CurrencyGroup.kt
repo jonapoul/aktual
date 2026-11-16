@@ -1,4 +1,4 @@
-package aktual.prefs.ui.format
+package aktual.prefs.ui.amounts
 
 import aktual.budget.model.Amount
 import aktual.budget.model.Currency
@@ -12,16 +12,15 @@ import aktual.core.icons.material.LineStartArrowNotch
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SpaceBar
 import aktual.core.l10n.Strings
-import aktual.core.ui.LocalCurrencyConfig
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
-import aktual.prefs.vm.format.FormatSettingsState
+import aktual.prefs.vm.amounts.AmountSettingsState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 @Composable
-internal fun CurrencyGroup(state: FormatSettingsState) =
+internal fun CurrencyGroup(state: AmountSettingsState) =
   PreferenceGroup(title = Strings.settingsCurrency, subtitle = Strings.settingsCurrencyDesc) {
     ListPreferenceItem(
       preference = state.currency,
@@ -39,7 +38,7 @@ internal fun CurrencyGroup(state: FormatSettingsState) =
     )
     ListPreferenceItem(
       preference = state.symbolPosition,
-      optionString = { c -> c.string() },
+      optionString = { c -> c.string(state.currencyConfig) },
       optionSuffix = null,
       icon =
         when (state.symbolPosition.value) {
@@ -110,9 +109,7 @@ private fun Currency.string(): String =
   }
 
 @Composable
-private fun CurrencySymbolPosition.string(
-  config: CurrencyConfig = LocalCurrencyConfig.current,
-): String =
+private fun CurrencySymbolPosition.string(config: CurrencyConfig): String =
   when (this) {
     BeforeAmount ->
       Strings.settingsCurrencySymbolPositionBefore(symbolPositionString(config, position = this))

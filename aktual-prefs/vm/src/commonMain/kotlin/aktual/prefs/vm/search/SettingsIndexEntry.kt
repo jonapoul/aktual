@@ -1,6 +1,7 @@
 package aktual.prefs.vm.search
 
 import aktual.core.l10n.Res
+import aktual.core.l10n.settings_amounts
 import aktual.core.l10n.settings_app_icon
 import aktual.core.l10n.settings_currency
 import aktual.core.l10n.settings_currency_add_space
@@ -15,7 +16,6 @@ import aktual.core.l10n.settings_format_distance_group
 import aktual.core.l10n.settings_format_first_day
 import aktual.core.l10n.settings_format_group
 import aktual.core.l10n.settings_format_numbers
-import aktual.core.l10n.settings_format_numbers_group
 import aktual.core.l10n.settings_security
 import aktual.core.l10n.settings_security_app_lock
 import aktual.core.l10n.settings_security_auto_save_locations
@@ -108,17 +108,7 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
     SettingsPage.Format to
       entry(
         Res.string.settings_format_group,
-        entry(
-          Res.string.settings_format_numbers_group,
-          entry(Res.string.settings_format_numbers),
-          entry(Res.string.settings_format_decimal),
-        ),
-        entry(
-          Res.string.settings_currency,
-          entry(Res.string.settings_currency_default),
-          entry(Res.string.settings_currency_symbol_position),
-          entry(Res.string.settings_currency_add_space),
-        ),
+        entry(Res.string.settings_amounts),
         entry(
           Res.string.settings_format_dates_group,
           entry(Res.string.settings_format_dates),
@@ -127,6 +117,18 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         entry(
           Res.string.settings_format_distance_group,
           entry(Res.string.settings_format_distance),
+        ),
+      ),
+    SettingsPage.Amounts to
+      entry(
+        Res.string.settings_amounts,
+        entry(Res.string.settings_format_numbers),
+        entry(Res.string.settings_format_decimal),
+        entry(
+          Res.string.settings_currency,
+          entry(Res.string.settings_currency_default),
+          entry(Res.string.settings_currency_symbol_position),
+          entry(Res.string.settings_currency_add_space),
         ),
       ),
     SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),

@@ -244,7 +244,6 @@ private fun PinnedContent(
     if (state.canPinMore) {
       BottomSheetListItem(
         label = Strings.homeReportsAdd,
-        isSelected = false,
         leadingContent = { BottomSheetIcon(AktualIcons.Add) },
         onClick = { onPick(null) },
       )
@@ -301,7 +300,6 @@ private fun PickerContent(
       page.reports.fastForEach { report ->
         BottomSheetListItem(
           label = report.displayName(),
-          isSelected = false,
           onClick = { onPick(report.id) },
         )
       }

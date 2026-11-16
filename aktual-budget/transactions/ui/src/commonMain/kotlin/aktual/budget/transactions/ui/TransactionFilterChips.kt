@@ -246,7 +246,6 @@ private fun FieldList(onSelect: (Field) -> Unit) =
     FILTER_FIELDS.fastForEach { field ->
       BottomSheetListItem(
         label = field.label().replaceFirstChar { it.titlecase() },
-        isSelected = false,
         onClick = { onSelect(field) },
       )
     }

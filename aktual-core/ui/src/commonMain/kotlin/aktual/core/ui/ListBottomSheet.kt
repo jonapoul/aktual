@@ -1,10 +1,11 @@
 package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Check
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,19 +15,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -110,24 +115,48 @@ internal fun <T : Any> filterOptions(
       .toImmutableList()
   }
 
+/**
+ * Row in a bottom sheet list. Pass [isSelected] for a list of choices, which shows a radio button
+ * and highlights the chosen row. Leave it null for a list of actions.
+ */
 @Composable
 fun BottomSheetListItem(
   label: String,
-  isSelected: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  isSelected: Boolean? = null,
   enabled: Boolean = true,
   leadingContent: (@Composable () -> Unit)? = null,
   trailingContent: (@Composable () -> Unit)? = null,
   labelColor: Color = Unspecified,
 ) {
-  val contentColor = if (enabled) colors.pageText else colors.pageText.disabled
+  val isChosen = isSelected == true && enabled
+  val contentColor =
+    when {
+      !enabled -> colors.pageText.disabled
+      isChosen -> colors.settingsNavItemTextSelected
+      else -> colors.pageText
+    }
+  val background by
+    animateColorAsState(if (isChosen) colors.settingsNavItemBackgroundSelected else Transparent)
   CompositionLocalProvider(LocalContentColor provides contentColor) {
     Row(
       modifier =
         modifier
           .fillMaxWidth()
-          .clickable(enabled, onClick = onClick)
+          .background(background)
+          .then(
+            if (isSelected == null) {
+              Modifier.clickable(enabled, onClick = onClick)
+            } else {
+              Modifier.selectable(
+                selected = isSelected,
+                enabled = enabled,
+                role = Role.RadioButton,
+                onClick = onClick,
+              )
+            },
+          )
           .padding(horizontal = Dimens.Huge, vertical = Dimens.Large),
       horizontalArrangement = Arrangement.spacedBy(Dimens.Huge),
       verticalAlignment = CenterVertically,
@@ -137,17 +166,30 @@ fun BottomSheetListItem(
       Text(
         modifier = Modifier.weight(1f),
         text = label,
-        color = if (enabled) labelColor else Unspecified,
+        color =
+          when {
+            !enabled -> Unspecified
+            isChosen -> colors.settingsNavItemTextSelected
+            else -> labelColor
+          },
+        fontWeight = if (isChosen) Medium else null,
         style = AktualTheme.typography.bodyLarge,
       )
 
-      if (isSelected || trailingContent != null) {
+      if (isSelected != null || trailingContent != null) {
         Row(
           horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
           verticalAlignment = CenterVertically,
         ) {
-          if (isSelected) BottomSheetIcon(AktualIcons.Check)
           trailingContent?.invoke()
+          if (isSelected != null) {
+            RadioButton(
+              selected = isSelected,
+              onClick = null,
+              enabled = enabled,
+              colors = colors.radioButton(),
+            )
+          }
         }
       }
     }

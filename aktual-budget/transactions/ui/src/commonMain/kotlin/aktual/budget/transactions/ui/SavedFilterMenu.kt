@@ -87,7 +87,7 @@ internal fun SavedFilterSheet(
       if (saved.filters.isNotEmpty() && hasConditions) HorizontalDivider()
 
       val item: @Composable (String, () -> Unit) -> Unit = { label, onClick ->
-        BottomSheetListItem(label = label, isSelected = false, onClick = { dismiss(onClick) })
+        BottomSheetListItem(label = label, onClick = { dismiss(onClick) })
       }
       if (hasConditions && (applied == null || saved.isModified)) {
         item(Strings.transactionsFilterSaveNew) { onName(SaveNew) }

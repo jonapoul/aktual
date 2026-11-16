@@ -362,7 +362,6 @@ private fun MenuSheet(
       for (item in items) {
         BottomSheetListItem(
           label = item.label,
-          isSelected = false,
           onClick = { if (item.opensSheet) item.onClick() else dismiss(item.onClick) },
           trailingContent = item.trailing?.let { trailing -> { AmountLabel(trailing) } },
         )
@@ -484,14 +483,12 @@ private fun SummarySheet(
       for ((label, sheet) in actions) {
         BottomSheetListItem(
           label = label,
-          isSelected = false,
           onClick = { onAction(OpenSheet(sheet)) },
         )
       }
       if (summary.held != Zero) {
         BottomSheetListItem(
           label = Strings.budgetingHoldReset,
-          isSelected = false,
           onClick = { dismiss { onAction(ResetHold(month)) } },
         )
       }
