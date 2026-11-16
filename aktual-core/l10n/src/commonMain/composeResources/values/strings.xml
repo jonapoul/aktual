@@ -2550,7 +2550,12 @@
   <string name="settings_ui_glass_corner_radius">Corner radius</string>
   <string name="settings_app_icon">App icon</string>
   <string name="settings_app_icon_desc">Choose the icon Aktual shows on your home screen or taskbar. Your launcher might take a few seconds to update.</string>
-  <string name="settings_app_icon_preview">Preview</string>
+  <string name="settings_app_icon_shape">Preview shape</string>
+  <string name="settings_app_icon_shape_desc">Pick the shape your launcher uses to compare every icon in it</string>
+  <string name="settings_app_icon_shape_circle">Circle</string>
+  <string name="settings_app_icon_shape_squircle">Squircle</string>
+  <string name="settings_app_icon_shape_square">Square</string>
+  <string name="settings_app_icon_shape_teardrop">Teardrop</string>
   <string name="settings_app_icon_choose">Icons</string>
   <string name="settings_app_icon_default">Default</string>
   <string name="settings_app_icon_light">Light</string>

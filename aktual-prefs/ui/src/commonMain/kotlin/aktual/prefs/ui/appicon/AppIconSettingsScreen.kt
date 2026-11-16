@@ -12,25 +12,29 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.AppIcon
 import aktual.prefs.components.AppIconImage
-import aktual.prefs.components.AppIconShape
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.vm.appicon.AppIconSettingsViewModel
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -41,8 +45,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Suppress("ViewModelForwarding", "ComposeViewModelForwarding")
 @Composable
@@ -52,19 +54,24 @@ fun AppIconSettingsScreen(
   viewModel: AppIconSettingsViewModel = metroViewModel<AppIconSettingsViewModel>(),
 ) {
   val selected by viewModel.selected.collectAsStateWithLifecycle()
+  var mask by rememberSaveable { mutableStateOf(LauncherMask.Circle) }
   AppIconSettingsScaffold(
     selected = selected,
+    mask = mask,
     highlight = highlight,
     onBack = { back() },
     onSelect = viewModel::select,
+    onSelectMask = { mask = it },
   )
 }
 
 @Composable
 private fun AppIconSettingsScaffold(
   selected: AppIcon,
+  mask: LauncherMask,
   onBack: () -> Unit,
   onSelect: (AppIcon) -> Unit,
+  onSelectMask: (LauncherMask) -> Unit,
   highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
@@ -74,22 +81,15 @@ private fun AppIconSettingsScaffold(
     onBack = onBack,
   ) {
     item {
-      PreferenceGroup(title = Strings.settingsAppIconPreview) {
-        // The same icon under the masks different launchers apply
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-          horizontalArrangement = Arrangement.SpaceEvenly,
-          verticalAlignment = CenterVertically,
-        ) {
-          LauncherShapes.forEach { shape ->
-            AppIconImage(
-              icon = selected,
-              modifier =
-                Modifier.size(PreviewSize).border(HairlineWidth, colors.tableBorder, shape),
-              shape = shape,
-            )
-          }
-        }
+      PreferenceGroup(
+        title = Strings.settingsAppIconShape,
+        subtitle = Strings.settingsAppIconShapeDesc,
+      ) {
+        MaskSelector(
+          selected = mask,
+          onSelect = onSelectMask,
+          modifier = Modifier.padding(vertical = 8.dp),
+        )
       }
     }
 
@@ -102,7 +102,12 @@ private fun AppIconSettingsScaffold(
           maxItemsInEachRow = OPTIONS_PER_ROW,
         ) {
           AppIcon.entries.forEach { icon ->
-            IconOption(icon = icon, isSelected = icon == selected, onClick = { onSelect(icon) })
+            IconOption(
+              icon = icon,
+              shape = mask.shape,
+              isSelected = icon == selected,
+              onClick = { onSelect(icon) },
+            )
           }
         }
       }
@@ -111,7 +116,49 @@ private fun AppIconSettingsScaffold(
 }
 
 @Composable
-private fun IconOption(icon: AppIcon, isSelected: Boolean, onClick: () -> Unit) {
+private fun MaskSelector(
+  selected: LauncherMask,
+  onSelect: (LauncherMask) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(CardShape)
+        .background(colors.buttonNormalBackground)
+        .padding(4.dp)
+        .selectableGroup(),
+    horizontalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    LauncherMask.entries.forEach { mask ->
+      val isSelected = mask == selected
+      val contentColor = if (isSelected) colors.buttonPrimaryText else colors.pageTextLight
+      Column(
+        modifier =
+          Modifier.weight(1f)
+            .heightIn(min = MinTouchHeight)
+            .clip(CardShape)
+            .background(if (isSelected) colors.buttonPrimaryBackgroundHover else Color.Transparent)
+            .border(
+              width = HairlineWidth,
+              color = if (isSelected) colors.buttonPrimaryBorder else Color.Transparent,
+              shape = CardShape,
+            )
+            .selectable(selected = isSelected, role = RadioButton, onClick = { onSelect(mask) })
+            .padding(4.dp),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp, CenterVertically),
+      ) {
+        Box(Modifier.size(SwatchSize).background(contentColor, mask.shape))
+        Text(text = mask.label(), style = typography.bodySmall, color = contentColor)
+      }
+    }
+  }
+}
+
+@Composable
+private fun IconOption(icon: AppIcon, shape: Shape, isSelected: Boolean, onClick: () -> Unit) {
   Column(
     modifier =
       Modifier.width(OptionWidth)
@@ -124,11 +171,12 @@ private fun IconOption(icon: AppIcon, isSelected: Boolean, onClick: () -> Unit) 
     val ringColor = if (isSelected) colors.settingsNavItemAccentSelected else Color.Transparent
     AppIconImage(
       icon = icon,
+      shape = shape,
       modifier =
-        Modifier.border(width = 3.dp, color = ringColor, shape = AppIconShape)
+        Modifier.border(width = 3.dp, color = ringColor, shape = shape)
           .padding(5.dp)
           .size(OptionIconSize)
-          .border(HairlineWidth, colors.tableBorder, AppIconShape),
+          .border(HairlineWidth, colors.tableBorder, shape),
     )
     Text(
       text = icon.label(),
@@ -138,6 +186,15 @@ private fun IconOption(icon: AppIcon, isSelected: Boolean, onClick: () -> Unit) 
     )
   }
 }
+
+@Composable
+private fun LauncherMask.label(): String =
+  when (this) {
+    Circle -> Strings.settingsAppIconShapeCircle
+    Squircle -> Strings.settingsAppIconShapeSquircle
+    Square -> Strings.settingsAppIconShapeSquare
+    Teardrop -> Strings.settingsAppIconShapeTeardrop
+  }
 
 @Composable
 private fun AppIcon.label(): String =
@@ -151,23 +208,11 @@ private fun AppIcon.label(): String =
     Ink -> Strings.settingsAppIconInk
   }
 
-private val LauncherShapes: ImmutableList<Shape> =
-  persistentListOf(
-    CircleShape,
-    AppIconShape,
-    RoundedCornerShape(percent = 12),
-    RoundedCornerShape(
-      topStartPercent = 50,
-      topEndPercent = 50,
-      bottomEndPercent = 12,
-      bottomStartPercent = 50,
-    ),
-  )
-
-private val PreviewSize = 64.dp
 private val OptionIconSize = 56.dp
 private val OptionWidth = 84.dp
 private val HairlineWidth = 1.dp
+private val SwatchSize = 16.dp
+private val MinTouchHeight = 52.dp
 
 // Seven icons sit as four and three rather than leaving one alone on a phone-width row
 private const val OPTIONS_PER_ROW = 4
@@ -178,5 +223,11 @@ private fun PreviewAppIconSettingsScaffold(
   @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
   PreviewWithColors(colors) {
-    AppIconSettingsScaffold(selected = Dark, onBack = {}, onSelect = {})
+    AppIconSettingsScaffold(
+      selected = Dark,
+      mask = Teardrop,
+      onBack = {},
+      onSelect = {},
+      onSelectMask = {},
+    )
   }
