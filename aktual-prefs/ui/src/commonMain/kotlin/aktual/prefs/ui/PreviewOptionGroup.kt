@@ -9,6 +9,8 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.radioButton
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.vm.ListPreference
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -90,11 +93,16 @@ private fun PreviewOptionRow(
   onClick: () -> Unit,
   preview: (@Composable () -> Unit)?,
 ) {
+  val background by
+    animateColorAsState(
+      if (isSelected && enabled) colors.settingsNavItemBackgroundSelected else Transparent,
+    )
   Row(
     modifier =
       Modifier.fillMaxWidth()
         .heightIn(min = MinTouchHeight)
         .clip(CardShape)
+        .background(background)
         .selectable(
           selected = isSelected,
           enabled = enabled,
@@ -109,7 +117,13 @@ private fun PreviewOptionRow(
     Text(
       text = label,
       style = typography.bodyLarge,
-      color = if (isSelected && enabled) colors.pageText else colors.pageTextSubdued,
+      color =
+        when {
+          !enabled -> colors.pageTextSubdued
+          isSelected -> colors.settingsNavItemTextSelected
+          else -> colors.pageText
+        },
+      fontWeight = if (isSelected) Medium else Normal,
       modifier = Modifier.weight(1f),
     )
     RadioButton(
