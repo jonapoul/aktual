@@ -26,12 +26,13 @@ internal fun SubSettingsItem(
   icon: ImageVector,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  subtitle: String? = null,
   isEnabled: Boolean = true,
 ) {
   BasicPreferenceItem(
     modifier = modifier,
     title = title,
-    subtitle = null,
+    subtitle = subtitle,
     icon = icon,
     onClick = onClick,
     enabled = isEnabled,

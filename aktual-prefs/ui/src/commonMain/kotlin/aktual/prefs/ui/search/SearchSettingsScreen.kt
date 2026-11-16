@@ -8,7 +8,9 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.SearchOff
 import aktual.core.icons.material.Security
+import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
+import aktual.core.nav.AmountSettingsNavigator
 import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.FormatSettingsNavigator
@@ -76,6 +78,7 @@ internal fun SearchSettingsScreen(
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
+  toAmountSettings: AmountSettingsNavigator,
   toAppIconSettings: AppIconSettingsNavigator,
   viewModel: SearchSettingsViewModel = metroViewModel(),
 ) {
@@ -96,6 +99,7 @@ internal fun SearchSettingsScreen(
             SystemUi -> toSystemUiSettings(highlight)
             SettingsPage.Security -> toSecuritySettings(highlight)
             Format -> toFormatSettings(highlight)
+            Amounts -> toAmountSettings(highlight)
             LauncherIcon -> toAppIconSettings(highlight)
           }
         }
@@ -226,6 +230,7 @@ private fun SettingsPage.icon(): ImageVector =
     SystemUi -> AktualIcons.Tuning
     SettingsPage.Security -> MaterialIcons.Security
     Format -> MaterialIcons.Numbers
+    Amounts -> MaterialIcons.Speed125
     LauncherIcon -> MaterialIcons.Apps
   }
 

@@ -1,34 +1,32 @@
 package aktual.prefs.ui.format
 
+import aktual.budget.model.Amount
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
-import aktual.budget.model.NumberFormat
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Location
 import aktual.core.icons.material.CalendarViewWeek
-import aktual.core.icons.material.DecimalDecrease
-import aktual.core.icons.material.DecimalIncrease
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
 import aktual.core.model.DistanceUnit
+import aktual.core.nav.AmountSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.formattedString
 import aktual.prefs.components.PreferenceGroup
-import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
-import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.ui.root.SubSettingsItem
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.format.FormatSettingsState
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,17 +35,24 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun FormatSettingsScreen(
   back: BackNavigator,
+  toAmountSettings: AmountSettingsNavigator,
   highlight: SettingsHighlight?,
   viewModel: FormatSettingsViewModel = metroViewModel<FormatSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  FormatSettingsScaffold(state = state, highlight = highlight, onBack = { back() })
+  FormatSettingsScaffold(
+    state = state,
+    highlight = highlight,
+    onBack = { back() },
+    onOpenAmounts = { toAmountSettings() },
+  )
 }
 
 @Composable
 private fun FormatSettingsScaffold(
   state: FormatSettingsState,
   onBack: () -> Unit,
+  onOpenAmounts: () -> Unit,
   highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
@@ -57,29 +62,13 @@ private fun FormatSettingsScaffold(
     onBack = onBack,
   ) {
     item {
-      PreferenceGroup(title = Strings.settingsFormatNumbersGroup) {
-        ListPreferenceItem(
-          preference = state.numberFormat,
-          optionString = { f -> f.string() },
-          optionSuffix = null,
-          title = Strings.settingsFormatNumbers,
-          subtitle = null,
-          icon = MaterialIcons.Speed125,
-        )
-        BooleanPreferenceItem(
-          preference = state.hideFraction,
-          title = Strings.settingsFormatDecimal,
-          subtitle = null,
-          icon =
-            if (state.hideFraction.value) {
-              MaterialIcons.DecimalDecrease
-            } else {
-              MaterialIcons.DecimalIncrease
-            },
-        )
-      }
+      SubSettingsItem(
+        title = Strings.settingsAmounts,
+        subtitle = AmountsExample.formattedString(isPrivacyEnabled = false),
+        icon = MaterialIcons.Speed125,
+        onClick = onOpenAmounts,
+      )
     }
-    item { CurrencyGroup(state) }
     item {
       PreferenceGroup(title = Strings.settingsFormatDatesGroup) {
         ListPreferenceItem(
@@ -115,15 +104,7 @@ private fun FormatSettingsScaffold(
   }
 }
 
-@Stable
-private fun NumberFormat.string(): String =
-  when (this) {
-    CommaDot -> "123,456.78"
-    DotComma -> "123.456,78"
-    SpaceComma -> "123 456,78"
-    ApostropheDot -> "123'456.78"
-    CommaDotIn -> "1,23,456.78"
-  }
+private val AmountsExample = Amount(1_234.56)
 
 @Composable
 private fun DateFormat.label(): String =
@@ -163,23 +144,17 @@ private fun PreviewFormatSettingsScaffold(
   PreviewWithColorParams(params) {
     FormatSettingsScaffold(
       onBack = {},
+      onOpenAmounts = {},
       state =
         FormatSettingsState(
-          numberFormat = ListPreference(numberFormat),
           dateFormat = ListPreference(dateFormat),
           firstDayOfWeek = ListPreference(firstDayOfWeek),
-          hideFraction = BooleanPreference(hideFraction),
-          currency = ListPreference(PoundSterling),
-          symbolPosition = ListPreference(BeforeAmount),
-          spaceBetweenAmountAndSymbol = BooleanPreference(true),
           distanceUnit = ListPreference(Default),
         ),
     )
   }
 
 private data class FormatSettingsParams(
-  val numberFormat: NumberFormat,
-  val hideFraction: Boolean,
   val dateFormat: DateFormat,
   val firstDayOfWeek: FirstDayOfWeek,
 )
@@ -187,8 +162,6 @@ private data class FormatSettingsParams(
 private class FormatSettingsProvider :
   ColorParamsProvider<FormatSettingsParams>(
     FormatSettingsParams(
-      numberFormat = CommaDot,
-      hideFraction = true,
       dateFormat = MmDdYyyy,
       firstDayOfWeek = Monday,
     ),
