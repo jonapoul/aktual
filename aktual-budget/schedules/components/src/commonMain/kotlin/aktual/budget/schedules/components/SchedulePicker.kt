@@ -10,14 +10,11 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.domain.amountPrefix
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.Check
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AnimatedFlowRow
-import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.BottomSheetMessage
 import aktual.core.ui.Chip
@@ -27,8 +24,10 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.core.ui.radioButton
 import aktual.core.ui.scrollbar
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,11 +37,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -53,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -128,6 +130,7 @@ private fun SchedulePickerContent(
         BottomSheetListItem(
           modifier = Modifier.animateItem(),
           label = Strings.transactionNone,
+          isSelected = false,
           onClick = onUnlink,
         )
       }
@@ -201,18 +204,24 @@ private fun ScheduleItem(
   isSelected: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
-) =
+) {
+  val background by
+    animateColorAsState(if (isSelected) colors.settingsNavItemBackgroundSelected else Transparent)
   ListItem(
-    modifier = modifier.clickable(onClick = onClick),
+    modifier =
+      modifier
+        .background(background)
+        .selectable(selected = isSelected, role = Role.RadioButton, onClick = onClick),
     headlineContent = {
       Text(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
         color =
-          if (schedule.name == null || schedule.isCompleted) {
-            colors.pageTextSubdued
-          } else {
-            colors.pageText
+          when {
+            isSelected -> colors.settingsNavItemTextSelected
+            schedule.name == null || schedule.isCompleted -> colors.pageTextSubdued
+            else -> colors.pageText
           },
+        fontWeight = if (isSelected) Medium else null,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -238,12 +247,13 @@ private fun ScheduleItem(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = CenterVertically,
       ) {
-        if (isSelected) BottomSheetIcon(AktualIcons.Check)
         ScheduleAmount(schedule)
+        RadioButton(selected = isSelected, onClick = null, colors = colors.radioButton())
       }
     },
     colors = ListItemDefaults.colors(containerColor = Transparent),
   )
+}
 
 @Composable
 private fun ScheduleAmount(schedule: Schedule) =
