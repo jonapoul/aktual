@@ -74,7 +74,7 @@ private fun BarSettingsScaffold(
         title = Strings.settingsUiBarEffect,
         preference = state.barEffect,
         label = { it.label() },
-        preview = { effect -> BarThumbnail(config.copy(appBarEffect = effect)) },
+        preview = { OptionIcon(it.icon) },
       )
     }
     item {
@@ -98,7 +98,7 @@ private fun BarSettingsScaffold(
         title = Strings.settingsUiGlassStyle,
         preference = state.glassStyle,
         label = { it.label() },
-        preview = { style -> BarThumbnail(config.copy(appBarEffect = Glass, glassStyle = style)) },
+        preview = { OptionIcon(it.icon) },
       )
     }
     item {

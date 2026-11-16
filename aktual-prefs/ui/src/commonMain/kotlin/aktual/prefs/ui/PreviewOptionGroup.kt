@@ -19,9 +19,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -97,41 +99,44 @@ private fun PreviewOptionRow(
     animateColorAsState(
       if (isSelected && enabled) colors.settingsNavItemBackgroundSelected else Transparent,
     )
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .heightIn(min = MinTouchHeight)
-        .clip(CardShape)
-        .background(background)
-        .selectable(
-          selected = isSelected,
-          enabled = enabled,
-          role = Role.RadioButton,
-          onClick = onClick,
-        )
-        .padding(horizontal = 6.dp, vertical = 4.dp),
-    verticalAlignment = CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    preview?.invoke()
-    Text(
-      text = label,
-      style = typography.bodyLarge,
-      color =
-        when {
-          !enabled -> colors.pageTextSubdued
-          isSelected -> colors.settingsNavItemTextSelected
-          else -> colors.pageText
-        },
-      fontWeight = if (isSelected) Medium else Normal,
-      modifier = Modifier.weight(1f),
-    )
-    RadioButton(
-      selected = isSelected,
-      onClick = null,
-      enabled = enabled,
-      colors = colors.radioButton(),
-    )
+  val contentColor =
+    when {
+      !enabled -> colors.pageTextSubdued
+      isSelected -> colors.settingsNavItemTextSelected
+      else -> colors.pageText
+    }
+  CompositionLocalProvider(LocalContentColor provides contentColor) {
+    Row(
+      modifier =
+        Modifier.fillMaxWidth()
+          .heightIn(min = MinTouchHeight)
+          .clip(CardShape)
+          .background(background)
+          .selectable(
+            selected = isSelected,
+            enabled = enabled,
+            role = Role.RadioButton,
+            onClick = onClick,
+          )
+          .padding(horizontal = 6.dp, vertical = 4.dp),
+      verticalAlignment = CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      preview?.invoke()
+      Text(
+        text = label,
+        style = typography.bodyLarge,
+        color = contentColor,
+        fontWeight = if (isSelected) Medium else Normal,
+        modifier = Modifier.weight(1f),
+      )
+      RadioButton(
+        selected = isSelected,
+        onClick = null,
+        enabled = enabled,
+        colors = colors.radioButton(),
+      )
+    }
   }
 }
 

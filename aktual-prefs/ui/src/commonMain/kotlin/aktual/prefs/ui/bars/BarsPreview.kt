@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -102,29 +100,12 @@ internal fun BarsPreview(config: HazeConfig, modifier: Modifier = Modifier) =
     }
   }
 
-// Small sample of one bar over coloured stripes, for comparing options side by side
-@Composable
-internal fun BarThumbnail(config: HazeConfig, modifier: Modifier = Modifier) =
-  HazedBars(
-    config = config.copy(glassCornerRadius = ThumbnailCornerRadius),
-    barHeight = ThumbnailBarHeight,
-    modifier = modifier.size(width = 64.dp, height = 40.dp),
-    topBar = {},
-    bottomBar = null,
-  ) { topPadding ->
-    Row(modifier = Modifier.fillMaxSize().padding(top = topPadding)) {
-      swatches().fastForEach { color ->
-        Box(modifier = Modifier.weight(1f).fillMaxHeight().background(color))
-      }
-    }
-  }
-
 @Composable
 private fun HazedBars(
   config: HazeConfig,
   barHeight: Dp,
   topBar: @Composable RowScope.() -> Unit,
-  bottomBar: (@Composable RowScope.() -> Unit)?,
+  bottomBar: @Composable RowScope.() -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable (topPadding: Dp) -> Unit,
 ) {
@@ -152,17 +133,15 @@ private fun HazedBars(
       content = topBar,
     )
 
-    if (bottomBar != null) {
-      Row(
-        modifier =
-          Modifier.align(BottomCenter)
-            .fillMaxWidth()
-            .height(barHeight)
-            .hazedBottomBar(state = hazeState, config = config),
-        verticalAlignment = CenterVertically,
-        content = bottomBar,
-      )
-    }
+    Row(
+      modifier =
+        Modifier.align(BottomCenter)
+          .fillMaxWidth()
+          .height(barHeight)
+          .hazedBottomBar(state = hazeState, config = config),
+      verticalAlignment = CenterVertically,
+      content = bottomBar,
+    )
   }
 }
 
@@ -248,19 +227,8 @@ private val SampleTransactions =
 
 private val BarHeight = 44.dp
 private val PreviewHeight = 220.dp
-private val ThumbnailBarHeight = 16.dp
-private val ThumbnailCornerRadius = 6.dp
 
 @Preview
 @Composable
 private fun PreviewBarsPreview(@PreviewParameter(ColorParameters::class) colors: Colors) =
-  PreviewWithColors(colors) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      BarsPreview(HazeConfig(appBarEffect = Blur))
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        BarThumbnail(HazeConfig(appBarEffect = None))
-        BarThumbnail(HazeConfig(appBarEffect = Blur))
-        BarThumbnail(HazeConfig(appBarEffect = Glass))
-      }
-    }
-  }
+  PreviewWithColors(colors) { BarsPreview(HazeConfig(appBarEffect = Blur)) }
