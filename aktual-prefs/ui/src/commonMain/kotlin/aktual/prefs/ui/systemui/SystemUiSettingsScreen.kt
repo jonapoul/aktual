@@ -1,7 +1,5 @@
 package aktual.prefs.ui.systemui
 
-import aktual.budget.model.BarEffect
-import aktual.budget.model.BarGlassStyle
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
@@ -10,10 +8,9 @@ import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Opacity
-import aktual.core.icons.material.RoundedCorner
-import aktual.core.icons.material.Texture
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.BarSettingsNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
@@ -21,19 +18,19 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.LocalHazeConfig
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
-import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.ui.SliderPreferenceItem
+import aktual.prefs.ui.bars.label
+import aktual.prefs.ui.root.SubSettingsItem
 import aktual.prefs.vm.BooleanPreference
-import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.SliderPreference
 import aktual.prefs.vm.systemui.BlurAlphaPreference
 import aktual.prefs.vm.systemui.BlurRadiusPreference
-import aktual.prefs.vm.systemui.GlassCornerRadiusPreference
 import aktual.prefs.vm.systemui.SystemUiSettingsState
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,17 +49,24 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun SystemUiSettingsScreen(
   back: BackNavigator,
+  toBarSettings: BarSettingsNavigator,
   highlight: SettingsHighlight?,
   viewModel: SystemUiSettingsViewModel = metroViewModel<SystemUiSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  SystemUiSettingsScaffold(state = state, highlight = highlight, onBack = back::invoke)
+  SystemUiSettingsScaffold(
+    state = state,
+    highlight = highlight,
+    onBack = back::invoke,
+    onOpenBars = { toBarSettings() },
+  )
 }
 
 @Composable
 private fun SystemUiSettingsScaffold(
   state: SystemUiSettingsState,
   onBack: () -> Unit,
+  onOpenBars: () -> Unit,
   highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
@@ -80,31 +84,12 @@ private fun SystemUiSettingsScaffold(
       )
     }
     item {
-      PreferenceGroup(title = Strings.settingsUiBarsTitle) {
-        ListPreferenceItem(
-          preference = state.barEffect,
-          optionString = { it.string() },
-          optionSuffix = null,
-          title = Strings.settingsUiBarEffect,
-          subtitle = null,
-          icon = MaterialIcons.BlurOn,
-        )
-        BlurSettings(radius = state.barBlurRadius, alpha = state.barBlurAlpha)
-        ListPreferenceItem(
-          preference = state.glassStyle,
-          optionString = { it.string() },
-          optionSuffix = null,
-          title = Strings.settingsUiGlassStyle,
-          subtitle = null,
-          icon = MaterialIcons.Texture,
-        )
-        SliderPreferenceItem(
-          preference = state.glassCornerRadiusDp,
-          title = Strings.settingsUiGlassCornerRadius,
-          subtitle = null,
-          icon = MaterialIcons.RoundedCorner,
-        )
-      }
+      SubSettingsItem(
+        title = Strings.settingsUiBarsTitle,
+        subtitle = LocalHazeConfig.current.appBarEffect.label(),
+        icon = MaterialIcons.BlurOn,
+        onClick = onOpenBars,
+      )
     }
     item {
       PreferenceGroup(title = Strings.settingsUiDialogsTitle) {
@@ -163,21 +148,6 @@ private fun BlurSettings(radius: SliderPreference, alpha: SliderPreference) {
   )
 }
 
-@Composable
-private fun BarEffect.string(): String =
-  when (this) {
-    None -> Strings.settingsUiBarEffectNone
-    Blur -> Strings.settingsUiBarEffectBlur
-    Glass -> Strings.settingsUiBarEffectGlass
-  }
-
-@Composable
-private fun BarGlassStyle.string(): String =
-  when (this) {
-    Regular -> Strings.settingsUiGlassStyleRegular
-    Clear -> Strings.settingsUiGlassStyleClear
-  }
-
 @PortraitPreview
 @Composable
 private fun PreviewSystemUiSettingsScaffold(
@@ -186,14 +156,10 @@ private fun PreviewSystemUiSettingsScaffold(
   PreviewWithColors(colors) {
     SystemUiSettingsScaffold(
       onBack = {},
+      onOpenBars = {},
       state =
         SystemUiSettingsState(
           showStatusBar = BooleanPreference(true),
-          barEffect = ListPreference(Blur),
-          barBlurRadius = BlurRadiusPreference(5f),
-          barBlurAlpha = BlurAlphaPreference(0.5f),
-          glassStyle = ListPreference(Regular, enabled = false),
-          glassCornerRadiusDp = GlassCornerRadiusPreference(24f, enabled = false),
           blurDialogs = BooleanPreference(true),
           dialogBlurRadius = BlurRadiusPreference(5f),
           dialogBlurAlpha = BlurAlphaPreference(0.5f),

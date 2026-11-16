@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
@@ -306,6 +307,7 @@ private fun barGlassStyle(
   }
 }
 
+@Immutable
 data class HazeConfig(
   val appBarEffect: BarEffect = Default,
   val dialogs: Boolean = true,

@@ -104,7 +104,7 @@ class SearchSettingsViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitResults().map { it.path.last() })
-        .containsExactly("ui bars title", "ui dialogs title")
+        .containsExactly("ui dialogs title", "ui bars title")
     }
   }
 

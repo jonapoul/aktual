@@ -71,20 +71,22 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
       entry(
         Res.string.settings_ui_group,
         entry(Res.string.settings_ui_show_status),
-        entry(
-          Res.string.settings_ui_bars_title,
-          entry(Res.string.settings_ui_bar_effect),
-          entry(Res.string.settings_ui_blur_radius),
-          entry(Res.string.settings_ui_blur_alpha),
-          entry(Res.string.settings_ui_glass_style),
-          entry(Res.string.settings_ui_glass_corner_radius),
-        ),
+        entry(Res.string.settings_ui_bars_title),
         entry(
           Res.string.settings_ui_dialogs_title,
           entry(Res.string.settings_ui_blur_dialogs),
           entry(Res.string.settings_ui_blur_radius),
           entry(Res.string.settings_ui_blur_alpha),
         ),
+      ),
+    SettingsPage.Bars to
+      entry(
+        Res.string.settings_ui_bars_title,
+        entry(Res.string.settings_ui_bar_effect),
+        entry(Res.string.settings_ui_blur_radius),
+        entry(Res.string.settings_ui_blur_alpha),
+        entry(Res.string.settings_ui_glass_style),
+        entry(Res.string.settings_ui_glass_corner_radius),
       ),
     SettingsPage.Security to
       entry(

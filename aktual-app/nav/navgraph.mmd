@@ -15,6 +15,7 @@ flowchart TD
   securitySettings["Security Settings"]
   formatSettings["Format Settings"]
   amountSettings["Amount Settings"]
+  barSettings["Bar Settings"]
   appIconSettings["App Icon Settings"]
   themeSettings["Theme Settings"]
   customThemes["Custom Themes"]
@@ -86,6 +87,8 @@ flowchart TD
   searchSettings --tap result--> securitySettings
   searchSettings --tap result--> formatSettings
   searchSettings --tap result--> amountSettings
+  searchSettings --tap result--> barSettings
+  systemUiSettings --tap app bars--> barSettings
   formatSettings --tap amounts--> amountSettings
   searchSettings --tap result--> appIconSettings
   themeSettings --tap custom themes--> customThemes

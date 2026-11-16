@@ -32,6 +32,7 @@ private val materialIcons =
       BlurOn,
       Build,
       CalendarViewWeek,
+      CropSquare,
       CurrencyPound,
       DecimalDecrease,
       DecimalIncrease,
@@ -70,6 +71,7 @@ private val materialIcons =
       Sort,
       SpaceBar,
       Speed125,
+      Square,
       SubdirectoryArrowRight,
       SwapHoriz,
       Texture,
@@ -78,6 +80,7 @@ private val materialIcons =
       UnfoldLess,
       UnfoldMore,
       Undo,
+      Window,
       ZoomOut,
     )
   }

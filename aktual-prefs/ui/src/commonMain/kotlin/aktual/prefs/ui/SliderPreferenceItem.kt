@@ -38,6 +38,7 @@ internal fun SliderPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
+  onValueChanging: (Float) -> Unit = {},
 ) {
   if (!preference.visible) return
   SliderPreferenceItem(
@@ -50,6 +51,7 @@ internal fun SliderPreferenceItem(
     icon = icon,
     modifier = modifier,
     includeBackground = includeBackground,
+    onValueChanging = onValueChanging,
   )
 }
 
@@ -64,6 +66,7 @@ internal fun SliderPreferenceItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   includeBackground: Boolean = true,
+  onValueChanging: (Float) -> Unit = {},
 ) {
   var currentValue by remember(value) { mutableFloatStateOf(value) }
   BasicPreferenceItem(
@@ -79,7 +82,10 @@ internal fun SliderPreferenceItem(
         Slider(
           modifier = Modifier.weight(1f),
           value = currentValue,
-          onValueChange = { currentValue = it },
+          onValueChange = { newValue ->
+            currentValue = newValue
+            onValueChanging(newValue)
+          },
           valueRange = range,
           onValueChangeFinished = { onValueChange(currentValue) },
           enabled = enabled,

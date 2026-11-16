@@ -16,6 +16,7 @@ sealed interface SearchSettingsState {
 enum class SettingsPage {
   Theme,
   SystemUi,
+  Bars,
   Security,
   Format,
   Amounts,
