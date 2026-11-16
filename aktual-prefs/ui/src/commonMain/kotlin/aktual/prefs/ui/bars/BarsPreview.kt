@@ -236,14 +236,14 @@ private fun sample(payee: SamplePayee, day: Int, amount: Double) =
 
 private val SampleTransactions =
   listOf(
-    sample(SamplePayee.Groceries, day = 28, amount = -64.99),
-    sample(SamplePayee.Salary, day = 27, amount = 2_450.0),
-    sample(SamplePayee.Coffee, day = 26, amount = -4.75),
-    sample(SamplePayee.Electricity, day = 24, amount = -120.0),
-    sample(SamplePayee.Rent, day = 21, amount = -950.0),
-    sample(SamplePayee.Refund, day = 19, amount = 35.0),
-    sample(SamplePayee.Restaurant, day = 17, amount = -42.0),
-    sample(SamplePayee.Insurance, day = 14, amount = -58.2),
+    sample(Groceries, day = 28, amount = -64.99),
+    sample(Salary, day = 27, amount = 2_450.0),
+    sample(Coffee, day = 26, amount = -4.75),
+    sample(Electricity, day = 24, amount = -120.0),
+    sample(Rent, day = 21, amount = -950.0),
+    sample(Refund, day = 19, amount = 35.0),
+    sample(Restaurant, day = 17, amount = -42.0),
+    sample(Insurance, day = 14, amount = -58.2),
   )
 
 private val BarHeight = 44.dp
