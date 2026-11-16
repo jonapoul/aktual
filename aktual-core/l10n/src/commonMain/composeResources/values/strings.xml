@@ -2536,6 +2536,14 @@
   <string name="settings_ui_show_status">Show bottom status bar</string>
   <string name="settings_ui_bars_title">App bars</string>
   <string name="settings_bars_desc">Choose how the bars at the top and bottom of the screen look. Content scrolls behind them.</string>
+  <string name="settings_bars_sample_groceries">Groceries</string>
+  <string name="settings_bars_sample_salary">Salary</string>
+  <string name="settings_bars_sample_coffee">Coffee shop</string>
+  <string name="settings_bars_sample_electricity">Electricity</string>
+  <string name="settings_bars_sample_rent">Rent</string>
+  <string name="settings_bars_sample_refund">Refund</string>
+  <string name="settings_bars_sample_restaurant">Restaurant</string>
+  <string name="settings_bars_sample_insurance">Car insurance</string>
   <string name="settings_ui_bar_effect">Effect</string>
   <string name="settings_ui_bar_effect_none">Solid</string>
   <string name="settings_ui_bar_effect_blur">Blur</string>

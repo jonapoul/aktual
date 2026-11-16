@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
 import aktual.core.icons.CloudCheck
+import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -12,6 +13,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.HazeConfig
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.hazedBottomBar
 import aktual.core.ui.hazedTopBar
@@ -27,10 +29,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -50,6 +50,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
+import kotlinx.datetime.LocalDate
 
 // A mock screen with a top and bottom bar drawn by the app's real bar effects, over a scrollable
 // list of made-up transactions so there's something behind the bars to blur
@@ -66,7 +67,12 @@ internal fun BarsPreview(config: HazeConfig, modifier: Modifier = Modifier) =
         contentDescription = null,
         tint = colors.pageText,
       )
-      PlaceholderLine(width = 120.dp, color = colors.pageText)
+      Text(
+        text = Strings.transactionsTitleAll,
+        style = typography.titleMedium,
+        color = colors.pageText,
+        maxLines = 1,
+      )
     },
     bottomBar = {
       Icon(
@@ -75,7 +81,12 @@ internal fun BarsPreview(config: HazeConfig, modifier: Modifier = Modifier) =
         contentDescription = null,
         tint = colors.pageTextSubdued,
       )
-      PlaceholderLine(width = 80.dp, color = colors.pageTextSubdued)
+      Text(
+        text = Strings.connectionConnected,
+        style = typography.bodySmall,
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+      )
     },
   ) { topPadding ->
     Column(
@@ -85,8 +96,8 @@ internal fun BarsPreview(config: HazeConfig, modifier: Modifier = Modifier) =
           .padding(top = topPadding, bottom = BarHeight),
     ) {
       val swatches = swatches()
-      SampleAmounts.fastForEachIndexed { i, amount ->
-        SampleRow(amount = amount, color = swatches[i % swatches.size])
+      SampleTransactions.fastForEachIndexed { i, transaction ->
+        SampleRow(transaction = transaction, color = swatches[i % swatches.size])
       }
     }
   }
@@ -156,48 +167,89 @@ private fun HazedBars(
 }
 
 @Composable
-private fun SampleRow(amount: Amount, color: Color) {
+private fun SampleRow(transaction: SampleTransaction, color: Color) {
   Row(
     modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     Box(modifier = Modifier.size(28.dp).clip(CircleShape).background(color))
-    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-      PlaceholderLine(width = 96.dp, color = colors.pageText)
-      PlaceholderLine(width = 64.dp, color = colors.pageTextSubdued)
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = transaction.payee.label(),
+        style = typography.bodyMedium,
+        color = colors.pageText,
+        maxLines = 1,
+      )
+      Text(
+        text = transaction.date.formatted(),
+        style = typography.bodySmall,
+        color = colors.pageTextSubdued,
+        maxLines = 1,
+      )
     }
     Text(
-      text = amount.formattedString(isPrivacyEnabled = false),
+      text = transaction.amount.formattedString(isPrivacyEnabled = false),
       style = typography.bodyMedium,
-      color = if (amount.isPositive()) colors.numberPositive else colors.numberNegative,
+      color = if (transaction.amount.isPositive()) colors.numberPositive else colors.numberNegative,
     )
   }
 }
-
-@Composable
-private fun PlaceholderLine(width: Dp, color: Color) =
-  Box(
-    modifier =
-      Modifier.width(width)
-        .height(8.dp)
-        .clip(RoundedCornerShape(4.dp))
-        .background(color.copy(alpha = PlaceholderAlpha)),
-  )
 
 @Composable
 @ReadOnlyComposable
 private fun swatches(): List<Color> =
   listOf(colors.chartQual1, colors.chartQual2, colors.chartQual3, colors.chartQual4)
 
-private val SampleAmounts =
-  listOf(-12.5, 2_450.0, -64.99, -8.2, -120.0, 35.0, -4.75, -950.0, 18.3, -42.0).map { Amount(it) }
+private enum class SamplePayee {
+  Groceries,
+  Salary,
+  Coffee,
+  Electricity,
+  Rent,
+  Refund,
+  Restaurant,
+  Insurance,
+}
+
+@Composable
+private fun SamplePayee.label(): String =
+  when (this) {
+    Groceries -> Strings.settingsBarsSampleGroceries
+    Salary -> Strings.settingsBarsSampleSalary
+    Coffee -> Strings.settingsBarsSampleCoffee
+    Electricity -> Strings.settingsBarsSampleElectricity
+    Rent -> Strings.settingsBarsSampleRent
+    Refund -> Strings.settingsBarsSampleRefund
+    Restaurant -> Strings.settingsBarsSampleRestaurant
+    Insurance -> Strings.settingsBarsSampleInsurance
+  }
+
+private data class SampleTransaction(
+  val payee: SamplePayee,
+  val date: LocalDate,
+  val amount: Amount,
+)
+
+private fun sample(payee: SamplePayee, day: Int, amount: Double) =
+  SampleTransaction(payee, LocalDate(year = 2026, month = 3, day = day), Amount(amount))
+
+private val SampleTransactions =
+  listOf(
+    sample(SamplePayee.Groceries, day = 28, amount = -64.99),
+    sample(SamplePayee.Salary, day = 27, amount = 2_450.0),
+    sample(SamplePayee.Coffee, day = 26, amount = -4.75),
+    sample(SamplePayee.Electricity, day = 24, amount = -120.0),
+    sample(SamplePayee.Rent, day = 21, amount = -950.0),
+    sample(SamplePayee.Refund, day = 19, amount = 35.0),
+    sample(SamplePayee.Restaurant, day = 17, amount = -42.0),
+    sample(SamplePayee.Insurance, day = 14, amount = -58.2),
+  )
 
 private val BarHeight = 44.dp
 private val PreviewHeight = 220.dp
 private val ThumbnailBarHeight = 16.dp
 private val ThumbnailCornerRadius = 6.dp
-private const val PlaceholderAlpha = 0.5f
 
 @Preview
 @Composable
