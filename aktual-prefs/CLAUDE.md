@@ -37,7 +37,7 @@ The root `SettingsScreen` only lists links to the other settings screens.
 
 1. New `*SettingsState` + `*SettingsViewModel` in their own package under `aktual-prefs/vm/`, plus a smoke test in `aktual-test:smoke`.
 1. New navigator + route in `aktual-core:nav`'s `SettingsNavigators.kt` / `SettingsRoutes.kt`.
-1. New `*SettingsScreen.kt` under `aktual-prefs/ui/`, built on `SettingsListScaffold`, and an `entry` in `SettingsNavEntryContributor`.
+1. New `*SettingsScreen.kt` under `aktual-prefs/ui/`, built on `SettingsListScaffold`, and an `entry` in `SettingsNavEntryContributor`. For settings whose output is worth comparing, use `PreviewSettingsScaffold` instead, which pins a live preview above the list (beside it on wide windows), and `PreviewOptionGroup` for radio options that each show their own output.
 1. A `SubSettingsItem` in `SettingsScreen.kt` with its `SettingsAction`, and update `aktual-app/nav/navgraph.mmd`.
 
 ## Security settings

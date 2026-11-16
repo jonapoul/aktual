@@ -18,6 +18,7 @@ import aktual.prefs.components.ScrollToHighlight
 import aktual.prefs.components.rememberPreferenceHighlighter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -59,32 +60,49 @@ internal fun SettingsListScaffold(
     ) { innerPadding ->
       Box {
         PageBackground()
-        LazyColumn(
+        SettingsList(
+          listState = listState,
+          description = description,
           modifier =
             Modifier.hazedTopBarContent(hazeState, innerPadding)
               .fillMaxSize()
               .scrollbar(listState)
               .padding(Dimens.Large),
-          state = listState,
           contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
-          verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-          if (description != null) {
-            item {
-              Text(
-                modifier = Modifier.padding(horizontal = 6.dp),
-                text = description,
-                fontWeight = Light,
-                style = typography.bodyMedium,
-                color = colors.pageTextLight,
-              )
-            }
-          }
-          content()
-          item { BottomSpacing() }
-        }
+          content = content,
+        )
       }
     }
+  }
+}
+
+@Composable
+internal fun SettingsList(
+  listState: LazyListState,
+  description: String?,
+  modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
+  content: LazyListScope.() -> Unit,
+) {
+  LazyColumn(
+    modifier = modifier,
+    state = listState,
+    contentPadding = contentPadding,
+    verticalArrangement = Arrangement.spacedBy(10.dp),
+  ) {
+    if (description != null) {
+      item {
+        Text(
+          modifier = Modifier.padding(horizontal = 6.dp),
+          text = description,
+          fontWeight = Light,
+          style = typography.bodyMedium,
+          color = colors.pageTextLight,
+        )
+      }
+    }
+    content()
+    item { BottomSpacing() }
   }
 }
 

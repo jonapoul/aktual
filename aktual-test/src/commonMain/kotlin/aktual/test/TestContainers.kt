@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.Preferences
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.test.TestScope
 import okio.FileSystem
 import okio.Path
@@ -25,7 +26,11 @@ class TestCoroutineContainer(
 
   @Provides fun contexts(): CoroutineContexts = contexts
 
-  @Provides fun viewModelContext(): ViewModelContext = ViewModelContext { contexts.main }
+  @Provides
+  fun viewModelContext(): ViewModelContext = ViewModelContext {
+    val main = contexts.main
+    if (main is MainCoroutineDispatcher) main.immediate else main
+  }
 }
 
 fun TestScope.coroutineContainer(
