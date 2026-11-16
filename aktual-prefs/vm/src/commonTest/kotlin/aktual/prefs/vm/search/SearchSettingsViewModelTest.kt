@@ -49,22 +49,22 @@ class SearchSettingsViewModelTest {
   fun `Matches a group and the preferences in it, with their paths`() = runTest {
     val viewModel = buildViewModel()
 
-    viewModel.setQuery("dialogs")
+    viewModel.setQuery("system")
 
     viewModel.state.test {
       assertThat(awaitResults())
         .containsExactly(
           SettingsSearchResult(
-            title = "ui dialogs title",
+            title = "theme system group",
             kind = Group,
-            page = SystemUi,
-            path = persistentListOf("ui group"),
+            page = Theme,
+            path = persistentListOf("theme"),
           ),
           SettingsSearchResult(
-            title = "ui blur dialogs",
+            title = "theme use system",
             kind = Preference,
-            page = SystemUi,
-            path = persistentListOf("ui group", "ui dialogs title"),
+            page = Theme,
+            path = persistentListOf("theme", "theme system group"),
           ),
         )
     }
@@ -104,7 +104,7 @@ class SearchSettingsViewModelTest {
 
     viewModel.state.test {
       assertThat(awaitResults().map { it.path.last() })
-        .containsExactly("ui dialogs title", "ui bars title")
+        .containsExactly("ui bars title", "ui dialogs title")
     }
   }
 

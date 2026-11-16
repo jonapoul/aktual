@@ -15,19 +15,17 @@ import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.PreviewOptionGroup
 import aktual.prefs.ui.PreviewSettingsScaffold
 import aktual.prefs.ui.SliderPreferenceItem
+import aktual.prefs.ui.rememberSliderDraft
+import aktual.prefs.vm.BlurAlphaPreference
+import aktual.prefs.vm.BlurRadiusPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.SliderPreference
 import aktual.prefs.vm.bars.BarSettingsState
 import aktual.prefs.vm.bars.BarSettingsViewModel
 import aktual.prefs.vm.bars.GlassCornerRadiusPreference
-import aktual.prefs.vm.systemui.BlurAlphaPreference
-import aktual.prefs.vm.systemui.BlurRadiusPreference
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -51,9 +49,9 @@ private fun BarSettingsScaffold(
   highlight: SettingsHighlight? = null,
 ) {
   // Sliders only save when released, so the preview follows these while one is being dragged
-  val blurRadius = rememberDraft(state.blurRadius)
-  val blurAlpha = rememberDraft(state.blurAlpha)
-  val cornerRadius = rememberDraft(state.glassCornerRadiusDp)
+  val blurRadius = rememberSliderDraft(state.blurRadius)
+  val blurAlpha = rememberSliderDraft(state.blurAlpha)
+  val cornerRadius = rememberSliderDraft(state.glassCornerRadiusDp)
   val config =
     LocalHazeConfig.current.copy(
       appBarEffect = state.barEffect.value,
@@ -112,10 +110,6 @@ private fun BarSettingsScaffold(
     }
   }
 }
-
-@Composable
-private fun rememberDraft(preference: SliderPreference): MutableFloatState =
-  remember(preference.value) { mutableFloatStateOf(preference.value) }
 
 @Composable
 @NonRestartableComposable

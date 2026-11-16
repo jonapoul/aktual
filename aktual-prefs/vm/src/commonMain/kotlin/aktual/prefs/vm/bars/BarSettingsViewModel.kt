@@ -4,11 +4,11 @@ import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.prefs.SystemUiPreferences
+import aktual.prefs.vm.BlurAlphaPreference
+import aktual.prefs.vm.BlurRadiusPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.collectAsState
 import aktual.prefs.vm.launchAndSet
-import aktual.prefs.vm.systemui.BlurAlphaPreference
-import aktual.prefs.vm.systemui.BlurRadiusPreference
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

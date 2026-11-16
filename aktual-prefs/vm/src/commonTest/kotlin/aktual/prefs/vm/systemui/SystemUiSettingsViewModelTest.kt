@@ -27,20 +27,4 @@ class SystemUiSettingsViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
   }
-
-  @Test
-  fun `Dialog blur settings are disabled without dialog blur`() = runTest {
-    val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
-    val viewModel = SystemUiSettingsViewModel(preferences, viewModelContext = viewModelContext)
-
-    viewModel.state.test {
-      assertThat(awaitItem().dialogBlurRadius.enabled).isTrue()
-
-      preferences.hazeDialogs.set(false)
-      assertThat(awaitItem().dialogBlurRadius.enabled).isFalse()
-
-      expectNoEvents()
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
 }

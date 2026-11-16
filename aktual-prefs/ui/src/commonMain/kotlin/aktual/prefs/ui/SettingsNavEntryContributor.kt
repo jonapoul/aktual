@@ -9,6 +9,8 @@ import aktual.core.nav.BarSettingsNavRoute
 import aktual.core.nav.BarSettingsNavigator
 import aktual.core.nav.CustomThemeSettingsNavRoute
 import aktual.core.nav.CustomThemesNavigator
+import aktual.core.nav.DialogSettingsNavRoute
+import aktual.core.nav.DialogSettingsNavigator
 import aktual.core.nav.FormatSettingsNavRoute
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.InspectThemeNavRoute
@@ -30,6 +32,7 @@ import aktual.di.AppScope
 import aktual.prefs.ui.amounts.AmountSettingsScreen
 import aktual.prefs.ui.appicon.AppIconSettingsScreen
 import aktual.prefs.ui.bars.BarSettingsScreen
+import aktual.prefs.ui.dialogs.DialogSettingsScreen
 import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
@@ -67,16 +70,26 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toFormatSettings = FormatSettingsNavigator(stack),
         toAmountSettings = AmountSettingsNavigator(stack),
         toBarSettings = BarSettingsNavigator(stack),
+        toDialogSettings = DialogSettingsNavigator(stack),
         toAppIconSettings = AppIconSettingsNavigator(stack),
       )
     }
 
     entry<SystemUiSettingsNavRoute> { route ->
-      SystemUiSettingsScreen(BackNavigator(stack), BarSettingsNavigator(stack), route.highlight)
+      SystemUiSettingsScreen(
+        back = BackNavigator(stack),
+        toBarSettings = BarSettingsNavigator(stack),
+        toDialogSettings = DialogSettingsNavigator(stack),
+        highlight = route.highlight,
+      )
     }
 
     entry<BarSettingsNavRoute> { route ->
       BarSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
+    entry<DialogSettingsNavRoute> { route ->
+      DialogSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
     entry<SecuritySettingsNavRoute> { route ->

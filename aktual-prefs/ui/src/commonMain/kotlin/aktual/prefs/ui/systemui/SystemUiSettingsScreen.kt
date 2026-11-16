@@ -3,45 +3,28 @@ package aktual.prefs.ui.systemui
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
-import aktual.core.icons.material.BlurCircular
 import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Opacity
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BarSettingsNavigator
+import aktual.core.nav.DialogSettingsNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.theme.Colors
-import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualButton
 import aktual.core.ui.ColorParameters
-import aktual.core.ui.DialogTextButton
-import aktual.core.ui.Dimens
 import aktual.core.ui.LocalHazeConfig
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
-import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
-import aktual.prefs.ui.SliderPreferenceItem
 import aktual.prefs.ui.bars.label
 import aktual.prefs.ui.root.SubSettingsItem
 import aktual.prefs.vm.BooleanPreference
-import aktual.prefs.vm.SliderPreference
-import aktual.prefs.vm.systemui.BlurAlphaPreference
-import aktual.prefs.vm.systemui.BlurRadiusPreference
 import aktual.prefs.vm.systemui.SystemUiSettingsState
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -50,6 +33,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun SystemUiSettingsScreen(
   back: BackNavigator,
   toBarSettings: BarSettingsNavigator,
+  toDialogSettings: DialogSettingsNavigator,
   highlight: SettingsHighlight?,
   viewModel: SystemUiSettingsViewModel = metroViewModel<SystemUiSettingsViewModel>(),
 ) {
@@ -59,6 +43,7 @@ fun SystemUiSettingsScreen(
     highlight = highlight,
     onBack = back::invoke,
     onOpenBars = { toBarSettings() },
+    onOpenDialogs = { toDialogSettings() },
   )
 }
 
@@ -67,6 +52,7 @@ private fun SystemUiSettingsScaffold(
   state: SystemUiSettingsState,
   onBack: () -> Unit,
   onOpenBars: () -> Unit,
+  onOpenDialogs: () -> Unit,
   highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
@@ -92,60 +78,19 @@ private fun SystemUiSettingsScaffold(
       )
     }
     item {
-      PreferenceGroup(title = Strings.settingsUiDialogsTitle) {
-        BooleanPreferenceItem(
-          preference = state.blurDialogs,
-          title = Strings.settingsUiBlurDialogs,
-          subtitle = null,
-          icon = MaterialIcons.Dialogs,
-        )
-        BlurSettings(radius = state.dialogBlurRadius, alpha = state.dialogBlurAlpha)
-        TestDialogButton()
-      }
+      SubSettingsItem(
+        title = Strings.settingsUiDialogsTitle,
+        subtitle =
+          if (LocalHazeConfig.current.dialogs) {
+            Strings.settingsDialogsBlurred
+          } else {
+            Strings.settingsDialogsNotBlurred
+          },
+        icon = MaterialIcons.Dialogs,
+        onClick = onOpenDialogs,
+      )
     }
   }
-}
-
-@Composable
-private fun TestDialogButton() {
-  var showDialog by remember { mutableStateOf(false) }
-  AktualButton(
-    kind = Primary,
-    modifier = Modifier.fillMaxWidth().padding(Dimens.Large),
-    text = Strings.settingsUiTestDialog,
-    onClick = { showDialog = true },
-  )
-
-  if (showDialog) {
-    AktualAlertDialog(
-      title = Strings.settingsUiTestDialogTitle,
-      onDismissRequest = { showDialog = false },
-      buttons = {
-        DialogTextButton(
-          text = Strings.settingsUiTestDialogDismiss,
-          onClick = { showDialog = false },
-        )
-      },
-    ) {
-      Text(Strings.settingsUiTestDialogMessage)
-    }
-  }
-}
-
-@Composable
-private fun BlurSettings(radius: SliderPreference, alpha: SliderPreference) {
-  SliderPreferenceItem(
-    preference = radius,
-    title = Strings.settingsUiBlurRadius,
-    subtitle = null,
-    icon = MaterialIcons.BlurCircular,
-  )
-  SliderPreferenceItem(
-    preference = alpha,
-    title = Strings.settingsUiBlurAlpha,
-    subtitle = null,
-    icon = MaterialIcons.Opacity,
-  )
 }
 
 @PortraitPreview
@@ -157,12 +102,7 @@ private fun PreviewSystemUiSettingsScaffold(
     SystemUiSettingsScaffold(
       onBack = {},
       onOpenBars = {},
-      state =
-        SystemUiSettingsState(
-          showStatusBar = BooleanPreference(true),
-          blurDialogs = BooleanPreference(true),
-          dialogBlurRadius = BlurRadiusPreference(5f),
-          dialogBlurAlpha = BlurAlphaPreference(0.5f),
-        ),
+      onOpenDialogs = {},
+      state = SystemUiSettingsState(showStatusBar = BooleanPreference(true)),
     )
   }

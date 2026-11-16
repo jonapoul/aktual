@@ -27,31 +27,11 @@ internal constructor(
   val state: StateFlow<SystemUiSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by collectAsState(preferences.showBottomBar)
-      val blurDialogs by collectAsState(preferences.hazeDialogs)
-      val dialogBlurRadius by collectAsState(preferences.dialogBlurRadius)
-      val dialogBlurAlpha by collectAsState(preferences.dialogBlurAlpha)
       SystemUiSettingsState(
         showStatusBar =
           BooleanPreference(
             value = showBottomBar,
             onChange = { launchAndSet(preferences.showBottomBar, it) },
-          ),
-        blurDialogs =
-          BooleanPreference(
-            value = blurDialogs,
-            onChange = { launchAndSet(preferences.hazeDialogs, it) },
-          ),
-        dialogBlurRadius =
-          BlurRadiusPreference(
-            value = dialogBlurRadius,
-            enabled = blurDialogs,
-            onChange = { launchAndSet(preferences.dialogBlurRadius, it) },
-          ),
-        dialogBlurAlpha =
-          BlurAlphaPreference(
-            value = dialogBlurAlpha,
-            enabled = blurDialogs,
-            onChange = { launchAndSet(preferences.dialogBlurAlpha, it) },
           ),
       )
     }

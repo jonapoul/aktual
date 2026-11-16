@@ -213,20 +213,29 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   }
 
   if (visible) {
-    val style =
-      blurStyle(colors.cardBackground, blurConfig.dialogBlurRadius, blurConfig.dialogBlurAlpha) {
-        progress.value
-      }
     val excluded = dialogBlurState.excludedFromBlur
     Box(
       modifier =
         modifier
           .fillMaxSize()
           .then(if (excluded.isEmpty()) Modifier else Modifier.clip(HoledShape(excluded)))
-          .hazeBlur(input = HazeInput.Sources(hazeState), style = style),
+          .dialogBlur(hazeState, blurConfig) { progress.value },
     )
   }
 }
+
+/** The blur drawn behind dialogs, scaled by [progress] from none to fully applied. */
+@Composable
+fun Modifier.dialogBlur(
+  state: HazeState,
+  config: HazeConfig = LocalHazeConfig.current,
+  progress: () -> Float = { 1f },
+): Modifier =
+  hazeBlur(
+    input = HazeInput.Sources(state),
+    style =
+      blurStyle(colors.cardBackground, config.dialogBlurRadius, config.dialogBlurAlpha, progress),
+  )
 
 // Shape covering the full composable area minus rectangular holes, used to punch the blur
 // overlay out from behind expanded dropdown anchors so they appear unblurred.
