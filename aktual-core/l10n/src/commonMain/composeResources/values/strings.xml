@@ -2204,6 +2204,8 @@
   <string name="transactions_delete_account_login_kept_title">Bank login not removed</string>
   <string name="transactions_delete_account_login_kept_message">The account was deleted, but its GoCardless bank login couldn’t be removed from the server.</string>
   <string name="transactions_delete_account_login_kept_dismiss">OK</string>
+  <string name="transactions_delete_transaction_done">Transaction deleted</string>
+  <string name="transactions_delete_transaction_failed">Couldn’t delete transaction</string>
   <string name="transactions_reconcile">Reconcile</string>
   <string name="transactions_reconcile_message">Enter the current balance of your bank account that you want to reconcile with:</string>
   <string name="transactions_reconcile_last_synced">Last balance from bank: %1$s</string>

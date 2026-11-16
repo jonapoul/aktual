@@ -35,6 +35,7 @@ import aktual.budget.transactions.domain.SavedFilter
 import aktual.budget.transactions.domain.SavedFilters
 import aktual.budget.transactions.domain.TransactionFilters
 import aktual.budget.transactions.domain.TransactionMatcher
+import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -109,6 +110,7 @@ internal constructor(
   private val bankSyncController: BankSyncController,
   private val deleter: AccountDeleter,
   private val reconciler: Reconciler,
+  private val writer: TransactionWriter,
   private val viewPrefs: AccountViewPrefs,
   private val transactionPreferences: TransactionPreferences,
   private val filters: TransactionFilters,
@@ -135,6 +137,7 @@ internal constructor(
   // Buffered, so an event sent while the screen is being recreated waits for it
   private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
   private var deleteJob: Job? = null
+  private var deleteTransactionJob: Job? = null
   // The bank balance being reconciled against, while reconciling
   private val mutableReconcileTarget = MutableStateFlow<Amount?>(null)
   private val mutableReconcileBusy = MutableStateFlow(false)
@@ -524,6 +527,24 @@ internal constructor(
         onFailure = { e ->
           log.e(e) { "Failed deleting account $account" }
           mutableEvents.trySend(DeleteAccountFailed)
+        },
+      )
+    }
+  }
+
+  // A split parent takes its parts with it, and a transfer its other side, as in the editor
+  fun deleteTransaction(id: TransactionId) {
+    if (deleteTransactionJob?.isActive == true) return
+    deleteTransactionJob = viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          writer.write(runTransfers = true) { delete(id) }
+          log.i { "Deleted transaction $id" }
+          mutableEvents.trySend(TransactionDeleted)
+        },
+        onFailure = { e ->
+          log.e(e) { "Failed deleting transaction $id" }
+          mutableEvents.trySend(DeleteTransactionFailed)
         },
       )
     }

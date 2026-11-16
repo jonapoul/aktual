@@ -14,6 +14,7 @@ import aktual.budget.model.TransactionsDensity
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.tags.domain.TagLabel
+import aktual.budget.transactions.ui.edit.ConfirmDeleteDialog
 import aktual.budget.transactions.ui.edit.ReconciledDialog
 import aktual.budget.transactions.vm.AccountChoice
 import aktual.budget.transactions.vm.AccountViewOptions
@@ -65,6 +66,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -128,6 +130,7 @@ fun TransactionsScreen(
   val adjustmentNotes = Strings.transactionsReconcileAdjustmentNotes
   var showLoginKept by rememberSaveable { mutableStateOf(false) }
   var confirmUnlock by remember { mutableStateOf<TransactionId?>(null) }
+  var confirmDelete by remember { mutableStateOf<PendingDelete?>(null) }
   var editAccount by remember { mutableStateOf<AccountId?>(null) }
   TransactionsEvents(
     events = viewModel.events,
@@ -178,6 +181,7 @@ fun TransactionsScreen(
           } else {
             viewModel.setCleared(action.id, !action.cleared)
           }
+        is DeleteTransaction -> confirmDelete = PendingDelete(action.id, action.reconciled)
         CreateReconcileAdjustment -> viewModel.createReconcileAdjustment(adjustmentNotes)
         is ViewModelAction -> viewModel.handle(action)
       }
@@ -186,16 +190,14 @@ fun TransactionsScreen(
 
   editAccount?.let { id -> EditAccountSheet(id = id, onDismiss = { editAccount = null }) }
 
-  confirmUnlock?.let { id ->
-    ReconciledDialog(
-      message = Strings.transactionReconciledUnlock,
-      onConfirm = {
-        confirmUnlock = null
-        viewModel.unlockTransaction(id)
-      },
-      onCancel = { confirmUnlock = null },
-    )
-  }
+  RowDialogs(
+    confirmUnlock = confirmUnlock,
+    confirmDelete = confirmDelete,
+    onConfirmUnlockChange = { confirmUnlock = it },
+    onConfirmDeleteChange = { confirmDelete = it },
+    onUnlock = viewModel::unlockTransaction,
+    onDelete = viewModel::deleteTransaction,
+  )
 
   if (showLoginKept) {
     BankLoginKeptDialog(
@@ -244,6 +246,8 @@ private fun TransactionsEvents(
   val deleteFailed = Strings.transactionsDeleteAccountFailed
   val reconcileFailed = Strings.transactionsReconcileFailed
   val saveFilterFailed = Strings.transactionsFilterSaveFailed
+  val transactionDeleted = Strings.transactionsDeleteTransactionDone
+  val deleteTransactionFailed = Strings.transactionsDeleteTransactionFailed
   val currentOnAccountDelete by rememberUpdatedState(onAccountDelete)
   val currentOnBankLoginKeep by rememberUpdatedState(onBankLoginKeep)
   LaunchedEffect(events) {
@@ -253,6 +257,8 @@ private fun TransactionsEvents(
         AccountDeletedBankLoginKept -> currentOnBankLoginKeep()
         DeleteAccountFailed -> snackbars.show { showErrorSnackbar(deleteFailed) }
         ReconcileFailed -> snackbars.show { showErrorSnackbar(reconcileFailed) }
+        TransactionDeleted -> snackbars.show(message = transactionDeleted)
+        DeleteTransactionFailed -> snackbars.show { showErrorSnackbar(deleteTransactionFailed) }
         SaveFilterFailed -> snackbars.show { showErrorSnackbar(saveFilterFailed) }
         is FilterNameTaken ->
           snackbars.show {
@@ -277,6 +283,51 @@ private fun BankSyncSnackbars(finished: Flow<BankSyncSummary>, snackbars: Snackb
     }
   }
 }
+
+// Asked of a single row: unlocking it while reconciling, or deleting it after a swipe
+@Composable
+@Suppress("LongParameterList")
+private fun RowDialogs(
+  confirmUnlock: TransactionId?,
+  confirmDelete: PendingDelete?,
+  onConfirmUnlockChange: (TransactionId?) -> Unit,
+  onConfirmDeleteChange: (PendingDelete?) -> Unit,
+  onUnlock: (TransactionId) -> Unit,
+  onDelete: (TransactionId) -> Unit,
+) {
+  confirmUnlock?.let { id ->
+    ReconciledDialog(
+      message = Strings.transactionReconciledUnlock,
+      onConfirm = {
+        onConfirmUnlockChange(null)
+        onUnlock(id)
+      },
+      onCancel = { onConfirmUnlockChange(null) },
+    )
+  }
+
+  val pending = confirmDelete ?: return
+  val dismiss = { onConfirmDeleteChange(null) }
+  if (pending.reconciled) {
+    // As upstream, a reconciled transaction warns first, then asks as for any other
+    ReconciledDialog(
+      message = Strings.transactionReconciledDelete,
+      onConfirm = { onConfirmDeleteChange(pending.copy(reconciled = false)) },
+      onCancel = dismiss,
+    )
+  } else {
+    ConfirmDeleteDialog(
+      onConfirm = {
+        dismiss()
+        onDelete(pending.id)
+      },
+      onCancel = dismiss,
+    )
+  }
+}
+
+// A delete waiting on its confirm dialog. reconciled shows the reconciled warning first
+@Immutable private data class PendingDelete(val id: TransactionId, val reconciled: Boolean)
 
 @Composable
 private fun BankLoginKeptDialog(onDismiss: () -> Unit) =
