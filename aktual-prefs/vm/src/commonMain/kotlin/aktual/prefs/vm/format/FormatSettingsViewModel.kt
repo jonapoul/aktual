@@ -24,20 +24,8 @@ internal constructor(preferences: FormatPreferences, viewModelContext: ViewModel
   ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<FormatSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
-      val dateFormat by collectAsState(preferences.dateFormat)
-      val firstDayOfWeek by collectAsState(preferences.firstDayOfWeek)
       val distanceUnit by collectAsState(preferences.distanceUnit)
       FormatSettingsState(
-        dateFormat =
-          ListPreference(
-            value = dateFormat,
-            onChange = { launchAndSet(preferences.dateFormat, it) },
-          ),
-        firstDayOfWeek =
-          ListPreference(
-            value = firstDayOfWeek,
-            onChange = { launchAndSet(preferences.firstDayOfWeek, it) },
-          ),
         distanceUnit =
           ListPreference(
             value = distanceUnit,

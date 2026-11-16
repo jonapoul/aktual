@@ -9,6 +9,8 @@ import aktual.core.nav.BarSettingsNavRoute
 import aktual.core.nav.BarSettingsNavigator
 import aktual.core.nav.CustomThemeSettingsNavRoute
 import aktual.core.nav.CustomThemesNavigator
+import aktual.core.nav.DateSettingsNavRoute
+import aktual.core.nav.DateSettingsNavigator
 import aktual.core.nav.DialogSettingsNavRoute
 import aktual.core.nav.DialogSettingsNavigator
 import aktual.core.nav.FormatSettingsNavRoute
@@ -32,6 +34,7 @@ import aktual.di.AppScope
 import aktual.prefs.ui.amounts.AmountSettingsScreen
 import aktual.prefs.ui.appicon.AppIconSettingsScreen
 import aktual.prefs.ui.bars.BarSettingsScreen
+import aktual.prefs.ui.dates.DateSettingsScreen
 import aktual.prefs.ui.dialogs.DialogSettingsScreen
 import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
@@ -69,6 +72,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
         toAmountSettings = AmountSettingsNavigator(stack),
+        toDateSettings = DateSettingsNavigator(stack),
         toBarSettings = BarSettingsNavigator(stack),
         toDialogSettings = DialogSettingsNavigator(stack),
         toAppIconSettings = AppIconSettingsNavigator(stack),
@@ -88,6 +92,10 @@ class SettingsNavEntryContributor : NavEntryContributor {
       BarSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
+    entry<DateSettingsNavRoute> { route ->
+      DateSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
     entry<DialogSettingsNavRoute> { route ->
       DialogSettingsScreen(BackNavigator(stack), route.highlight)
     }
@@ -97,7 +105,12 @@ class SettingsNavEntryContributor : NavEntryContributor {
     }
 
     entry<FormatSettingsNavRoute> { route ->
-      FormatSettingsScreen(BackNavigator(stack), AmountSettingsNavigator(stack), route.highlight)
+      FormatSettingsScreen(
+        back = BackNavigator(stack),
+        toAmountSettings = AmountSettingsNavigator(stack),
+        toDateSettings = DateSettingsNavigator(stack),
+        highlight = route.highlight,
+      )
     }
 
     entry<AmountSettingsNavRoute> { route ->

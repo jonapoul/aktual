@@ -34,3 +34,5 @@ import kotlinx.serialization.Serializable
 // A setting to scroll to and flash on opening a settings page. group is the title of the card
 // holding it, or null for a card or setting at the top level of the page
 @Immutable @Serializable data class SettingsHighlight(val group: String?, val title: String)
+
+@Serializable data class DateSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey

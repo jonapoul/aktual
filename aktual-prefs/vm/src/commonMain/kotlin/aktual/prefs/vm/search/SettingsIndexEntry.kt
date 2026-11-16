@@ -113,15 +113,17 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
       entry(
         Res.string.settings_format_group,
         entry(Res.string.settings_amounts),
-        entry(
-          Res.string.settings_format_dates_group,
-          entry(Res.string.settings_format_dates),
-          entry(Res.string.settings_format_first_day),
-        ),
+        entry(Res.string.settings_format_dates_group),
         entry(
           Res.string.settings_format_distance_group,
           entry(Res.string.settings_format_distance),
         ),
+      ),
+    SettingsPage.Dates to
+      entry(
+        Res.string.settings_format_dates_group,
+        entry(Res.string.settings_format_dates),
+        entry(Res.string.settings_format_first_day),
       ),
     SettingsPage.Amounts to
       entry(

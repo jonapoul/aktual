@@ -15,6 +15,7 @@ flowchart TD
   securitySettings["Security Settings"]
   formatSettings["Format Settings"]
   amountSettings["Amount Settings"]
+  dateSettings["Date Settings"]
   barSettings["Bar Settings"]
   dialogSettings["Dialog Settings"]
   appIconSettings["App Icon Settings"]
@@ -93,6 +94,8 @@ flowchart TD
   searchSettings --tap result--> dialogSettings
   systemUiSettings --tap dialogs--> dialogSettings
   formatSettings --tap amounts--> amountSettings
+  formatSettings --tap dates--> dateSettings
+  searchSettings --tap result--> dateSettings
   searchSettings --tap result--> appIconSettings
   themeSettings --tap custom themes--> customThemes
   themeSettings --tap inspect--> inspectTheme

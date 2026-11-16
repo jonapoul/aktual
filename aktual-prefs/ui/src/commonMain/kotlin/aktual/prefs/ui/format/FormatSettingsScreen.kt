@@ -1,10 +1,7 @@
 package aktual.prefs.ui.format
 
 import aktual.budget.model.Amount
-import aktual.budget.model.DateFormat
-import aktual.budget.model.FirstDayOfWeek
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Calendar3
 import aktual.core.icons.Location
 import aktual.core.icons.material.CalendarViewWeek
 import aktual.core.icons.material.MaterialIcons
@@ -13,11 +10,13 @@ import aktual.core.l10n.Strings
 import aktual.core.model.DistanceUnit
 import aktual.core.nav.AmountSettingsNavigator
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.DateSettingsNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.ui.ColorParams
-import aktual.core.ui.ColorParamsProvider
+import aktual.core.theme.Colors
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.ListPreferenceItem
@@ -31,11 +30,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun FormatSettingsScreen(
   back: BackNavigator,
   toAmountSettings: AmountSettingsNavigator,
+  toDateSettings: DateSettingsNavigator,
   highlight: SettingsHighlight?,
   viewModel: FormatSettingsViewModel = metroViewModel<FormatSettingsViewModel>(),
 ) {
@@ -45,6 +46,7 @@ fun FormatSettingsScreen(
     highlight = highlight,
     onBack = { back() },
     onOpenAmounts = { toAmountSettings() },
+    onOpenDates = { toDateSettings() },
   )
 }
 
@@ -53,6 +55,7 @@ private fun FormatSettingsScaffold(
   state: FormatSettingsState,
   onBack: () -> Unit,
   onOpenAmounts: () -> Unit,
+  onOpenDates: () -> Unit,
   highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
@@ -70,24 +73,12 @@ private fun FormatSettingsScaffold(
       )
     }
     item {
-      PreferenceGroup(title = Strings.settingsFormatDatesGroup) {
-        ListPreferenceItem(
-          preference = state.dateFormat,
-          optionString = { f -> f.label() },
-          optionSuffix = null,
-          title = Strings.settingsFormatDates,
-          subtitle = null,
-          icon = MaterialIcons.CalendarViewWeek,
-        )
-        ListPreferenceItem(
-          preference = state.firstDayOfWeek,
-          optionString = { d -> d.string() },
-          optionSuffix = null,
-          title = Strings.settingsFormatFirstDay,
-          subtitle = null,
-          icon = AktualIcons.Calendar3,
-        )
-      }
+      SubSettingsItem(
+        title = Strings.settingsFormatDatesGroup,
+        subtitle = DatesExample.formatted(),
+        icon = MaterialIcons.CalendarViewWeek,
+        onClick = onOpenDates,
+      )
     }
     item {
       PreferenceGroup(title = Strings.settingsFormatDistanceGroup) {
@@ -106,16 +97,8 @@ private fun FormatSettingsScaffold(
 
 private val AmountsExample = Amount(1_234.56)
 
-@Composable
-private fun DateFormat.label(): String =
-  when (this) {
-    MmDdYyyy -> Strings.settingsDateFormatMmDdYyyy
-    DdMmYyyy -> Strings.settingsDateFormatDdMmYyyy
-    YyyyMmDd -> Strings.settingsDateFormatYyyyMmDd
-    MmDdYyyyDot -> Strings.settingsDateFormatMmDdYyyyDot
-    DdMmYyyyDot -> Strings.settingsDateFormatDdMmYyyyDot
-    DdMmYyyyDash -> Strings.settingsDateFormatDdMmYyyyDash
-  }
+// Day and month both fit in either position, so the order shows
+private val DatesExample = LocalDate(year = 2026, month = 2, day = 3)
 
 @Composable
 private fun DistanceUnit.label(): String =
@@ -124,45 +107,16 @@ private fun DistanceUnit.label(): String =
     Imperial -> Strings.settingsFormatDistanceImperial
   }
 
-@Composable
-private fun FirstDayOfWeek.string(): String =
-  when (this) {
-    Sunday -> Strings.weekSunday
-    Monday -> Strings.weekMonday
-    Tuesday -> Strings.weekTuesday
-    Wednesday -> Strings.weekWednesday
-    Thursday -> Strings.weekThursday
-    Friday -> Strings.weekFriday
-    Saturday -> Strings.weekSaturday
-  }
-
 @PortraitPreview
 @Composable
 private fun PreviewFormatSettingsScaffold(
-  @PreviewParameter(FormatSettingsProvider::class) params: ColorParams<FormatSettingsParams>,
+  @PreviewParameter(ColorParameters::class) colors: Colors,
 ) =
-  PreviewWithColorParams(params) {
+  PreviewWithColors(colors) {
     FormatSettingsScaffold(
       onBack = {},
       onOpenAmounts = {},
-      state =
-        FormatSettingsState(
-          dateFormat = ListPreference(dateFormat),
-          firstDayOfWeek = ListPreference(firstDayOfWeek),
-          distanceUnit = ListPreference(Default),
-        ),
+      onOpenDates = {},
+      state = FormatSettingsState(distanceUnit = ListPreference(Default)),
     )
   }
-
-private data class FormatSettingsParams(
-  val dateFormat: DateFormat,
-  val firstDayOfWeek: FirstDayOfWeek,
-)
-
-private class FormatSettingsProvider :
-  ColorParamsProvider<FormatSettingsParams>(
-    FormatSettingsParams(
-      dateFormat = MmDdYyyy,
-      firstDayOfWeek = Monday,
-    ),
-  )

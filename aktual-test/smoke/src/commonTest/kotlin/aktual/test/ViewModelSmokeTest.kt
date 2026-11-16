@@ -48,6 +48,7 @@ import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.amounts.AmountSettingsViewModel
 import aktual.prefs.vm.appicon.AppIconSettingsViewModel
 import aktual.prefs.vm.bars.BarSettingsViewModel
+import aktual.prefs.vm.dates.DateSettingsViewModel
 import aktual.prefs.vm.dialogs.DialogSettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
@@ -213,6 +214,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun barSettings() = testVm<BarSettingsViewModel>()
 
   @Test fun dialogSettings() = testVm<DialogSettingsViewModel>()
+
+  @Test fun dateSettings() = testVm<DateSettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
 

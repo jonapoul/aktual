@@ -21,6 +21,7 @@ enum class SettingsPage {
   Security,
   Format,
   Amounts,
+  Dates,
   LauncherIcon,
 }
 

@@ -2512,6 +2512,7 @@
   <string name="settings_amounts_desc">Choose how amounts look throughout the app.</string>
   <string name="settings_format_decimal">Hide decimal places</string>
   <string name="settings_format_dates">Date format</string>
+  <string name="settings_dates_desc">Choose how dates are written and which day each week starts on.</string>
   <string name="settings_date_format_mm_dd_yyyy">MM/DD/YYYY</string>
   <string name="settings_date_format_dd_mm_yyyy">DD/MM/YYYY</string>
   <string name="settings_date_format_yyyy_mm_dd">YYYY-MM-DD</string>
