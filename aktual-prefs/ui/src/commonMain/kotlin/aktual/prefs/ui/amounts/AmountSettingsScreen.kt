@@ -127,7 +127,7 @@ private fun Amount.format(
 @ReadOnlyComposable
 private fun Amount.color(): Color =
   when {
-    this == Amount.Zero -> colors.numberNeutral
+    this == Zero -> colors.numberNeutral
     isPositive() -> colors.numberPositive
     else -> colors.numberNegative
   }
