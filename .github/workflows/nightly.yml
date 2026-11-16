@@ -1,7 +1,7 @@
 name: Nightly
 
 on:
-  # 2am daily
+  # 19:23 UTC: GitHub delays scheduled runs ~7h, so this lands around 02:00 UTC
   schedule:
     - cron: '23 19 * * *'
   workflow_dispatch:
