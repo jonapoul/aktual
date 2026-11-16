@@ -268,7 +268,6 @@ private fun PayeeSheet(
         item {
           BottomSheetListItem(
             label = Strings.transactionPayeeCreate(name),
-            isSelected = false,
             leadingContent = { BottomSheetIcon(AktualIcons.Add) },
             onClick = {
               onCreate(name)

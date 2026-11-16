@@ -128,7 +128,6 @@ private fun SchedulePickerContent(
         BottomSheetListItem(
           modifier = Modifier.animateItem(),
           label = Strings.transactionNone,
-          isSelected = false,
           onClick = onUnlink,
         )
       }

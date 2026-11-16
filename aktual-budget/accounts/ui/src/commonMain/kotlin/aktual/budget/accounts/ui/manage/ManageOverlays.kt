@@ -178,7 +178,6 @@ private fun MenuItem(
 ) =
   BottomSheetListItem(
     label = label,
-    isSelected = false,
     labelColor = color,
     onClick = onClick,
     leadingContent = { Icon(imageVector = icon, contentDescription = null, tint = color) },
