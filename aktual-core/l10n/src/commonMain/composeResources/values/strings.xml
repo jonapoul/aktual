@@ -2535,6 +2535,7 @@
   <string name="settings_ui_group">System UI</string>
   <string name="settings_ui_show_status">Show bottom status bar</string>
   <string name="settings_ui_bars_title">App bars</string>
+  <string name="settings_bars_desc">Choose how the bars at the top and bottom of the screen look. Content scrolls behind them.</string>
   <string name="settings_ui_bar_effect">Effect</string>
   <string name="settings_ui_bar_effect_none">Solid</string>
   <string name="settings_ui_bar_effect_blur">Blur</string>
