@@ -17,6 +17,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -166,3 +167,9 @@ private class SliderPreferenceItemProvider :
       enabled = false,
     ),
   )
+
+// Holds a slider's value while it's dragged, since the preference only saves on release. Resets
+// when the saved value changes
+@Composable
+internal fun rememberSliderDraft(preference: SliderPreference): MutableFloatState =
+  remember(preference.value) { mutableFloatStateOf(preference.value) }

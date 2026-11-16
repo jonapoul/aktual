@@ -43,3 +43,17 @@ data class SliderPreference(
   val visible: Boolean = true,
   val onChange: (Float) -> Unit = {},
 )
+
+fun BlurRadiusPreference(
+  value: Float,
+  enabled: Boolean = true,
+  onChange: (Float) -> Unit = {},
+): SliderPreference =
+  SliderPreference(value = value, range = 0f..20f, enabled = enabled, onChange = onChange)
+
+fun BlurAlphaPreference(
+  value: Float,
+  enabled: Boolean = true,
+  onChange: (Float) -> Unit = {},
+): SliderPreference =
+  SliderPreference(value = value, range = 0f..1f, enabled = enabled, onChange = onChange)

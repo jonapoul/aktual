@@ -17,6 +17,7 @@ enum class SettingsPage {
   Theme,
   SystemUi,
   Bars,
+  Dialogs,
   Security,
   Format,
   Amounts,

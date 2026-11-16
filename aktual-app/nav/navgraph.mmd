@@ -16,6 +16,7 @@ flowchart TD
   formatSettings["Format Settings"]
   amountSettings["Amount Settings"]
   barSettings["Bar Settings"]
+  dialogSettings["Dialog Settings"]
   appIconSettings["App Icon Settings"]
   themeSettings["Theme Settings"]
   customThemes["Custom Themes"]
@@ -89,6 +90,8 @@ flowchart TD
   searchSettings --tap result--> amountSettings
   searchSettings --tap result--> barSettings
   systemUiSettings --tap app bars--> barSettings
+  searchSettings --tap result--> dialogSettings
+  systemUiSettings --tap dialogs--> dialogSettings
   formatSettings --tap amounts--> amountSettings
   searchSettings --tap result--> appIconSettings
   themeSettings --tap custom themes--> customThemes
