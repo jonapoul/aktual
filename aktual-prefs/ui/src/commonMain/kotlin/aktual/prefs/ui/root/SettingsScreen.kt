@@ -4,10 +4,12 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.SearchAlternate
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
+import aktual.core.icons.material.Apps
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
+import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.SearchSettingsNavigator
@@ -33,6 +35,7 @@ fun SettingsScreen(
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
+  toAppIconSettings: AppIconSettingsNavigator,
 ) {
   SettingsScaffold(
     onAction = { action ->
@@ -43,6 +46,7 @@ fun SettingsScreen(
         NavToSystemUiSettings -> toSystemUiSettings()
         NavToSecuritySettings -> toSecuritySettings()
         NavToFormatSettings -> toFormatSettings()
+        NavToAppIconSettings -> toAppIconSettings()
       }
     },
   )
@@ -74,6 +78,13 @@ private fun SettingsScaffold(onAction: OnAction<SettingsAction>) {
         title = Strings.settingsUiGroup,
         icon = AktualIcons.Tuning,
         onClick = { onAction(NavToSystemUiSettings) },
+      )
+    }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsAppIcon,
+        icon = MaterialIcons.Apps,
+        onClick = { onAction(NavToAppIconSettings) },
       )
     }
     if (ShouldShowSecuritySettings) {

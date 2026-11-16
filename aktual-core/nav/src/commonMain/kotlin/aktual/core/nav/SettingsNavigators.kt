@@ -52,3 +52,9 @@ class FormatSettingsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke(highlight: SettingsHighlight? = null) =
     stack.push(FormatSettingsNavRoute(highlight))
 }
+
+@Immutable
+class AppIconSettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke(highlight: SettingsHighlight? = null) =
+    stack.push(AppIconSettingsNavRoute(highlight))
+}

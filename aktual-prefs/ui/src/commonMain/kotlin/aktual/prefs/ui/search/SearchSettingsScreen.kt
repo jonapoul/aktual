@@ -3,11 +3,13 @@ package aktual.prefs.ui.search
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
+import aktual.core.icons.material.Apps
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
 import aktual.core.icons.material.SearchOff
 import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
+import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
@@ -74,6 +76,7 @@ internal fun SearchSettingsScreen(
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
+  toAppIconSettings: AppIconSettingsNavigator,
   viewModel: SearchSettingsViewModel = metroViewModel(),
 ) {
   val query by viewModel.query.collectAsStateWithLifecycle()
@@ -93,6 +96,7 @@ internal fun SearchSettingsScreen(
             SystemUi -> toSystemUiSettings(highlight)
             SettingsPage.Security -> toSecuritySettings(highlight)
             Format -> toFormatSettings(highlight)
+            LauncherIcon -> toAppIconSettings(highlight)
           }
         }
       }
@@ -222,6 +226,7 @@ private fun SettingsPage.icon(): ImageVector =
     SystemUi -> AktualIcons.Tuning
     SettingsPage.Security -> MaterialIcons.Security
     Format -> MaterialIcons.Numbers
+    LauncherIcon -> MaterialIcons.Apps
   }
 
 @PortraitPreview

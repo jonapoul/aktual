@@ -1,5 +1,7 @@
 package aktual.prefs.ui
 
+import aktual.core.nav.AppIconSettingsNavRoute
+import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CustomThemeSettingsNavRoute
 import aktual.core.nav.CustomThemesNavigator
@@ -21,6 +23,7 @@ import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.di.AppScope
+import aktual.prefs.ui.appicon.AppIconSettingsScreen
 import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
@@ -45,6 +48,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
+        toAppIconSettings = AppIconSettingsNavigator(stack),
       )
     }
 
@@ -55,6 +59,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
+        toAppIconSettings = AppIconSettingsNavigator(stack),
       )
     }
 
@@ -68,6 +73,10 @@ class SettingsNavEntryContributor : NavEntryContributor {
 
     entry<FormatSettingsNavRoute> { route ->
       FormatSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
+    entry<AppIconSettingsNavRoute> { route ->
+      AppIconSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
     entry<ThemeSettingsNavRoute> { route ->
