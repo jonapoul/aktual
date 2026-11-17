@@ -58,6 +58,7 @@ import aktual.prefs.vm.security.SecuritySettingsViewModel
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
+import aktual.prefs.vm.transactions.TransactionSettingsViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -216,6 +217,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun dialogSettings() = testVm<DialogSettingsViewModel>()
 
   @Test fun dateSettings() = testVm<DateSettingsViewModel>()
+
+  @Test fun transactionSettings() = testVm<TransactionSettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
 

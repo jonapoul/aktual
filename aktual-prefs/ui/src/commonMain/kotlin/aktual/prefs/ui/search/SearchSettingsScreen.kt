@@ -9,6 +9,7 @@ import aktual.core.icons.material.CalendarViewWeek
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
+import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.SearchOff
 import aktual.core.icons.material.Security
 import aktual.core.icons.material.Speed125
@@ -24,6 +25,7 @@ import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -86,6 +88,7 @@ internal fun SearchSettingsScreen(
   toFormatSettings: FormatSettingsNavigator,
   toAmountSettings: AmountSettingsNavigator,
   toDateSettings: DateSettingsNavigator,
+  toTransactionSettings: TransactionSettingsNavigator,
   toBarSettings: BarSettingsNavigator,
   toDialogSettings: DialogSettingsNavigator,
   toAppIconSettings: AppIconSettingsNavigator,
@@ -110,6 +113,7 @@ internal fun SearchSettingsScreen(
             Format -> toFormatSettings(highlight)
             Amounts -> toAmountSettings(highlight)
             Dates -> toDateSettings(highlight)
+            SettingsPage.Transactions -> toTransactionSettings(highlight)
             Bars -> toBarSettings(highlight)
             SettingsPage.Dialogs -> toDialogSettings(highlight)
             LauncherIcon -> toAppIconSettings(highlight)
@@ -244,6 +248,7 @@ private fun SettingsPage.icon(): ImageVector =
     Format -> MaterialIcons.Numbers
     Amounts -> MaterialIcons.Speed125
     Dates -> MaterialIcons.CalendarViewWeek
+    SettingsPage.Transactions -> MaterialIcons.ReceiptLong
     Bars -> MaterialIcons.BlurOn
     SettingsPage.Dialogs -> MaterialIcons.Dialogs
     LauncherIcon -> MaterialIcons.Apps

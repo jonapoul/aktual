@@ -30,6 +30,8 @@ import aktual.core.nav.SystemUiSettingsNavRoute
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
+import aktual.core.nav.TransactionSettingsNavRoute
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.amounts.AmountSettingsScreen
 import aktual.prefs.ui.appicon.AppIconSettingsScreen
@@ -45,6 +47,7 @@ import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
+import aktual.prefs.ui.transactions.TransactionSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -60,6 +63,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
+        toTransactionSettings = TransactionSettingsNavigator(stack),
         toAppIconSettings = AppIconSettingsNavigator(stack),
       )
     }
@@ -73,6 +77,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toFormatSettings = FormatSettingsNavigator(stack),
         toAmountSettings = AmountSettingsNavigator(stack),
         toDateSettings = DateSettingsNavigator(stack),
+        toTransactionSettings = TransactionSettingsNavigator(stack),
         toBarSettings = BarSettingsNavigator(stack),
         toDialogSettings = DialogSettingsNavigator(stack),
         toAppIconSettings = AppIconSettingsNavigator(stack),
@@ -94,6 +99,10 @@ class SettingsNavEntryContributor : NavEntryContributor {
 
     entry<DateSettingsNavRoute> { route ->
       DateSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
+    entry<TransactionSettingsNavRoute> { route ->
+      TransactionSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
     entry<DialogSettingsNavRoute> { route ->

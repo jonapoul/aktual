@@ -22,6 +22,7 @@ enum class SettingsPage {
   Format,
   Amounts,
   Dates,
+  Transactions,
   LauncherIcon,
 }
 
