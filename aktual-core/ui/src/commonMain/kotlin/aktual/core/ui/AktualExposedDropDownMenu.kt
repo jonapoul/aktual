@@ -19,6 +19,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +70,7 @@ fun <T> AktualExposedDropDownMenu(
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   textStyle: TextStyle = LocalTextStyle.current,
-  contentPadding: PaddingValues = DROPDOWN_CONTENT_PADDING,
+  contentPadding: PaddingValues = TEXT_FIELD_CONTENT_PADDING,
 ) {
   var isExpanded by remember { mutableStateOf(false) }
   var selectedOption by remember(value) { mutableStateOf(value) }
@@ -78,7 +79,7 @@ fun <T> AktualExposedDropDownMenu(
 
   val textMeasurer = rememberTextMeasurer()
   val density = LocalDensity.current
-  val trailingIconSize = LocalMinimumInteractiveComponentSize.current
+  val trailingIconSize = TEXT_FIELD_MIN_HEIGHT
   val layoutDirection = LocalLayoutDirection.current
   val contentWidth =
     remember(
@@ -110,38 +111,42 @@ fun <T> AktualExposedDropDownMenu(
     expanded = isExpanded,
     onExpandedChange = { isExpanded = it },
   ) {
-    BasicTextField(
-      modifier =
-        Modifier.menuAnchor(PrimaryNotEditable, enabled = isEnabled)
-          .fillMaxWidth()
-          .clip(TextFieldShape)
-          .border(1.dp, borderColor, TextFieldShape)
-          .onGloballyPositioned { coords ->
-            if (isExpanded) {
-              dialogBlurState.excludedFromBlur[ExposedDropdownMenuAnchorKey] = coords.boundsInRoot()
-            }
-          },
-      value = selectedString,
-      onValueChange = {},
-      readOnly = true,
-      enabled = isEnabled,
-      singleLine = true,
-      textStyle = textStyle.copy(color = colors.formInputText),
-      interactionSource = interactionSource,
-      decorationBox = { innerTextField ->
-        TextFieldDefaults.DecorationBox(
-          value = selectedString,
-          innerTextField = innerTextField,
-          enabled = isEnabled,
-          singleLine = true,
-          visualTransformation = None,
-          interactionSource = interactionSource,
-          trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-          colors = colors.exposedDropDownMenu(),
-          contentPadding = contentPadding,
-        )
-      },
-    )
+    // The trailing icon slot applies the minimum interactive size, so cap it at the field height
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides TEXT_FIELD_MIN_HEIGHT) {
+      BasicTextField(
+        modifier =
+          Modifier.menuAnchor(PrimaryNotEditable, enabled = isEnabled)
+            .fillMaxWidth()
+            .clip(TextFieldShape)
+            .border(1.dp, borderColor, TextFieldShape)
+            .onGloballyPositioned { coords ->
+              if (isExpanded) {
+                dialogBlurState.excludedFromBlur[ExposedDropdownMenuAnchorKey] =
+                  coords.boundsInRoot()
+              }
+            },
+        value = selectedString,
+        onValueChange = {},
+        readOnly = true,
+        enabled = isEnabled,
+        singleLine = true,
+        textStyle = textStyle.copy(color = colors.formInputText),
+        interactionSource = interactionSource,
+        decorationBox = { innerTextField ->
+          TextFieldDefaults.DecorationBox(
+            value = selectedString,
+            innerTextField = innerTextField,
+            enabled = isEnabled,
+            singleLine = true,
+            visualTransformation = None,
+            interactionSource = interactionSource,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+            colors = colors.exposedDropDownMenu(),
+            contentPadding = contentPadding,
+          )
+        },
+      )
+    }
 
     // Not ExposedDropdownMenu: on Android its popup isn't touch modal, so taps outside it reach
     // the content underneath instead of only dismissing the menu
@@ -162,17 +167,6 @@ fun <T> AktualExposedDropDownMenu(
 }
 
 private data object ExposedDropdownMenuAnchorKey
-
-private val DROPDOWN_PADDING_H = 16.dp
-private val DROPDOWN_PADDING_V = 12.dp
-
-private val DROPDOWN_CONTENT_PADDING =
-  TextFieldDefaults.contentPaddingWithoutLabel(
-    start = DROPDOWN_PADDING_H,
-    end = DROPDOWN_PADDING_H,
-    top = DROPDOWN_PADDING_V,
-    bottom = DROPDOWN_PADDING_V,
-  )
 
 @Preview
 @Composable

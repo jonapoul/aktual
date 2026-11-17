@@ -6,6 +6,7 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.Dimens
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.textField
@@ -107,13 +108,14 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           textState.edit { replace(0, length, displayText) }
         }
       }
-      Box {
+      Box(modifier = Modifier.padding(Dimens.Large)) {
         AktualTextField(
           state = textState,
           modifier = Modifier.fillMaxWidth(),
           placeholderText = null,
           readOnly = true,
           isEnabled = enabled,
+          singleLine = true,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
           leadingIcon =
             if (optionPrefix != null || optionSuffix != null) {

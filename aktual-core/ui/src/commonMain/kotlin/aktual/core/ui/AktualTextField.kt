@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
@@ -17,6 +18,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
@@ -97,13 +99,17 @@ fun AktualTextField(
   val errorDescription = Strings.inputInvalid
 
   // Built on BasicTextField rather than TextField so the border only wraps the container, leaving
-  // the supporting text below it
-  CompositionLocalProvider(LocalTextSelectionColors provides colors.textSelectionColors) {
+  // the supporting text below it. The icon slots apply the minimum interactive size, so cap it at
+  // the field height to stop icons stretching the field
+  CompositionLocalProvider(
+    LocalTextSelectionColors provides colors.textSelectionColors,
+    LocalMinimumInteractiveComponentSize provides TEXT_FIELD_MIN_HEIGHT,
+  ) {
     BasicTextField(
       modifier =
         modifier
           .semantics { if (isError) error(errorDescription) }
-          .defaultMinSize(TextFieldDefaults.MinWidth, TextFieldDefaults.MinHeight)
+          .defaultMinSize(TextFieldDefaults.MinWidth, TEXT_FIELD_MIN_HEIGHT)
           .focusRequester(focusRequester),
       state = state,
       enabled = isEnabled,
@@ -137,6 +143,7 @@ fun AktualTextField(
           supportingText = supportingText,
           isError = isError,
           colors = colors,
+          contentPadding = TEXT_FIELD_CONTENT_PADDING,
           container = {
             TextFieldDefaults.Container(
               modifier =
@@ -152,6 +159,16 @@ fun AktualTextField(
     )
   }
 }
+
+internal val TEXT_FIELD_MIN_HEIGHT = 40.dp
+
+internal val TEXT_FIELD_CONTENT_PADDING =
+  TextFieldDefaults.contentPaddingWithoutLabel(
+    start = Dimens.VeryLarge,
+    end = Dimens.VeryLarge,
+    top = Dimens.Large,
+    bottom = Dimens.Large,
+  )
 
 private fun Modifier.outline(
   colors: Colors,
@@ -176,7 +193,8 @@ private fun Modifier.outline(
 @Composable
 private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
   BasicIconButton(
-    modifier = modifier,
+    modifier = modifier.size(CLEAR_BUTTON_SIZE),
+    size = CLEAR_ICON_SIZE,
     imageVector = AktualIcons.Delete,
     contentDescription = Strings.inputClear,
     colors =
@@ -186,6 +204,9 @@ private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = M
     onClick = onClick,
   )
 }
+
+private val CLEAR_BUTTON_SIZE = 32.dp
+private val CLEAR_ICON_SIZE = 18.dp
 
 private data class TextInputPreviewParams(
   val initialText: String,
