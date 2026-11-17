@@ -9,6 +9,7 @@ import aktual.app.nav.rememberBackStack
 import aktual.core.model.ForegroundStateHolder
 import aktual.core.openid.AndroidOpenIdRedirects
 import aktual.core.ui.LoadingScreenIfNull
+import aktual.core.ui.rememberLocalNetworkPermissionRequest
 import aktual.di.AppScope
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -17,11 +18,13 @@ import android.os.Bundle
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -174,6 +177,21 @@ private fun Content(
 @Suppress("ViewModelForwarding")
 @SuppressLint("ComposeViewModelForwarding")
 private fun UnlockedContent(viewModel: AktualActivityViewModel) {
+  // Server requests wait for the answer, so they go through once it's given
+  val requestLocalNetworkPermission =
+    rememberLocalNetworkPermissionRequest(onResult = { viewModel.onLocalNetworkPermissionResult() })
+  LaunchedEffect(Unit) {
+    if (viewModel.needsLocalNetworkPermission()) requestLocalNetworkPermission()
+  }
+  // Leaving composition with the dialog up unregisters the launcher, so no result would arrive.
+  // Not on a configuration change though, since the recreated launcher still gets the result
+  val activity = LocalActivity.current
+  DisposableEffect(activity) {
+    onDispose {
+      if (activity?.isChangingConfigurations != true) viewModel.onLocalNetworkPermissionResult()
+    }
+  }
+
   val viewModelFactory by remember {
     viewModel.runLevels.viewModelFactory()
   }

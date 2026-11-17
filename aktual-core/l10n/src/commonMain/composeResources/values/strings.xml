@@ -295,6 +295,7 @@
   <string name="server_url_message">There is no server configured. After running the server, specify the URL here to use the app. You can always change this later. We will validate that Actual is running at this URL.</string>
   <string name="server_url_confirm">Confirm</string>
   <string name="server_url_try_demo">Try the demo budget</string>
+  <string name="server_url_local_network_blocked">Couldn’t reach the server on your local network. Give Aktual the Nearby devices permission in system settings, then try again.</string>
 
   <!-- budget-accounts -->
   <string name="accounts_create_title">Create account</string>
