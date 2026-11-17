@@ -1,6 +1,8 @@
 package aktual.budget.transactions.vm
 
+import aktual.core.model.ServerUrl
 import aktual.core.utils.AppDirectory
+import aktual.core.utils.LocalNetworkPermission
 import aktual.core.utils.LocationProvider
 import aktual.di.AppScope
 import dev.zacsweers.metro.BindingContainer
@@ -16,11 +18,21 @@ internal object TestPlatformBindings {
 
   @Provides fun location(): LocationProvider = NoLocationProvider
 
+  @Provides fun localNetwork(): LocalNetworkPermission = GrantedLocalNetworkPermission
+
   private object NoLocationProvider : LocationProvider {
     override val isSupported = false
 
     override fun hasPermission() = false
 
     override suspend fun currentLocation() = null
+  }
+
+  private object GrantedLocalNetworkPermission : LocalNetworkPermission {
+    override fun isGranted() = true
+
+    override suspend fun isRequiredFor(url: ServerUrl) = false
+
+    override suspend fun isRequiredForHost(host: String) = false
   }
 }
