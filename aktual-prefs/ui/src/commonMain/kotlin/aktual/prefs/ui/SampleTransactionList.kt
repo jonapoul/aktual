@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -120,7 +119,7 @@ private fun SplitLabel(expanded: Boolean) {
     Text(
       text = Strings.transactionsSplit,
       style = typography.bodySmall,
-      fontStyle = FontStyle.Italic,
+      fontStyle = Italic,
       color = colors.pageTextSubdued,
       maxLines = 1,
     )

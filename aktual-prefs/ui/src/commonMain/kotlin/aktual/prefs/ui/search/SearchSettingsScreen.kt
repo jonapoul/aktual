@@ -14,18 +14,8 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.icons.material.Security
 import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
-import aktual.core.nav.AmountSettingsNavigator
-import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
-import aktual.core.nav.BarSettingsNavigator
-import aktual.core.nav.DateSettingsNavigator
-import aktual.core.nav.DialogSettingsNavigator
-import aktual.core.nav.FormatSettingsNavigator
-import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.nav.SystemUiSettingsNavigator
-import aktual.core.nav.ThemeSettingsNavigator
-import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -82,16 +72,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun SearchSettingsScreen(
   back: BackNavigator,
-  toThemeSettings: ThemeSettingsNavigator,
-  toSystemUiSettings: SystemUiSettingsNavigator,
-  toSecuritySettings: SecuritySettingsNavigator,
-  toFormatSettings: FormatSettingsNavigator,
-  toAmountSettings: AmountSettingsNavigator,
-  toDateSettings: DateSettingsNavigator,
-  toTransactionSettings: TransactionSettingsNavigator,
-  toBarSettings: BarSettingsNavigator,
-  toDialogSettings: DialogSettingsNavigator,
-  toAppIconSettings: AppIconSettingsNavigator,
+  toPage: SettingsPageNavigator,
   viewModel: SearchSettingsViewModel = metroViewModel(),
 ) {
   val query by viewModel.query.collectAsStateWithLifecycle()
@@ -104,21 +85,7 @@ internal fun SearchSettingsScreen(
       when (action) {
         NavBack -> back()
         is SetQuery -> viewModel.setQuery(action.query)
-        is OpenSetting -> {
-          val highlight = action.setting.highlight()
-          when (action.setting.page) {
-            Theme -> toThemeSettings(highlight)
-            SystemUi -> toSystemUiSettings(highlight)
-            SettingsPage.Security -> toSecuritySettings(highlight)
-            Format -> toFormatSettings(highlight)
-            Amounts -> toAmountSettings(highlight)
-            Dates -> toDateSettings(highlight)
-            SettingsPage.Transactions -> toTransactionSettings(highlight)
-            Bars -> toBarSettings(highlight)
-            SettingsPage.Dialogs -> toDialogSettings(highlight)
-            LauncherIcon -> toAppIconSettings(highlight)
-          }
-        }
+        is OpenSetting -> toPage(action.setting.page, action.setting.highlight())
       }
     },
   )
@@ -248,7 +215,7 @@ private fun SettingsPage.icon(): ImageVector =
     Format -> MaterialIcons.Numbers
     Amounts -> MaterialIcons.Speed125
     Dates -> MaterialIcons.CalendarViewWeek
-    SettingsPage.Transactions -> MaterialIcons.ReceiptLong
+    Transactions -> MaterialIcons.ReceiptLong
     Bars -> MaterialIcons.BlurOn
     SettingsPage.Dialogs -> MaterialIcons.Dialogs
     LauncherIcon -> MaterialIcons.Apps

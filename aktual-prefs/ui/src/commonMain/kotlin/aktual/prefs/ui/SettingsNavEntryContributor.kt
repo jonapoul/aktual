@@ -43,6 +43,7 @@ import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
 import aktual.prefs.ui.search.SearchSettingsScreen
+import aktual.prefs.ui.search.SettingsPageNavigator
 import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
@@ -69,19 +70,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
     }
 
     entry<SearchSettingsNavRoute> {
-      SearchSettingsScreen(
-        back = BackNavigator(stack),
-        toThemeSettings = ThemeSettingsNavigator(stack),
-        toSystemUiSettings = SystemUiSettingsNavigator(stack),
-        toSecuritySettings = SecuritySettingsNavigator(stack),
-        toFormatSettings = FormatSettingsNavigator(stack),
-        toAmountSettings = AmountSettingsNavigator(stack),
-        toDateSettings = DateSettingsNavigator(stack),
-        toTransactionSettings = TransactionSettingsNavigator(stack),
-        toBarSettings = BarSettingsNavigator(stack),
-        toDialogSettings = DialogSettingsNavigator(stack),
-        toAppIconSettings = AppIconSettingsNavigator(stack),
-      )
+      SearchSettingsScreen(back = BackNavigator(stack), toPage = SettingsPageNavigator(stack))
     }
 
     entry<SystemUiSettingsNavRoute> { route ->
