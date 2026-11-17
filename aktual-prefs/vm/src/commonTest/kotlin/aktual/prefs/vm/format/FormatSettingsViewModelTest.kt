@@ -14,14 +14,14 @@ import kotlinx.coroutines.test.runTest
 
 class FormatSettingsViewModelTest {
   @Test
-  fun `Date format changes the preference`() = runTest {
+  fun `Distance unit changes the preference`() = runTest {
     val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
     val viewModel = viewModel(preferences)
 
     viewModel.state.test {
-      awaitItem().dateFormat.onChange(DdMmYyyyDot)
-      assertThat(awaitItem().dateFormat.value).isEqualTo(DdMmYyyyDot)
-      assertThat(preferences.dateFormat.get()).isEqualTo(DdMmYyyyDot)
+      awaitItem().distanceUnit.onChange(Metric)
+      assertThat(awaitItem().distanceUnit.value).isEqualTo(Metric)
+      assertThat(preferences.distanceUnit.get()).isEqualTo(Metric)
       cancelAndIgnoreRemainingEvents()
     }
   }

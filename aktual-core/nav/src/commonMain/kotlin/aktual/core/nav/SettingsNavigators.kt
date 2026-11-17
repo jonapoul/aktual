@@ -76,3 +76,9 @@ class DialogSettingsNavigator(private val stack: NavStack<NavKey>) {
   operator fun invoke(highlight: SettingsHighlight? = null) =
     stack.push(DialogSettingsNavRoute(highlight))
 }
+
+@Immutable
+class DateSettingsNavigator(private val stack: NavStack<NavKey>) {
+  operator fun invoke(highlight: SettingsHighlight? = null) =
+    stack.push(DateSettingsNavRoute(highlight))
+}
