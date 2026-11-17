@@ -2546,6 +2546,11 @@
   <string name="settings_sample_payee_refund">Refund</string>
   <string name="settings_sample_payee_restaurant">Restaurant</string>
   <string name="settings_sample_payee_insurance">Car insurance</string>
+  <string name="settings_sample_payee_supermarket">Supermarket</string>
+  <string name="settings_sample_category_food">Food</string>
+  <string name="settings_sample_category_household">Household</string>
+  <string name="settings_transactions">Transactions</string>
+  <string name="settings_transactions_desc">Choose how transaction lists look. These also show in the view options on the transactions screen.</string>
   <string name="settings_dialogs_desc">Choose whether the screen behind a dialog is blurred, and by how much.</string>
   <string name="settings_dialogs_blurred">Blurred background</string>
   <string name="settings_dialogs_not_blurred">Plain background</string>

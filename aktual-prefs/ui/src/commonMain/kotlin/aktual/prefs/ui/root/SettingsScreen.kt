@@ -7,6 +7,7 @@ import aktual.core.icons.Tuning
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
+import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Security
 import aktual.core.l10n.Strings
 import aktual.core.nav.AppIconSettingsNavigator
@@ -16,6 +17,7 @@ import aktual.core.nav.SearchSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.ColorParameters
@@ -35,6 +37,7 @@ fun SettingsScreen(
   toSystemUiSettings: SystemUiSettingsNavigator,
   toSecuritySettings: SecuritySettingsNavigator,
   toFormatSettings: FormatSettingsNavigator,
+  toTransactionSettings: TransactionSettingsNavigator,
   toAppIconSettings: AppIconSettingsNavigator,
 ) {
   SettingsScaffold(
@@ -46,6 +49,7 @@ fun SettingsScreen(
         NavToSystemUiSettings -> toSystemUiSettings()
         NavToSecuritySettings -> toSecuritySettings()
         NavToFormatSettings -> toFormatSettings()
+        NavToTransactionSettings -> toTransactionSettings()
         NavToAppIconSettings -> toAppIconSettings()
       }
     },
@@ -101,6 +105,13 @@ private fun SettingsScaffold(onAction: OnAction<SettingsAction>) {
         title = Strings.settingsFormatGroup,
         icon = MaterialIcons.Numbers,
         onClick = { onAction(NavToFormatSettings) },
+      )
+    }
+    item {
+      SubSettingsItem(
+        title = Strings.settingsTransactions,
+        icon = MaterialIcons.ReceiptLong,
+        onClick = { onAction(NavToTransactionSettings) },
       )
     }
   }

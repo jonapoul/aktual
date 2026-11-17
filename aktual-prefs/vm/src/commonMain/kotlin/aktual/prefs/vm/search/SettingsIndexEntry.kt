@@ -30,6 +30,7 @@ import aktual.core.l10n.settings_theme_custom_title
 import aktual.core.l10n.settings_theme_local_title
 import aktual.core.l10n.settings_theme_system_group
 import aktual.core.l10n.settings_theme_use_system
+import aktual.core.l10n.settings_transactions
 import aktual.core.l10n.settings_ui_bar_effect
 import aktual.core.l10n.settings_ui_bars_title
 import aktual.core.l10n.settings_ui_blur_alpha
@@ -40,6 +41,8 @@ import aktual.core.l10n.settings_ui_glass_corner_radius
 import aktual.core.l10n.settings_ui_glass_style
 import aktual.core.l10n.settings_ui_group
 import aktual.core.l10n.settings_ui_show_status
+import aktual.core.l10n.transactions_view_alternate_rows
+import aktual.core.l10n.transactions_view_expand_splits
 import org.jetbrains.compose.resources.StringResource
 
 // Mirrors the layout of the settings screens. An entry with children is a group, one without is a
@@ -136,6 +139,12 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
           entry(Res.string.settings_currency_symbol_position),
           entry(Res.string.settings_currency_add_space),
         ),
+      ),
+    SettingsPage.Transactions to
+      entry(
+        Res.string.settings_transactions,
+        entry(Res.string.transactions_view_alternate_rows),
+        entry(Res.string.transactions_view_expand_splits),
       ),
     SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),
   )

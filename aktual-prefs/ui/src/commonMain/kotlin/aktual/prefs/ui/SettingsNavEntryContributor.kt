@@ -30,6 +30,8 @@ import aktual.core.nav.SystemUiSettingsNavRoute
 import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
+import aktual.core.nav.TransactionSettingsNavRoute
+import aktual.core.nav.TransactionSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.amounts.AmountSettingsScreen
 import aktual.prefs.ui.appicon.AppIconSettingsScreen
@@ -41,10 +43,12 @@ import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
 import aktual.prefs.ui.search.SearchSettingsScreen
+import aktual.prefs.ui.search.SettingsPageNavigator
 import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
+import aktual.prefs.ui.transactions.TransactionSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -60,23 +64,13 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toSystemUiSettings = SystemUiSettingsNavigator(stack),
         toSecuritySettings = SecuritySettingsNavigator(stack),
         toFormatSettings = FormatSettingsNavigator(stack),
+        toTransactionSettings = TransactionSettingsNavigator(stack),
         toAppIconSettings = AppIconSettingsNavigator(stack),
       )
     }
 
     entry<SearchSettingsNavRoute> {
-      SearchSettingsScreen(
-        back = BackNavigator(stack),
-        toThemeSettings = ThemeSettingsNavigator(stack),
-        toSystemUiSettings = SystemUiSettingsNavigator(stack),
-        toSecuritySettings = SecuritySettingsNavigator(stack),
-        toFormatSettings = FormatSettingsNavigator(stack),
-        toAmountSettings = AmountSettingsNavigator(stack),
-        toDateSettings = DateSettingsNavigator(stack),
-        toBarSettings = BarSettingsNavigator(stack),
-        toDialogSettings = DialogSettingsNavigator(stack),
-        toAppIconSettings = AppIconSettingsNavigator(stack),
-      )
+      SearchSettingsScreen(back = BackNavigator(stack), toPage = SettingsPageNavigator(stack))
     }
 
     entry<SystemUiSettingsNavRoute> { route ->
@@ -94,6 +88,10 @@ class SettingsNavEntryContributor : NavEntryContributor {
 
     entry<DateSettingsNavRoute> { route ->
       DateSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
+    entry<TransactionSettingsNavRoute> { route ->
+      TransactionSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
     entry<DialogSettingsNavRoute> { route ->

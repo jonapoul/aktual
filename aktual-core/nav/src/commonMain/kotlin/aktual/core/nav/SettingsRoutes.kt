@@ -36,3 +36,6 @@ import kotlinx.serialization.Serializable
 @Immutable @Serializable data class SettingsHighlight(val group: String?, val title: String)
 
 @Serializable data class DateSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey
+
+@Serializable
+data class TransactionSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey
