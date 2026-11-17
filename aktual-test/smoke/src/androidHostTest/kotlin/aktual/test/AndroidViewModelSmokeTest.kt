@@ -12,9 +12,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 
-// Single SDK version, otherwise we get UnsatisfiedLinkError
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34], application = AktualApplication::class)
+@Config(application = AktualApplication::class)
 class AndroidViewModelSmokeTest : ViewModelSmokeTest<TestAndroidAppGraph>() {
   override fun buildGraph(): TestAndroidAppGraph =
     createDynamicGraph<TestAndroidAppGraph>(
