@@ -1,8 +1,8 @@
 package aktual.prefs.vm.dates
 
-import aktual.core.utils.Calendar
 import aktual.prefs.FormatPreferences
 import aktual.prefs.FormatPreferencesImpl
+import aktual.test.TestCalendar
 import aktual.test.buildPreferences
 import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
@@ -53,7 +53,7 @@ class DateSettingsViewModelTest {
   }
 
   private fun TestScope.viewModel(preferences: FormatPreferences) =
-    DateSettingsViewModel(preferences, Calendar { Today }, viewModelContext = viewModelContext)
+    DateSettingsViewModel(preferences, TestCalendar(Today), viewModelContext = viewModelContext)
 
   private companion object {
     val Today = LocalDate(year = 2026, month = 2, day = 3)

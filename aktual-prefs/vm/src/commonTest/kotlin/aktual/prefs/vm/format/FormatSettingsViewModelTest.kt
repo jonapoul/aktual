@@ -19,9 +19,9 @@ class FormatSettingsViewModelTest {
     val viewModel = viewModel(preferences)
 
     viewModel.state.test {
-      awaitItem().distanceUnit.onChange(Imperial)
-      assertThat(awaitItem().distanceUnit.value).isEqualTo(Imperial)
-      assertThat(preferences.distanceUnit.get()).isEqualTo(Imperial)
+      awaitItem().distanceUnit.onChange(Metric)
+      assertThat(awaitItem().distanceUnit.value).isEqualTo(Metric)
+      assertThat(preferences.distanceUnit.get()).isEqualTo(Metric)
       cancelAndIgnoreRemainingEvents()
     }
   }
