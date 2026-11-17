@@ -1,6 +1,7 @@
 package aktual.budget.reports.components
 
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.claimHorizontalDrags
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -282,7 +283,7 @@ internal fun ZoomableChart(
   modifier: Modifier = Modifier,
   content: @Composable BoxScope.(Modifier) -> Unit,
 ) {
-  val gestures = if (enabled) Modifier.zoomGestures(state) else Modifier
+  val gestures = if (enabled) Modifier.zoomGestures(state).claimHorizontalDrags() else Modifier
   Box(modifier = modifier.testTag(ChartTags.ZoomableChart).then(gestures)) {
     content(Modifier.fillMaxSize())
   }

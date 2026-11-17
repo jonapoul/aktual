@@ -23,6 +23,7 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
 import aktual.budget.reports.vm.montecarlo.PotBalancesChart
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.claimHorizontalDrags
 import aktual.core.ui.isInPreview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -129,7 +130,7 @@ internal fun FanChart(
     }
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.claimHorizontalDrags(),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     animationSpec = chartAnimationSpec(),

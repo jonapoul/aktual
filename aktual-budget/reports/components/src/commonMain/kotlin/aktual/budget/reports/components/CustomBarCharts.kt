@@ -16,6 +16,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.claimHorizontalDrags
 import aktual.core.ui.formatted
 import aktual.core.ui.isInPreview
 import aktual.core.ui.redacted
@@ -87,7 +88,7 @@ internal fun CustomBarChart(
     }
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.claimHorizontalDrags(enabled = !compact),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     animationSpec = chartAnimationSpec(),
@@ -149,7 +150,7 @@ internal fun CustomStackedBarChart(
     }
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.claimHorizontalDrags(enabled = !compact),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     animationSpec = chartAnimationSpec(),
