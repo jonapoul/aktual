@@ -6,6 +6,8 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -23,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -101,16 +105,25 @@ internal fun <T> ColumnScope.SortSection(
 
 @Composable
 private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String) {
+  val background by
+    animateColorAsState(if (isSelected) colors.settingsNavItemBackgroundSelected else Transparent)
   Row(
     modifier =
       Modifier.fillMaxWidth()
-        .selectable(selected = isSelected, onClick = onClick, role = null)
+        .clip(CardShape)
+        .background(background)
+        .selectable(selected = isSelected, onClick = onClick, role = Role.RadioButton)
         .padding(vertical = 4.dp),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     RadioButton(selected = isSelected, onClick = null, colors = colors.radioButton())
-    Text(text = name, style = typography.bodyLarge)
+    Text(
+      text = name,
+      style = typography.bodyLarge,
+      color = if (isSelected) colors.settingsNavItemTextSelected else Unspecified,
+      fontWeight = if (isSelected) Medium else null,
+    )
   }
 }
 
