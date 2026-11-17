@@ -251,6 +251,7 @@ include(
   ":aktual-metrics:ui",
   ":aktual-metrics:vm",
   ":aktual-prefs",
+  ":aktual-prefs:budget",
   ":aktual-prefs:components",
   ":aktual-prefs:impl",
   ":aktual-prefs:ui",

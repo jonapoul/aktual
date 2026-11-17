@@ -66,6 +66,8 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toFormatSettings = FormatSettingsNavigator(stack),
         toTransactionSettings = TransactionSettingsNavigator(stack),
         toAppIconSettings = AppIconSettingsNavigator(stack),
+        toAmountSettings = AmountSettingsNavigator(stack),
+        toDateSettings = DateSettingsNavigator(stack),
       )
     }
 
@@ -103,12 +105,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
     }
 
     entry<FormatSettingsNavRoute> { route ->
-      FormatSettingsScreen(
-        back = BackNavigator(stack),
-        toAmountSettings = AmountSettingsNavigator(stack),
-        toDateSettings = DateSettingsNavigator(stack),
-        highlight = route.highlight,
-      )
+      FormatSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
     entry<AmountSettingsNavRoute> { route ->

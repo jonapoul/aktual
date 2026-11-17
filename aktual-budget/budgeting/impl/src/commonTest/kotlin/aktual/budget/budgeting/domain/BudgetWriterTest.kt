@@ -24,10 +24,8 @@ import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.localChange
 import aktual.budget.utils.BudgetSync
-import aktual.core.model.DistanceUnit
 import aktual.core.utils.Calendar
-import aktual.prefs.CurrencyPreferences
-import aktual.prefs.FormatPreferences
+import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.Preference
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
@@ -577,7 +575,6 @@ internal class BudgetWriterTest {
         calculator = calculator,
         notesDao = notesDao,
         formatPreferences = TestFormatPreferences,
-        currencyPreferences = TestCurrencyPreferences,
       )
 
     override suspend fun invoke(changes: List<LocalChange>) {
@@ -663,18 +660,16 @@ internal class BudgetWriterTest {
     }
   }
 
-  private object TestFormatPreferences : FormatPreferences {
-    override val hideFraction = fixed(false)
-    override val dateFormat = fixed(DateFormat.Default)
-    override val firstDayOfWeek = fixed(FirstDayOfWeek.Default)
+  private object TestFormatPreferences : BudgetFormatPreferences {
     override val numberFormat = fixed(NumberFormat.Default)
-    override val distanceUnit = fixed(DistanceUnit.Default)
-  }
-
-  private object TestCurrencyPreferences : CurrencyPreferences {
+    override val hideFraction = fixed(false)
     override val currency = fixed(Currency.UsDollar)
     override val symbolPosition = fixed(CurrencySymbolPosition.BeforeAmount)
     override val spaceBetweenAmountAndSymbol = fixed(false)
+    override val dateFormat = fixed(DateFormat.Default)
+    override val firstDayOfWeek = fixed(FirstDayOfWeek.Default)
+
+    override suspend fun changeCurrency(currency: Currency) = Unit
   }
 
   private companion object {

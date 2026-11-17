@@ -26,19 +26,24 @@ enum class SettingsPage {
   LauncherIcon,
 }
 
+// Pages holding the open budget's synced settings rather than this device's
+val BudgetSettingsPages: Set<SettingsPage> = setOf(Amounts, Dates)
+
 enum class SettingsSearchKind {
   Page,
   Group,
   Preference,
 }
 
-// path holds the titles of the page and group containing the setting, outermost first
+// path holds the titles of the page and group containing the setting, outermost first. budgetName
+// is set for settings synced with the open budget
 @Immutable
 data class SettingsSearchResult(
   val title: String,
   val kind: SettingsSearchKind,
   val page: SettingsPage,
   val path: ImmutableList<String>,
+  val budgetName: String? = null,
 ) {
   val key: String
     get() = (path + title).joinToString(separator = "/")

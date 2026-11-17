@@ -1,10 +1,12 @@
 package aktual.prefs.vm.dates
 
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.utils.Calendar
-import aktual.di.AppScope
+import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
-import aktual.prefs.FormatPreferences
+import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.collectAsState
 import aktual.prefs.vm.launchAndSet
@@ -21,10 +23,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 @Stable
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(BudgetScope::class)
 class DateSettingsViewModel
 internal constructor(
-  preferences: FormatPreferences,
+  preferences: BudgetFormatPreferences,
+  localPreferences: BudgetLocalPreferences,
   calendar: Calendar,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -33,7 +36,12 @@ internal constructor(
       val dateFormat by collectAsState(preferences.dateFormat)
       val firstDayOfWeek by collectAsState(preferences.firstDayOfWeek)
       val today by remember { calendar.observeToday() }.collectAsState(calendar.today())
+      val budgetName by remember {
+        localPreferences.observe(BudgetName)
+      }
+        .collectAsState(localPreferences[BudgetName])
       DateSettingsState(
+        budgetName = budgetName.orEmpty(),
         dateFormat =
           ListPreference(
             value = dateFormat,

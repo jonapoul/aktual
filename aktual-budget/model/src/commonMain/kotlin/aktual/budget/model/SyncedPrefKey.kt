@@ -8,8 +8,17 @@ sealed interface SyncedPrefKey {
     /** [aktual.budget.model.BudgetType] */
     BudgetType("budgetType"),
 
+    /** [aktual.budget.model.CurrencySymbolPosition] */
+    CurrencySymbolPosition("currencySymbolPosition"),
+
+    /** [Boolean] */
+    CurrencySpaceBetweenAmountAndSymbol("currencySpaceBetweenAmountAndSymbol"),
+
     /** [aktual.budget.model.DateFormat] */
     DateFormat("dateFormat"),
+
+    /** [aktual.budget.model.Currency] */
+    DefaultCurrencyCode("defaultCurrencyCode"),
 
     /** [aktual.budget.model.FirstDayOfWeek] */
     FirstDayOfWeekIdx("firstDayOfWeekIdx"),

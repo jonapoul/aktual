@@ -2438,6 +2438,10 @@
 
   <!-- settings -->
   <string name="settings_toolbar">App Settings</string>
+  <string name="settings_budget_synced">Synced to every device using this budget</string>
+  <string name="settings_budget_unnamed">This budget</string>
+  <string name="settings_device_group">This device</string>
+  <string name="settings_device_desc">Only changes this app on this device</string>
   <string name="settings_search">Search settings</string>
   <string name="settings_search_placeholder">Search settings</string>
   <string name="settings_search_prompt">Enter some text to search settings and groups</string>
@@ -2510,10 +2514,10 @@
   <string name="settings_format_desc">Formatting does not affect how budget data is stored, and can be changed at any time.</string>
   <string name="settings_format_numbers">Number format</string>
   <string name="settings_amounts">Amounts</string>
-  <string name="settings_amounts_desc">Choose how amounts look throughout the app.</string>
+  <string name="settings_amounts_desc">Choose how amounts look in %1$s. Changes sync to every device using this budget.</string>
   <string name="settings_format_decimal">Hide decimal places</string>
   <string name="settings_format_dates">Date format</string>
-  <string name="settings_dates_desc">Choose how dates are written and which day each week starts on.</string>
+  <string name="settings_dates_desc">Choose how dates are written in %1$s and which day each week starts on. Changes sync to every device using this budget.</string>
   <string name="settings_date_format_mm_dd_yyyy">MM/DD/YYYY</string>
   <string name="settings_date_format_dd_mm_yyyy">DD/MM/YYYY</string>
   <string name="settings_date_format_yyyy_mm_dd">YYYY-MM-DD</string>

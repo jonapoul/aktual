@@ -13,6 +13,6 @@ enum class DateFormat(override val value: String) : SerializableByString {
   override fun toString(): String = value
 
   companion object {
-    val Default = YyyyMmDd
+    val Default = MmDdYyyy
   }
 }

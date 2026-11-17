@@ -16,6 +16,7 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -137,6 +138,38 @@ class SearchSettingsViewModelTest {
     }
   }
 
+  @Test
+  fun `Budget settings hidden with no budget open`() = runTest {
+    val viewModel = buildViewModel(budgetName = null)
+
+    viewModel.setQuery("first day")
+
+    viewModel.state.test {
+      advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isEqualTo(NoResults)
+    }
+  }
+
+  @Test
+  fun `Budget settings carry the open budget's name`() = runTest {
+    val viewModel = buildViewModel(budgetName = "My Budget")
+
+    viewModel.setQuery("first day")
+
+    viewModel.state.test {
+      assertThat(awaitResults())
+        .containsExactly(
+          SettingsSearchResult(
+            title = "format first day",
+            kind = Preference,
+            page = Dates,
+            path = persistentListOf("format dates group"),
+            budgetName = "My Budget",
+          ),
+        )
+    }
+  }
+
   private suspend fun ReceiveTurbine<SearchSettingsState>.awaitResults():
     List<
       SettingsSearchResult,
@@ -147,11 +180,15 @@ class SearchSettingsViewModelTest {
     return state.settings
   }
 
-  private fun TestScope.buildViewModel(locationSupported: Boolean = true) =
+  private fun TestScope.buildViewModel(
+    locationSupported: Boolean = true,
+    budgetName: String? = null,
+  ) =
     SearchSettingsViewModel(
       savedState = SavedStateHandle(),
       strings = FakeStringLookup,
       locationProvider = FakeLocationProvider(locationSupported),
+      openBudgetName = { flowOf(budgetName) },
       viewModelContext = viewModelContext,
     )
 

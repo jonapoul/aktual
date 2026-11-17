@@ -11,6 +11,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class AmountSettingsState(
+  val budgetName: String,
   val numberFormat: ListPreference<NumberFormat>,
   val hideFraction: BooleanPreference,
   val currency: ListPreference<Currency>,

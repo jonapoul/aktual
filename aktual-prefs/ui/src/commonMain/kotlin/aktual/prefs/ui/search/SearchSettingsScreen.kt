@@ -187,9 +187,11 @@ private fun ResultItem(
         color = colors.tableText,
       )
 
-      if (setting.path.isNotEmpty()) {
+      // Budget settings lead with the budget's name, so they're told apart from this device's
+      val breadcrumbs = listOfNotNull(setting.budgetName) + setting.path
+      if (breadcrumbs.isNotEmpty()) {
         Text(
-          text = setting.path.joinToString(separator = " › "),
+          text = breadcrumbs.joinToString(separator = " › "),
           style = typography.bodySmall,
           color = colors.tableTextLight,
         )

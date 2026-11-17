@@ -44,8 +44,7 @@ import aktual.budget.rules.domain.TransactionFilterCompiler
 import aktual.core.model.Percent
 import aktual.core.utils.Calendar
 import aktual.log
-import aktual.prefs.CurrencyPreferences
-import aktual.prefs.FormatPreferences
+import aktual.prefs.BudgetFormatPreferences
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import kotlin.math.roundToLong
@@ -83,8 +82,7 @@ internal class ChartDataLoader(
   private val preferences: PreferencesDao,
   private val formulaDao: FormulaDao,
   private val budgets: BudgetMonthCalculator,
-  private val formatPreferences: FormatPreferences,
-  private val currencyPreferences: CurrencyPreferences,
+  private val formatPreferences: BudgetFormatPreferences,
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
   private val compiler: TransactionFilterCompiler,
@@ -242,9 +240,9 @@ internal class ChartDataLoader(
     combine(
       formatPreferences.numberFormat.asFlow(),
       formatPreferences.hideFraction.asFlow(),
-      currencyPreferences.currency.asFlow(),
-      currencyPreferences.symbolPosition.asFlow(),
-      currencyPreferences.spaceBetweenAmountAndSymbol.asFlow(),
+      formatPreferences.currency.asFlow(),
+      formatPreferences.symbolPosition.asFlow(),
+      formatPreferences.spaceBetweenAmountAndSymbol.asFlow(),
     ) { numberFormat, hideFraction, currency, position, includeSpace ->
       formulaFormat(
         numberFormat = NumberFormatConfig(numberFormat, hideFraction),

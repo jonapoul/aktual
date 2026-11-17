@@ -1,15 +1,13 @@
 package aktual.prefs.vm.amounts
 
 import aktual.budget.model.Currency
-import aktual.prefs.CurrencyPreferences
-import aktual.prefs.CurrencyPreferencesImpl
-import aktual.prefs.FormatPreferences
-import aktual.prefs.FormatPreferencesImpl
+import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.FakeBudgetFormatPreferences
 import aktual.prefs.vm.ListPreference
-import aktual.test.buildPreferences
+import aktual.test.TestBudgetLocalPreferences
 import aktual.test.viewModelContext
-import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
@@ -25,7 +23,7 @@ import kotlinx.coroutines.test.runTest
 class AmountSettingsViewModelTest {
   @Test
   fun `Hide fraction toggles the preference`() = runTest {
-    val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val preferences = FakeBudgetFormatPreferences()
     val viewModel = viewModel(preferences = preferences)
 
     viewModel.state.test {
@@ -43,14 +41,27 @@ class AmountSettingsViewModelTest {
   }
 
   @Test
+  fun `Choosing a currency changes it in the budget`() = runTest {
+    val preferences = FakeBudgetFormatPreferences()
+    val viewModel = viewModel(preferences = preferences)
+
+    viewModel.state.test {
+      awaitItem().currency.onChange(Euro)
+      assertThat(awaitItem().currency.value).isEqualTo(Euro)
+      assertThat(preferences.currency.get()).isEqualTo(Euro)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Symbol settings are disabled without a currency`() = runTest {
-    val currencies = CurrencyPreferencesImpl(buildPreferences(unconfinedDispatcher))
-    val viewModel = viewModel(currencies = currencies)
+    val preferences = FakeBudgetFormatPreferences()
+    val viewModel = viewModel(preferences = preferences)
 
     viewModel.state.test {
       awaitItem()
 
-      currencies.currency.set(Euro)
+      preferences.currency.set(Euro)
       assertThat(awaitItem()).all {
         prop(AmountSettingsState::symbolPosition).prop(ListPreference<*>::enabled).isTrue()
         prop(AmountSettingsState::spaceBetweenAmountAndSymbol)
@@ -58,7 +69,7 @@ class AmountSettingsViewModelTest {
           .isTrue()
       }
 
-      currencies.currency.set(None)
+      preferences.currency.set(None)
       assertThat(awaitItem()).all {
         prop(AmountSettingsState::symbolPosition).prop(ListPreference<*>::enabled).isFalse()
         prop(AmountSettingsState::spaceBetweenAmountAndSymbol)
@@ -66,6 +77,16 @@ class AmountSettingsViewModelTest {
           .isFalse()
       }
 
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Budget name comes from the open budget`() = runTest {
+    val viewModel = viewModel()
+
+    viewModel.state.test {
+      assertThat(awaitItem().budgetName).isEqualTo(BUDGET_NAME)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -84,8 +105,15 @@ class AmountSettingsViewModelTest {
   }
 
   private fun TestScope.viewModel(
-    preferences: FormatPreferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher)),
-    currencies: CurrencyPreferences =
-      CurrencyPreferencesImpl(buildPreferences(unconfinedDispatcher)),
-  ) = AmountSettingsViewModel(preferences, currencies, viewModelContext = viewModelContext)
+    preferences: FakeBudgetFormatPreferences = FakeBudgetFormatPreferences(),
+  ) =
+    AmountSettingsViewModel(
+      preferences = preferences,
+      localPreferences = TestBudgetLocalPreferences(DbMetadata().set(BudgetName, BUDGET_NAME)),
+      viewModelContext = viewModelContext,
+    )
+
+  private companion object {
+    const val BUDGET_NAME = "My Budget"
+  }
 }

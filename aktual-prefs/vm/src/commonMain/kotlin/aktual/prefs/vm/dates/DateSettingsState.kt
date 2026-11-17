@@ -8,6 +8,7 @@ import kotlinx.datetime.LocalDate
 
 @Immutable
 data class DateSettingsState(
+  val budgetName: String,
   val dateFormat: ListPreference<DateFormat>,
   val firstDayOfWeek: ListPreference<FirstDayOfWeek>,
   val today: LocalDate,
