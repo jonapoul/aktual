@@ -8,6 +8,7 @@ import aktual.budget.reports.vm.CustomTotals
 import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.claimHorizontalDrags
 import aktual.core.ui.isInPreview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -80,7 +81,7 @@ internal fun CustomLineChart(
     }
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.claimHorizontalDrags(enabled = !compact),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     animationSpec = chartAnimationSpec(),
@@ -140,7 +141,7 @@ internal fun CustomAreaChart(
     }
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.claimHorizontalDrags(enabled = !compact),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     animationSpec = chartAnimationSpec(),
@@ -213,7 +214,7 @@ internal fun CustomBarLineChart(
     }
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.claimHorizontalDrags(enabled = !compact),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     animationSpec = chartAnimationSpec(),
