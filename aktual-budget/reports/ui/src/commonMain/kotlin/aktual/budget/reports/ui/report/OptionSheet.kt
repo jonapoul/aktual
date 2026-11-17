@@ -4,7 +4,10 @@ import aktual.budget.reports.ui.Tags
 import aktual.budget.rules.components.QuerySheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardShape
 import aktual.core.ui.radioButton
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,8 +18,10 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -38,10 +43,17 @@ internal fun <T> OptionSheet(
     Column(modifier = Modifier.selectableGroup()) {
       options.fastForEach { option ->
         val enabled = isEnabled(option)
+        val isChosen = option == selected && enabled
+        val background by
+          animateColorAsState(
+            if (isChosen) colors.settingsNavItemBackgroundSelected else Transparent,
+          )
         Row(
           modifier =
             Modifier.fillMaxWidth()
               .heightIn(min = 48.dp)
+              .clip(CardShape)
+              .background(background)
               .testTag(Tags.CustomOption)
               .selectable(
                 selected = option == selected,
@@ -61,7 +73,13 @@ internal fun <T> OptionSheet(
           Text(
             text = label(option),
             style = typography.bodyLarge,
-            color = if (enabled) colors.pageText else colors.pageTextSubdued,
+            color =
+              when {
+                !enabled -> colors.pageTextSubdued
+                isChosen -> colors.settingsNavItemTextSelected
+                else -> colors.pageText
+              },
+            fontWeight = if (isChosen) Medium else null,
           )
         }
       }

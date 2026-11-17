@@ -15,9 +15,11 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.disabled
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
 import aktual.prefs.components.BasicPreferenceItem
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -95,7 +98,15 @@ internal fun ThemeItem(
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == id
-    val backgroundColor = colors.buttonNormalBackground.disabledIf(enabled || !isSelected)
+    val isChosen = isSelected && enabled
+    val backgroundColor by
+      animateColorAsState(
+        if (isChosen) {
+          colors.settingsNavItemBackgroundSelected
+        } else {
+          colors.buttonNormalBackground.disabledIf(enabled || !isSelected)
+        },
+      )
     Row(
       modifier =
         Modifier.fillMaxHeight().weight(1f).background(backgroundColor, CardShape).clickable(
@@ -118,7 +129,13 @@ internal fun ThemeItem(
         modifier = Modifier.weight(1f),
         text = name,
         style = typography.bodyLarge,
-        color = colors.buttonNormalText.disabledIf(!enabled),
+        fontWeight = if (isChosen) Medium else Normal,
+        color =
+          when {
+            !enabled -> colors.buttonNormalText.disabled
+            isChosen -> colors.settingsNavItemTextSelected
+            else -> colors.buttonNormalText
+          },
       )
     }
 

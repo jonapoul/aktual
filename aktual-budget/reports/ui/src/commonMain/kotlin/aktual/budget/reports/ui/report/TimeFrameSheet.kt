@@ -9,7 +9,10 @@ import aktual.budget.rules.components.SectionLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardShape
 import aktual.core.ui.radioButton
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,8 +24,10 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -57,18 +62,28 @@ internal fun TimeFrameSheet(
   }
 
 @Composable
-private fun ModeRow(mode: TimeFrameMode, isSelected: Boolean, onSelect: () -> Unit) =
+private fun ModeRow(mode: TimeFrameMode, isSelected: Boolean, onSelect: () -> Unit) {
+  val background by
+    animateColorAsState(if (isSelected) colors.settingsNavItemBackgroundSelected else Transparent)
   Row(
     modifier =
       Modifier.fillMaxWidth()
         .heightIn(min = 48.dp)
+        .clip(CardShape)
+        .background(background)
         .selectable(selected = isSelected, role = Role.RadioButton, onClick = onSelect),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     RadioButton(selected = isSelected, onClick = null, colors = colors.radioButton())
-    Text(text = mode.label(), style = typography.bodyLarge)
+    Text(
+      text = mode.label(),
+      style = typography.bodyLarge,
+      color = if (isSelected) colors.settingsNavItemTextSelected else Unspecified,
+      fontWeight = if (isSelected) Medium else null,
+    )
   }
+}
 
 @Composable
 private fun MonthPickers(

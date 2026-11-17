@@ -40,6 +40,7 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.bottomNavBarPadding
+import aktual.core.ui.disabled
 import aktual.core.ui.disabledIf
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.radioButton
@@ -55,6 +56,7 @@ import aktual.prefs.vm.theme.custom.CustomThemeEvent
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.ThemeFilter
 import aktual.prefs.vm.theme.custom.ThemeSorting
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -73,6 +75,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
@@ -92,6 +95,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -352,14 +356,24 @@ private fun CustomThemeItem(
   modifier: Modifier = Modifier,
 ) {
   val enabled = item.state !is Fetching
+  val isChosen = item.isSelected && enabled
+  val background by
+    animateColorAsState(
+      if (isChosen) colors.settingsNavItemBackgroundSelected else colors.tableBackground,
+    )
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
+        .background(background, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
-        .clickable(enabled) { onAction(SelectTheme(item.summary)) }
+        .selectable(
+          selected = item.isSelected,
+          enabled = enabled,
+          role = Role.RadioButton,
+          onClick = { onAction(SelectTheme(item.summary)) },
+        )
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
@@ -382,7 +396,12 @@ private fun CustomThemeItem(
             text = item.summary.name,
             style = typography.bodyMedium,
             fontWeight = SemiBold,
-            color = colors.pageText.disabledIf(!enabled),
+            color =
+              when {
+                !enabled -> colors.pageText.disabled
+                isChosen -> colors.settingsNavItemTextSelected
+                else -> colors.pageText
+              },
             maxLines = 1,
             overflow = Ellipsis,
           )
