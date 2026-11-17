@@ -11,6 +11,7 @@ import aktual.core.nav.SettingsNavRoute
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
+import aktual.di.RunLevelController
 import aktual.di.RunLevelState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 class BudgetNavRailNavEntryContributor
 internal constructor(
   private val runLevelState: RunLevelState,
+  private val runLevelController: RunLevelController,
   private val demoBudget: DemoBudget,
   private val scope: AppCoroutineScope,
 ) : NavEntryContributor {
@@ -37,7 +39,7 @@ internal constructor(
           onAction = { action ->
             when (action) {
               LogOut -> stack.replaceAll(ServerUrlNavRoute)
-              SwitchFile -> stack.replaceAll(ListBudgetsNavRoute)
+              SwitchFile -> switchFile(stack)
               ExitDemo -> exitDemo(stack)
               Settings -> stack.push(SettingsNavRoute)
               About -> stack.push(InfoNavRoute)
@@ -46,6 +48,12 @@ internal constructor(
         )
       }
     }
+  }
+
+  // Leaving the budget closes it, so nothing outside it (like settings) acts as if it's still open
+  private fun switchFile(stack: NavStack<NavKey>) {
+    stack.replaceAll(ListBudgetsNavRoute)
+    runLevelController.onBudgetClosed()
   }
 
   private fun exitDemo(stack: NavStack<NavKey>) {

@@ -2440,6 +2440,8 @@
   <string name="settings_toolbar">App Settings</string>
   <string name="settings_budget_synced">Synced to every device using this budget</string>
   <string name="settings_budget_unnamed">This budget</string>
+  <string name="settings_budget_group">Budget</string>
+  <string name="settings_budget_closed">Open a budget to change these. Each budget keeps its own, synced to every device using it.</string>
   <string name="settings_device_group">This device</string>
   <string name="settings_device_desc">Only changes this app on this device</string>
   <string name="settings_search">Search settings</string>

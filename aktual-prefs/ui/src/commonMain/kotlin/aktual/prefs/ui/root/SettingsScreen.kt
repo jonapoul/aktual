@@ -91,25 +91,33 @@ private fun SettingsScaffold(budgetName: String?, onAction: OnAction<SettingsAct
       )
     },
   ) {
-    if (budgetName != null) {
-      item {
-        PreferenceGroup(
-          title = budgetName.ifBlank { Strings.settingsBudgetUnnamed },
-          subtitle = Strings.settingsBudgetSynced,
-        ) {
-          SubSettingsItem(
-            title = Strings.settingsAmounts,
-            subtitle = AmountsExample.formattedString(isPrivacyEnabled = false),
-            icon = MaterialIcons.Speed125,
-            onClick = { onAction(NavToAmountSettings) },
-          )
-          SubSettingsItem(
-            title = Strings.settingsFormatDatesGroup,
-            subtitle = DatesExample.formatted(),
-            icon = MaterialIcons.CalendarViewWeek,
-            onClick = { onAction(NavToDateSettings) },
-          )
-        }
+    // Greyed out with no budget open, since these belong to a budget
+    item {
+      val isBudgetOpen = budgetName != null
+      PreferenceGroup(
+        title =
+          when {
+            budgetName == null -> Strings.settingsBudgetGroup
+            budgetName.isBlank() -> Strings.settingsBudgetUnnamed
+            else -> budgetName
+          },
+        subtitle = if (isBudgetOpen) Strings.settingsBudgetSynced else Strings.settingsBudgetClosed,
+        enabled = isBudgetOpen,
+      ) {
+        SubSettingsItem(
+          title = Strings.settingsAmounts,
+          subtitle = AmountsExample.formattedString(isPrivacyEnabled = false),
+          icon = MaterialIcons.Speed125,
+          isEnabled = isBudgetOpen,
+          onClick = { onAction(NavToAmountSettings) },
+        )
+        SubSettingsItem(
+          title = Strings.settingsFormatDatesGroup,
+          subtitle = DatesExample.formatted(),
+          icon = MaterialIcons.CalendarViewWeek,
+          isEnabled = isBudgetOpen,
+          onClick = { onAction(NavToDateSettings) },
+        )
       }
     }
 
