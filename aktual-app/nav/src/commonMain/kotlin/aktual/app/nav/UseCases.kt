@@ -20,12 +20,13 @@ import aktual.core.ui.HazeConfig
 import aktual.core.utils.TokenExpiredEvent
 import aktual.di.AppGraph
 import aktual.di.BudgetGraph
+import aktual.di.BudgetScope
 import aktual.di.LoggedInGraph
 import aktual.di.RunLevelState
 import aktual.di.ServerChosenGraph
 import aktual.log
 import aktual.prefs.AppPreferences
-import aktual.prefs.CurrencyPreferences
+import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.FormatPreferences
 import aktual.prefs.Preference
 import aktual.prefs.SystemUiPreferences
@@ -39,10 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import app.cash.molecule.launchMolecule
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -89,30 +92,65 @@ data class FormatConfig(
 class FormatConfigUseCase(
   private val prefs: AppPreferences,
   private val formats: FormatPreferences,
-  private val currencies: CurrencyPreferences,
+  private val runLevelState: RunLevelState,
 ) {
-  operator fun invoke(scope: CoroutineScope): StateFlow<FormatConfig> =
-    scope.launchMolecule(Immediate) {
-      val dateFormat by formats.dateFormat.collectAsStateFlow(scope)
-      val numberFormat by formats.numberFormat.collectAsStateFlow(scope)
-      val hideFraction by formats.hideFraction.collectAsStateFlow(scope)
-      val currency by currencies.currency.collectAsStateFlow(scope)
-      val currencySymbolPosition by currencies.symbolPosition.collectAsStateFlow(scope)
-      val currencySpaceBetweenAmountAndSymbol by
-        currencies.spaceBetweenAmountAndSymbol.collectAsStateFlow(scope)
+  operator fun invoke(scope: CoroutineScope): StateFlow<FormatConfig> {
+    val budgetFormats: Flow<BudgetFormats> =
+      runLevelState.budget().flatMapLatest { graph ->
+        (graph as? BudgetFormatPreferencesGraph)?.budgetFormatPreferences?.observe()
+          ?: flowOf(BudgetFormats())
+      }
+
+    return scope.launchMolecule(Immediate) {
+      val budget by budgetFormats.collectAsState(initial = BudgetFormats())
       val isPrivacyEnabled by prefs.isPrivacyEnabled.collectAsStateFlow(scope)
       val distanceUnit by formats.distanceUnit.collectAsStateFlow(scope)
       FormatConfig(
-        dateFormat = dateFormat,
-        numberFormat = numberFormat,
-        hideFraction = hideFraction,
-        currency = currency,
-        symbolPosition = currencySymbolPosition,
-        spaceBetweenAmountAndSymbol = currencySpaceBetweenAmountAndSymbol,
+        dateFormat = budget.dateFormat,
+        numberFormat = budget.numberFormat,
+        hideFraction = budget.hideFraction,
+        currency = budget.currency,
+        symbolPosition = budget.symbolPosition,
+        spaceBetweenAmountAndSymbol = budget.spaceBetweenAmountAndSymbol,
         isPrivacyEnabled = isPrivacyEnabled,
         distanceUnit = distanceUnit,
       )
     }
+  }
+
+  // Defaults match upstream's when a budget has never set them
+  private data class BudgetFormats(
+    val dateFormat: DateFormat = Default,
+    val numberFormat: NumberFormat = Default,
+    val hideFraction: Boolean = false,
+    val currency: Currency = Default,
+    val symbolPosition: CurrencySymbolPosition = Default,
+    val spaceBetweenAmountAndSymbol: Boolean = false,
+  )
+
+  private fun BudgetFormatPreferences.observe(): Flow<BudgetFormats> =
+    combine(
+        numberFormat.asFlow(),
+        hideFraction.asFlow(),
+        currency.asFlow(),
+        symbolPosition.asFlow(),
+        spaceBetweenAmountAndSymbol.asFlow(),
+      ) { numberFormat, hideFraction, currency, symbolPosition, includeSpace ->
+        BudgetFormats(
+          numberFormat = numberFormat,
+          hideFraction = hideFraction,
+          currency = currency,
+          symbolPosition = symbolPosition,
+          spaceBetweenAmountAndSymbol = includeSpace,
+        )
+      }
+      .combine(dateFormat.asFlow()) { formats, dateFormat -> formats.copy(dateFormat = dateFormat) }
+}
+
+/** Gives code outside the budget graph, like [FormatConfigUseCase], the open budget's formats */
+@ContributesTo(BudgetScope::class)
+interface BudgetFormatPreferencesGraph {
+  val budgetFormatPreferences: BudgetFormatPreferences
 }
 
 @Inject

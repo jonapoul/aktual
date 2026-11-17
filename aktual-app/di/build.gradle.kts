@@ -32,6 +32,7 @@ kotlin {
     api(project(":aktual-core:theme:impl"))
     api(project(":aktual-di:bindings"))
     api(project(":aktual-di:runlevel:impl"))
+    api(project(":aktual-prefs:budget"))
     api(project(":aktual-prefs:impl"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okio)

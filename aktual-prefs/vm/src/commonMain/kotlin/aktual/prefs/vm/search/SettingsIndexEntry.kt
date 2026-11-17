@@ -115,8 +115,6 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
     SettingsPage.Format to
       entry(
         Res.string.settings_format_group,
-        entry(Res.string.settings_amounts),
-        entry(Res.string.settings_format_dates_group),
         entry(
           Res.string.settings_format_distance_group,
           entry(Res.string.settings_format_distance),

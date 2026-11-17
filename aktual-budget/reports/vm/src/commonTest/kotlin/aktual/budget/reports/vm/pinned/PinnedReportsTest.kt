@@ -11,14 +11,14 @@ import aktual.budget.model.DbMetadataKey.Companion.HomeReports
 import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.DashboardSync
-import aktual.budget.reports.vm.TestCurrencyPreferences
+import aktual.budget.reports.vm.TestFormatPreferences
 import aktual.budget.reports.vm.TextData
 import aktual.budget.reports.vm.chartDataLoader
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.DashboardPages
 import aktual.budget.reports.vm.runSyncedDatabaseTest
-import aktual.prefs.CurrencyPreferences
+import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.Preference
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -145,7 +145,7 @@ class PinnedReportsTest {
 
   @Test
   fun `A chart that fails to load doesn't stop the others`() =
-    runPinnedTest(currencyPreferences = BrokenCurrencyPreferences) { pinned, sync, _ ->
+    runPinnedTest(formatPreferences = BrokenFormatPreferences) { pinned, sync, _ ->
       val meta = buildJsonObject { put("formula", "=1") }
       sync.insertWidget(FORMULA, PAGE_2.id, Formula, x = 0, y = 1, meta = meta)
       pinned.pin(FORMULA)
@@ -179,7 +179,7 @@ class PinnedReportsTest {
   private fun summary(id: WidgetId) = ReportSummary(id, Markdown, name = null)
 
   private fun runPinnedTest(
-    currencyPreferences: CurrencyPreferences = TestCurrencyPreferences,
+    formatPreferences: BudgetFormatPreferences = TestFormatPreferences,
     action:
       suspend BudgetDatabase.(PinnedReports, DashboardSync, TestBudgetLocalPreferences) -> Unit,
   ) = runSyncedDatabaseTest { scope, controller ->
@@ -220,7 +220,7 @@ class PinnedReportsTest {
           chartDataLoader(
             contexts = contexts,
             calendar = { LocalDate(2026, 1, 1) },
-            currencyPreferences = currencyPreferences,
+            formatPreferences = formatPreferences,
           ),
       )
     action(pinned, sync, prefs)
@@ -237,9 +237,9 @@ class PinnedReportsTest {
     val FORMULA = WidgetId("formula")
   }
 
-  private object BrokenCurrencyPreferences : CurrencyPreferences by TestCurrencyPreferences {
+  private object BrokenFormatPreferences : BudgetFormatPreferences by TestFormatPreferences {
     override val currency =
-      object : Preference<Currency> by TestCurrencyPreferences.currency {
+      object : Preference<Currency> by TestFormatPreferences.currency {
         override fun asFlow(): Flow<Currency> = flow { error("Broken") }
       }
   }

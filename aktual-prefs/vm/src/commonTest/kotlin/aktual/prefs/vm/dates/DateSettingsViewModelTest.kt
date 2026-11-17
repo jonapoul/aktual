@@ -1,11 +1,9 @@
 package aktual.prefs.vm.dates
 
-import aktual.prefs.FormatPreferences
-import aktual.prefs.FormatPreferencesImpl
+import aktual.prefs.vm.FakeBudgetFormatPreferences
+import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestCalendar
-import aktual.test.buildPreferences
 import aktual.test.viewModelContext
-import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -17,7 +15,7 @@ import kotlinx.datetime.LocalDate
 class DateSettingsViewModelTest {
   @Test
   fun `Date format changes the preference`() = runTest {
-    val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val preferences = FakeBudgetFormatPreferences()
     val viewModel = viewModel(preferences)
 
     viewModel.state.test {
@@ -30,20 +28,20 @@ class DateSettingsViewModelTest {
 
   @Test
   fun `First day of week changes the preference`() = runTest {
-    val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val preferences = FakeBudgetFormatPreferences()
     val viewModel = viewModel(preferences)
 
     viewModel.state.test {
-      awaitItem().firstDayOfWeek.onChange(Sunday)
-      assertThat(awaitItem().firstDayOfWeek.value).isEqualTo(Sunday)
-      assertThat(preferences.firstDayOfWeek.get()).isEqualTo(Sunday)
+      awaitItem().firstDayOfWeek.onChange(Monday)
+      assertThat(awaitItem().firstDayOfWeek.value).isEqualTo(Monday)
+      assertThat(preferences.firstDayOfWeek.get()).isEqualTo(Monday)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `Today comes from the calendar`() = runTest {
-    val preferences = FormatPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val preferences = FakeBudgetFormatPreferences()
     val viewModel = viewModel(preferences)
 
     viewModel.state.test {
@@ -52,8 +50,13 @@ class DateSettingsViewModelTest {
     }
   }
 
-  private fun TestScope.viewModel(preferences: FormatPreferences) =
-    DateSettingsViewModel(preferences, TestCalendar(Today), viewModelContext = viewModelContext)
+  private fun TestScope.viewModel(preferences: FakeBudgetFormatPreferences) =
+    DateSettingsViewModel(
+      preferences = preferences,
+      localPreferences = TestBudgetLocalPreferences(),
+      calendar = TestCalendar(Today),
+      viewModelContext = viewModelContext,
+    )
 
   private companion object {
     val Today = LocalDate(year = 2026, month = 2, day = 3)

@@ -5,6 +5,7 @@ import aktual.core.utils.LocationProvider
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.prefs.vm.OpenBudgetName
 import aktual.prefs.vm.search.SearchSettingsState.Results
 import aktual.prefs.vm.security.ShouldShowSecuritySettings
 import androidx.compose.runtime.Stable
@@ -34,6 +35,7 @@ internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   private val strings: StringLookup,
   private val locationProvider: LocationProvider,
+  openBudgetName: OpenBudgetName,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
@@ -51,7 +53,8 @@ internal constructor(
   private val settings = MutableStateFlow<List<SettingsSearchResult>>(emptyList())
 
   val state: StateFlow<SearchSettingsState> =
-    combine(query, settings, ::search).stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
+    combine(query, settings, openBudgetName.observe(), ::search)
+      .stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
 
   init {
     viewModelScope.launch {
@@ -89,14 +92,20 @@ internal constructor(
     entry.children.forEach { child -> addEntry(page, child, path + title, isPage = false) }
   }
 
-  private fun search(query: String, settings: List<SettingsSearchResult>): SearchSettingsState {
+  private fun search(
+    query: String,
+    settings: List<SettingsSearchResult>,
+    budgetName: String?,
+  ): SearchSettingsState {
     val trimmed = query.trim()
     if (trimmed.isEmpty()) return NoQuery
 
     // Pages before groups before single preferences, otherwise in screen order
     val matching =
       settings
+        .asSequence()
         .filter { it.title.contains(trimmed, ignoreCase = true) }
+        .map { result -> result.inBudget(budgetName) }
         .sortedBy { it.kind }
         .toImmutableList()
 
@@ -106,6 +115,9 @@ internal constructor(
       Results(trimmed, matching)
     }
   }
+
+  private fun SettingsSearchResult.inBudget(budgetName: String?): SettingsSearchResult =
+    if (page in BudgetSettingsPages) copy(budgetName = budgetName) else this
 
   private companion object {
     const val KEY_QUERY = "query"

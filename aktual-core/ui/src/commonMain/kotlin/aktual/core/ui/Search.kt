@@ -194,11 +194,12 @@ fun Modifier.searchResultCard(
   colors: Colors,
   onClick: () -> Unit,
   padding: PaddingValues = PaddingValues(12.dp),
+  enabled: Boolean = true,
 ): Modifier =
   fillMaxWidth()
     .clip(CardShape)
     .background(colors.tableBackground)
-    .clickable(onClick = onClick)
+    .clickable(enabled = enabled, onClick = onClick)
     .padding(padding)
 
 // Bolds each case-insensitive match of query in text

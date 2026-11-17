@@ -17,3 +17,7 @@ internal data object NavToFormatSettings : SettingsAction
 internal data object NavToTransactionSettings : SettingsAction
 
 internal data object NavToAppIconSettings : SettingsAction
+
+internal data object NavToAmountSettings : SettingsAction
+
+internal data object NavToDateSettings : SettingsAction

@@ -1,10 +1,16 @@
 # aktual-prefs
 
-Preferences and settings, split into `vm` (state) and `ui` (Compose). `components` holds the preference item composables shared with other features: `BasicPreferenceItem`, `PreferenceGroup` and the value-based `BooleanPreferenceItem`. Items inside a `PreferenceGroup` drop their own card background and use the group's.
+Preferences and settings, split into `vm` (state) and `ui` (Compose). `impl` stores this device's settings in DataStore (`AppScope`). `budget` implements `BudgetFormatPreferences`, the formatting synced with the open budget (`BudgetScope`). `components` holds the preference item composables shared with other features: `BasicPreferenceItem`, `PreferenceGroup` and the value-based `BooleanPreferenceItem`. Items inside a `PreferenceGroup` drop their own card background and use the group's.
+
+## Device vs budget settings
+
+Settings that upstream syncs with the budget (its `SyncedPrefs`: currency, number format, hide fraction, date format, first day of week) live in the budget's `preferences` table, not DataStore. `BudgetFormatPreferences` reads them through `PreferencesDao` and writes with `BudgetSync`, using upstream's stored formats, so they sync with the web app and other devices. Their VMs (`AmountSettingsViewModel`, `DateSettingsViewModel`) are in `BudgetScope`, and the root settings screen groups their pages under the budget's name, greyed out while no budget is open. "Switch budget" closes the open budget and forgets it as the last opened one, so this holds from the budget list and the next launch starts there. Settings search shows results from `BudgetSettingsPages` disabled while no budget is open. Everything else is a device setting in DataStore, under the root screen's "This device" group.
+
+`FormatConfigUseCase` (`aktual-app:nav`) reads the open budget's formats through `BudgetFormatPreferencesGraph`, falling back to upstream's defaults with no budget open.
 
 ## Adding a new setting
 
-1. **Declare it.** Pick the right `*Preferences` interface in `aktual-prefs/src/.../` (e.g. `AppPreferences`, `FormatPreferences`, `TransactionPreferences`) and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
+1. **Declare it.** Pick the right `*Preferences` interface in `aktual-prefs/src/.../` (e.g. `AppPreferences`, `FormatPreferences`, `TransactionPreferences`, or `BudgetFormatPreferences` for one synced with the budget) and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
 
 1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/src/commonMain/.../UseCases.kt`.
 
@@ -29,7 +35,7 @@ Preferences and settings, split into `vm` (state) and `ui` (Compose). `component
 
 ## Changing a stored key or format
 
-Don't just swap the key, or existing users lose their value. Add a `DataMigration<Preferences>` under `aktual-prefs/impl/.../migration/` and append it to `preferenceMigrations()`, which `DataStoreContainer` runs whenever the DataStore opens. For a move from one key to another with a value conversion, extend `PreferenceKeyMigration` (see `CurrencyOrdinalToCode`). Freeze any lookup data in the migration itself rather than reading the current enum, since that can change later.
+Don't just swap the key, or existing users lose their value. Add a `DataMigration<Preferences>` under `aktual-prefs/impl/.../migration/` and append it to `preferenceMigrations()`, which `DataStoreContainer` runs whenever the DataStore opens. To drop keys that aren't used any more, add them to a `RemoveKeys`. Freeze any lookup data in the migration itself rather than reading the current enum, since that can change later.
 
 ## Adding a new settings screen
 

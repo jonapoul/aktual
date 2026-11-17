@@ -9,7 +9,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.utils.BudgetSync
-import aktual.prefs.FormatPreferences
+import aktual.prefs.BudgetFormatPreferences
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
@@ -129,7 +129,7 @@ class CalendarLoaderTest {
   ) = runSyncedDatabaseTest { scope, sync ->
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val formatPreferences =
-      object : FormatPreferences by TestFormatPreferences {
+      object : BudgetFormatPreferences by TestFormatPreferences {
         override val firstDayOfWeek = fixed(firstDayOfWeek)
       }
     val loader = chartDataLoader(contexts, calendar = { TODAY }, formatPreferences)

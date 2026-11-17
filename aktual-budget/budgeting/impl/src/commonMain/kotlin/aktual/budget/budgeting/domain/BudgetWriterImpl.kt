@@ -22,8 +22,7 @@ import aktual.budget.model.messageValue
 import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.di.BudgetScope
-import aktual.prefs.CurrencyPreferences
-import aktual.prefs.FormatPreferences
+import aktual.prefs.BudgetFormatPreferences
 import dev.zacsweers.metro.ContributesBinding
 import kotlin.math.floor
 import kotlinx.coroutines.flow.first
@@ -45,8 +44,7 @@ internal constructor(
   private val calendar: Calendar,
   private val calculator: BudgetMonthCalculator,
   private val notesDao: NotesDao,
-  private val formatPreferences: FormatPreferences,
-  private val currencyPreferences: CurrencyPreferences,
+  private val formatPreferences: BudgetFormatPreferences,
 ) : BudgetWriter {
   override suspend fun setBudget(month: YearMonth, category: CategoryId, amount: Amount) = send {
     set(month, category, amount)
@@ -260,7 +258,7 @@ internal constructor(
           ),
         currencyConfig =
           CurrencyConfig(
-            currency = currencyPreferences.currency.get(),
+            currency = formatPreferences.currency.get(),
             position = BeforeAmount,
             includeSpace = false,
           ),

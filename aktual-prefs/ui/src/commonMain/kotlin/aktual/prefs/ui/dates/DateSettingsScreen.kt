@@ -48,7 +48,8 @@ private fun DateSettingsScaffold(
 ) {
   PreviewSettingsScaffold(
     title = Strings.settingsFormatDatesGroup,
-    description = Strings.settingsDatesDesc,
+    description =
+      Strings.settingsDatesDesc(state.budgetName.ifBlank { Strings.settingsBudgetUnnamed }),
     onBack = onBack,
     preview = {
       DatesPreview(
@@ -98,6 +99,7 @@ private fun PreviewDateSettingsScaffold(@PreviewParameter(ColorParameters::class
       onBack = {},
       state =
         DateSettingsState(
+          budgetName = "My Budget",
           dateFormat = ListPreference(DdMmYyyy),
           firstDayOfWeek = ListPreference(Monday),
           today = LocalDate(year = 2026, month = 11, day = 16),

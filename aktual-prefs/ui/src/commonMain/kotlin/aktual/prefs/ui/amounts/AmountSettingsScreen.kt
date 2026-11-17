@@ -56,7 +56,8 @@ private fun AmountSettingsScaffold(
 ) {
   PreviewSettingsScaffold(
     title = Strings.settingsAmounts,
-    description = Strings.settingsAmountsDesc,
+    description =
+      Strings.settingsAmountsDesc(state.budgetName.ifBlank { Strings.settingsBudgetUnnamed }),
     onBack = onBack,
     preview = { AmountsPreview(state) },
     highlight = highlight,
@@ -145,6 +146,7 @@ private fun PreviewAmountSettingsScaffold(
       onBack = {},
       state =
         AmountSettingsState(
+          budgetName = "My Budget",
           numberFormat = ListPreference(DotComma),
           hideFraction = BooleanPreference(false),
           currency = ListPreference(Euro),

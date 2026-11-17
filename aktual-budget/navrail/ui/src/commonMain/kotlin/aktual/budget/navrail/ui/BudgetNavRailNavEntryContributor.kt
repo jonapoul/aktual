@@ -11,7 +11,10 @@ import aktual.core.nav.SettingsNavRoute
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.di.AppCoroutineScope
 import aktual.di.AppScope
+import aktual.di.RunLevelController
 import aktual.di.RunLevelState
+import aktual.prefs.AppPreferences
+import aktual.prefs.delete
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,6 +27,8 @@ import kotlinx.coroutines.launch
 class BudgetNavRailNavEntryContributor
 internal constructor(
   private val runLevelState: RunLevelState,
+  private val runLevelController: RunLevelController,
+  private val appPreferences: AppPreferences,
   private val demoBudget: DemoBudget,
   private val scope: AppCoroutineScope,
 ) : NavEntryContributor {
@@ -37,7 +42,7 @@ internal constructor(
           onAction = { action ->
             when (action) {
               LogOut -> stack.replaceAll(ServerUrlNavRoute)
-              SwitchFile -> stack.replaceAll(ListBudgetsNavRoute)
+              SwitchFile -> switchFile(stack)
               ExitDemo -> exitDemo(stack)
               Settings -> stack.push(SettingsNavRoute)
               About -> stack.push(InfoNavRoute)
@@ -46,6 +51,14 @@ internal constructor(
         )
       }
     }
+  }
+
+  // Leaving the budget closes it, so nothing outside it (like settings) acts as if it's still open.
+  // Forgetting it means the next launch starts on the budget list too
+  private fun switchFile(stack: NavStack<NavKey>) {
+    stack.replaceAll(ListBudgetsNavRoute)
+    runLevelController.onBudgetClosed()
+    scope.launch { appPreferences.lastOpenedBudgetId.delete() }
   }
 
   private fun exitDemo(stack: NavStack<NavKey>) {

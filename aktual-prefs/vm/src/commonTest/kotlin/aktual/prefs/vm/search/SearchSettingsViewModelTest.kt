@@ -14,8 +14,11 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -137,6 +140,41 @@ class SearchSettingsViewModelTest {
     }
   }
 
+  @Test
+  fun `Budget settings disabled with no budget open`() = runTest {
+    val viewModel = buildViewModel(budgetName = null)
+
+    viewModel.setQuery("first day")
+
+    viewModel.state.test {
+      val results = awaitResults()
+      assertThat(results.map { it.page }).containsExactly(SettingsPage.Dates)
+      assertThat(results.single().isEnabled).isFalse()
+    }
+  }
+
+  @Test
+  fun `Budget settings carry the open budget's name`() = runTest {
+    val viewModel = buildViewModel(budgetName = "My Budget")
+
+    viewModel.setQuery("first day")
+
+    viewModel.state.test {
+      val results = awaitResults()
+      assertThat(results)
+        .containsExactly(
+          SettingsSearchResult(
+            title = "format first day",
+            kind = Preference,
+            page = Dates,
+            path = persistentListOf("format dates group"),
+            budgetName = "My Budget",
+          ),
+        )
+      assertThat(results.single().isEnabled).isTrue()
+    }
+  }
+
   private suspend fun ReceiveTurbine<SearchSettingsState>.awaitResults():
     List<
       SettingsSearchResult,
@@ -147,11 +185,15 @@ class SearchSettingsViewModelTest {
     return state.settings
   }
 
-  private fun TestScope.buildViewModel(locationSupported: Boolean = true) =
+  private fun TestScope.buildViewModel(
+    locationSupported: Boolean = true,
+    budgetName: String? = null,
+  ) =
     SearchSettingsViewModel(
       savedState = SavedStateHandle(),
       strings = FakeStringLookup,
       locationProvider = FakeLocationProvider(locationSupported),
+      openBudgetName = { flowOf(budgetName) },
       viewModelContext = viewModelContext,
     )
 
