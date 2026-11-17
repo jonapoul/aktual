@@ -37,6 +37,10 @@ kotlin {
     implementation(libs.okio)
     implementation(project(":aktual-core:logging"))
   }
+
+  commonTestDependencies {
+    implementation(libs.ktor.test)
+  }
 }
 
 buildConfig {

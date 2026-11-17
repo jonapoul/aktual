@@ -16,14 +16,17 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.Dimens
 import aktual.core.ui.ErrorBanner
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.rememberLocalNetworkPermissionRequest
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.log
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,7 +62,20 @@ fun ServerUrlScreen(
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
-  val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+  val error by viewModel.error.collectAsStateWithLifecycle()
+
+  val requestLocalNetworkPermission =
+    rememberLocalNetworkPermissionRequest(
+      openSettingsIfBlocked = true,
+      onResult = viewModel::onLocalNetworkPermissionResult,
+    )
+
+  LaunchedEffect(Unit) {
+    while (true) {
+      viewModel.localNetworkPermissionRequests.receive()
+      requestLocalNetworkPermission()
+    }
+  }
 
   DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
@@ -81,7 +97,12 @@ fun ServerUrlScreen(
     versions = versions,
     isEnabled = isEnabled,
     isLoading = isLoading,
-    errorMessage = errorMessage,
+    errorMessage =
+      when (val e = error) {
+        null -> null
+        is Failed -> e.message
+        LocalNetworkBlocked -> Strings.serverUrlLocalNetworkBlocked
+      },
     onAction = { action ->
       when (action) {
         ConfirmUrl -> viewModel.onClickConfirm()
@@ -155,14 +176,18 @@ private fun ServerUrlContent(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.Start,
   ) {
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    Column {
       Text(text = Strings.serverUrlTitle, style = typography.headlineLarge)
+
+      VerticalSpacer(Dimens.Huge)
 
       Text(
         text = Strings.serverUrlMessage,
         color = colors.tableRowHeaderText,
         style = typography.bodyLarge,
       )
+
+      VerticalSpacer(Dimens.Huge)
 
       InputFields(
         modifier = Modifier.fillMaxWidth(),
@@ -171,19 +196,23 @@ private fun ServerUrlContent(
         onAction = onAction,
       )
 
+      VerticalSpacer(Dimens.Huge)
+
       AktualButton(
         kind = Primary,
-        modifier = Modifier.padding(5.dp).fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         text = Strings.serverUrlConfirm,
         isLoading = isLoading,
         isEnabled = isEnabled,
         onClick = { onAction(ConfirmUrl) },
       )
 
+      VerticalSpacer(Dimens.Medium)
+
       AktualButton(
         kind = Primary,
         variant = Secondary,
-        modifier = Modifier.padding(5.dp).fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         text = Strings.serverUrlTryDemo,
         isEnabled = !isLoading,
         onClick = { onAction(TryDemo) },

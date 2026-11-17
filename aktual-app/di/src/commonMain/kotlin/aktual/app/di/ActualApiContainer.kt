@@ -4,8 +4,11 @@ import aktual.api.buildKtorClient
 import aktual.api.client.AktualClient
 import aktual.api.client.ThemeClient
 import aktual.api.model.account.FailureReason
+import aktual.core.l10n.StringLookup
 import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
+import aktual.core.utils.LocalNetworkPermission
+import aktual.core.utils.LocalNetworkPrompt
 import aktual.core.utils.TokenExpiredNotifier
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
@@ -32,8 +35,13 @@ object ActualApiContainer {
     engine: HttpClientEngine,
     notifyTokenExpired: TokenExpiredNotifier,
     preferences: AppPreferences,
+    localNetworkPermission: LocalNetworkPermission,
+    localNetworkPrompt: LocalNetworkPrompt,
+    strings: StringLookup,
   ): HttpClient =
     buildKtorClient(AktualJson, tag = "ACTUAL", engine, buildConfig.isDebug) {
+      install(localNetworkPlugin(localNetworkPermission, localNetworkPrompt, strings))
+
       HttpResponseValidator {
         handleResponseExceptionWithRequest { exception, _ ->
           if (exception is ResponseException) {

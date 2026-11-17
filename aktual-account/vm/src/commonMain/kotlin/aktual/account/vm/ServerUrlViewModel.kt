@@ -8,6 +8,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.utils.LocalNetworkPermission
+import aktual.core.utils.isMissingFor
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.di.RunLevelController
@@ -30,11 +32,13 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -50,6 +54,7 @@ internal constructor(
   private val preferences: AppPreferences,
   private val runLevelController: RunLevelController,
   private val demoBudget: DemoBudget,
+  private val localNetworkPermission: LocalNetworkPermission,
   versionsStateHolder: AktualVersionsStateHolder,
   buildConfig: BuildConfig,
   viewModelContext: ViewModelContext,
@@ -59,6 +64,11 @@ internal constructor(
   private val mutableProtocol = MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Https)
   private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
   private val mutableNavDestination = Channel<NavDestination>()
+  private val mutablePermissionRequests = Channel<Unit>(capacity = Channel.CONFLATED)
+
+  // The URL confirmed while waiting for a permission result. Null in a new VM after process death
+  private val pendingUrl = MutableStateFlow<ServerUrl?>(value = null)
+  private var permissionCheckJob: Job? = null
 
   val versions: StateFlow<AktualVersions> = versionsStateHolder.asStateFlow()
 
@@ -71,14 +81,17 @@ internal constructor(
 
   val navDestination: ReceiveChannel<NavDestination> = mutableNavDestination
 
-  val errorMessage: StateFlow<String?> =
+  // Asks the UI to request local network permission, then call onLocalNetworkPermissionResult
+  val localNetworkPermissionRequests: ReceiveChannel<Unit> = mutablePermissionRequests
+
+  val error: StateFlow<ServerUrlError?> =
     viewModelScope.launchMolecule(Immediate) {
       val confirmResult by mutableConfirmResult.collectAsState()
-      val result = confirmResult
-      if (result is Failed) {
-        "Failed: ${result.reason}"
-      } else {
-        null
+      when (val result = confirmResult) {
+        is Failed -> ServerUrlError.Failed(message = "Failed: ${result.reason}")
+        LocalNetworkBlocked -> ServerUrlError.LocalNetworkBlocked
+        is Succeeded,
+        null -> null
       }
     }
 
@@ -104,6 +117,10 @@ internal constructor(
   }
 
   fun clearState() {
+    // Drop any unanswered permission request, so it doesn't fire when the screen comes back
+    permissionCheckJob?.cancel()
+    pendingUrl.update { null }
+    mutablePermissionRequests.tryReceive()
     mutableIsLoading.reset()
     mutableConfirmResult.reset()
   }
@@ -142,27 +159,53 @@ internal constructor(
     log.v { "onClickConfirm" }
     mutableConfirmResult.reset()
     mutableIsLoading.update { true }
-    viewModelScope.launch {
-      val protocol = mutableProtocol.value
-      val baseUrl = mutableBaseUrl.value
-      val url = ServerUrl(protocol, baseUrl)
-      if (url != preferences.serverUrl.get()) {
-        preferences.token.delete()
+    val url = ServerUrl(mutableProtocol.value, mutableBaseUrl.value)
+    permissionCheckJob = viewModelScope.launch {
+      if (localNetworkPermission.isMissingFor(url)) {
+        pendingUrl.update { url }
+        mutablePermissionRequests.send(Unit)
+      } else {
+        // Not a child, so clearState doesn't cancel a connection in progress
+        viewModelScope.launch { connect(url, isPermissionMissing = false) }
       }
-
-      val serverChosenGraph = runLevelController.onServerChosen(url)
-      preferences.serverUrl.set(url)
-      val accountApi = serverChosenGraph[AccountApi::class]
-      checkIfNeedsBootstrap(url, accountApi)
-      mutableIsLoading.update { false }
     }
+  }
+
+  // Connects either way: the address check can be wrong, and a denial just means it'll fail
+  fun onLocalNetworkPermissionResult(isGranted: Boolean) {
+    log.v { "onLocalNetworkPermissionResult $isGranted" }
+    val url = pendingUrl.getAndUpdate { null }
+    if (url == null) {
+      log.w { "No pending URL for permission result" }
+      mutableIsLoading.update { false }
+      return
+    }
+    viewModelScope.launch { connect(url, isPermissionMissing = true) }
+  }
+
+  // isPermissionMissing is what the check before connecting found, so a failure doesn't resolve
+  // the host again
+  private suspend fun connect(url: ServerUrl, isPermissionMissing: Boolean) {
+    if (url != preferences.serverUrl.get()) {
+      preferences.token.delete()
+    }
+
+    val serverChosenGraph = runLevelController.onServerChosen(url)
+    preferences.serverUrl.set(url)
+    val accountApi = serverChosenGraph[AccountApi::class]
+    checkIfNeedsBootstrap(url, accountApi, isPermissionMissing)
+    mutableIsLoading.update { false }
   }
 
   fun onClickAbout() {
     mutableNavDestination.trySend(ToAbout)
   }
 
-  private suspend fun checkIfNeedsBootstrap(url: ServerUrl, accountApi: AccountApi) {
+  private suspend fun checkIfNeedsBootstrap(
+    url: ServerUrl,
+    accountApi: AccountApi,
+    isPermissionMissing: Boolean,
+  ) {
     runCatchingCancellable(
       attempt = {
         log.v { "checkIfNeedsBootstrap $url" }
@@ -188,7 +231,13 @@ internal constructor(
 
         preferences.serverUrl.delete()
 
-        mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+        val result =
+          if (isPermissionMissing && !localNetworkPermission.isGranted()) {
+            ConfirmResult.LocalNetworkBlocked
+          } else {
+            ConfirmResult.Failed(reason = e.requireMessage())
+          }
+        mutableConfirmResult.update { result }
       },
     )
   }
@@ -197,6 +246,7 @@ internal constructor(
     when (this) {
       null -> null
       is Failed -> null
+      LocalNetworkBlocked -> null
       is Succeeded -> if (isBootstrapped) ToLogin else ToBootstrap
     }
 }
@@ -205,6 +255,16 @@ internal sealed interface ConfirmResult {
   data class Failed(val reason: String) : ConfirmResult
 
   data class Succeeded(val isBootstrapped: Boolean) : ConfirmResult
+
+  // Failed to connect to a local network address without the permission
+  data object LocalNetworkBlocked : ConfirmResult
+}
+
+sealed interface ServerUrlError {
+  data class Failed(val message: String) : ServerUrlError
+
+  // Failed to connect to a local network address without the permission
+  data object LocalNetworkBlocked : ServerUrlError
 }
 
 sealed interface NavDestination {

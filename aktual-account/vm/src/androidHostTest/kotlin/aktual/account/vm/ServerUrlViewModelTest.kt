@@ -2,6 +2,7 @@ package aktual.account.vm
 
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.core.utils.LocalNetworkPermission
 import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelController
@@ -19,11 +20,17 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.contains
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import assertk.assertions.prop
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createDynamicGraph
 import io.ktor.client.engine.mock.MockEngine
 import java.io.IOException
@@ -45,6 +52,7 @@ class ServerUrlViewModelTest {
 
   // Mock
   private lateinit var mockEngine: MockEngine.Queue
+  private val localNetworkPermission = FakeLocalNetworkPermission()
 
   @AfterTest
   fun after() {
@@ -60,6 +68,7 @@ class ServerUrlViewModelTest {
       createDynamicGraph<TestAppGraph>(
         TestCoroutineContainer(backgroundScope, contexts),
         TestHttpContainer(mockEngine),
+        FakeLocalNetworkContainer(localNetworkPermission),
       )
 
     appGraph.preferences.serverUrl.set(EXAMPLE_URL)
@@ -131,7 +140,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Show error message if bootstrap request gives failure response`() = runServerUrlTest {
-    viewModel.errorMessage.test {
+    viewModel.error.test {
       // Given we're currently not navigating
       assertThatNextEmission().isNull()
 
@@ -154,14 +163,18 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThatNextEmission().isNotNull().contains(reason)
+      assertThatNextEmission()
+        .isNotNull()
+        .isInstanceOf<ServerUrlError.Failed>()
+        .prop(ServerUrlError.Failed::message)
+        .contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `Show error message if bootstrap request fails`() = runServerUrlTest {
-    viewModel.errorMessage.test {
+    viewModel.error.test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertThatNextEmission().isNull()
 
@@ -176,7 +189,11 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThatNextEmission().isNotNull().contains(reason)
+      assertThatNextEmission()
+        .isNotNull()
+        .isInstanceOf<ServerUrlError.Failed>()
+        .prop(ServerUrlError.Failed::message)
+        .contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -210,6 +227,96 @@ class ServerUrlViewModelTest {
       }
     }
 
+  @Test
+  fun `Request local network permission before connecting`() = runServerUrlTest {
+    viewModel.localNetworkPermissionRequests.receiveAsFlow().test {
+      // Given the permission is needed for this server
+      advanceUntilIdle()
+      localNetworkPermission.isMissing = true
+      setBootstrapResponse(bootstrapped = true)
+
+      // When
+      viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+      viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
+      viewModel.onClickConfirm()
+
+      // Then the permission is requested without connecting yet
+      awaitItem()
+      advanceUntilIdle()
+      assertThat(mockEngine.requestHistory).isEmpty()
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    viewModel.navDestination.receiveAsFlow().test {
+      // When it's given
+      localNetworkPermission.isMissing = false
+      viewModel.onLocalNetworkPermissionResult(isGranted = true)
+
+      // Then we connect
+      assertThatNextEmissionIsEqualTo(ToLogin)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Ignore permission result without a pending request`() = runServerUrlTest {
+    // Given a new VM, e.g. after process death while the permission dialog was showing
+    advanceUntilIdle()
+    setBootstrapResponse(bootstrapped = true)
+
+    // When the result arrives
+    viewModel.onLocalNetworkPermissionResult(isGranted = true)
+    advanceUntilIdle()
+
+    // Then nothing connects
+    assertThat(mockEngine.requestHistory).isEmpty()
+    viewModel.isLoading.test { assertThatNextEmission().isFalse() }
+  }
+
+  @Test
+  fun `Clearing state drops an unanswered permission request`() = runServerUrlTest {
+    // Given a permission request the UI hasn't received
+    advanceUntilIdle()
+    localNetworkPermission.isMissing = true
+    setBootstrapResponse(bootstrapped = true)
+    viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+    viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
+    viewModel.onClickConfirm()
+    advanceUntilIdle()
+
+    // When the screen leaves
+    viewModel.clearState()
+
+    // Then nothing is left to request, and a late result doesn't connect
+    assertThat(viewModel.localNetworkPermissionRequests.tryReceive().isSuccess).isFalse()
+    viewModel.onLocalNetworkPermissionResult(isGranted = true)
+    advanceUntilIdle()
+    assertThat(mockEngine.requestHistory).isEmpty()
+  }
+
+  @Test
+  fun `Show local network error if connecting fails without the permission`() = runServerUrlTest {
+    viewModel.error.test {
+      // Given the permission is needed but denied, and the connection fails
+      assertThatNextEmission().isNull()
+      localNetworkPermission.isMissing = true
+      mockEngine.clear()
+      mockEngine += { throw IOException("Timed out") }
+
+      // When
+      viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+      viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
+      viewModel.onClickConfirm()
+      advanceUntilIdle()
+      viewModel.onLocalNetworkPermissionResult(isGranted = false)
+
+      // Then
+      assertThatNextEmission().isEqualTo(LocalNetworkBlocked)
+      assertThat(localNetworkPermission.requiredChecks).isEqualTo(1)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private fun setBootstrapResponse(bootstrapped: Boolean) {
     val json =
       """
@@ -238,6 +345,26 @@ class ServerUrlViewModelTest {
   internal interface TestAppGraph : AppGraph {
     val runLevelController: RunLevelController
     val preferences: AppPreferences
+  }
+
+  private class FakeLocalNetworkPermission : LocalNetworkPermission {
+    var isMissing = false
+
+    var requiredChecks = 0
+
+    override fun isGranted(): Boolean = !isMissing
+
+    override suspend fun isRequiredFor(url: ServerUrl): Boolean {
+      requiredChecks++
+      return true
+    }
+
+    override suspend fun isRequiredForHost(host: String): Boolean = true
+  }
+
+  @BindingContainer
+  private class FakeLocalNetworkContainer(private val permission: LocalNetworkPermission) {
+    @Provides fun permission(): LocalNetworkPermission = permission
   }
 
   private companion object {

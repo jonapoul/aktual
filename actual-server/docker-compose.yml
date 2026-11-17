@@ -1,0 +1,18 @@
+services:
+  actual_server:
+    image: docker.io/actualbudget/actual-server:latest
+    ports:
+      - '5006:5006'
+    environment:
+      - ACTUAL_HTTPS_KEY=/certs/selfhost.key
+      - ACTUAL_HTTPS_CERT=/certs/selfhost.crt
+    volumes:
+      - ./actual-data:/data
+      - ./certs:/certs:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'NODE_EXTRA_CA_CERTS=/certs/selfhost.crt node scripts/health-check.js']
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
