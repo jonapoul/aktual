@@ -32,9 +32,11 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScrollToTopOnNewQuery
 import aktual.core.ui.SearchMessage
 import aktual.core.ui.SearchScaffold
+import aktual.core.ui.disabled
 import aktual.core.ui.rememberHighlighted
 import aktual.core.ui.scrollbar
 import aktual.core.ui.searchResultCard
+import aktual.prefs.vm.search.BudgetSettingsPages
 import aktual.prefs.vm.search.SearchSettingsState
 import aktual.prefs.vm.search.SearchSettingsState.Results
 import aktual.prefs.vm.search.SearchSettingsViewModel
@@ -62,6 +64,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -169,6 +172,7 @@ private fun ResultItem(
         colors = colors,
         onClick = onClick,
         padding = PaddingValues(horizontal = VeryLarge, vertical = Large),
+        enabled = setting.isEnabled,
       ),
     horizontalArrangement = Arrangement.spacedBy(VeryLarge),
     verticalAlignment = CenterVertically,
@@ -177,27 +181,40 @@ private fun ResultItem(
       modifier = Modifier.size(20.dp),
       imageVector = setting.page.icon(),
       contentDescription = null,
-      tint = colors.tableTextLight,
+      tint = colors.tableTextLight.orDisabled(setting.isEnabled),
     )
 
     Column(modifier = Modifier.weight(1f)) {
       Text(
         text = rememberHighlighted(setting.title, query),
         style = typography.bodyMedium,
-        color = colors.tableText,
+        color = colors.tableText.orDisabled(setting.isEnabled),
       )
 
       // Budget settings lead with the budget's name, so they're told apart from this device's
-      val breadcrumbs = listOfNotNull(setting.budgetName) + setting.path
+      val breadcrumbs = listOfNotNull(setting.budgetLabel()) + setting.path
       if (breadcrumbs.isNotEmpty()) {
         Text(
           text = breadcrumbs.joinToString(separator = " › "),
           style = typography.bodySmall,
-          color = colors.tableTextLight,
+          color = colors.tableTextLight.orDisabled(setting.isEnabled),
         )
       }
     }
   }
+
+@Composable
+private fun SettingsSearchResult.budgetLabel(): String? {
+  if (page !in BudgetSettingsPages) return null
+  val name = budgetName
+  return when {
+    name == null -> Strings.settingsBudgetGroup
+    name.isBlank() -> Strings.settingsBudgetUnnamed
+    else -> name
+  }
+}
+
+@Stable private fun Color.orDisabled(isEnabled: Boolean): Color = if (isEnabled) this else disabled
 
 // path[0] is the page, path[1] the group holding a preference, if it's in one
 @Stable
@@ -263,6 +280,13 @@ private class SearchSettingsScaffoldProvider :
                 kind = Preference,
                 page = SystemUi,
                 path = persistentListOf(SystemUiTitle, DialogsTitle),
+              ),
+              // No budget open, so it's disabled
+              SettingsSearchResult(
+                title = "First day of the week",
+                kind = Preference,
+                page = Dates,
+                path = persistentListOf("Dates"),
               ),
             ),
         ),

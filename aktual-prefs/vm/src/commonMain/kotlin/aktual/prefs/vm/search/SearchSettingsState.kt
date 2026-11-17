@@ -36,7 +36,7 @@ enum class SettingsSearchKind {
 }
 
 // path holds the titles of the page and group containing the setting, outermost first. budgetName
-// is set for settings synced with the open budget
+// is the open budget's, for settings synced with it. Those are disabled with no budget open
 @Immutable
 data class SettingsSearchResult(
   val title: String,
@@ -47,4 +47,7 @@ data class SettingsSearchResult(
 ) {
   val key: String
     get() = (path + title).joinToString(separator = "/")
+
+  val isEnabled: Boolean
+    get() = page !in BudgetSettingsPages || budgetName != null
 }

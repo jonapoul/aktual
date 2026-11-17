@@ -105,7 +105,7 @@ internal constructor(
       settings
         .asSequence()
         .filter { it.title.contains(trimmed, ignoreCase = true) }
-        .mapNotNull { result -> result.inBudget(budgetName) }
+        .map { result -> result.inBudget(budgetName) }
         .sortedBy { it.kind }
         .toImmutableList()
 
@@ -116,13 +116,8 @@ internal constructor(
     }
   }
 
-  // Budget settings only exist while a budget is open
-  private fun SettingsSearchResult.inBudget(budgetName: String?): SettingsSearchResult? =
-    when {
-      page !in BudgetSettingsPages -> this
-      budgetName == null -> null
-      else -> copy(budgetName = budgetName)
-    }
+  private fun SettingsSearchResult.inBudget(budgetName: String?): SettingsSearchResult =
+    if (page in BudgetSettingsPages) copy(budgetName = budgetName) else this
 
   private companion object {
     const val KEY_QUERY = "query"

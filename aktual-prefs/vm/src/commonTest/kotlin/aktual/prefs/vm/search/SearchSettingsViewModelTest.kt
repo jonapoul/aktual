@@ -14,6 +14,8 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.flowOf
@@ -139,14 +141,15 @@ class SearchSettingsViewModelTest {
   }
 
   @Test
-  fun `Budget settings hidden with no budget open`() = runTest {
+  fun `Budget settings disabled with no budget open`() = runTest {
     val viewModel = buildViewModel(budgetName = null)
 
     viewModel.setQuery("first day")
 
     viewModel.state.test {
-      advanceUntilIdle()
-      assertThat(expectMostRecentItem()).isEqualTo(NoResults)
+      val results = awaitResults()
+      assertThat(results.map { it.page }).containsExactly(SettingsPage.Dates)
+      assertThat(results.single().isEnabled).isFalse()
     }
   }
 
@@ -157,7 +160,8 @@ class SearchSettingsViewModelTest {
     viewModel.setQuery("first day")
 
     viewModel.state.test {
-      assertThat(awaitResults())
+      val results = awaitResults()
+      assertThat(results)
         .containsExactly(
           SettingsSearchResult(
             title = "format first day",
@@ -167,6 +171,7 @@ class SearchSettingsViewModelTest {
             budgetName = "My Budget",
           ),
         )
+      assertThat(results.single().isEnabled).isTrue()
     }
   }
 
