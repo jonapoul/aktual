@@ -3,7 +3,6 @@ package aktual.api.client
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
-import kotlin.math.roundToLong
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -60,7 +59,7 @@ internal fun enableBankingAccounts(accounts: JsonArray): List<ExternalBankAccoun
       institution = json.string("institution"),
       orgId = id,
       orgDomain = null,
-      balance = json.number(BALANCE)?.roundToLong()?.let(::Amount),
+      balance = centsBalance(json.number(BALANCE)),
     )
   }
 
@@ -72,7 +71,7 @@ private fun simpleFin(json: JsonObject): ExternalBankAccount? {
     institution = org?.string(NAME),
     orgId = org?.string(ID),
     orgDomain = org?.string("domain"),
-    balance = json.number(BALANCE)?.let(::Amount),
+    balance = decimalBalance(json.number(BALANCE)),
   )
 }
 
@@ -95,7 +94,7 @@ private fun pluggyAi(json: JsonObject): ExternalBankAccount? {
     institution = name,
     orgId = json.string(ID),
     orgDomain = null,
-    balance = balance?.let(::Amount),
+    balance = decimalBalance(balance),
   )
 }
 
@@ -107,19 +106,40 @@ private fun akahu(json: JsonObject): ExternalBankAccount? {
     institution = connection?.string(NAME),
     orgId = connection?.string(AKAHU_ID),
     orgDomain = connection?.string(NAME),
-    balance = (json[BALANCE] as? JsonObject)?.number("current")?.let(::Amount),
+    balance = decimalBalance((json[BALANCE] as? JsonObject)?.number("current")),
   )
+}
+
+// A provider balance, or null if it's missing, invalid or too large to format. Ported from
+// externalBalanceToInteger() in upstream's
+// packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx
+// (actualbudget/actual#9529). Enable Banking reports whole cents, the others decimal amounts
+internal fun centsBalance(balance: Double?): Amount? =
+  balance?.takeIf { it.isFinite() && it % 1.0 == 0.0 }?.let { safeAmount(Amount(it.toLong())) }
+
+internal fun decimalBalance(balance: Double?): Amount? =
+  balance?.takeIf { it.isFinite() }?.let { safeAmount(Amount(it)) }
+
+private fun safeAmount(amount: Amount): Amount? = amount.takeIf {
+  it.toLong() in -MAX_SAFE_NUMBER..MAX_SAFE_NUMBER
 }
 
 private fun JsonObject.string(key: String): String? = get(key).primitive()?.contentOrNull
 
-// SimpleFIN sends balances as decimal strings, the others as numbers
-private fun JsonObject.number(key: String): Double? =
-  get(key).primitive()?.let { p ->
-    p.doubleOrNull ?: p.contentOrNull?.toDoubleOrNull()
-  }
+// SimpleFIN sends balances as decimal strings, the others as numbers. Strings only accept plain
+// decimals, since toDoubleOrNull() also takes forms like "100d" that upstream's Number() rejects
+private fun JsonObject.number(key: String): Double? {
+  val primitive = get(key).primitive() ?: return null
+  if (!primitive.isString) return primitive.doubleOrNull
+  return primitive.content.trim().takeIf { DECIMAL.matches(it) }?.toDouble()
+}
 
 private fun JsonElement?.primitive(): JsonPrimitive? = this as? JsonPrimitive
+
+// Upstream's MAX_SAFE_NUMBER in packages/loot-core/src/shared/util.ts: 2^51 - 1
+private const val MAX_SAFE_NUMBER = 2251799813685247L
+
+private val DECIMAL = Regex("""[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?""")
 
 private const val NAME = "name"
 private const val ID = "id"
