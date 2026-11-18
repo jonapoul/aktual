@@ -185,7 +185,7 @@ data class SankeyLink(
   val grouped: ImmutableList<SankeyGroupedItem> = persistentListOf(),
 )
 
-@Immutable data class SankeyGroupedItem(val name: String, val value: Amount)
+@Immutable data class SankeyGroupedItem(val label: SankeyLabel, val value: Amount)
 
 @Immutable
 sealed interface SankeyLabel {
@@ -194,6 +194,8 @@ sealed interface SankeyLabel {
   data object Income : SankeyLabel
 
   data object Other : SankeyLabel
+
+  data object NoPayee : SankeyLabel
 
   // Budgeted mode, see createBudgetGraph() in upstream's sankey-spreadsheet.ts
   data object Budgeted : SankeyLabel

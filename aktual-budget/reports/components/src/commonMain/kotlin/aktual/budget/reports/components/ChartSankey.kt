@@ -369,7 +369,7 @@ private fun GroupedItemRow(item: SankeyGroupedItem, modifier: Modifier = Modifie
     val style = typography.bodySmall
     Text(
       modifier = Modifier.weight(1f, fill = false),
-      text = item.name,
+      text = item.label.string(),
       color = colors.menuItemText.copy(alpha = GROUPED_ALPHA),
       style = style,
       maxLines = 1,
@@ -443,6 +443,7 @@ private fun SankeyLabel.string(): String =
     is Text -> value
     SankeyLabel.Income -> Strings.reportsSankeyIncome
     Other -> Strings.reportsSankeyOther
+    NoPayee -> Strings.reportsSankeyNoPayee
     Budgeted -> Strings.reportsSankeyBudgeted
     AvailableFunds -> Strings.reportsSankeyAvailableFunds
     ToBudget -> Strings.reportsSankeyToBudget

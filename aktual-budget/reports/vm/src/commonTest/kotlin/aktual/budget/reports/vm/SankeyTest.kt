@@ -42,11 +42,43 @@ class SankeyTest {
   }
 
   @Test
-  fun `Refunded expense category flows into the account`() {
-    val data = calculate(expense(total = 200, categoryId = "food", category = "Food"))
+  fun `Refunded expense category flows from its payee into the account`() {
+    val data =
+      calculate(
+        expense(
+          total = 25,
+          categoryId = "food",
+          category = "Food",
+          payeeId = "store",
+          payee = "Store",
+        ),
+      )
 
-    assertThat(data.flows()).containsExactly(Flow("food__NEGATIVE", "checking", 200))
+    assertThat(data.flows())
+      .containsExactlyInAnyOrder(
+        Flow("store", "food__NEGATIVE", 25),
+        Flow("food__NEGATIVE", "checking", 25),
+      )
     assertThat(data.node("food__NEGATIVE").label).isEqualTo(SankeyLabel.Text("Food"))
+    assertThat(data.node("store").label).isEqualTo(SankeyLabel.Text("Store"))
+  }
+
+  @Test
+  fun `Refunds without a payee are included in the category value`() {
+    val data =
+      calculate(
+        expense(total = 50, categoryId = "food", payeeId = "store", payee = "Store"),
+        expense(total = 50, categoryId = "food"),
+      )
+
+    assertThat(data.flows())
+      .containsExactlyInAnyOrder(
+        Flow("store", "food__NEGATIVE", 50),
+        Flow("food__NO_PAYEE", "food__NEGATIVE", 50),
+        Flow("food__NEGATIVE", "checking", 100),
+      )
+    assertThat(data.node("food__NO_PAYEE").label).isEqualTo(NoPayee)
+    assertThat(data.node("food__NEGATIVE").value).isEqualTo(Amount(100))
   }
 
   @Test
@@ -71,6 +103,65 @@ class SankeyTest {
     assertThat(account.label).isEqualTo(Income)
     assertThat(account.value).isEqualTo(Amount(1500))
     assertThat(account.color).isEqualTo(Primary)
+  }
+
+  @Test
+  fun `Grouped accounts net a category's payments and deposits across accounts`() {
+    val data =
+      calculate(
+        expense(total = -100, categoryId = "food", accountId = "a1"),
+        expense(total = 25, categoryId = "food", accountId = "a2"),
+        params = SankeyParams(groupAccounts = true),
+      )
+
+    assertThat(data.flows())
+      .containsExactlyInAnyOrder(
+        Flow("all_income", "bills", 75),
+        Flow("bills", "food", 75),
+      )
+  }
+
+  @Test
+  fun `Grouped accounts net a category's deposits and payments across accounts`() {
+    val data =
+      calculate(
+        expense(total = -25, categoryId = "food", accountId = "a1"),
+        expense(total = 100, categoryId = "food", accountId = "a2"),
+        params = SankeyParams(groupAccounts = true),
+      )
+
+    assertThat(data.flows())
+      .containsExactlyInAnyOrder(
+        Flow("food__NO_PAYEE", "food__NEGATIVE", 75),
+        Flow("food__NEGATIVE", "all_income", 75),
+      )
+  }
+
+  @Test
+  fun `Grouped accounts drop categories that net to zero`() {
+    val data =
+      calculate(
+        expense(total = -100, categoryId = "food", accountId = "a1"),
+        expense(total = 100, categoryId = "food", accountId = "a2"),
+        params = SankeyParams(groupAccounts = true),
+      )
+
+    assertThat(data.nodes).isEmpty()
+  }
+
+  @Test
+  fun `Grouped accounts keep separate payees apart`() {
+    val entries =
+      aggregateAccounts(
+        listOf(
+          income(total = 100, accountId = "a1", payeeId = "one"),
+          income(total = -25, accountId = "a2", payeeId = "one"),
+          income(total = 50, accountId = "a2", payeeId = "two"),
+        ),
+      )
+
+    assertThat(entries.map { Triple(it.payeeId, it.accountId, it.total) })
+      .containsExactly(Triple("one", "all_income", 75L), Triple("two", "all_income", 50L))
   }
 
   @Test
@@ -138,9 +229,9 @@ class SankeyTest {
     val link = data.links.single { data.nodes[it.target].key == "bills__OTHER_BUCKET" }
     assertThat(link.grouped)
       .containsExactly(
-        SankeyGroupedItem("Big", Amount(500)),
-        SankeyGroupedItem("Small 2", Amount(100)),
-        SankeyGroupedItem("Small 1", Amount(50)),
+        SankeyGroupedItem(SankeyLabel.Text("Big"), Amount(500)),
+        SankeyGroupedItem(SankeyLabel.Text("Small 2"), Amount(100)),
+        SankeyGroupedItem(SankeyLabel.Text("Small 1"), Amount(50)),
       )
     assertThat(data.links.filter { data.nodes[it.target].key != "bills__OTHER_BUCKET" }).each {
       it.transform { link -> link.grouped }.isEmpty()
@@ -160,8 +251,8 @@ class SankeyTest {
     val link = data.links.single { data.nodes[it.target].key == "bills__OTHER_BUCKET" }
     assertThat(link.grouped)
       .containsExactly(
-        SankeyGroupedItem("big", Amount(500)),
-        SankeyGroupedItem("Misc", Amount(150)),
+        SankeyGroupedItem(SankeyLabel.Text("big"), Amount(500)),
+        SankeyGroupedItem(SankeyLabel.Text("Misc"), Amount(150)),
       )
   }
 
@@ -232,6 +323,21 @@ class SankeyTest {
 
     assertThat(data.node("a").percent.intValue).isEqualTo(75)
     assertThat(data.node("b").percent.intValue).isEqualTo(25)
+  }
+
+  @Test
+  fun `Account percentages span every account column`() {
+    val data =
+      calculate(
+        expense(total = -75, categoryId = "food", accountId = "a"),
+        expense(total = -25, categoryId = "rent", accountId = "b"),
+        transfers = listOf(SankeyTransferPair("a", "a", "b", "b", 25)),
+      )
+
+    // a sends 75 to bills and 25 to b, which sends 25 to bills
+    assertThat(data.node("b").column).isEqualTo(data.node("a").column + 1)
+    assertThat(data.node("a").percent.intValue).isEqualTo(80)
+    assertThat(data.node("b").percent.intValue).isEqualTo(20)
   }
 
   @Test
@@ -324,6 +430,8 @@ class SankeyTest {
     category: String = categoryId,
     groupId: String = "bills",
     accountId: String = "checking",
+    payeeId: String? = null,
+    payee: String? = null,
   ) =
     SankeyEntry(
       categoryGroupId = groupId,
@@ -334,6 +442,8 @@ class SankeyTest {
       total = total,
       accountId = accountId,
       accountName = accountId,
+      payeeId = payeeId,
+      payeeName = payee,
     )
 
   private companion object {

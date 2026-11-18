@@ -14,6 +14,7 @@ import kotlinx.datetime.plusMonth
 
 private const val OTHER_SUFFIX = "__OTHER_BUCKET"
 private const val NEGATIVE_SUFFIX = "__NEGATIVE"
+private const val NO_PAYEE_SUFFIX = "__NO_PAYEE"
 private const val ALL_ACCOUNTS = "all_income"
 private const val TO_BUDGET = "to_budget"
 private const val BUDGETED = "budgeted"
@@ -126,8 +127,8 @@ private data class GraphNode(
 
 private typealias Graph = LinkedHashMap<String, GraphNode>
 
-// Names and values of the nodes merged into each link, keyed by the link's source and target
-private typealias GroupedItems = HashMap<Pair<String, String>, LinkedHashMap<String, Long>>
+// Labels and values of the nodes merged into each link, keyed by the link's source and target
+private typealias GroupedItems = HashMap<Pair<String, String>, LinkedHashMap<SankeyLabel, Long>>
 
 // packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts
 // createTransactionsGraph() and buildSankeyData()
@@ -142,7 +143,8 @@ internal fun calculateSankey(
   params: SankeyParams,
 ): SankeyData =
   sankeyData(title, start, end, categoryOrder, params) {
-    transactionsGraph(entries, transfers, params.groupAccounts)
+    val netted = if (params.groupAccounts) aggregateAccounts(entries) else entries
+    transactionsGraph(netted, transfers, params.groupAccounts)
   }
 
 // createBudgetGraph() and buildSankeyData()
@@ -281,10 +283,15 @@ private fun transactionsGraph(
       }
 
       else -> {
-        // Refunded expense category > Account
+        // Payee > Refunded expense category > Account
         graph.addNode(negativeKey, GraphNode(IncomeCategory, categoryLabel))
         addAccount(entry.accountId, entry.accountName)
         graph.addLink(negativeKey, account, value)
+        val payeeKey = entry.payeeId ?: entry.categoryId + NO_PAYEE_SUFFIX
+        val payeeLabel: SankeyLabel =
+          if (entry.payeeId == null) NoPayee else SankeyLabel.Text(entry.payeeName.orEmpty())
+        graph.addNode(payeeKey, GraphNode(IncomePayee, payeeLabel))
+        graph.addLink(payeeKey, negativeKey, value)
       }
     }
   }
@@ -298,6 +305,20 @@ private fun transactionsGraph(
   }
 
   return graph
+}
+
+// Nets each category and payee's flows across all accounts, so payments and deposits in different
+// accounts cancel out instead of both being drawn
+internal fun aggregateAccounts(entries: List<SankeyEntry>): List<SankeyEntry> {
+  val totals = LinkedHashMap<Pair<String, String?>, SankeyEntry>()
+  for (entry in entries) {
+    val key = entry.categoryId to entry.payeeId
+    val existing = totals[key]
+    totals[key] =
+      existing?.copy(total = existing.total + entry.total)
+        ?: entry.copy(accountId = ALL_ACCOUNTS, accountName = ALL_ACCOUNTS)
+  }
+  return totals.values.filter { it.total != 0L }
 }
 
 private fun budgetGraph(budget: SankeyBudget, start: YearMonth, end: YearMonth) =
@@ -394,10 +415,9 @@ private fun groupOtherNodes(graph: Graph, topN: Int, global: Boolean): GroupedIt
 
 private fun moveToOther(graph: Graph, key: String, global: Boolean, grouped: GroupedItems) {
   val node = graph[key] ?: return
-  val name = (node.label as? Text)?.value ?: key
   fun addGrouped(from: String, to: String, value: Long) {
     val items = grouped.getOrPut(from to to) { LinkedHashMap() }
-    items[name] = (items[name] ?: 0L) + value
+    items[node.label] = (items[node.label] ?: 0L) + value
   }
 
   val parentKey =
@@ -540,12 +560,14 @@ private fun accountDepths(graph: Graph): Map<String, Int> {
 private fun toSankeyGraph(graph: Graph, grouped: GroupedItems): SankeyGraph {
   val columns = columns(graph)
   val values = graph.keys.associateWith { graph.nodeValue(it) }
-  val columnTotals =
-    graph.keys
-      .groupingBy { columns.getValue(it) }
-      .fold(0L) { total, key ->
-        total + values.getValue(key)
-      }
+  // Accounts can spread over several columns, but their percentages still describe the split
+  // between all accounts
+  fun percentGroup(key: String): Any =
+    if (graph.getValue(key).layer == Account) SankeyLayer.Account else columns.getValue(key)
+  val groupTotals =
+    graph.keys.groupingBy(::percentGroup).fold(0L) { total, key ->
+      total + values.getValue(key)
+    }
   val indices = graph.keys.withIndex().associate { (i, key) -> key to i }
   val colors = graph.mapValues { (key, node) -> nodeColor(key, node) }
 
@@ -555,7 +577,7 @@ private fun toSankeyGraph(graph: Graph, grouped: GroupedItems): SankeyGraph {
       label = node.label,
       column = columns.getValue(key),
       value = Amount(values.getValue(key)),
-      percent = Percent(values.getValue(key), columnTotals.getValue(columns.getValue(key))),
+      percent = Percent(values.getValue(key), groupTotals.getValue(percentGroup(key))),
       color = colors.getValue(key),
     )
   }
@@ -589,7 +611,7 @@ private fun GroupedItems.itemsFor(
   val items = get(source to target) ?: return persistentListOf()
   return items.entries
     .sortedByDescending { it.value }
-    .map { (name, value) -> SankeyGroupedItem(name, Amount(value)) }
+    .map { (label, value) -> SankeyGroupedItem(label, Amount(value)) }
     .toImmutableList()
 }
 
