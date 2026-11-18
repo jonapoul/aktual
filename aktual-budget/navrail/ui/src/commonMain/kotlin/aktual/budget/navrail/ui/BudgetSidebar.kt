@@ -21,7 +21,6 @@ import aktual.budget.navrail.vm.SidebarAccountsAction.ToggleSection
 import aktual.budget.navrail.vm.SidebarAccountsState
 import aktual.budget.navrail.vm.SidebarSection
 import aktual.budget.navrail.vm.SidebarSyncStatus
-import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronDownUp
@@ -167,7 +166,6 @@ internal fun ColumnScope.BudgetSidebarContent(
   transactionsRoot: BudgetNavKey?,
   onSelectTab: (BudgetTab) -> Unit,
   onOpenTransactions: (BudgetNavKey.Transactions) -> Unit,
-  onAddAccount: () -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
   onAccountsAction: OnAction<SidebarAccountsAction>,
   onAction: OnAction<BudgetMenuAction>,
@@ -197,8 +195,9 @@ internal fun ColumnScope.BudgetSidebarContent(
           transactionsRoot !is AccountTransactionsNavRoute &&
           transactionsRoot !is AccountGroupTransactionsNavRoute &&
           transactionsRoot !is ManageAccountsNavRoute,
+      isManageSelected = transactionsRoot is ManageAccountsNavRoute,
       onClick = { onOpenTransactions(TransactionsNavRoute) },
-      onAddAccount = onAddAccount,
+      onManage = { onOpenTransactions(ManageAccountsNavRoute) },
       onAction = onAccountsAction,
     )
 
@@ -222,13 +221,6 @@ internal fun ColumnScope.BudgetSidebarContent(
         onToggle = { onAccountsAction(ToggleSection(it)) },
       )
     }
-
-    DrawerItem(
-      icon = AktualIcons.Pencil1,
-      label = Strings.accountsManageTitle,
-      selected = transactionsRoot is ManageAccountsNavRoute,
-      onClick = { onOpenTransactions(ManageAccountsNavRoute) },
-    )
   }
 
   HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp), color = colors.sidebarBorder)
@@ -244,8 +236,9 @@ internal fun ColumnScope.BudgetSidebarContent(
 private fun AccountsHeader(
   state: SidebarAccountsState,
   selected: Boolean,
+  isManageSelected: Boolean,
   onClick: () -> Unit,
-  onAddAccount: () -> Unit,
+  onManage: () -> Unit,
   onAction: OnAction<SidebarAccountsAction>,
   modifier: Modifier = Modifier,
 ) {
@@ -297,9 +290,10 @@ private fun AccountsHeader(
     )
 
     HeaderIconButton(
-      icon = AktualIcons.Add,
-      label = Strings.accountsAddTitle,
-      onClick = onAddAccount,
+      icon = AktualIcons.Pencil1,
+      label = Strings.accountsManageTitle,
+      isToggledOn = isManageSelected,
+      onClick = onManage,
     )
   }
 }
@@ -1019,7 +1013,6 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColorParameters::class) c
         transactionsRoot = AccountTransactionsNavRoute(AccountId("Joint Account")),
         onSelectTab = {},
         onOpenTransactions = {},
-        onAddAccount = {},
         onSetPrivacyMode = {},
         onAccountsAction = {},
         onAction = {},
@@ -1046,7 +1039,6 @@ private fun PreviewBudgetDrawerSheetSearching(
         transactionsRoot = null,
         onSelectTab = {},
         onOpenTransactions = {},
-        onAddAccount = {},
         onSetPrivacyMode = {},
         onAccountsAction = {},
         onAction = {},
