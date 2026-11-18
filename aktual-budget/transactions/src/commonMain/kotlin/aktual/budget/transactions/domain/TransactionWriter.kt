@@ -19,11 +19,16 @@ interface TransactionWriter {
    * the other side of every transfer among them is added, updated or removed to match, in a second
    * invoke() call. Bank sync leaves it off, as upstream's does.
    *
+   * [syncTransferDates] also moves the other side of each transfer to its new date, and that side's
+   * split if it's a part of one, as upstream's sync-transfer-date pref does when a date is edited.
+   * Only used with [runTransfers].
+   *
    * [learnCategories] is the flag of that name too: afterwards, [CategoryLearner] looks at the
    * transactions that were added or given a category. Only user edits turn it on.
    */
   suspend fun <R> write(
     runTransfers: Boolean = false,
+    syncTransferDates: Boolean = false,
     learnCategories: Boolean = false,
     block: suspend TransactionBatch.() -> R,
   ): R

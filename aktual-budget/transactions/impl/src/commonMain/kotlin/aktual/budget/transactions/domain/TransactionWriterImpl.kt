@@ -33,6 +33,7 @@ class TransactionWriterImpl(
 
   override suspend fun <R> write(
     runTransfers: Boolean,
+    syncTransferDates: Boolean,
     learnCategories: Boolean,
     block: suspend TransactionBatch.() -> R,
   ): R = mutex.withLock {
@@ -41,7 +42,8 @@ class TransactionWriterImpl(
     send(batch)
     if (runTransfers) {
       val transfers = newBatch()
-      Transfers(transfers, accountDao, payeeDao, transactionDao).run(batch.touched())
+      Transfers(transfers, accountDao, payeeDao, transactionDao, syncTransferDates)
+        .run(batch.touched())
       send(transfers)
     }
     if (learnCategories) categoryLearner.learn(batch.categorised())

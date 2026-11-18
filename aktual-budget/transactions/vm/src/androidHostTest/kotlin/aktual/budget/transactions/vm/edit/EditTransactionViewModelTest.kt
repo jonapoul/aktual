@@ -11,6 +11,7 @@ import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_LOCATIONS
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
+import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.DatabaseTables.TRANSACTIONS
 import aktual.budget.db.dao.PayeeDao
@@ -36,6 +37,7 @@ import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
@@ -1208,6 +1210,61 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `A transfer offers to sync both dates`() = runDatabaseTest { scope ->
+    insertTransfer()
+    val sync = FakeBudgetSync()
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded().mode.form.syncTransferDate).isEqualTo(false)
+      cancelAndIgnoreRemainingEvents()
+    }
+    viewModel.setSyncTransferDate(enabled = true)
+    scope.testScheduler.advanceUntilIdle()
+
+    assertThat(sync.calls)
+      .containsExactly(listOf(localChange(PREFERENCES, "sync-transfer-date", "value", "true")))
+  }
+
+  @Test
+  fun `Moving a transfer's date moves its other side when synced`() =
+    runSyncedTest { scope, database ->
+    insertTransfer()
+    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
+    PreferencesDao(this, contexts)[SyncedPrefKey.Global.SyncTransferDate] = "true"
+    // Applied, so the transfer pass sees the new date
+    val sync = FakeBudgetSync(appliedTo = database)
+    val viewModel = createViewModel(scope, id = "t", sync = sync)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        var loaded = awaitLoaded()
+        while (loaded.mode.form.syncTransferDate != true) loaded = awaitLoaded()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setDate(DATE_2)
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+      assertThat(sync.calls)
+        .containsExactly(
+          listOf(localChange(TRANSACTIONS, "t", "date", 20250602L)),
+          listOf(localChange(TRANSACTIONS, "o", "date", 20250602L)),
+        )
+    }
+  }
+
+  private suspend fun BudgetDatabase.insertTransfer() {
+    insertEntities()
+    PayeeDao(this).insert(PayeeId("to-b"), name = null, transferAccount = AccountId("b"))
+    PayeeDao(this).insert(PayeeId("to-a"), name = null, transferAccount = AccountId("a"))
+    with(TransactionDao(this)) {
+      insert("t", "a", null, "to-b", DATE_1, amount = -10.0, transferId = "o")
+      insert("o", "b", null, "to-a", DATE_1, amount = 10.0, transferId = "t")
+    }
+  }
+
+  @Test
   fun `A new transaction starts in the list's account and category`() = runDatabaseTest { scope ->
     insertEntities()
     val target = EditTransactionTarget.New(AccountId("b"), CategoryId("c"))
@@ -1968,6 +2025,8 @@ class EditTransactionViewModelTest {
       locationProvider = location,
       securityPreferences = security,
       budgetScope = BudgetCoroutineScope(scope.backgroundScope),
+      budgetSync = sync,
+      preferencesDao = PreferencesDao(this, contexts),
       budgetCalculator =
         BudgetMonthCalculatorImpl(
           budgetDao = BudgetDao(this, contexts),

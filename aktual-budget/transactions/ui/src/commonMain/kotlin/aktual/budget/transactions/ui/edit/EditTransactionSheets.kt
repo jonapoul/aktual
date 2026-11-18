@@ -28,6 +28,7 @@ import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.BottomSheetMessage
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
+import aktual.core.ui.checkbox
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
@@ -40,9 +41,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.LocalTextStyle
@@ -62,6 +65,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -122,7 +126,13 @@ internal fun EditTransactionSheet(
       )
 
     Date ->
-      DateDialog(date = draft.date, onDismiss = onDismiss, onSelect = { onAction(SetDate(it)) })
+      DateDialog(
+        date = draft.date,
+        syncTransferDate = form.syncTransferDate,
+        onDismiss = onDismiss,
+        onSelect = { onAction(SetDate(it)) },
+        onSyncTransferDate = { onAction(SetSyncTransferDate(it)) },
+      )
 
     Notes ->
       NotesSheet(
@@ -604,7 +614,13 @@ private fun CategoryBalance(balance: Amount) =
 // Saving rejects dates before MIN_TRANSACTION_DATE, so they can't be picked. The range still holds
 // an older date that's already saved, which the picker would otherwise crash on
 @Composable
-private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalDate) -> Unit) {
+private fun DateDialog(
+  date: LocalDate,
+  syncTransferDate: Boolean?,
+  onDismiss: () -> Unit,
+  onSelect: (LocalDate) -> Unit,
+  onSyncTransferDate: (Boolean) -> Unit,
+) {
   val first = minOf(MIN_TRANSACTION_DATE.year, date.year)
   val last = maxOf(DatePickerDefaults.YearRange.last, date.year)
   val state =
@@ -629,7 +645,26 @@ private fun DateDialog(date: LocalDate, onDismiss: () -> Unit, onSelect: (LocalD
     dismissButton = {
       DialogTextButton(text = Strings.transactionSheetCancel, onClick = onDismiss)
     },
-    content = { DatePicker(state = state) },
+    content = {
+      DatePicker(state = state)
+      if (syncTransferDate != null) {
+        Row(
+          modifier =
+            Modifier.fillMaxWidth()
+              .toggleable(
+                value = syncTransferDate,
+                role = Role.Checkbox,
+                onValueChange = onSyncTransferDate,
+              )
+              .padding(horizontal = 12.dp, vertical = 4.dp),
+          verticalAlignment = CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          Checkbox(checked = syncTransferDate, onCheckedChange = null, colors = colors.checkbox())
+          Text(text = Strings.transactionSyncTransferDate, color = colors.pageText)
+        }
+      }
+    },
   )
 }
 

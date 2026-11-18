@@ -38,6 +38,9 @@ sealed interface SyncedPrefKey {
     /** [Boolean] */
     ShowHiddenTags("show-hidden-tags"),
 
+    /** [Boolean], whether editing a transfer's date also moves the other side */
+    SyncTransferDate("sync-transfer-date"),
+
     /** [aktual.budget.model.UpcomingLength] */
     UpcomingScheduledTransactionLength("upcomingScheduledTransactionLength"),
   }
