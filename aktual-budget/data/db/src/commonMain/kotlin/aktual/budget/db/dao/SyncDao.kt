@@ -196,7 +196,7 @@ class SyncDao(
   }
 
   /** Read the current clock timestamp from the messages_clock table, or a zero-epoch fallback. */
-  private suspend fun getClockTimestamp(): Timestamp {
+  suspend fun getClockTimestamp(): Timestamp {
     val clock = clockQueries.getFirst().awaitAsOneOrNull()?.clock ?: return EPOCH_TIMESTAMP
     val raw = clock[TIMESTAMP_KEY]?.jsonPrimitive?.contentOrNull ?: return EPOCH_TIMESTAMP
     return Timestamp.parse(raw)
