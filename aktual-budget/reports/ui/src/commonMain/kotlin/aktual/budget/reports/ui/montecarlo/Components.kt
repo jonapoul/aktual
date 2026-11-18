@@ -4,7 +4,6 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloSection
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronRight
-import aktual.core.icons.InformationOutline
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.letterSpacings
@@ -21,23 +20,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition.Companion.Above
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableSet
-import kotlinx.coroutines.launch
 
 // One section of the page on its own card
 @Composable
@@ -118,35 +109,3 @@ internal fun BodyText(text: String, modifier: Modifier = Modifier) =
     text = text.redacted(),
     style = typography.bodyMedium,
   )
-
-// MonteCarloHelpTooltip: a small info icon that shows its text when tapped
-@Composable
-internal fun HelpTooltip(text: String, modifier: Modifier = Modifier) {
-  val state = rememberTooltipState(isPersistent = true)
-  val scope = rememberCoroutineScope()
-  TooltipBox(
-    modifier = modifier,
-    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(Above),
-    state = state,
-    tooltip = {
-      PlainTooltip(
-        shape = CardShape,
-        contentColor = colors.tooltipText,
-        containerColor = colors.tooltipBackground,
-        content = { Text(text) },
-      )
-    },
-  ) {
-    Icon(
-      modifier =
-        Modifier.size(HELP_ICON_SIZE).clickable {
-          if (state.isVisible) state.dismiss() else scope.launch { state.show() }
-        },
-      imageVector = AktualIcons.InformationOutline,
-      contentDescription = text,
-      tint = colors.pageTextSubdued,
-    )
-  }
-}
-
-private val HELP_ICON_SIZE = 16.dp

@@ -122,6 +122,7 @@ private fun InputsSection(
     SettingValueRow(
       Strings.reportsCrossoverExpenseCategories,
       countLabel(selectedCategories, categories.size),
+      help = Strings.reportsCrossoverExpenseCategoriesHelp,
     ) {
       onPick(Categories)
     }
@@ -130,6 +131,7 @@ private fun InputsSection(
     SettingValueRow(
       Strings.reportsCrossoverIncomeAccounts,
       countLabel(selectedAccounts, editorData.allAccounts.size),
+      help = Strings.reportsCrossoverIncomeAccountsHelp,
     ) {
       onPick(Accounts)
     }
@@ -146,7 +148,7 @@ private fun ProjectionSection(
   onPickProjection: () -> Unit,
 ) =
   Section(label = Strings.reportsCrossoverProjection) {
-    NumberRow(Strings.reportsCrossoverWithdrawalRate) {
+    NumberRow(Strings.reportsCrossoverWithdrawalRate, Strings.reportsCrossoverWithdrawalRateHelp) {
       NumberField(
         value = meta.safeWithdrawalRate,
         min = 0.0,
@@ -159,11 +161,12 @@ private fun ProjectionSection(
     SettingValueRow(
       Strings.reportsCrossoverProjectionType,
       meta.projectionType.orDefault().label(),
+      help = Strings.reportsCrossoverProjectionTypeHelp,
     ) {
       onPickProjection()
     }
     Divider()
-    NumberRow(Strings.reportsCrossoverTargetIncome) {
+    NumberRow(Strings.reportsCrossoverTargetIncome, Strings.reportsCrossoverTargetIncomeHelp) {
       NumberField(
         value = meta.expenseAdjustmentFactor,
         min = 0.0,
@@ -175,12 +178,19 @@ private fun ProjectionSection(
     }
     Divider()
     val customGrowth = meta.estimatedReturn != null || meta.expectedContribution != null
-    SwitchRow(Strings.reportsCrossoverCustomGrowth, customGrowth) { enabled ->
+    SwitchRow(
+      label = Strings.reportsCrossoverCustomGrowth,
+      isChecked = customGrowth,
+      help = Strings.reportsCrossoverCustomGrowthHelp,
+    ) { enabled ->
       onEdit { it.withCustomGrowth(enabled) }
     }
     if (customGrowth) {
       Divider()
-      NumberRow(Strings.reportsCrossoverExpectedReturn) {
+      NumberRow(
+        Strings.reportsCrossoverExpectedReturn,
+        Strings.reportsCrossoverExpectedReturnHelp,
+      ) {
         NumberField(
           value = meta.estimatedReturn ?: 0.0,
           min = 0.0,
@@ -190,7 +200,10 @@ private fun ProjectionSection(
         )
       }
       Divider()
-      NumberRow(Strings.reportsCrossoverExpectedContribution) {
+      NumberRow(
+        Strings.reportsCrossoverExpectedContribution,
+        Strings.reportsCrossoverExpectedContributionHelp,
+      ) {
         // Saved in cents, typed in whole units
         NumberField(
           value = (meta.expectedContribution ?: 0.0) / CENTS,
@@ -205,8 +218,8 @@ private fun ProjectionSection(
   }
 
 @Composable
-private fun NumberRow(label: String, field: @Composable () -> Unit) =
-  ValueRow(label = label, onClick = null) { field() }
+private fun NumberRow(label: String, help: String, field: @Composable () -> Unit) =
+  ValueRow(label = label, onClick = null, help = help) { field() }
 
 @Composable
 internal fun AccountSheet(

@@ -1439,6 +1439,14 @@
   <string name="reports_crossover_custom_growth">Use custom growth projections</string>
   <string name="reports_crossover_expected_return">Expected return (annual %)</string>
   <string name="reports_crossover_expected_contribution">Expected monthly contribution</string>
+  <string name="reports_crossover_expense_categories_help">Used to estimate your future expenses.\n\nSelect the budget categories that reflect your living expenses in retirement, like food, utilities, entertainment and medical.\n\nExclude categories that won’t continue in retirement, like retirement savings.</string>
+  <string name="reports_crossover_income_accounts_help">Used to estimate your future income.\n\nSelect the accounts that will fund your retirement, like retirement and savings accounts.\n\nExclude accounts that won’t, like mortgage or child education accounts.</string>
+  <string name="reports_crossover_withdrawal_rate_help">The amount you plan to withdraw from your income accounts each year to fund your living expenses.</string>
+  <string name="reports_crossover_projection_type_help">How past expenses are projected into the future.\n\nHampel filtered median filters out outliers before taking the median expense.\n\nMedian uses the median of all past expenses without filtering.\n\nMean uses the average of all past expenses.</string>
+  <string name="reports_crossover_target_income_help">Your target retirement income as a percentage of projected expenses.\n\n100% means you need retirement income equal to your current projected expenses. Above 100% means you plan to spend more in retirement, and below 100% less.\n\nThe chart shows both the projected expenses (solid line) and your target income (dashed line).</string>
+  <string name="reports_crossover_custom_growth_help">Turn this on to set your own monthly contribution and investment return, used to project your investments into the future.\n\nWhen it’s off, the projection uses the past performance of your income accounts, which includes both past contributions and investment growth.</string>
+  <string name="reports_crossover_expected_return_help">The expected annual return on your investments, used to project the growth of your income accounts.</string>
+  <string name="reports_crossover_expected_contribution_help">The amount you plan to add to your income accounts each month. It’s added to the balance each month before the investment return is applied.</string>
   <string name="reports_crossover_what_title">What is the crossover point?</string>
   <string name="reports_crossover_what">The crossover point is when your monthly investment income (from selected accounts using the safe withdrawal rate) meets or exceeds your total monthly expenses (from selected categories). The chart projects into the future using your estimated return until the lines cross.</string>
 
@@ -1455,6 +1463,7 @@
   <string name="reports_sankey_for">For %1$s</string>
   <string name="reports_sankey_mode">Mode</string>
   <string name="reports_sankey_mode_spent">Spent</string>
+  <string name="reports_sankey_mode_help">Spent shows where your money went, from the transactions in the range.\n\nBudgeted shows how you planned it, from the amounts budgeted to each category.</string>
   <string name="reports_sankey_top_categories">Show up to</string>
   <string name="reports_sankey_top_all">All</string>
   <string name="reports_sankey_sort">Category sort</string>
@@ -1484,6 +1493,7 @@
   <string name="reports_balance_forecast_source">Forecast from</string>
   <string name="reports_balance_forecast_source_schedules">Schedules</string>
   <string name="reports_balance_forecast_source_tracking">Tracking budget</string>
+  <string name="reports_balance_forecast_source_help">Schedules adds each upcoming scheduled transaction to its account’s balance.\n\nTracking budget starts from your on-budget balance, then adds each month’s budgeted income and takes away its budgeted expenses.</string>
   <string name="reports_balance_forecast_accounts">Accounts</string>
   <string name="reports_balance_forecast_granularity">Granularity</string>
   <string name="reports_balance_forecast_daily">Daily</string>
@@ -1777,10 +1787,12 @@
   <string name="reports_custom_editor_options">Options</string>
   <string name="reports_custom_editor_show_hidden">Show hidden categories</string>
   <string name="reports_custom_editor_show_empty">Show empty rows</string>
+  <string name="reports_custom_editor_show_empty_help">Show rows whose totals are zero or blank.</string>
   <string name="reports_custom_editor_show_off_budget">Show off budget</string>
   <string name="reports_custom_editor_show_uncategorised">Show uncategorized</string>
   <string name="reports_custom_editor_trim_intervals">Trim empty intervals</string>
   <string name="reports_custom_editor_show_trend_lines">Show trend lines</string>
+  <string name="reports_custom_editor_show_trend_lines_help">Add a trend line for each series. Only for line graphs.</string>
   <string name="reports_custom_editor_categories">Categories</string>
   <string name="reports_custom_editor_categories_all">All</string>
   <string name="reports_custom_editor_categories_some">%1$d of %2$d</string>

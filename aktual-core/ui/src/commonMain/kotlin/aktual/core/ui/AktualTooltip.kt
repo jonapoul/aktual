@@ -1,5 +1,7 @@
 package aktual.core.ui
 
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Question
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import androidx.compose.animation.AnimatedVisibility
@@ -12,8 +14,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipDefaults.rememberTooltipPositionProvider
@@ -25,9 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -46,6 +52,7 @@ fun AktualTooltip(
   tooltipText: String,
   modifier: Modifier = Modifier,
   kind: ButtonKind = Bare,
+  iconSize: Dp? = null,
   positionProvider: PopupPositionProvider = rememberTooltipPositionProvider(positioning = Above),
 ) {
   val visibleState = remember { MutableTransitionState(false) }
@@ -63,6 +70,7 @@ fun AktualTooltip(
       kind = kind,
       imageVector = imageVector,
       contentDescription = contentDescription,
+      size = iconSize,
       onClick = { visibleState.targetState = !isShowing },
     )
 
@@ -107,9 +115,14 @@ fun AktualTooltip(
                   translationY =
                     (if (origin.pivotFractionY > CENTRE) 1 else -1) * size.height * shift
                 }
-                .sizeIn(minWidth = 40.dp, minHeight = 24.dp, maxWidth = 200.dp)
+                .sizeIn(minWidth = 40.dp, minHeight = 24.dp, maxWidth = TooltipMaxWidth)
+                // Upstream's styles.tooltip: a border and shadow, so it stands out from cards of
+                // the
+                // same colour underneath
+                .shadow(elevation = 8.dp, shape = CardShape)
                 .clip(CardShape)
                 .background(colors.tooltipBackground)
+                .border(width = 2.dp, color = colors.tooltipBorder, shape = CardShape)
                 .padding(horizontal = 8.dp, vertical = 4.dp),
             contentAlignment = CenterStart,
           ) {
@@ -120,6 +133,21 @@ fun AktualTooltip(
     }
   }
 }
+
+// A small question mark beside a label that explains it when tapped. It takes up no more room than
+// its icon, but the button still gets a full-size touch target
+@Composable
+fun AktualHelpTooltip(text: String, modifier: Modifier = Modifier) =
+  AktualTooltip(
+    modifier = modifier.size(HelpIconSize),
+    imageVector = AktualIcons.Question,
+    contentDescription = text,
+    tooltipText = text,
+    iconSize = HelpIconSize,
+  )
+
+private val HelpIconSize = 16.dp
+private val TooltipMaxWidth = 280.dp
 
 private const val CENTRE = 0.5f
 

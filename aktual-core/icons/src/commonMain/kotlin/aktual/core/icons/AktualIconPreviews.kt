@@ -65,6 +65,7 @@ private val aktualIcons =
       OpenBracket,
       Pencil1,
       Pin,
+      Question,
       Refresh,
       Reports,
       RightArrow2,
