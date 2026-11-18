@@ -9,6 +9,9 @@ import aktual.budget.db.dao.DatabaseTables.PAYEES
 import aktual.budget.db.dao.DatabaseTables.PAYEE_MAPPING
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
+import aktual.budget.model.ConditionSet
+import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
 import aktual.budget.utils.BudgetSync
 import aktual.core.model.percent
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -36,7 +39,9 @@ class SummaryLoaderTest {
     sync.insertSpending()
 
     loader.summary(meta(content = """{"type":"sum"}""", conditions = listOf(FOOD))).test {
-      assertThatNextEmissionIsEqualTo(SummaryData.Sum(TITLE, MAY_1, MAY_31, Amount(-1900)))
+      assertThatNextEmissionIsEqualTo(
+        SummaryData.Sum(TITLE, MAY_1, MAY_31, Amount(-1900), filter(FOOD)),
+      )
     }
   }
 
@@ -109,6 +114,8 @@ class SummaryLoaderTest {
           denominator = Amount(-4600),
           percent = 41.3.percent,
           divisor = PercentageDivisor.Specific(MAY_1, MAY_31),
+          filter = filter(FOOD),
+          divisorFilter = filter(),
         ),
       )
     }
@@ -129,10 +136,39 @@ class SummaryLoaderTest {
           denominator = Amount(-4609),
           percent = 41.22.percent,
           divisor = AllTime,
+          filter = filter(FOOD),
+          divisorFilter = filter(),
         ),
       )
     }
   }
+
+  @Test
+  fun `Percentage divisor keeps the transactions matching its own filters`() =
+    runLoaderTest { loader, sync ->
+      sync.insertSpending()
+      val content =
+        SummaryReportMeta()
+          .withSummaryType(Percentage)
+          .withDivisorConditions(listOf(FUEL), Or)
+          .content
+
+      loader.summary(meta(content, conditions = listOf(FOOD))).test {
+        assertThatNextEmissionIsEqualTo(
+          SummaryData.Percentage(
+            title = TITLE,
+            start = MAY_1,
+            end = MAY_31,
+            numerator = Amount(-1900),
+            denominator = Amount(-2000),
+            percent = 95.percent,
+            divisor = PercentageDivisor.Specific(MAY_1, MAY_31),
+            filter = filter(FOOD),
+            divisorFilter = filter(FUEL, op = Or),
+          ),
+        )
+      }
+    }
 
   @Test
   fun `Percentage of nothing is zero`() = runLoaderTest { loader, _ ->
@@ -186,6 +222,12 @@ class SummaryLoaderTest {
       content = content,
     )
 
+  private suspend fun BudgetDatabase.filter(vararg conditions: Condition, op: ConditionOp = And) =
+    SummaryFilter(
+      ConditionSet(conditions.toList(), op),
+      ConditionEntitiesLoaderImpl(this).load().names,
+    )
+
   private fun runLoaderTest(
     action: suspend BudgetDatabase.(ChartDataLoader, BudgetSync) -> Unit,
   ) = runSyncedDatabaseTest { scope, sync ->
@@ -205,6 +247,12 @@ class SummaryLoaderTest {
         field = Category,
         operator = OneOf,
         value = JsonArray(listOf(JsonPrimitive("food"))),
+      )
+    val FUEL =
+      Condition(
+        field = Category,
+        operator = OneOf,
+        value = JsonArray(listOf(JsonPrimitive("fuel"))),
       )
   }
 }

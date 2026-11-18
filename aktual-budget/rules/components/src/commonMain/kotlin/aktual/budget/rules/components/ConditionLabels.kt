@@ -88,3 +88,16 @@ fun Condition.valueLabel(
     NoValue -> null
     null -> value.toString()
   }
+
+// E.g. "Category is one of Food, Fuel"
+@Composable
+fun Condition.description(
+  names: ImmutableMap<String, String>,
+  schema: ConditionSchema = FilterConditions,
+): String =
+  listOfNotNull(
+      field.label().replaceFirstChar { it.titlecase() },
+      operator.label(),
+      valueLabel(names, schema),
+    )
+    .joinToString(separator = " ")

@@ -12,6 +12,7 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
+import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
 import aktual.budget.rules.domain.TransactionFilterCompilerImpl
 import aktual.core.utils.Calendar
 import aktual.prefs.BudgetFormatPreferences
@@ -40,6 +41,7 @@ internal fun BudgetDatabase.chartDataLoader(
     calendar = calendar,
     contexts = contexts,
     compiler = TransactionFilterCompilerImpl(),
+    entities = ConditionEntitiesLoaderImpl(this),
   )
 
 internal object TestFormatPreferences : BudgetFormatPreferences {

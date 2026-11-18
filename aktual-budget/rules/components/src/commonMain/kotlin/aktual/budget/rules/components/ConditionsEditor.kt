@@ -85,10 +85,12 @@ fun ConditionsList(
   schema: ConditionSchema = FilterConditions,
   fields: ImmutableList<Field> = schema.fields,
   isEnabled: Boolean = true,
+  matchLabel: String = Strings.reportsFormulaQueryMatch,
+  conditionsLabel: String = Strings.reportsFormulaQueryConditions,
 ) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(22.dp)) {
     Column {
-      SectionLabel(Strings.reportsFormulaQueryMatch)
+      SectionLabel(matchLabel)
       AktualSlidingToggleButton(
         modifier = Modifier.fillMaxWidth(),
         selected = if (conditionsOp == Or) Or else And,
@@ -103,7 +105,7 @@ fun ConditionsList(
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
       Column {
-        SectionLabel(Strings.reportsFormulaQueryConditions)
+        SectionLabel(conditionsLabel)
         if (conditions.isNotEmpty()) {
           CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
             conditions.fastForEachIndexed { index, condition ->

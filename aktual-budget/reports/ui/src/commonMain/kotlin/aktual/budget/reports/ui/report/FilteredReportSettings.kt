@@ -15,7 +15,6 @@ import aktual.budget.rules.components.ConditionSheetAt
 import aktual.budget.rules.components.ConditionsList
 import aktual.budget.rules.components.QuerySheet
 import aktual.budget.rules.components.SectionLabel
-import aktual.budget.rules.components.label
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import androidx.compose.foundation.layout.Column
@@ -153,7 +152,8 @@ internal fun AgeOfMoneySettings(
     }
   }
 
-// Settings for a report with a time frame, filters and maybe some display options between them.
+// Settings for a report with a time frame, filters and maybe some display options between them,
+// and anything else after the filters.
 // The time frame picker and conditions replace the settings while open, then come back to them
 @Composable
 internal fun FilteredReportSettings(
@@ -166,6 +166,7 @@ internal fun FilteredReportSettings(
   onDismiss: () -> Unit,
   title: String = Strings.reportsChartSettings,
   showTimeFrame: Boolean = true,
+  footer: (@Composable ColumnScope.() -> Unit)? = null,
   display: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   var pickTimeFrame by rememberSaveable { mutableStateOf(false) }
@@ -216,6 +217,8 @@ internal fun FilteredReportSettings(
         onOpen = { conditionIndex = it },
       )
     }
+
+    footer?.invoke(this)
   }
 }
 
