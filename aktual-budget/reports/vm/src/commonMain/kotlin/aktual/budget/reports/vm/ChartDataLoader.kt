@@ -28,14 +28,12 @@ import aktual.budget.formula.TextValue
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
-import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormatConfig
-import aktual.budget.model.PayeeId
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.budget.model.parseScheduleAmount
@@ -857,30 +855,20 @@ internal class ChartDataLoader(
     return combine(dao.observeSankeyCategoryTotals(start, end), transfers, ::Pair)
   }
 
-  // Expense totals are split by account, income totals by account and payee
-  private fun sankeyEntries(rows: List<SankeyCategoryTotals>): List<SankeyEntry> {
-    val entries = LinkedHashMap<Triple<CategoryId, AccountId, PayeeId?>, SankeyEntry>()
-    for (row in rows) {
-      val isIncome = row.is_income == true
-      val payee = row.payee.takeIf { isIncome }
-      val key = Triple(row.category, row.account, payee)
-      val existing = entries[key]
-      entries[key] =
-        existing?.copy(total = existing.total + row.total)
-          ?: SankeyEntry(
-            categoryGroupId = row.category_group.value,
-            categoryGroup = row.group_name.orEmpty(),
-            categoryId = row.category.value,
-            category = row.category_name.orEmpty(),
-            isIncome = isIncome,
-            total = row.total,
-            accountId = row.account.value,
-            accountName = row.account_name.orEmpty(),
-            payeeId = payee?.value,
-            payeeName = row.payee_name.takeIf { isIncome },
-          )
-    }
-    return entries.values.toList()
+  // Rows are already totalled per category, account and payee
+  private fun sankeyEntries(rows: List<SankeyCategoryTotals>): List<SankeyEntry> = rows.map { row ->
+    SankeyEntry(
+      categoryGroupId = row.category_group.value,
+      categoryGroup = row.group_name.orEmpty(),
+      categoryId = row.category.value,
+      category = row.category_name.orEmpty(),
+      isIncome = row.is_income == true,
+      total = row.total,
+      accountId = row.account.value,
+      accountName = row.account_name.orEmpty(),
+      payeeId = row.payee?.value,
+      payeeName = row.payee_name,
+    )
   }
 
   private fun budgetOrder(rows: List<SankeyCategoryTotals>): List<String> =

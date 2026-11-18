@@ -1443,6 +1443,7 @@
   <string name="reports_sankey_spent">%1$s (Spent)</string>
   <string name="reports_sankey_income">Income</string>
   <string name="reports_sankey_other">Other</string>
+  <string name="reports_sankey_no_payee">(No payee)</string>
   <string name="reports_sankey_budgeted">Budgeted</string>
   <string name="reports_sankey_available_funds">Available funds</string>
   <string name="reports_sankey_to_budget">To budget</string>
