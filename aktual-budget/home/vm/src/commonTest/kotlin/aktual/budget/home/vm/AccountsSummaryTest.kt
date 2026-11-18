@@ -174,6 +174,7 @@ internal class AccountsSummaryTest {
       last_sync = lastSync,
       balance = balance,
       last_activity = lastActivity,
+      account_group_id = null,
     )
 
   private companion object {
