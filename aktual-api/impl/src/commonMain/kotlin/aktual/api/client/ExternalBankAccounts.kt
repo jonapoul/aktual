@@ -3,8 +3,6 @@ package aktual.api.client
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
-import kotlin.math.abs
-import kotlin.math.roundToLong
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -61,7 +59,7 @@ internal fun enableBankingAccounts(accounts: JsonArray): List<ExternalBankAccoun
       institution = json.string("institution"),
       orgId = id,
       orgDomain = null,
-      balance = externalBalance(json.number(BALANCE), inCents = true),
+      balance = centsBalance(json.number(BALANCE)),
     )
   }
 
@@ -73,7 +71,7 @@ private fun simpleFin(json: JsonObject): ExternalBankAccount? {
     institution = org?.string(NAME),
     orgId = org?.string(ID),
     orgDomain = org?.string("domain"),
-    balance = externalBalance(json.number(BALANCE), inCents = false),
+    balance = decimalBalance(json.number(BALANCE)),
   )
 }
 
@@ -96,7 +94,7 @@ private fun pluggyAi(json: JsonObject): ExternalBankAccount? {
     institution = name,
     orgId = json.string(ID),
     orgDomain = null,
-    balance = externalBalance(balance, inCents = false),
+    balance = decimalBalance(balance),
   )
 }
 
@@ -108,33 +106,40 @@ private fun akahu(json: JsonObject): ExternalBankAccount? {
     institution = connection?.string(NAME),
     orgId = connection?.string(AKAHU_ID),
     orgDomain = connection?.string(NAME),
-    balance = externalBalance((json[BALANCE] as? JsonObject)?.number("current"), inCents = false),
+    balance = decimalBalance((json[BALANCE] as? JsonObject)?.number("current")),
   )
 }
 
-// A provider balance in cents, or null if it's missing, invalid or too large to format. Enable
-// Banking already reports cents, the others decimal amounts. Ported from externalBalanceToInteger()
-// in upstream's packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx
-// (actualbudget/actual#9529)
-internal fun externalBalance(balance: Double?, inCents: Boolean): Amount? {
-  if (balance == null || !balance.isFinite()) return null
-  val cents = if (inCents) balance else (balance * CENTS_PER_UNIT).roundToLong().toDouble()
-  return if (cents % 1.0 == 0.0 && abs(cents) <= MAX_SAFE_NUMBER) Amount(cents.toLong()) else null
+// A provider balance, or null if it's missing, invalid or too large to format. Ported from
+// externalBalanceToInteger() in upstream's
+// packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx
+// (actualbudget/actual#9529). Enable Banking reports whole cents, the others decimal amounts
+internal fun centsBalance(balance: Double?): Amount? =
+  balance?.takeIf { it.isFinite() && it % 1.0 == 0.0 }?.let { safeAmount(Amount(it.toLong())) }
+
+internal fun decimalBalance(balance: Double?): Amount? =
+  balance?.takeIf { it.isFinite() }?.let { safeAmount(Amount(it)) }
+
+private fun safeAmount(amount: Amount): Amount? = amount.takeIf {
+  it.toLong() in -MAX_SAFE_NUMBER..MAX_SAFE_NUMBER
 }
 
 private fun JsonObject.string(key: String): String? = get(key).primitive()?.contentOrNull
 
-// SimpleFIN sends balances as decimal strings, the others as numbers
-private fun JsonObject.number(key: String): Double? =
-  get(key).primitive()?.let { p ->
-    p.doubleOrNull ?: p.contentOrNull?.toDoubleOrNull()
-  }
+// SimpleFIN sends balances as decimal strings, the others as numbers. Strings only accept plain
+// decimals, since toDoubleOrNull() also takes forms like "100d" that upstream's Number() rejects
+private fun JsonObject.number(key: String): Double? {
+  val primitive = get(key).primitive() ?: return null
+  if (!primitive.isString) return primitive.doubleOrNull
+  return primitive.content.trim().takeIf { DECIMAL.matches(it) }?.toDouble()
+}
 
 private fun JsonElement?.primitive(): JsonPrimitive? = this as? JsonPrimitive
 
 // Upstream's MAX_SAFE_NUMBER in packages/loot-core/src/shared/util.ts: 2^51 - 1
-private const val MAX_SAFE_NUMBER = 2251799813685247.0
-private const val CENTS_PER_UNIT = 100.0
+private const val MAX_SAFE_NUMBER = 2251799813685247L
+
+private val DECIMAL = Regex("""[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?""")
 
 private const val NAME = "name"
 private const val ID = "id"
