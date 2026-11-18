@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -144,7 +145,7 @@ internal fun TagColorPicker(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
-      verticalAlignment = CenterVertically,
+      verticalAlignment = Top,
     ) {
       ColorPickerTextField(
         modifier = Modifier.weight(1f),
