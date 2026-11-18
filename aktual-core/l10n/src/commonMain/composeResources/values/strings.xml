@@ -2133,6 +2133,12 @@
   <string name="tags_delete_failed">Couldn't delete #%1$s</string>
   <string name="tags_delete_failed_unknown">Couldn't delete tag</string>
   <string name="tags_restore_failed">Couldn't restore #%1$s</string>
+  <string name="tags_hide">Hide</string>
+  <string name="tags_unhide">Unhide</string>
+  <string name="tags_hidden">Hid #%1$s</string>
+  <string name="tags_visibility_failed">Couldn't update #%1$s</string>
+  <string name="tags_show_hidden">Show hidden tags</string>
+  <string name="tags_dont_show_hidden">Don't show hidden tags</string>
   <string name="tags_create_title">New tag</string>
   <string name="tags_edit_title">Edit tag</string>
   <string name="tags_create_tag_label">Tag</string>

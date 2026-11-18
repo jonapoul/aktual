@@ -4,6 +4,8 @@ import aktual.budget.tags.vm.list.TagItem
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.valentinilk.shimmer.rememberShimmer
@@ -57,6 +60,16 @@ internal fun TagItem(
   SwipeToReveal(
     actions =
       persistentListOf(
+        SwipeAction(
+          text = if (tag.hidden) Strings.tagsUnhide else Strings.tagsHide,
+          icon = if (tag.hidden) AktualIcons.ViewShow else AktualIcons.ViewHide,
+          background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+          foreground = colors.tableText,
+          onClick = {
+            onOpenChange(false)
+            onAction(SetHidden(tag, hidden = !tag.hidden))
+          },
+        ),
         SwipeAction(
           text = Strings.tagsDelete,
           icon = AktualIcons.Trash,

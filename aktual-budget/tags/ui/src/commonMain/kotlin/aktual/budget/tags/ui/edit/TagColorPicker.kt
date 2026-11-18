@@ -68,6 +68,7 @@ import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import kotlin.random.Random
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.drop
 
 @Suppress("LongMethod")
 @Composable
@@ -115,9 +116,11 @@ internal fun TagColorPicker(
 
   // auto-apply what the user types: a valid hex updates the colour, anything else flags an error.
   // An empty field means the theme default. That's handled even when unfocused, since the clear
-  // button empties the field before focusing it
+  // button empties the field before focusing it. The first value is skipped so the field starting
+  // empty, before the colour is filled in, can't clear the colour
   LaunchedEffect(Unit) {
     snapshotFlow { hexState.text.toString() }
+      .drop(1)
       .collect { text ->
         val trimmed = text.trim()
         if (trimmed.isEmpty()) {

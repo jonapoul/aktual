@@ -7,7 +7,9 @@ import aktual.core.l10n.tags_delete_failed
 import aktual.core.l10n.tags_delete_failed_unknown
 import aktual.core.l10n.tags_deleted
 import aktual.core.l10n.tags_deleted_undo
+import aktual.core.l10n.tags_hidden
 import aktual.core.l10n.tags_restore_failed
+import aktual.core.l10n.tags_visibility_failed
 import aktual.core.ui.showErrorSnackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -37,4 +39,23 @@ internal suspend fun SnackbarHostState.showDeleteFailed(event: ListTagsEvent.Del
 
 internal suspend fun SnackbarHostState.showRestoreFailed(event: ListTagsEvent.RestoreFailed) {
   showErrorSnackbar(getString(Res.string.tags_restore_failed, event.tag))
+}
+
+internal suspend fun SnackbarHostState.showTagHidden(
+  event: ListTagsEvent.Hidden,
+  onUndo: (TagItem) -> Unit,
+) {
+  val result =
+    showSnackbar(
+      message = getString(Res.string.tags_hidden, event.item.tag),
+      actionLabel = getString(Res.string.tags_deleted_undo),
+      duration = SnackbarDuration.Long,
+    )
+  if (result == ActionPerformed) {
+    onUndo(event.item)
+  }
+}
+
+internal suspend fun SnackbarHostState.showVisibilityFailed(event: ListTagsEvent.VisibilityFailed) {
+  showErrorSnackbar(getString(Res.string.tags_visibility_failed, event.tag))
 }
