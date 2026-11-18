@@ -48,7 +48,7 @@ class ListTagsViewModel
 internal constructor(
   private val tagsDao: TagsDao,
   private val transactionDao: TransactionDao,
-  private val preferencesDao: PreferencesDao,
+  preferencesDao: PreferencesDao,
   private val budgetSync: BudgetSync,
   private val preferences: TagPreferences,
   private val budgetScope: BudgetCoroutineScope,

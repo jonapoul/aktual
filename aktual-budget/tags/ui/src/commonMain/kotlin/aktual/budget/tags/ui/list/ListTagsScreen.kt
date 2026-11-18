@@ -320,9 +320,9 @@ private fun ListTagsMenu(
           expanded = false
           onSort()
         },
-        onShowHiddenChange = {
+        onShowHiddenChange = { show ->
           expanded = false
-          onShowHiddenChange(it)
+          onShowHiddenChange(show)
         },
       )
     }
