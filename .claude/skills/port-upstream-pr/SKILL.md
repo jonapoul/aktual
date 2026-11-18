@@ -123,8 +123,6 @@ Put them in the PR body as one side-by-side table:
 
 Push the branch and open a **draft** PR against `main` on `jonapoul/aktual`. Use `gh pr create --draft --body-file <file>` if `gh` works, otherwise the GitHub MCP `create_pull_request` with `draft: true`.
 
-Title: `Port actualbudget/actual#<n>: <upstream title>`
-
 Body (keep the repo template's `Closes #` line only if there's an Aktual issue for it):
 
 ```markdown
