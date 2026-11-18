@@ -35,6 +35,8 @@ private val COLUMN_IDS =
     "cleared",
   )
 
+private val AMOUNT_COLUMNS = setOf("payment", "deposit")
+
 // The running balance and category group are opt in
 private fun isHiddenByDefault(id: String) = id == BALANCE_COLUMN || id == "group"
 
@@ -46,11 +48,9 @@ internal fun parseTransactionTableColumns(raw: String?): List<TransactionTableCo
   val saved = savedColumns(raw).toMutableList()
 
   // New transactions need an amount, so at least one of these stays visible
-  val payment = saved.indexOfFirst { it.id == "payment" }
-  val deposit = saved.indexOfFirst { it.id == "deposit" }
-  if (payment >= 0 && deposit >= 0 && saved[payment].hidden && saved[deposit].hidden) {
-    saved[payment] = saved[payment].copy(hidden = false)
-    saved[deposit] = saved[deposit].copy(hidden = false)
+  val amounts = saved.withIndex().filter { (_, column) -> column.id in AMOUNT_COLUMNS }
+  if (amounts.size == AMOUNT_COLUMNS.size && amounts.all { it.value.hidden }) {
+    for ((index, column) in amounts) saved[index] = column.copy(hidden = false)
   }
 
   for ((index, id) in COLUMN_IDS.withIndex()) {
@@ -82,14 +82,14 @@ private fun savedColumns(raw: String?): List<TransactionTableColumn> {
     } catch (_: SerializationException) {
       null
     }
-  val saved = mutableListOf<TransactionTableColumn>()
-  for (entry in array.orEmpty()) {
-    val obj = entry as? JsonObject ?: continue
-    val id = (obj["id"] as? JsonPrimitive)?.contentOrNull ?: continue
-    if (id !in COLUMN_IDS || saved.any { it.id == id }) continue
-    // The date drives editing, so upstream never hides it
-    val hidden = (obj["hidden"] as? JsonPrimitive)?.booleanOrNull == true && id != "date"
-    saved.add(TransactionTableColumn(id, hidden))
-  }
-  return saved
+  return array
+    .orEmpty()
+    .mapNotNull { it as? JsonObject }
+    .mapNotNull { obj ->
+      val id = (obj["id"] as? JsonPrimitive)?.contentOrNull?.takeIf { it in COLUMN_IDS }
+      // The date drives editing, so upstream never hides it
+      val hidden = (obj["hidden"] as? JsonPrimitive)?.booleanOrNull == true && id != "date"
+      id?.let { TransactionTableColumn(it, hidden) }
+    }
+    .distinctBy { it.id }
 }

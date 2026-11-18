@@ -124,9 +124,11 @@ class AccountViewPrefsTest {
       .isEqualTo(expected)
   }
 
-  private class PrefsScope(val preferences: PreferencesDao, val sync: TestBudgetSync) {
-    val prefs = AccountViewPrefsImpl(preferences, sync)
-  }
+  private data class PrefsScope(
+    val preferences: PreferencesDao,
+    val sync: TestBudgetSync,
+    val prefs: AccountViewPrefsImpl = AccountViewPrefsImpl(preferences, sync),
+  )
 
   private fun runPrefsTest(action: suspend PrefsScope.() -> Unit) = runDatabaseTest { scope ->
     val preferences =

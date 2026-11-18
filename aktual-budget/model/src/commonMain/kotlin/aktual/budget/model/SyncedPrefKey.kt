@@ -42,7 +42,7 @@ sealed interface SyncedPrefKey {
     SyncTransferDate("sync-transfer-date"),
 
     /** Transaction table columns as JSON, for views with none of their own */
-    TransactionTableColumns("transaction-table-columns"),
+    TransactionTableColumns(TRANSACTION_TABLE_COLUMNS_KEY),
 
     /** [aktual.budget.model.UpcomingLength] */
     UpcomingScheduledTransactionLength("upcomingScheduledTransactionLength"),
@@ -85,7 +85,7 @@ sealed interface SyncedPrefKey {
      * keys it by views that aren't accounts, e.g. "all-accounts"
      */
     data class TransactionTableColumns(override val id: AccountId) :
-      PerAccount("transaction-table-columns")
+      PerAccount(TRANSACTION_TABLE_COLUMNS_KEY)
 
     /** [Boolean], the running balance of each transaction. Superseded by the table columns */
     data class ShowBalances(override val id: AccountId) : PerAccount("show-balances")
@@ -107,6 +107,8 @@ sealed interface SyncedPrefKey {
     // Also in Transactions.sq
     const val NEW_TRANSACTIONS_SEEN_PREFIX = "aktual-new-transactions-seen"
 
+    private const val TRANSACTION_TABLE_COLUMNS_KEY = "transaction-table-columns"
+
     fun decode(key: String): SyncedPrefKey =
       Global.entries.firstOrNull { it.key == key }
         ?: fromId(key, "hide-cleared", PerAccount::HideCleared)
@@ -120,7 +122,7 @@ sealed interface SyncedPrefKey {
         ?: fromId(key, "custom-sync-mappings", PerAccount::CustomSyncMappings)
         ?: fromId(key, "show-extra-balances", PerAccount::ShowExtraBalances)
         ?: fromId(key, NEW_TRANSACTIONS_SEEN_PREFIX, PerAccount::NewTransactionsSeen)
-        ?: fromId(key, "transaction-table-columns", PerAccount::TransactionTableColumns)
+        ?: fromId(key, TRANSACTION_TABLE_COLUMNS_KEY, PerAccount::TransactionTableColumns)
         ?: Other(key)
 
     private fun fromId(
