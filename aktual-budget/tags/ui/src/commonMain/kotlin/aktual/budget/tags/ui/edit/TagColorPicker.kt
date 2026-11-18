@@ -72,7 +72,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun TagColorPicker(
   color: Color?,
-  onColorChange: (Color) -> Unit,
+  onColorChange: (Color?) -> Unit,
   onErrorChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
   showAdvanced: Boolean = false,
@@ -112,15 +112,17 @@ internal fun TagColorPicker(
     hexError = false
   }
 
-  // auto-apply what the user types: a valid hex updates the colour, anything else flags an error
+  // auto-apply what the user types: a valid hex updates the colour, anything else flags an error.
+  // An empty field means the theme default. That's handled even when unfocused, since the clear
+  // button empties the field before focusing it
   LaunchedEffect(Unit) {
     snapshotFlow { hexState.text.toString() }
       .collect { text ->
-        if (!hexFocused) return@collect
         val trimmed = text.trim()
         if (trimmed.isEmpty()) {
           hexError = false
-        } else {
+          currentOnColorChange(null)
+        } else if (hexFocused) {
           val parsed = trimmed.toColorOrNull()
           if (parsed == null) {
             hexError = true
@@ -242,6 +244,7 @@ private fun ColorPickerTextField(
     state = hexState,
     interactionSource = hexInteraction,
     singleLine = true,
+    clearable = true,
     placeholderText = Strings.tagsCreateColorPlaceholder,
     colors = fieldColors,
     textStyle = LocalTextStyle.current.merge(textAlign = Center),

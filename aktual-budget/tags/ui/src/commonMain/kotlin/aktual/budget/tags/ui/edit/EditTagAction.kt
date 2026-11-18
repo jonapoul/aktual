@@ -15,6 +15,6 @@ internal data object DismissSaveError : EditTagAction
 
 @JvmInline internal value class SetDescription(val description: String) : EditTagAction
 
-@JvmInline internal value class SetColor(val color: Color) : EditTagAction
+@JvmInline internal value class SetColor(val color: Color?) : EditTagAction
 
 @JvmInline internal value class SetColorError(val isError: Boolean) : EditTagAction

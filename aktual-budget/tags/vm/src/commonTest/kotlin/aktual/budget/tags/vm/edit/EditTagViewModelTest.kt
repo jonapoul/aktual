@@ -6,6 +6,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
+import aktual.budget.tags.vm.hideTag
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
 import aktual.budget.utils.BudgetSync
@@ -160,15 +161,79 @@ class EditTagViewModelTest {
       val viewModel = createViewModel(scope, id = TagId("groceries-id"))
       viewModel.awaitLoaded()
 
-      viewModel.isDuplicateName.test {
+      viewModel.duplicateName.test {
         // keeping its own name is fine
-        assertThatNextEmission().isFalse()
+        assertThatNextEmission().isNull()
 
         // renaming onto another existing tag is blocked
         viewModel.setTag("food")
-        assertThatNextEmission().isTrue()
+        assertThatNextEmission().isEqualTo(Visible)
       }
     }
+
+  @Test
+  fun `A name owned by a hidden tag is flagged as a hidden duplicate`() = runDatabaseTest { scope ->
+    insertTag(id = "food-id", tag = "food")
+    hideTag("food-id")
+    val viewModel = createViewModel(scope, id = null)
+    viewModel.awaitLoaded()
+
+    viewModel.duplicateName.test {
+      assertThatNextEmission().isNull()
+
+      viewModel.setTag("food")
+      assertThatNextEmission().isEqualTo(Hidden)
+    }
+    viewModel.canSave.test { assertThatNextEmission().isFalse() }
+  }
+
+  @Test
+  fun `A name that only differs by sanitising counts as a duplicate`() = runDatabaseTest { scope ->
+    insertTag(id = "eating-out-id", tag = "eating-out")
+    val viewModel = createViewModel(scope, id = null)
+    viewModel.awaitLoaded()
+
+    viewModel.duplicateName.test {
+      assertThatNextEmission().isNull()
+
+      viewModel.setTag("eating out ")
+      assertThatNextEmission().isEqualTo(Visible)
+    }
+  }
+
+  @Test
+  fun `Saving sanitises the name`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope, id = null)
+    viewModel.awaitLoaded()
+
+    viewModel.setTag(" #eating  out ")
+
+    viewModel.events.test {
+      viewModel.save()
+      assertThatNextEmission().isEqualTo(FinishedSaving)
+    }
+
+    assertThat(tagsDao.getTag(TagId(GENERATED_ID)))
+      .isNotNull()
+      .prop(GetTag::tag)
+      .isEqualTo("eating-out")
+  }
+
+  @Test
+  fun `Clearing the colour saves the tag with the theme default`() = runDatabaseTest { scope ->
+    insertTag(id = "groceries-id", tag = "groceries", color = "#AABBCC")
+    val viewModel = createViewModel(scope, id = TagId("groceries-id"))
+    viewModel.awaitLoaded()
+
+    viewModel.setColor(null)
+
+    viewModel.events.test {
+      viewModel.save()
+      assertThatNextEmission().isEqualTo(FinishedSaving)
+    }
+
+    assertThat(tagsDao.getTag(TagId("groceries-id"))).isNotNull().prop(GetTag::color).isNull()
+  }
 
   @Test
   fun `Saving a new tag persists it, syncs the change and emits the saved event`() =

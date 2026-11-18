@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -55,6 +56,7 @@ fun AktualTextField(
   leadingIcon: (@Composable () -> Unit)? = null,
   trailingIcon: (@Composable () -> Unit)? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  inputTransformation: InputTransformation? = null,
   outputTransformation: OutputTransformation? = null,
   keyboardOptions: KeyboardOptions = Default,
   onKeyboardAction: KeyboardActionHandler? = null,
@@ -120,6 +122,7 @@ fun AktualTextField(
       onKeyboardAction = onKeyboardAction,
       lineLimits = lineLimits,
       interactionSource = interactionSource,
+      inputTransformation = inputTransformation,
       outputTransformation = outputTransformation,
       decorator =
         TextFieldDefaults.decorator(
