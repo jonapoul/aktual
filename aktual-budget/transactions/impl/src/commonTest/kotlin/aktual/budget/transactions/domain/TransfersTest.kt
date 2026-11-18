@@ -194,7 +194,7 @@ internal class TransfersTest {
   }
 
   @Test
-  fun `A split part on the other side moves its split, but not its other parts`() = runWriterTest {
+  fun `A split part on the other side moves its whole split`() = runWriterTest {
     val payees = prepareDatabase()
     val parent = insert(NewTransaction(account = TWO, date = DATE, isParent = true))
     val part =
@@ -209,7 +209,7 @@ internal class TransfersTest {
 
     assertThat(row(part).date).isEqualTo(moved)
     assertThat(row(parent).date).isEqualTo(moved)
-    assertThat(row(sibling).date).isEqualTo(DATE)
+    assertThat(row(sibling).date).isEqualTo(moved)
   }
 
   @Test

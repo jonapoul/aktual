@@ -1229,30 +1229,30 @@ class EditTransactionViewModelTest {
   @Test
   fun `Moving a transfer's date moves its other side when synced`() =
     runSyncedTest { scope, database ->
-    insertTransfer()
-    val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
-    PreferencesDao(this, contexts)[SyncedPrefKey.Global.SyncTransferDate] = "true"
-    // Applied, so the transfer pass sees the new date
-    val sync = FakeBudgetSync(appliedTo = database)
-    val viewModel = createViewModel(scope, id = "t", sync = sync)
+      insertTransfer()
+      val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
+      PreferencesDao(this, contexts)[SyncedPrefKey.Global.SyncTransferDate] = "true"
+      // Applied, so the transfer pass sees the new date
+      val sync = FakeBudgetSync(appliedTo = database)
+      val viewModel = createViewModel(scope, id = "t", sync = sync)
 
-    viewModel.events.test {
-      viewModel.state.test {
-        var loaded = awaitLoaded()
-        while (loaded.mode.form.syncTransferDate != true) loaded = awaitLoaded()
-        cancelAndIgnoreRemainingEvents()
+      viewModel.events.test {
+        viewModel.state.test {
+          var loaded = awaitLoaded()
+          while (loaded.mode.form.syncTransferDate != true) loaded = awaitLoaded()
+          cancelAndIgnoreRemainingEvents()
+        }
+        viewModel.setDate(DATE_2)
+        viewModel.save()
+
+        assertThatNextEmissionIsEqualTo(Saved)
+        assertThat(sync.calls)
+          .containsExactly(
+            listOf(localChange(TRANSACTIONS, "t", "date", 20250602L)),
+            listOf(localChange(TRANSACTIONS, "o", "date", 20250602L)),
+          )
       }
-      viewModel.setDate(DATE_2)
-      viewModel.save()
-
-      assertThatNextEmissionIsEqualTo(Saved)
-      assertThat(sync.calls)
-        .containsExactly(
-          listOf(localChange(TRANSACTIONS, "t", "date", 20250602L)),
-          listOf(localChange(TRANSACTIONS, "o", "date", 20250602L)),
-        )
     }
-  }
 
   private suspend fun BudgetDatabase.insertTransfer() {
     insertEntities()

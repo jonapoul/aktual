@@ -27,7 +27,7 @@ internal class Transfers(
   // Whether the other side follows a changed date, see TransactionWriter.write
   private val syncDates: Boolean = false,
 ) {
-  private val movedParents = mutableSetOf<TransactionId>()
+  private val movedSplits = mutableSetOf<TransactionId>()
 
   suspend fun run(touched: TouchedTransactions) {
     for (id in touched.added) transactionDao.row(id)?.let { onInsert(it) }
@@ -120,15 +120,17 @@ internal class Transfers(
         date = t.date.takeIf { syncDates && it != other?.date },
       )
     batch.update(update)
-    if (syncDates && other?.isChild == true) moveParent(other.parent_id, t.date)
+    if (syncDates && other?.isChild == true) moveSplit(other.parent_id, linked, t.date)
     clearCategory(t, to, linked)
   }
 
-  // Upstream moves the split the other side's a part of, but not that split's other parts
-  private suspend fun moveParent(parent: TransactionId?, date: LocalDate?) {
-    if (parent == null || date == null || !movedParents.add(parent)) return
-    if (transactionDao.row(parent)?.date != date) {
-      batch.update(TransactionUpdate(id = parent, date = date))
+  // Moves the split the other side's a part of, and its other parts, so they keep sharing its date.
+  // Upstream leaves the other parts behind. Their own transfers don't follow
+  private suspend fun moveSplit(parent: TransactionId?, moved: TransactionId, date: LocalDate?) {
+    if (parent == null || date == null || !movedSplits.add(parent)) return
+    for (id in listOf(parent) + transactionDao.childIds(listOf(parent)) - moved) {
+      val row = transactionDao.row(id)?.takeIf { it.tombstone != true } ?: continue
+      if (row.date != date) batch.update(TransactionUpdate(id = id, date = date))
     }
   }
 
