@@ -1,7 +1,5 @@
 package aktual.budget.navrail.ui
 
-import aktual.budget.accounts.components.AddAccountSheet
-import aktual.budget.accounts.components.addAccount
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
@@ -31,7 +29,6 @@ import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetNavRoute
 import aktual.core.nav.BudgetTab
-import aktual.core.nav.CreateAccountNavRoute
 import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.ListPayeesNavRoute
 import aktual.core.nav.ListRulesNavRoute
@@ -43,6 +40,7 @@ import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.budgetTabOf
 import aktual.core.theme.Colors
+import aktual.core.theme.LightColors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -84,6 +82,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemColors
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -164,8 +163,6 @@ internal fun BudgetNavRail(
     selectedTab = Transactions
   }
 
-  val createAccount = { onOpenTransactions(CreateAccountNavRoute) }
-
   val onMenuAction: OnAction<BudgetMenuAction> = { action ->
     when (action) {
       RenameBudget -> dialog = Rename
@@ -188,12 +185,9 @@ internal fun BudgetNavRail(
         close()
         onOpenTransactions(route)
       },
-      onAddAccount = {
-        close()
-        addAccount(!headerState.isDemo, { dialog = AddAccount }, createAccount)
-      },
       // Stays open, so the balances can be seen changing
       onSetPrivacyMode = viewModel::setPrivacyMode,
+      onAccountsAction = viewModel::onAccountsAction,
       onAction = { action ->
         close()
         onMenuAction(action)
@@ -243,8 +237,6 @@ internal fun BudgetNavRail(
     hasUnpostedSchedules = hasUnpostedSchedules,
     onRename = viewModel::rename,
     onDismiss = { dialog = null },
-    onCreateAccount = createAccount,
-    onBankSync = { onSelectTab(BankSync) },
     onPostSchedules = viewModel::postUnpostedSchedules,
     onDismissSchedules = viewModel::dismissUnpostedSchedules,
   )
@@ -252,7 +244,6 @@ internal fun BudgetNavRail(
 
 private enum class NavRailDialog {
   Rename,
-  AddAccount,
 }
 
 @Composable
@@ -262,8 +253,6 @@ private fun BudgetNavRailDialogs(
   hasUnpostedSchedules: Boolean,
   onRename: (String) -> Unit,
   onDismiss: () -> Unit,
-  onCreateAccount: () -> Unit,
-  onBankSync: () -> Unit,
   onPostSchedules: () -> Unit,
   onDismissSchedules: () -> Unit,
 ) {
@@ -274,14 +263,6 @@ private fun BudgetNavRailDialogs(
         onDismiss()
         onRename(name)
       },
-      onDismiss = onDismiss,
-    )
-  }
-
-  if (dialog == AddAccount) {
-    AddAccountSheet(
-      onCreateLocal = onCreateAccount,
-      onBankSync = onBankSync,
       onDismiss = onDismiss,
     )
   }
@@ -483,12 +464,18 @@ private fun SidebarNavLayout(
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.fillMaxSize()) {
-    PermanentDrawerSheet(
-      modifier = Modifier.width(SidebarWidth),
-      drawerContainerColor = colors.sidebarBackground,
-      drawerContentColor = colors.sidebarItemText,
-      content = sidebar,
-    )
+    // Upstream only borders the sidebar in the light theme, where it's white like the page
+    val showBorder = colors == LightColors
+    val borderColor = colors.sidebarRedesignRightBorder
+    ProvideSidebarColors {
+      PermanentDrawerSheet(
+        modifier = Modifier.width(SidebarWidth),
+        drawerContainerColor = colors.sidebarBackground,
+        drawerContentColor = colors.sidebarItemText,
+        content = sidebar,
+      )
+    }
+    if (showBorder) VerticalDivider(thickness = 2.dp, color = borderColor)
     BudgetNavDisplay(
       contributors = contributors,
       appStack = appStack,
@@ -559,7 +546,7 @@ private fun SideNavRail(
   onSelectTab: (BudgetTab) -> Unit,
   onMenuClick: () -> Unit,
   modifier: Modifier = Modifier,
-) {
+) = ProvideSidebarColors {
   NavigationRail(
     modifier = modifier,
     containerColor = colors.sidebarBackground,
@@ -598,7 +585,7 @@ private fun Colors.navRailItem(): NavigationRailItemColors =
   NavigationRailItemColors(
     selectedIconColor = sidebarItemTextSelected,
     selectedTextColor = sidebarItemTextSelected,
-    selectedIndicatorColor = sidebarItemTextSelected.disabled,
+    selectedIndicatorColor = sidebarItemBackgroundSelected,
     unselectedIconColor = sidebarItemText,
     unselectedTextColor = sidebarItemText,
     disabledIconColor = sidebarItemText.disabled,

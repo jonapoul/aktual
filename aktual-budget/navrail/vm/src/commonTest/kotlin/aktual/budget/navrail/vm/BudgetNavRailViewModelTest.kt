@@ -3,6 +3,7 @@ package aktual.budget.navrail.vm
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.AccountGroupDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
@@ -11,10 +12,13 @@ import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.localChange
-import aktual.budget.model.sumOf
+import aktual.budget.navrail.vm.SidebarAccountsAction.Search
+import aktual.budget.navrail.vm.SidebarAccountsAction.ToggleSection
 import aktual.budget.schedules.domain.UnpostedSchedules
+import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -50,6 +54,7 @@ class BudgetNavRailViewModelTest {
   private val unpostedSchedules = TestUnpostedSchedules()
   private val newTransactions = FakeNewTransactions()
   private val formatPreferences = FakeBudgetFormatPreferences()
+  private val syncStateHolder = SyncStateHolder()
 
   @Test
   fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest { scope ->
@@ -143,7 +148,7 @@ class BudgetNavRailViewModelTest {
         )
 
       transactions.insert("t3", "off", "cat", "payee", DATE, amount = -25.0)
-      assertThat(awaitItem()).all {
+      assertThat(awaitItem().accounts).all {
         prop(DrawerAccounts::offBudget).isEqualTo(section(account("off", -25.0)))
         prop(DrawerAccounts::total).isEqualTo(Amount(-15.0))
       }
@@ -177,27 +182,142 @@ class BudgetNavRailViewModelTest {
       assertThat(awaitLoaded().onBudget.accounts.map { it.newTransactions }).containsExactly(0, 0)
 
       newTransactions.counts.update { mapOf(AccountId("b") to 2) }
-      assertThat(awaitItem().onBudget.accounts.map { it.name to it.newTransactions })
+      assertThat(awaitItem().accounts.onBudget.accounts.map { it.name to it.newTransactions })
         .containsExactly("a" to 0, "b" to 2)
 
       newTransactions.markSeen(AccountId("b"))
-      assertThat(awaitItem().onBudget.accounts.map { it.newTransactions }).containsExactly(0, 0)
+      assertThat(awaitItem().accounts.onBudget.accounts.map { it.newTransactions })
+        .containsExactly(0, 0)
     }
   }
 
-  private suspend fun ReceiveTurbine<DrawerAccounts>.awaitLoaded(): DrawerAccounts {
+  @Test
+  fun `Sections start open apart from closed accounts`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    viewModel(None, scope).accounts.test {
+      assertThat(awaitLoadedState()).all {
+        transform { it.isOpen(OnBudgetAccounts) }.isTrue()
+        transform { it.isOpen(OffBudgetAccounts) }.isTrue()
+        transform { it.isOpen(ClosedAccounts) }.isFalse()
+        prop(SidebarAccountsState::allOpen).isTrue()
+      }
+    }
+  }
+
+  @Test
+  fun `Toggling a section saves it to the budget's local prefs`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = viewModel(None, scope)
+
+    viewModel.accounts.test {
+      awaitLoaded()
+
+      viewModel.onAccountsAction(ToggleSection(OnBudgetAccounts))
+      assertThat(awaitItem()).all {
+        transform { it.isOpen(OnBudgetAccounts) }.isFalse()
+        prop(SidebarAccountsState::allOpen).isFalse()
+      }
+      assertThat(prefs[SidebarAccountsOpenState]).isEqualTo(mapOf("onbudget" to false))
+
+      viewModel.onAccountsAction(ToggleSection(ClosedAccounts))
+      assertThat(awaitItem().isOpen(ClosedAccounts)).isTrue()
+      assertThat(prefs[SidebarAccountsOpenState])
+        .isEqualTo(mapOf("onbudget" to false, "closed" to true))
+    }
+  }
+
+  @Test
+  fun `Toggling all sections opens them all when any is collapsed`() = runDatabaseTest { scope ->
+    insertAccount("a")
+    val viewModel = viewModel(None, scope)
+
+    viewModel.accounts.test {
+      awaitLoaded()
+
+      viewModel.onAccountsAction(ToggleAllSections)
+      assertThat(awaitItem()).all {
+        transform { it.isOpen(OnBudgetAccounts) }.isFalse()
+        transform { it.isOpen(OffBudgetAccounts) }.isFalse()
+      }
+
+      viewModel.onAccountsAction(ToggleSection(OnBudgetAccounts))
+      skipItems(1)
+      viewModel.onAccountsAction(ToggleAllSections)
+      assertThat(awaitItem()).all {
+        prop(SidebarAccountsState::allOpen).isTrue()
+        // Not part of expand/collapse all
+        transform { it.isOpen(ClosedAccounts) }.isFalse()
+      }
+    }
+  }
+
+  @Test
+  fun `Searching filters accounts and opens every section`() = runDatabaseTest { scope ->
+    insertAccount("Current")
+    insertAccount("Savings")
+    val viewModel = viewModel(None, scope)
+
+    viewModel.accounts.test {
+      awaitLoaded()
+      viewModel.onAccountsAction(ToggleSection(OnBudgetAccounts))
+      skipItems(1)
+
+      viewModel.onAccountsAction(Search(""))
+      assertThat(awaitItem()).all {
+        prop(SidebarAccountsState::search).isEqualTo("")
+        prop(SidebarAccountsState::isSearching).isFalse()
+      }
+
+      viewModel.onAccountsAction(Search("sav"))
+      assertThat(awaitItem()).all {
+        transform { it.accounts.onBudget.accounts.map(DrawerAccount::name) }
+          .containsExactly("Savings")
+        transform { it.isOpen(OnBudgetAccounts) }.isTrue()
+        // Totals still cover the whole section
+        transform { it.accounts.onBudget.accountCount }.isEqualTo(2)
+      }
+
+      viewModel.onAccountsAction(Search(null))
+      assertThat(awaitItem()).all {
+        transform { it.accounts.onBudget.accounts.size }.isEqualTo(2)
+        transform { it.isOpen(OnBudgetAccounts) }.isFalse()
+      }
+    }
+  }
+
+  @Test
+  fun `Sync status follows the server and sync state`() = runDatabaseTest { scope ->
+    viewModel(None, scope).headerState.test {
+      assertThat(awaitItem().syncStatus).isEqualTo(LocalOnly)
+    }
+
+    viewModel(REMOTE, scope).headerState.test {
+      assertThat(awaitItem().syncStatus).isEqualTo(Synced)
+
+      syncStateHolder.update { Syncing }
+      assertThat(awaitItem().syncStatus).isEqualTo(Syncing)
+
+      syncStateHolder.update { ClockDrift }
+      assertThat(awaitItem().syncStatus).isEqualTo(SyncError)
+    }
+  }
+
+  private suspend fun ReceiveTurbine<SidebarAccountsState>.awaitLoadedState():
+    SidebarAccountsState {
     var item = awaitItem()
-    while (item == DrawerAccounts()) item = awaitItem()
+    while (item.accounts == DrawerAccounts()) item = awaitItem()
     return item
   }
+
+  private suspend fun ReceiveTurbine<SidebarAccountsState>.awaitLoaded(): DrawerAccounts =
+    awaitLoadedState().accounts
 
   private fun account(id: String, balance: Double) =
     DrawerAccount(AccountId(id), name = id, balance = Amount(balance))
 
   private fun section(vararg accounts: DrawerAccount) =
     DrawerAccountSection(
-      accounts = persistentListOf(*accounts),
-      total = accounts.asList().sumOf { it.balance },
+      persistentListOf(DrawerAccountBucket(group = null, persistentListOf(*accounts))),
     )
 
   private suspend fun BudgetDatabase.insertAccount(
@@ -242,7 +362,9 @@ class BudgetNavRailViewModelTest {
       syncApi = api,
       sync = sync,
       accountDao = AccountDao(this),
+      groupDao = AccountGroupDao(this),
       newTransactions = newTransactions,
+      syncStateHolder = syncStateHolder,
       formatPreferences = formatPreferences,
       unpostedSchedules = unpostedSchedules,
       viewModelContext = scope.viewModelContext,

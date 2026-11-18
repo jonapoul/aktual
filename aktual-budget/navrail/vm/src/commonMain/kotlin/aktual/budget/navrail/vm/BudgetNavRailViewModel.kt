@@ -3,12 +3,16 @@ package aktual.budget.navrail.vm
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.AccountGroupDao
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
+import aktual.budget.model.SyncState
 import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.budget.utils.BudgetLocalPreferences
 import aktual.budget.utils.BudgetSync
+import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.BudgetServer
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.utils.runCatchingCancellable
@@ -27,7 +31,9 @@ import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -36,6 +42,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @Stable
+@Suppress("LongParameterList") // One source per part of the sidebar
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
 class BudgetNavRailViewModel
@@ -46,7 +53,9 @@ internal constructor(
   private val syncApi: BudgetSyncApi,
   private val sync: BudgetSync,
   accountDao: AccountDao,
+  groupDao: AccountGroupDao,
   newTransactions: NewTransactions,
+  syncStateHolder: SyncStateHolder,
   private val formatPreferences: BudgetFormatPreferences,
   private val unpostedSchedules: UnpostedSchedules,
   viewModelContext: ViewModelContext,
@@ -58,6 +67,7 @@ internal constructor(
     viewModelScope.launchMolecule(Immediate) {
       val budgetNameFlow = remember { localPreferences.observe(BudgetName) }
       val budgetName by budgetNameFlow.collectAsState(initial = localPreferences[BudgetName])
+      val syncState by syncStateHolder.collectAsState()
       val remote = server as? Remote
       DrawerHeaderState(
         budgetName = budgetName,
@@ -65,17 +75,58 @@ internal constructor(
         // Keys can't manage other keys, and the budget needs to be on the server
         canManageApiKeys =
           remote != null && !remote.token.isApiKey && localPreferences[CloudFileId] != null,
+        syncStatus = syncStatus(remote != null, syncState),
       )
     }
 
-  val accounts: StateFlow<DrawerAccounts> =
-    combine(accountDao.observeAllWithBalances(), newTransactions.counts) { rows, counts ->
-        rows.toDrawerAccounts(counts)
+  private val search = MutableStateFlow<String?>(null)
+
+  private val drawerAccounts =
+    combine(
+        accountDao.observeAllWithBalances(),
+        groupDao.observeAllActive(),
+        newTransactions.counts,
+      ) { rows, groups, counts ->
+        rows.toDrawerAccounts(groups, counts)
       }
       .catch { e -> log.e(e) { "Failed loading accounts" } }
-      .stateIn(viewModelScope, Eagerly, initialValue = DrawerAccounts())
+
+  private val openSections = localPreferences.observe(SidebarAccountsOpenState)
+
+  val accounts: StateFlow<SidebarAccountsState> =
+    combine(drawerAccounts, search, openSections) { accounts, search, openSections ->
+        SidebarAccountsState(
+          accounts = accounts.filter(search.orEmpty()),
+          search = search,
+          openSections = openSections.orEmpty().toImmutableMap(),
+          toggleableSections = accounts.toggleableSections(),
+        )
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = SidebarAccountsState())
 
   val hasUnpostedSchedules: StateFlow<Boolean> = unpostedSchedules.hasUnposted
+
+  fun onAccountsAction(action: SidebarAccountsAction) {
+    when (action) {
+      is ToggleSection -> {
+        val isOpen = accounts.value.isOpen(action.section)
+        saveOpenSections(mapOf(action.section.key to !isOpen))
+      }
+      ToggleAllSections -> {
+        val state = accounts.value
+        val open = !state.allOpen
+        saveOpenSections(state.toggleableSections.associate { it.key to open })
+      }
+      is Search -> search.update { action.query }
+    }
+  }
+
+  private fun saveOpenSections(changes: Map<String, Boolean>) {
+    localPreferences.update { metadata ->
+      val current = metadata[SidebarAccountsOpenState].orEmpty()
+      metadata.set(SidebarAccountsOpenState, current + changes)
+    }
+  }
 
   fun postUnpostedSchedules() = unpostedSchedules.post()
 
@@ -102,6 +153,17 @@ internal constructor(
       )
     }
   }
+
+  private fun syncStatus(hasServer: Boolean, state: SyncState): SidebarSyncStatus =
+    if (!hasServer) {
+      LocalOnly
+    } else {
+      when (state) {
+        is SyncState.Error -> SyncError
+        Syncing -> Syncing
+        Inactive -> Synced
+      }
+    }
 
   // Like savePrefs in packages/loot-core/src/server/prefs.ts
   private fun budgetNameChange(name: String) =
