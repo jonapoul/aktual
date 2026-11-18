@@ -46,7 +46,7 @@ internal class PreferencesDaoTest {
 
     val id = AccountId("abc-123")
     val key1 = SyncedPrefKey.Global.LearnCategories
-    val key2 = SyncedPrefKey.PerAccount.CsvMappings(id)
+    val key2 = SyncedPrefKey.PerAccount.HideReconciled(id)
 
     set(key1, "value1")
     assertAllPreferences(key1 to "value1")
