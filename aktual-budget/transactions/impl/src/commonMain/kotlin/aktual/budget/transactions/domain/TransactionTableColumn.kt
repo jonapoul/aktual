@@ -84,8 +84,8 @@ private fun savedColumns(raw: String?): List<TransactionTableColumn> {
     }
   return array
     .orEmpty()
-    .mapNotNull { it as? JsonObject }
-    .mapNotNull { obj ->
+    .mapNotNull { element ->
+      val obj = element as? JsonObject ?: return@mapNotNull null
       val id = (obj["id"] as? JsonPrimitive)?.contentOrNull?.takeIf { it in COLUMN_IDS }
       // The date drives editing, so upstream never hides it
       val hidden = (obj["hidden"] as? JsonPrimitive)?.booleanOrNull == true && id != "date"
