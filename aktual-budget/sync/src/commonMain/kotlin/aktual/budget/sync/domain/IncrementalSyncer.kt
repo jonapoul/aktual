@@ -6,7 +6,9 @@ import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.GroupId
 import aktual.budget.model.DbMetadataKey.Companion.LastSyncedTimestamp
+import aktual.budget.model.Merkle
 import aktual.budget.model.MerkleOperations
+import aktual.budget.model.MessageEnvelope
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
 import aktual.budget.utils.BudgetLocalPreferences
@@ -61,15 +63,29 @@ internal class IncrementalSyncer(
       )
     }
 
+    // Snapshot the point at which we are currently syncing
+    val currentTime = syncDao.getClockTimestamp()
     val since = sinceTimestamp ?: budgetMetadata[LastSyncedTimestamp] ?: fiveMinutesAgo()
     val localMessages = syncDao.getMessagesSince(since)
-    val requestBody = encoder(groupId, budgetId, since, localMessages)
-    val response = syncApi.syncBudget(requestBody)
+    val batches = splitIntoSyncBatches(localMessages)
+    val serverMessages = linkedMapOf<Timestamp, MessageEnvelope>()
+    var serverMerkle: Merkle? = null
+
+    for ((i, batch) in batches.withIndex()) {
+      if (batches.size > 1) log.i { "Sending sync batch ${i + 1}/${batches.size}" }
+
+      // Later batches only fetch messages newer than the snapshot. Older ones came back with the
+      // first batch or are caught by the merkle diff below
+      val batchSince = if (i == 0) since else currentTime
+      val response = syncApi.syncBudget(encoder(groupId, budgetId, batchSince, batch))
+      response.messages.forEach { msg -> serverMessages[msg.timestamp] = msg }
+      serverMerkle = response.merkle
+    }
 
     val currentMerkle = syncDao.getCurrentMerkle()
-    val applyResult = syncDao.applyMessages(response.messages, currentMerkle)
+    val applyResult = syncDao.applyMessages(serverMessages.values.toList(), currentMerkle)
 
-    val responseMerkle by response.merkle
+    val responseMerkle by requireNotNull(serverMerkle)
     val diffTime = MerkleOperations.diff(responseMerkle, applyResult.merkle)
 
     if (diffTime != null) {
