@@ -3,6 +3,7 @@ package aktual.budget.model
 import aktual.budget.model.DbMetadataKey.Companion.BudgetMonthCount
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.DbMetadataKey.Companion.Id
+import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
 import aktual.budget.model.DbMetadataKey.Companion.TransactionDensity
 import aktual.test.PrettyJson
 import assertk.assertThat
@@ -123,6 +124,36 @@ class DbMetadataTest {
     val json = """{ "budget.monthCount": "x", "id": "abc" }"""
     val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
     assertThat(decoded[BudgetMonthCount]).isNull()
+    assertThat(decoded[Id]).isEqualTo("abc")
+  }
+
+  @Test
+  fun `Read the sidebar open state as upstream writes it`() {
+    // packages/desktop-client/src/components/sidebar/redesign/useSidebarCollapseState.ts
+    val json =
+      """
+      {
+        "sidebar.accountsOpenState": { "onbudget": false, "closed": true, "group-abc-on": false }
+      }
+      """
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[SidebarAccountsOpenState])
+      .isEqualTo(mapOf("onbudget" to false, "closed" to true, "group-abc-on" to false))
+  }
+
+  @Test
+  fun `Write and read back the sidebar open state`() {
+    val metadata = DbMetadata(SidebarAccountsOpenState to mapOf("offbudget" to false))
+    val json = PrettyJson.encodeToString(metadata)
+    assertThat(PrettyJson.decodeFromString<DbMetadata>(json)[SidebarAccountsOpenState])
+      .isEqualTo(mapOf("offbudget" to false))
+  }
+
+  @Test
+  fun `Malformed sidebar open state reads as null`() {
+    val json = """{ "sidebar.accountsOpenState": ["onbudget"], "id": "abc" }"""
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded[SidebarAccountsOpenState]).isNull()
     assertThat(decoded[Id]).isEqualTo("abc")
   }
 
