@@ -32,8 +32,8 @@ class ExternalBankAccountsTest {
   @Test
   fun `Returns unknown for a missing or invalid balance`() {
     assertThat(externalBalance(null, inCents = false)).isNull()
-    assertThat(externalBalance(Double.NaN, inCents = false)).isNull()
-    assertThat(externalBalance(Double.POSITIVE_INFINITY, inCents = false)).isNull()
+    assertThat(externalBalance(NaN, inCents = false)).isNull()
+    assertThat(externalBalance(POSITIVE_INFINITY, inCents = false)).isNull()
     assertThat(externalBalance(1e14, inCents = false)).isNull()
     assertThat(externalBalance(1234.5, inCents = true)).isNull()
   }
@@ -41,7 +41,12 @@ class ExternalBankAccountsTest {
   @Test
   fun `Parses string balances, treating blank or invalid ones as unknown`() {
     val accounts =
-      listOf(JsonPrimitive("-100"), JsonPrimitive("   "), JsonPrimitive("abc"), JsonPrimitive("NaN"))
+      listOf(
+          JsonPrimitive("-100"),
+          JsonPrimitive("   "),
+          JsonPrimitive("abc"),
+          JsonPrimitive("NaN"),
+        )
         .plus(JsonNull)
         .mapIndexed { i, balance ->
           buildJsonObject {
