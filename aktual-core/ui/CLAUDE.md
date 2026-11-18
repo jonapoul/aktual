@@ -37,6 +37,10 @@ Use `AktualButton` and `AktualIconButton` (`AktualButtons.kt`), picking a `Butto
 
 In `AktualAlertDialog` button slots (and `AktualDatePickerDialog` confirm/dismiss slots), use `DialogTextButton` instead: tinted text with no background, picking a `DialogButtonKind` (`Normal` for cancel/dismiss, `Primary` for confirm, `Destructive` for delete/discard).
 
+## Tooltips
+
+Use `AktualTooltip` (`AktualTooltip.kt`) for an icon button that shows text when tapped, not Material's `TooltipBox`, whose popup lets taps outside it through on desktop. For a "?" beside a label explaining it, use `AktualHelpTooltip(text)`, which takes no more room than its 16dp icon.
+
 ## Action handlers
 
 Screens take a single `onAction: OnAction<FooAction>` for their sealed action type. Don't declare a per-screen `fun interface FooActionHandler`.

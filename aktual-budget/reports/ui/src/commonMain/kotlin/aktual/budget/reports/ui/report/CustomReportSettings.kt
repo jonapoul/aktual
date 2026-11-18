@@ -303,7 +303,11 @@ private fun OptionsSection(
       edit { it.copy(showHidden = show) }
     }
     Divider()
-    SwitchRow(Strings.reportsCustomEditorShowEmpty, draft.showEmpty) { show ->
+    SwitchRow(
+      label = Strings.reportsCustomEditorShowEmpty,
+      isChecked = draft.showEmpty,
+      help = Strings.reportsCustomEditorShowEmptyHelp,
+    ) { show ->
       edit { it.copy(showEmpty = show) }
     }
     Divider()
@@ -323,6 +327,7 @@ private fun OptionsSection(
       label = Strings.reportsCustomEditorShowTrendLines,
       isChecked = draft.showTrendLines && draft.canShowTrendLines,
       isEnabled = draft.canShowTrendLines,
+      help = Strings.reportsCustomEditorShowTrendLinesHelp,
       onChange = { show -> edit { it.copy(showTrendLines = show) } },
     )
   }

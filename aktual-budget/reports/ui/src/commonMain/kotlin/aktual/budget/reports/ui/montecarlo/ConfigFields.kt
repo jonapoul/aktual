@@ -7,6 +7,7 @@ import aktual.budget.reports.vm.clampAmount
 import aktual.budget.reports.vm.numberInputText
 import aktual.budget.reports.vm.parseNumberInput
 import aktual.budget.rules.components.CommitTextField
+import aktual.core.ui.AktualHelpTooltip
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -75,7 +76,7 @@ internal fun ItemCard(
           style = typography.titleSmall,
           fontWeight = SemiBold,
         )
-        titleHelp?.let { HelpTooltip(it) }
+        titleHelp?.let { AktualHelpTooltip(it) }
       }
       actions()
     }
@@ -99,7 +100,7 @@ internal fun GroupHeadingWithHelp(text: String, help: String, modifier: Modifier
     horizontalArrangement = Arrangement.spacedBy(LABEL_SPACING),
   ) {
     GroupHeading(text)
-    HelpTooltip(help)
+    AktualHelpTooltip(help)
   }
 
 @Composable
@@ -115,7 +116,7 @@ internal fun LabeledField(
       horizontalArrangement = Arrangement.spacedBy(LABEL_SPACING),
     ) {
       Text(text = label, style = typography.labelMedium, color = colors.pageTextSubdued)
-      help?.let { HelpTooltip(it) }
+      help?.let { AktualHelpTooltip(it) }
     }
     content()
   }
@@ -154,7 +155,7 @@ internal fun LabeledCheckbox(
       Checkbox(checked = checked, onCheckedChange = null, colors = colors.checkbox())
       BodyText(label)
     }
-    help?.let { HelpTooltip(it) }
+    help?.let { AktualHelpTooltip(it) }
   }
 
 @Composable

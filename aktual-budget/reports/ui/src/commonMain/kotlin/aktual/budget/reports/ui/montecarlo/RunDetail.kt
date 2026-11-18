@@ -11,6 +11,7 @@ import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualHelpTooltip
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -531,7 +532,7 @@ private fun PotTable(
           verticalAlignment = CenterVertically,
         ) {
           GroupHeading(Strings.monteCarloDetailPotAllocation)
-          HelpTooltip(Strings.monteCarloDetailHelpAllocation)
+          AktualHelpTooltip(Strings.monteCarloDetailHelpAllocation)
         }
       }
       if (hasContributions) {
@@ -631,7 +632,7 @@ private fun PotHeading(text: String, help: String? = null) =
     verticalAlignment = CenterVertically,
   ) {
     GroupHeading(text)
-    help?.let { HelpTooltip(it) }
+    help?.let { AktualHelpTooltip(it) }
   }
 
 // One of the run's charts at a time keeps the table within reach

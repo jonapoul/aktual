@@ -5,6 +5,7 @@ import aktual.budget.reports.vm.FontSizeMode
 import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.components.SettingRow
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualHelpTooltip
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -53,10 +55,13 @@ internal fun ValueRow(
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   showChevron: Boolean = onClick != null,
+  help: String? = null,
   value: @Composable RowScope.() -> Unit,
 ) =
   SettingRow(modifier = modifier, onClick = onClick, showChevron = showChevron) {
-    Text(text = label, style = typography.bodyLarge, color = colors.tableText)
+    LabelWithHelp(help = help) {
+      Text(text = label, style = typography.bodyLarge, color = colors.tableText)
+    }
     Row(
       modifier = Modifier.weight(1f),
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
@@ -66,8 +71,18 @@ internal fun ValueRow(
   }
 
 @Composable
-internal fun SettingValueRow(label: String, value: String, onClick: () -> Unit) =
-  ValueRow(modifier = Modifier.testTag(Tags.CustomSetting), label = label, onClick = onClick) {
+internal fun SettingValueRow(
+  label: String,
+  value: String,
+  help: String? = null,
+  onClick: () -> Unit,
+) =
+  ValueRow(
+    modifier = Modifier.testTag(Tags.CustomSetting),
+    label = label,
+    onClick = onClick,
+    help = help,
+  ) {
     Value(text = value)
   }
 
@@ -76,6 +91,7 @@ internal fun SwitchRow(
   label: String,
   isChecked: Boolean,
   isEnabled: Boolean = true,
+  help: String? = null,
   onChange: (Boolean) -> Unit,
 ) =
   SettingRow(
@@ -83,18 +99,44 @@ internal fun SwitchRow(
     onClick = { onChange(!isChecked) }.takeIf { isEnabled },
     showChevron = false,
   ) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = label,
-      style = typography.bodyLarge,
-      color = if (isEnabled) colors.tableText else colors.tableHeaderText,
-    )
+    LabelWithHelp(modifier = Modifier.weight(1f), help = help) {
+      Text(
+        modifier = Modifier.weight(1f, fill = false),
+        text = label,
+        style = typography.bodyLarge,
+        color = if (isEnabled) colors.tableText else colors.tableHeaderText,
+      )
+    }
     Switch(
       checked = isChecked,
       onCheckedChange = onChange,
       enabled = isEnabled,
       colors = colors.switch(),
     )
+  }
+
+// A section label with a help button beside it. SectionLabel pads its own bottom, so the button
+// gets the same padding to stay centred on the text
+@Composable
+internal fun SectionLabelWithHelp(text: String, help: String) =
+  Row(verticalAlignment = CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+    SectionLabel(text)
+    AktualHelpTooltip(modifier = Modifier.padding(bottom = 8.dp), text = help)
+  }
+
+@Composable
+private fun LabelWithHelp(
+  help: String?,
+  modifier: Modifier = Modifier,
+  text: @Composable RowScope.() -> Unit,
+) =
+  Row(
+    modifier = modifier,
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(6.dp),
+  ) {
+    text()
+    help?.let { AktualHelpTooltip(it) }
   }
 
 @Composable

@@ -23,6 +23,7 @@ import aktual.budget.reports.vm.surplusPot
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualHelpTooltip
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -85,7 +86,7 @@ internal fun MonteCarloConfiguration(
       horizontalArrangement = Arrangement.spacedBy(TAB_SPACING),
     ) {
       BodyText(modifier = Modifier.weight(1f, fill = false), text = tab.description())
-      tab.help()?.let { HelpTooltip(it) }
+      tab.help()?.let { AktualHelpTooltip(it) }
     }
 
     when (tab) {

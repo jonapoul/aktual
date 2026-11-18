@@ -124,7 +124,10 @@ private fun ColumnScope.BalanceForecastDisplay(
 
   if (editorData?.isTrackingBudget == true) {
     Column {
-      SectionLabel(Strings.reportsBalanceForecastSource)
+      SectionLabelWithHelp(
+        Strings.reportsBalanceForecastSource,
+        Strings.reportsBalanceForecastSourceHelp,
+      )
       AktualSlidingToggleButton(
         modifier = Modifier.fillMaxWidth(),
         selected = if (isTracking) TrackingBudget else Schedules,

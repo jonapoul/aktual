@@ -12,7 +12,6 @@ import aktual.budget.reports.vm.SankeyReportMeta
 import aktual.budget.reports.vm.normalizeSankeyLayers
 import aktual.budget.reports.vm.sankeyLayerChoices
 import aktual.budget.rules.components.Divider
-import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.components.label
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
@@ -93,7 +92,7 @@ internal fun SankeySettings(
     onDismiss = onDismiss,
   ) {
     Column {
-      SectionLabel(Strings.reportsSankeyMode)
+      SectionLabelWithHelp(Strings.reportsSankeyMode, Strings.reportsSankeyModeHelp)
       AktualSlidingToggleButton(
         modifier = Modifier.fillMaxWidth(),
         selected = if (meta.mode == Budgeted) Budgeted else Spent,
