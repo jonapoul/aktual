@@ -50,6 +50,7 @@ internal object TestFormatPreferences : BudgetFormatPreferences {
   override val spaceBetweenAmountAndSymbol = fixed(false)
   override val dateFormat = fixed(DateFormat.YyyyMmDd)
   override val firstDayOfWeek = fixed(FirstDayOfWeek.Monday)
+  override val isPrivacyEnabled = fixed(false)
 
   override suspend fun changeCurrency(currency: Currency) = Unit
 }

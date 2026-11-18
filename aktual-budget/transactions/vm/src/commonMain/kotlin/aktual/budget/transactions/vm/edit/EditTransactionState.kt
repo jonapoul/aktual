@@ -59,6 +59,9 @@ data class TransactionForm(
   // What the payee's location button does. Null where there's no location to use
   val locationAction: LocationAction? = null,
   val isLocating: Boolean = false,
+  // Whether a date edit also moves the other side of its transfers. Null unless it's a saved
+  // transfer, or has a part that is
+  val syncTransferDate: Boolean? = null,
 ) {
   val isSplit: Boolean
     get() = parts.isNotEmpty()

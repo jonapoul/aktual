@@ -180,6 +180,39 @@ internal class TransfersTest {
   }
 
   @Test
+  fun `The other side follows the date when asked to`() = runWriterTest {
+    val payees = prepareDatabase()
+    val id =
+      insert(NewTransaction(account = ONE, date = DATE, amount = Amount(5000), payee = payees.two))
+    val moved = LocalDate(2017, 2, 1)
+
+    writer.write(runTransfers = true, syncTransferDates = true) {
+      update(TransactionUpdate(id, date = moved))
+    }
+
+    assertThat(row(otherSide(id)).date).isEqualTo(moved)
+  }
+
+  @Test
+  fun `A split part on the other side moves its whole split`() = runWriterTest {
+    val payees = prepareDatabase()
+    val parent = insert(NewTransaction(account = TWO, date = DATE, isParent = true))
+    val part =
+      insert(NewTransaction(account = TWO, date = DATE, payee = payees.one, parentId = parent))
+    val sibling = insert(NewTransaction(account = TWO, date = DATE, parentId = parent))
+    val id = otherSide(part)
+    val moved = LocalDate(2017, 2, 1)
+
+    writer.write(runTransfers = true, syncTransferDates = true) {
+      update(TransactionUpdate(id, date = moved))
+    }
+
+    assertThat(row(part).date).isEqualTo(moved)
+    assertThat(row(parent).date).isEqualTo(moved)
+    assertThat(row(sibling).date).isEqualTo(moved)
+  }
+
+  @Test
   fun `Nothing is written to the other side when it already matches`() = runWriterTest {
     val payees = prepareDatabase()
     val id =

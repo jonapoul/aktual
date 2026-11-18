@@ -8,6 +8,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.log
+import kotlinx.datetime.LocalDate
 
 /**
  * packages/loot-core/src/server/transactions/transfer.ts: keeps the other side of each transfer in
@@ -23,7 +24,11 @@ internal class Transfers(
   private val accountDao: AccountDao,
   private val payeeDao: PayeeDao,
   private val transactionDao: TransactionDao,
+  // Whether the other side follows a changed date, see TransactionWriter.write
+  private val syncDates: Boolean = false,
 ) {
+  private val movedSplits = mutableSetOf<TransactionId>()
+
   suspend fun run(touched: TouchedTransactions) {
     for (id in touched.added) transactionDao.row(id)?.let { onInsert(it) }
     for (id in touched.updated) transactionDao.row(id)?.let { onUpdate(it) }
@@ -112,9 +117,21 @@ internal class Transfers(
         notes = changed(t.notes, other?.notes),
         amount = amount.takeIf { it != other?.amount },
         schedule = changed(t.schedule, other?.schedule),
+        date = t.date.takeIf { syncDates && it != other?.date },
       )
     batch.update(update)
+    if (syncDates && other?.isChild == true) moveSplit(other.parent_id, linked, t.date)
     clearCategory(t, to, linked)
+  }
+
+  // Moves the split the other side's a part of, and its other parts, so they keep sharing its date.
+  // Upstream leaves the other parts behind. Their own transfers don't follow
+  private suspend fun moveSplit(parent: TransactionId?, moved: TransactionId, date: LocalDate?) {
+    if (parent == null || date == null || !movedSplits.add(parent)) return
+    for (id in listOf(parent) + transactionDao.childIds(listOf(parent)) - moved) {
+      val row = transactionDao.row(id)?.takeIf { it.tombstone != true } ?: continue
+      if (row.date != date) batch.update(TransactionUpdate(id = id, date = date))
+    }
   }
 
   // A transfer between two on budget accounts, or two off budget ones, moves no money in or out

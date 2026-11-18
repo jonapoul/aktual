@@ -163,6 +163,7 @@ internal fun EditTransactionScreen(
         GoToBudget -> toBudget()
         ToggleHiddenCategories -> viewModel.toggleHiddenCategories()
         is PickingCategory -> viewModel.setPickingCategory(action.isPicking)
+        is SetSyncTransferDate -> viewModel.setSyncTransferDate(action.enabled)
         FindNearbyPayees -> withLocation(viewModel::findNearbyPayees)
         SavePayeeLocation -> withLocation(viewModel::saveLocation)
         is FieldAction -> viewModel.onFieldAction(action)

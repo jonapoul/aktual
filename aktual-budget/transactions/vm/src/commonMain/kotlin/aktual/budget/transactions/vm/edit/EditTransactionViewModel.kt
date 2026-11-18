@@ -3,7 +3,9 @@ package aktual.budget.transactions.vm.edit
 import aktual.budget.budgeting.domain.BudgetMonthCalculator
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
@@ -11,7 +13,9 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadataKey.Companion.BudgetShowHiddenCategories
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.SyncedPrefKey.Global.SyncTransferDate
 import aktual.budget.model.TransactionId
+import aktual.budget.model.localChange
 import aktual.budget.payees.domain.NearbyPayee
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.rules.domain.LoadedRules
@@ -47,6 +51,7 @@ import aktual.budget.transactions.domain.withoutPart
 import aktual.budget.transactions.vm.edit.EditTransactionState.Failure
 import aktual.budget.transactions.vm.toTransaction
 import aktual.budget.utils.BudgetLocalPreferences
+import aktual.budget.utils.BudgetSync
 import aktual.core.model.Coordinates
 import aktual.core.utils.Calendar
 import aktual.core.utils.LocationProvider
@@ -116,6 +121,8 @@ internal constructor(
   private val locationProvider: LocationProvider,
   private val securityPreferences: SecurityPreferences,
   private val budgetScope: BudgetCoroutineScope,
+  private val budgetSync: BudgetSync,
+  preferencesDao: PreferencesDao,
   budgetCalculator: BudgetMonthCalculator,
   schedulesLoader: SchedulesLoader,
   tagsDao: TagsDao,
@@ -155,6 +162,17 @@ internal constructor(
     localPreferences
       .observe(BudgetShowHiddenCategories)
       .map { it == true }
+      .stateIn(viewModelScope, Eagerly, false)
+
+  // upstream's sync-transfer-date synced pref, off unless set to "true"
+  private val syncTransferDate: StateFlow<Boolean> =
+    preferencesDao
+      .observe(SyncTransferDate)
+      .map { it == "true" }
+      .catch { e ->
+        log.w(e) { "Failed loading sync-transfer-date" }
+        emit(false)
+      }
       .stateIn(viewModelScope, Eagerly, false)
 
   private val isPickingCategory = MutableStateFlow(false)
@@ -248,6 +266,7 @@ internal constructor(
       val balances by categoryBalances.collectAsState()
       val scheduleOptions by schedules.collectAsState()
       val location by mutableLocation.collectAsState()
+      val syncDates by syncTransferDate.collectAsState()
       val changedElsewhere =
         when {
           isGone -> ChangedElsewhere.Deleted
@@ -266,6 +285,7 @@ internal constructor(
         isWorking = isWorking,
         changedElsewhere = changedElsewhere,
         location = location,
+        syncTransferDate = syncDates,
       )
     }
 
@@ -296,6 +316,7 @@ internal constructor(
     isWorking: Boolean,
     changedElsewhere: ChangedElsewhere?,
     location: LocationSearch,
+    syncTransferDate: Boolean,
   ): EditTransactionState {
     if (failure != null) return failure
     // A draft stays open when its transaction's deleted elsewhere, so it isn't lost
@@ -312,6 +333,7 @@ internal constructor(
           categories = categories,
           saved = saved,
           location = location,
+          syncTransferDate = syncTransferDate,
         )
       }
     return when (target) {
@@ -362,6 +384,7 @@ internal constructor(
     categories: CategoryView,
     saved: Saved?,
     location: LocationSearch,
+    syncTransferDate: Boolean,
   ): TransactionForm {
     val fields = draft.fields
     val transaction = saved?.details?.transaction
@@ -401,8 +424,12 @@ internal constructor(
       splitRemaining = draft.splitDifference,
       locationAction = locationAction(fields.payee, entities),
       isLocating = location.isWorking,
+      syncTransferDate = syncTransferDate.takeIf { saved != null && draft.hasTransfer(entities) },
     )
   }
+
+  private fun TransactionDraft.hasTransfer(entities: EditorEntities): Boolean =
+    fields.payee in entities.transferAccounts || parts.any { it.payee in entities.transferAccounts }
 
   // A payee that's not created yet, or a transfer, has nowhere to save a location against
   private fun locationAction(payee: PayeeId?, entities: EditorEntities): LocationAction? =
@@ -672,6 +699,17 @@ internal constructor(
 
   fun setDate(date: LocalDate) = updateDraft(Date) { it.copy(date = date) }
 
+  fun setSyncTransferDate(enabled: Boolean) {
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          budgetSync(localChange(PREFERENCES, SyncTransferDate.key, "value", enabled.toString()))
+        },
+        onFailure = { e -> log.e(e) { "Failed saving sync-transfer-date" } },
+      )
+    }
+  }
+
   fun setNotes(notes: String) = updateDraft(Notes) { it.copy(notes = notes) }
 
   fun setCleared(cleared: Boolean) = updateDraft(Cleared) { it.copy(cleared = cleared) }
@@ -808,8 +846,10 @@ internal constructor(
       return
     }
 
+    // As upstream, only a date edit moves the other side, not one made before the pref was set
+    val syncDates = syncTransferDate.value && draft.fields.date != saved.draft.fields.date
     launchSave {
-      writer.write(runTransfers = true, learnCategories = true) {
+      writer.write(runTransfers = true, syncTransferDates = syncDates, learnCategories = true) {
         transactionDiff(id, saved.draft, withSavedPayees(draft))?.let { write(it) }
       }
       loader.load(target.id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }

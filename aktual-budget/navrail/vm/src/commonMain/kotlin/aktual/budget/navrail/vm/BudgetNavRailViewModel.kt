@@ -16,7 +16,7 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
-import aktual.prefs.AppPreferences
+import aktual.prefs.BudgetFormatPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,7 +47,7 @@ internal constructor(
   private val sync: BudgetSync,
   accountDao: AccountDao,
   newTransactions: NewTransactions,
-  private val appPreferences: AppPreferences,
+  private val formatPreferences: BudgetFormatPreferences,
   private val unpostedSchedules: UnpostedSchedules,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -82,7 +82,7 @@ internal constructor(
   fun dismissUnpostedSchedules() = unpostedSchedules.dismiss()
 
   fun setPrivacyMode(isEnabled: Boolean) {
-    viewModelScope.launch { appPreferences.isPrivacyEnabled.set(isEnabled) }
+    viewModelScope.launch { formatPreferences.isPrivacyEnabled.set(isEnabled) }
   }
 
   fun rename(name: String) {

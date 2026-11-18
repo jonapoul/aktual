@@ -18,6 +18,7 @@ interface BudgetFormatPreferences {
   val spaceBetweenAmountAndSymbol: Preference<Boolean>
   val dateFormat: Preference<DateFormat>
   val firstDayOfWeek: Preference<FirstDayOfWeek>
+  val isPrivacyEnabled: Preference<Boolean>
 
   // Also resets the number format, decimals, symbol position and spacing to suit the new currency,
   // like upstream does

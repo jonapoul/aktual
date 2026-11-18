@@ -18,12 +18,9 @@ import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.prefs.AppPreferences
-import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
-import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
 import app.cash.turbine.ReceiveTurbine
@@ -52,6 +49,7 @@ class BudgetNavRailViewModelTest {
   private val api = TestBudgetSyncApi()
   private val unpostedSchedules = TestUnpostedSchedules()
   private val newTransactions = FakeNewTransactions()
+  private val formatPreferences = FakeBudgetFormatPreferences()
 
   @Test
   fun `Renaming updates the server, the local name and the sync log`() = runDatabaseTest { scope ->
@@ -219,11 +217,10 @@ class BudgetNavRailViewModelTest {
   }
 
   @Test
-  fun `Privacy mode is saved to the app preferences`() = runDatabaseTest { scope ->
-    val preferences = AppPreferencesImpl(scope.buildPreferences())
-    val viewModel = viewModel(None, scope, preferences)
+  fun `Privacy mode is saved to the budget's synced prefs`() = runDatabaseTest { scope ->
+    val viewModel = viewModel(None, scope)
 
-    preferences.isPrivacyEnabled.asFlow().test {
+    formatPreferences.isPrivacyEnabled.asFlow().test {
       assertThatNextEmissionIsEqualTo(false)
 
       viewModel.setPrivacyMode(isEnabled = true)
@@ -237,7 +234,6 @@ class BudgetNavRailViewModelTest {
   private fun BudgetDatabase.viewModel(
     server: BudgetServer,
     scope: TestScope,
-    appPreferences: AppPreferences = AppPreferencesImpl(scope.buildPreferences()),
   ) =
     BudgetNavRailViewModel(
       contributors = emptySet(),
@@ -247,7 +243,7 @@ class BudgetNavRailViewModelTest {
       sync = sync,
       accountDao = AccountDao(this),
       newTransactions = newTransactions,
-      appPreferences = appPreferences,
+      formatPreferences = formatPreferences,
       unpostedSchedules = unpostedSchedules,
       viewModelContext = scope.viewModelContext,
     )

@@ -35,6 +35,8 @@ internal data object ToggleHiddenCategories : EditTransactionAction
 
 internal data class PickingCategory(val isPicking: Boolean) : EditTransactionAction
 
+@JvmInline internal value class SetSyncTransferDate(val enabled: Boolean) : EditTransactionAction
+
 internal data object FindNearbyPayees : EditTransactionAction
 
 internal data object SavePayeeLocation : EditTransactionAction

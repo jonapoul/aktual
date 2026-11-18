@@ -1,7 +1,6 @@
 package aktual.budget.model
 
 import aktual.budget.model.SyncedPrefKey.Companion.decode
-import aktual.budget.model.SyncedPrefKey.PerAccount.CsvDelimiter
 import aktual.budget.model.SyncedPrefKey.PerAccount.CustomSyncMappings
 import aktual.budget.model.SyncedPrefKey.PerAccount.HideReconciled
 import aktual.budget.model.SyncedPrefKey.PerAccount.NewTransactionsSeen
@@ -15,11 +14,6 @@ import assertk.assertions.isEqualTo
 import kotlin.test.Test
 
 class SyncedPrefKeyAccountTest {
-  @Test
-  fun decoding() {
-    assertThat(decode("csv-delimiter-abc-123")).isEqualTo(CsvDelimiter(AccountId("abc-123")))
-  }
-
   @Test
   fun `Decode bank sync keys`() {
     val id = AccountId("abc-123")

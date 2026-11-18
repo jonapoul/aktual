@@ -2292,6 +2292,7 @@
   <string name="transaction_notes_placeholder">Add a note (optional)</string>
   <string name="transaction_sheet_done">Done</string>
   <string name="transaction_sheet_cancel">Cancel</string>
+  <string name="transaction_sync_transfer_date">Sync both transfer dates</string>
   <string name="transaction_delete_title">Delete transaction?</string>
   <string name="transaction_delete_message">Are you sure you want to delete the transaction?</string>
   <string name="transaction_delete_confirm">Delete</string>

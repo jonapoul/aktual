@@ -25,6 +25,7 @@ class BudgetFormatPreferencesImplTest {
     assertThat(prefs.spaceBetweenAmountAndSymbol.get()).isEqualTo(false)
     assertThat(prefs.dateFormat.get()).isEqualTo(MmDdYyyy)
     assertThat(prefs.firstDayOfWeek.get()).isEqualTo(Sunday)
+    assertThat(prefs.isPrivacyEnabled.get()).isEqualTo(false)
   }
 
   @Test
@@ -36,6 +37,7 @@ class BudgetFormatPreferencesImplTest {
     dao[SyncedPrefKey.Global.CurrencySpaceBetweenAmountAndSymbol] = "true"
     dao[SyncedPrefKey.Global.DateFormat] = "dd.MM.yyyy"
     dao[SyncedPrefKey.Global.FirstDayOfWeekIdx] = "1"
+    dao[SyncedPrefKey.Global.IsPrivacyEnabled] = "true"
 
     assertThat(prefs.currency.get()).isEqualTo(Euro)
     assertThat(prefs.numberFormat.get()).isEqualTo(DotComma)
@@ -44,6 +46,7 @@ class BudgetFormatPreferencesImplTest {
     assertThat(prefs.spaceBetweenAmountAndSymbol.get()).isEqualTo(true)
     assertThat(prefs.dateFormat.get()).isEqualTo(DdMmYyyyDot)
     assertThat(prefs.firstDayOfWeek.get()).isEqualTo(Monday)
+    assertThat(prefs.isPrivacyEnabled.get()).isEqualTo(true)
   }
 
   @Test

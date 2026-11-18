@@ -668,6 +668,7 @@ internal class BudgetWriterTest {
     override val spaceBetweenAmountAndSymbol = fixed(false)
     override val dateFormat = fixed(DateFormat.Default)
     override val firstDayOfWeek = fixed(FirstDayOfWeek.Default)
+    override val isPrivacyEnabled = fixed(false)
 
     override suspend fun changeCurrency(currency: Currency) = Unit
   }

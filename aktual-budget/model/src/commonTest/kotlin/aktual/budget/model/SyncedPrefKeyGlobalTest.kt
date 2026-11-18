@@ -22,6 +22,7 @@ class SyncedPrefKeyGlobalTest {
         LearnCategories,
         SyncedPrefKey.Global.NumberFormat,
         ShowHiddenTags,
+        SyncTransferDate,
         UpcomingScheduledTransactionLength,
       ),
   ) {
