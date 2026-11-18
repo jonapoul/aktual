@@ -49,12 +49,12 @@ else
   echo "Head commit: $(git -C "$DIR" log -1 --format='%h %s' "pr-$PR")"
 fi
 
-NOTES="upcoming-release-notes/$PR.md"
-if git -C "$DIR" cat-file -e "pr-$PR:$NOTES" 2>/dev/null; then
+# Release notes are usually <pr>.md, but not always
+for NOTES in $(git -C "$DIR" diff --name-only --diff-filter=AM "$BASE" -- upcoming-release-notes); do
   echo
   echo "== $NOTES"
   git -C "$DIR" show "pr-$PR:$NOTES"
-fi
+done
 
 echo
 echo "== Files"
