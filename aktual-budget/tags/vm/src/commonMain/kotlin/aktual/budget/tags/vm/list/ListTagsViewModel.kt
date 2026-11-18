@@ -1,10 +1,14 @@
 package aktual.budget.tags.vm.list
 
+import aktual.budget.db.dao.DatabaseTables.PREFERENCES
 import aktual.budget.db.dao.DatabaseTables.TAGS
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
+import aktual.budget.model.SyncedPrefKey.Global.ShowHiddenTags
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
+import aktual.budget.model.localChange
 import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
@@ -31,6 +35,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
@@ -43,6 +48,7 @@ class ListTagsViewModel
 internal constructor(
   private val tagsDao: TagsDao,
   private val transactionDao: TransactionDao,
+  preferencesDao: PreferencesDao,
   private val budgetSync: BudgetSync,
   private val preferences: TagPreferences,
   private val budgetScope: BudgetCoroutineScope,
@@ -58,6 +64,17 @@ internal constructor(
     )
   val events: SharedFlow<ListTagsEvent> = mutableEvents.asSharedFlow()
 
+  // upstream's show-hidden-tags synced pref, off unless set to "true"
+  val showHidden: StateFlow<Boolean> =
+    preferencesDao
+      .observe(ShowHiddenTags)
+      .map { it == "true" }
+      .catch { e ->
+        log.e(e) { "Failed loading show-hidden-tags" }
+        emit(false)
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = false)
+
   val state: StateFlow<ListTagsState> =
     retries
       .onStart { emit(Unit) }
@@ -66,14 +83,16 @@ internal constructor(
             observeTags(),
             preferences.sortField.asFlow(),
             preferences.sortDirection.asFlow(),
-          ) { tags, sortField, sortDirection ->
-            if (tags.isEmpty()) {
+            showHidden,
+          ) { tags, sortField, sortDirection, showHidden ->
+            val visible = if (showHidden) tags else tags.filterNot { it.hidden }
+            if (visible.isEmpty()) {
               Empty
             } else {
-              buildSuccessState(tags, TagSort(sortField, sortDirection))
+              buildSuccessState(visible, TagSort(sortField, sortDirection))
             }
           }
-          .onStart<ListTagsState> { emit(Loading) }
+          .onStart { emit(Loading) }
           .catch { e ->
             log.e(e) { "Failed loading tags" }
             emit(Failure(e.requireMessage()))
@@ -139,6 +158,37 @@ internal constructor(
           log.e(e) { "Failed restoring tag ${item.id}" }
           mutableEvents.tryEmit(ListTagsEvent.RestoreFailed(item.tag))
         },
+      )
+    }
+  }
+
+  // Hiding emits an event so the screen can offer undo. Like undoDelete, this can be called from a
+  // snackbar that outlives the screen, so it runs in the budget scope
+  fun setHidden(item: TagItem, hidden: Boolean) {
+    budgetScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          budgetSync(localChange(TAGS, item.id.toString(), "hidden", hidden))
+          if (hidden) {
+            mutableEvents.tryEmit(ListTagsEvent.Hidden(item))
+          }
+          log.d { "Set tag ${item.id} hidden=$hidden" }
+        },
+        onFailure = { e ->
+          log.e(e) { "Failed setting tag ${item.id} hidden=$hidden" }
+          mutableEvents.tryEmit(ListTagsEvent.VisibilityFailed(item.tag))
+        },
+      )
+    }
+  }
+
+  fun setShowHidden(show: Boolean) {
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          budgetSync(localChange(PREFERENCES, ShowHiddenTags.key, "value", show.toString()))
+        },
+        onFailure = { e -> log.e(e) { "Failed setting show-hidden-tags=$show" } },
       )
     }
   }

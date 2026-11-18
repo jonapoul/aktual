@@ -12,3 +12,6 @@ internal suspend fun BudgetDatabase.insertTag(
 
 internal suspend fun BudgetDatabase.tombstoneTag(id: String) =
   tagsQueries.setTombstone(tombstone = true, id = TagId(id))
+
+internal suspend fun BudgetDatabase.hideTag(id: String) =
+  tagsQueries.setHidden(hidden = true, id = TagId(id))

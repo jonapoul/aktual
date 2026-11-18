@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -67,12 +68,13 @@ import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import kotlin.random.Random
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.drop
 
 @Suppress("LongMethod")
 @Composable
 internal fun TagColorPicker(
   color: Color?,
-  onColorChange: (Color) -> Unit,
+  onColorChange: (Color?) -> Unit,
   onErrorChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
   showAdvanced: Boolean = false,
@@ -112,15 +114,19 @@ internal fun TagColorPicker(
     hexError = false
   }
 
-  // auto-apply what the user types: a valid hex updates the colour, anything else flags an error
+  // auto-apply what the user types: a valid hex updates the colour, anything else flags an error.
+  // An empty field means the theme default. That's handled even when unfocused, since the clear
+  // button empties the field before focusing it. The first value is skipped so the field starting
+  // empty, before the colour is filled in, can't clear the colour
   LaunchedEffect(Unit) {
     snapshotFlow { hexState.text.toString() }
+      .drop(1)
       .collect { text ->
-        if (!hexFocused) return@collect
         val trimmed = text.trim()
         if (trimmed.isEmpty()) {
           hexError = false
-        } else {
+          currentOnColorChange(null)
+        } else if (hexFocused) {
           val parsed = trimmed.toColorOrNull()
           if (parsed == null) {
             hexError = true
@@ -142,7 +148,7 @@ internal fun TagColorPicker(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
-      verticalAlignment = CenterVertically,
+      verticalAlignment = Top,
     ) {
       ColorPickerTextField(
         modifier = Modifier.weight(1f),
@@ -242,6 +248,7 @@ private fun ColorPickerTextField(
     state = hexState,
     interactionSource = hexInteraction,
     singleLine = true,
+    clearable = true,
     placeholderText = Strings.tagsCreateColorPlaceholder,
     colors = fieldColors,
     textStyle = LocalTextStyle.current.merge(textAlign = Center),

@@ -21,6 +21,7 @@ class SyncedPrefKeyGlobalTest {
         IsPrivacyEnabled,
         LearnCategories,
         SyncedPrefKey.Global.NumberFormat,
+        ShowHiddenTags,
         UpcomingScheduledTransactionLength,
       ),
   ) {

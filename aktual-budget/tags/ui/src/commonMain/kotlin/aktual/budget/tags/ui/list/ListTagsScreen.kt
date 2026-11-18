@@ -14,6 +14,8 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Refresh
 import aktual.core.icons.SearchAlternate
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
@@ -85,6 +87,7 @@ internal fun ListTagsScreen(
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val showHidden by viewModel.showHidden.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
@@ -93,6 +96,11 @@ internal fun ListTagsScreen(
         is Deleted -> snackbars.show { showDeleted(event, onUndo = viewModel::undoDelete) }
         is DeleteFailed -> snackbars.show { showDeleteFailed(event) }
         is RestoreFailed -> snackbars.show { showRestoreFailed(event) }
+        is Hidden ->
+          snackbars.show {
+            showTagHidden(event, onUndo = { viewModel.setHidden(it, hidden = false) })
+          }
+        is VisibilityFailed -> snackbars.show { showVisibilityFailed(event) }
       }
     }
   }
@@ -100,6 +108,7 @@ internal fun ListTagsScreen(
   ListTagsScaffold(
     modifier = modifier,
     state = state,
+    showHidden = showHidden,
     onAction = { action ->
       when (action) {
         Retry -> viewModel.retry()
@@ -109,6 +118,8 @@ internal fun ListTagsScreen(
         is DeleteTag -> viewModel.delete(action.id)
         is ViewTransactions -> toTransactions(action.id)
         is SetSort -> viewModel.setSort(action.sort)
+        is SetHidden -> viewModel.setHidden(action.item, action.hidden)
+        is SetShowHidden -> viewModel.setShowHidden(action.show)
       }
     },
   )
@@ -119,6 +130,7 @@ private fun ListTagsScaffold(
   state: ListTagsState,
   onAction: OnAction<ListTagsAction>,
   modifier: Modifier = Modifier,
+  showHidden: Boolean = false,
 ) {
   val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
@@ -161,8 +173,14 @@ private fun ListTagsScaffold(
             contentDescription = Strings.tagsCreate,
             onClick = { onAction(CreateTag) },
           )
-          if (successState != null) {
-            ListTagsMenu(onSort = { showSortDialog = true })
+          // also shown when empty, since hiding every tag leaves the list empty
+          if (successState != null || state == Empty) {
+            ListTagsMenu(
+              showSort = successState != null,
+              showHidden = showHidden,
+              onSort = { showSortDialog = true },
+              onShowHiddenChange = { onAction(SetShowHidden(it)) },
+            )
           }
         },
       )
@@ -278,7 +296,13 @@ private fun TagsList(
 }
 
 @Composable
-private fun ListTagsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
+private fun ListTagsMenu(
+  showSort: Boolean,
+  showHidden: Boolean,
+  onSort: () -> Unit,
+  onShowHiddenChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   var expanded by remember { mutableStateOf(false) }
 
   Box(modifier = modifier) {
@@ -290,9 +314,15 @@ private fun ListTagsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
 
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       ListTagsMenuItems(
+        showSort = showSort,
+        showHidden = showHidden,
         onSort = {
           expanded = false
           onSort()
+        },
+        onShowHiddenChange = { show ->
+          expanded = false
+          onShowHiddenChange(show)
         },
       )
     }
@@ -300,8 +330,20 @@ private fun ListTagsMenu(onSort: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ListTagsMenuItems(onSort: () -> Unit) {
-  AktualDropdownMenuItem(text = Strings.sort, leadingIcon = MaterialIcons.Sort, onClick = onSort)
+private fun ListTagsMenuItems(
+  showSort: Boolean,
+  showHidden: Boolean,
+  onSort: () -> Unit,
+  onShowHiddenChange: (Boolean) -> Unit,
+) {
+  if (showSort) {
+    AktualDropdownMenuItem(text = Strings.sort, leadingIcon = MaterialIcons.Sort, onClick = onSort)
+  }
+  AktualDropdownMenuItem(
+    text = if (showHidden) Strings.tagsDontShowHidden else Strings.tagsShowHidden,
+    leadingIcon = if (showHidden) AktualIcons.ViewHide else AktualIcons.ViewShow,
+    onClick = { onShowHiddenChange(!showHidden) },
+  )
 }
 
 @Composable
@@ -324,7 +366,12 @@ private class ListTagsStateProvider :
 private fun PreviewListTagsMenuItems(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     Column(Modifier.width(IntrinsicSize.Max).background(colors.menuBackground)) {
-      ListTagsMenuItems(onSort = {})
+      ListTagsMenuItems(
+        showSort = true,
+        showHidden = false,
+        onSort = {},
+        onShowHiddenChange = {},
+      )
     }
   }
 

@@ -1,12 +1,15 @@
 package aktual.budget.tags.vm.list
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
+import aktual.budget.model.SyncedPrefKey.Global.ShowHiddenTags
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
+import aktual.budget.tags.vm.hideTag
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.utils.BudgetSync
 import aktual.di.BudgetCoroutineScope
@@ -319,6 +322,127 @@ class ListTagsViewModelTest {
     }
   }
 
+  @Test
+  fun `Hidden tags are left out by default`() = runDatabaseTest { scope ->
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "rent-id", tag = "rent")
+    hideTag("rent-id")
+
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("groceries")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Hidden tags are listed when the show-hidden pref is on`() = runDatabaseTest { scope ->
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "rent-id", tag = "rent")
+    hideTag("rent-id")
+    PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher))[ShowHiddenTags] = "true"
+
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      var state = awaitLoaded()
+      while ((state as? Success)?.tags?.size != 2) state = awaitItem()
+      assertThat(state)
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag, TagItem::hidden)
+        .containsExactly("groceries" to false, "rent" to true)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Hiding every tag yields the empty state`() = runDatabaseTest { scope ->
+    insertTag(id = "rent-id", tag = "rent")
+    hideTag("rent-id")
+
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      assertThat(awaitLoaded()).isEqualTo(Empty)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Hiding a tag syncs the change and emits an event`() = runDatabaseTest { scope ->
+    insertTag(id = "rent-id", tag = "rent")
+    val sync = TestBudgetSync()
+    val viewModel = createViewModel(scope, sync)
+    val item = viewModel.awaitTags().single()
+
+    viewModel.events.test {
+      viewModel.setHidden(item, hidden = true)
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.Hidden(item))
+    }
+
+    assertThat(sync.changes)
+      .extracting(LocalChange::row, LocalChange::column, LocalChange::value)
+      .containsExactly(Triple("rent-id", "hidden", MessageValue.Number(1)))
+  }
+
+  @Test
+  fun `Unhiding a tag syncs the change without an event`() = runDatabaseTest { scope ->
+    insertTag(id = "rent-id", tag = "rent")
+    val sync = TestBudgetSync()
+    val viewModel = createViewModel(scope, sync)
+    val item = viewModel.awaitTags().single()
+
+    viewModel.events.test {
+      viewModel.setHidden(item, hidden = false)
+      scope.advanceUntilIdle()
+      expectNoEvents()
+    }
+
+    assertThat(sync.changes)
+      .extracting(LocalChange::row, LocalChange::column, LocalChange::value)
+      .containsExactly(Triple("rent-id", "hidden", MessageValue.Number(0)))
+  }
+
+  @Test
+  fun `A failed hide emits a VisibilityFailed event`() = runDatabaseTest { scope ->
+    insertTag(id = "rent-id", tag = "rent")
+    val viewModel = createViewModel(scope, sync = FailingSyncController())
+    val item = viewModel.awaitTags().single()
+
+    viewModel.events.test {
+      viewModel.setHidden(item, hidden = true)
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.VisibilityFailed("rent"))
+    }
+  }
+
+  @Test
+  fun `Toggling show-hidden syncs the pref`() = runDatabaseTest { scope ->
+    val sync = TestBudgetSync()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.setShowHidden(true)
+    scope.advanceUntilIdle()
+
+    assertThat(sync.changes)
+      .extracting(LocalChange::row, LocalChange::column, LocalChange::value)
+      .containsExactly(Triple("show-hidden-tags", "value", MessageValue.String("true")))
+  }
+
+  private suspend fun ListTagsViewModel.awaitTags(): List<TagItem> {
+    lateinit var tags: List<TagItem>
+    state.test {
+      tags = (awaitLoaded() as Success).tags
+      cancelAndIgnoreRemainingEvents()
+    }
+    return tags
+  }
+
   private suspend fun ReceiveTurbine<ListTagsState>.awaitLoaded(): ListTagsState {
     var state = awaitItem()
     while (state == Loading) state = awaitItem()
@@ -333,6 +457,7 @@ class ListTagsViewModelTest {
     ListTagsViewModel(
       tagsDao = TagsDao(this, TestCoroutineContexts(scope.standardDispatcher)),
       transactionDao = TransactionDao(database = this),
+      preferencesDao = PreferencesDao(this, TestCoroutineContexts(scope.standardDispatcher)),
       budgetSync = sync,
       preferences = preferences,
       budgetScope = BudgetCoroutineScope(scope),

@@ -1,6 +1,7 @@
 package aktual.budget.tags.ui.edit
 
 import aktual.budget.model.TagId
+import aktual.budget.tags.vm.edit.DuplicateName
 import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.core.icons.AktualIcons
@@ -95,7 +96,7 @@ fun EditTagScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val hasUnsavedChanges by viewModel.hasUnsavedChanges.collectAsStateWithLifecycle()
   val canSave by viewModel.canSave.collectAsStateWithLifecycle()
-  val isDuplicateName by viewModel.isDuplicateName.collectAsStateWithLifecycle()
+  val duplicateName by viewModel.duplicateName.collectAsStateWithLifecycle()
   val saveError by viewModel.saveError.collectAsStateWithLifecycle()
 
   // navigate away only once the tag has actually been persisted
@@ -112,7 +113,7 @@ fun EditTagScreen(
     state = state,
     hasChanges = hasUnsavedChanges,
     canSave = canSave,
-    isDuplicateName = isDuplicateName,
+    duplicateName = duplicateName,
     saveError = saveError,
     onAction = { action ->
       when (action) {
@@ -141,7 +142,7 @@ private fun EditTagScaffold(
   canSave: Boolean,
   onAction: OnAction<EditTagAction>,
   modifier: Modifier = Modifier,
-  isDuplicateName: Boolean = false,
+  duplicateName: DuplicateName? = null,
   saveError: String? = null,
 ) {
   val editing = state as? Editing
@@ -197,7 +198,7 @@ private fun EditTagScaffold(
             tagState = tagState,
             descriptionState = descriptionState,
             color = state.color,
-            isDuplicateName = isDuplicateName,
+            duplicateName = duplicateName,
             onColorChange = { onAction(SetColor(it)) },
             onColorError = { onAction(SetColorError(it)) },
             scrollState = scrollState,
@@ -304,8 +305,8 @@ private fun EditTagContent(
   tagState: TextFieldState,
   descriptionState: TextFieldState,
   color: Color?,
-  isDuplicateName: Boolean,
-  onColorChange: (Color) -> Unit,
+  duplicateName: DuplicateName?,
+  onColorChange: (Color?) -> Unit,
   onColorError: (Boolean) -> Unit,
   scrollState: ScrollState,
   contentPadding: PaddingValues,
@@ -326,12 +327,14 @@ private fun EditTagContent(
         val error =
           when {
             isBlank -> Strings.tagsCreateTagRequired
-            isDuplicateName -> Strings.tagsCreateTagDuplicate
+            duplicateName == Visible -> Strings.tagsCreateTagDuplicate
+            duplicateName == Hidden -> Strings.tagsCreateTagDuplicateHidden
             else -> null
           }
         AktualTextField(
           modifier = Modifier.fillMaxWidth(),
           state = tagState,
+          inputTransformation = TagNameInputTransformation,
           singleLine = true,
           placeholderText = Strings.tagsCreateTagPlaceholder,
           isError = error != null,

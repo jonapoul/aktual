@@ -6,6 +6,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
+import aktual.budget.tags.domain.sanitiseTagName
 import aktual.budget.tags.domain.toColorOrNull
 import aktual.budget.tags.domain.toHex
 import aktual.budget.tags.vm.list.toTagItem
@@ -31,9 +32,9 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toPersistentSet
+import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -56,7 +57,8 @@ internal constructor(
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
   private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)
-  private val mutableExistingNames = MutableStateFlow(persistentSetOf<String>())
+  // other tag names, mapped to whether that tag is hidden
+  private val mutableExistingNames = MutableStateFlow(persistentMapOf<String, Boolean>())
   private val mutableTag = MutableStateFlow("")
   private val mutableDescription = MutableStateFlow("")
   private val mutableColor = MutableStateFlow<Color?>(null)
@@ -104,11 +106,15 @@ internal constructor(
       l != null && (tag != l.tag || description != l.description || color != l.color)
     }
 
-  val isDuplicateName: StateFlow<Boolean> =
+  val duplicateName: StateFlow<DuplicateName?> =
     viewModelScope.launchMolecule(Immediate) {
       val tag by mutableTag.collectAsState()
       val existingNames by mutableExistingNames.collectAsState()
-      tag.trim() in existingNames
+      when (existingNames[sanitiseTagName(tag)]) {
+        null -> null
+        true -> Hidden
+        false -> Visible
+      }
     }
 
   val canSave: StateFlow<Boolean> =
@@ -116,8 +122,8 @@ internal constructor(
       val tag by mutableTag.collectAsState()
       val colorError by mutableColorError.collectAsState()
       val existingNames by mutableExistingNames.collectAsState()
-      val trimmed = tag.trim()
-      trimmed.isNotBlank() && !colorError && trimmed !in existingNames
+      val name = sanitiseTagName(tag)
+      name.isNotEmpty() && !colorError && name !in existingNames
     }
 
   init {
@@ -163,7 +169,7 @@ internal constructor(
   }
 
   // the active tag names other than the one being edited, so renaming a tag to itself stays allowed
-  private suspend fun loadOtherTagNames(): PersistentSet<String> =
+  private suspend fun loadOtherTagNames(): PersistentMap<String, Boolean> =
     runCatchingCancellable(
       attempt = {
         tagsDao
@@ -171,12 +177,12 @@ internal constructor(
           .asSequence()
           .mapNotNull { it.toTagItem() }
           .filter { it.id != tagId }
-          .map { it.tag }
-          .toPersistentSet()
+          .associate { it.tag to it.hidden }
+          .toPersistentMap()
       },
       onFailure = { e ->
         log.e(e) { "Failed loading existing tag names" }
-        persistentSetOf()
+        persistentMapOf()
       },
     )
 
@@ -203,7 +209,7 @@ internal constructor(
       mutableSaveError.update { null }
       runCatchingCancellable(
         attempt = {
-          val tag = mutableTag.value.trim()
+          val tag = sanitiseTagName(mutableTag.value)
           val description = mutableDescription.value.trim()
           val color = mutableColor.value?.toHex()
 

@@ -35,6 +35,9 @@ sealed interface SyncedPrefKey {
     /** [aktual.budget.model.NumberFormat] */
     NumberFormat("numberFormat"),
 
+    /** [Boolean] */
+    ShowHiddenTags("show-hidden-tags"),
+
     /** [aktual.budget.model.UpcomingLength] */
     UpcomingScheduledTransactionLength("upcomingScheduledTransactionLength"),
   }

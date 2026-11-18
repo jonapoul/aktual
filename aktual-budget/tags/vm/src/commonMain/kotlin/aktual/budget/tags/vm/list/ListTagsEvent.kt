@@ -9,4 +9,8 @@ sealed interface ListTagsEvent {
   @JvmInline value class DeleteFailed(val tag: String?) : ListTagsEvent
 
   @JvmInline value class RestoreFailed(val tag: String) : ListTagsEvent
+
+  @JvmInline value class Hidden(val item: TagItem) : ListTagsEvent
+
+  @JvmInline value class VisibilityFailed(val tag: String) : ListTagsEvent
 }
