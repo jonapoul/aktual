@@ -50,19 +50,18 @@ data class SidebarAccountsState(
   val isSearching: Boolean
     get() = !search.isNullOrBlank()
 
-  // Searching opens everything, so matches aren't hidden
-  fun isOpen(section: SidebarSection): Boolean =
-    isSearching || (openSections[section.key] ?: (section != SidebarSection.ClosedAccounts))
-
   val allOpen: Boolean
     get() = toggleableSections.all(::isOpen)
+
+  // Searching opens everything, so matches aren't hidden
+  fun isOpen(section: SidebarSection): Boolean =
+    isSearching || openSections[section.key] ?: (section != ClosedAccounts)
 }
 
 // Expand/collapse all covers the on/off budget sections and their groups, as upstream
-internal fun DrawerAccounts.toggleableSections(): ImmutableList<SidebarSection> =
-  buildList {
-  add(SidebarSection.OnBudgetAccounts)
-  add(SidebarSection.OffBudgetAccounts)
+internal fun DrawerAccounts.toggleableSections(): ImmutableList<SidebarSection> = buildList {
+  add(OnBudgetAccounts)
+  add(OffBudgetAccounts)
   onBudget.buckets.forEach { bucket ->
     bucket.group?.let { add(SidebarSection.group(it.id, offBudget = false)) }
   }
@@ -70,4 +69,4 @@ internal fun DrawerAccounts.toggleableSections(): ImmutableList<SidebarSection> 
     bucket.group?.let { add(SidebarSection.group(it.id, offBudget = true)) }
   }
 }
-    .toImmutableList()
+  .toImmutableList()

@@ -8,8 +8,9 @@ import androidx.compose.runtime.Immutable
  */
 fun Colors.sidebarColors(): Colors = if (this == LightColors) LightSidebarColors else this
 
+/** [LightColors] with the redesigned sidebar's palette. */
 @Immutable
-private data object LightSidebarColors : Colors by LightColors {
+data object LightSidebarColors : Colors by LightColors {
   override val sidebarBackground = LightColors.sidebarRedesignBackground
   override val sidebarItemText = LightColors.sidebarRedesignItemText
   override val sidebarItemTextUpdated = sidebarItemText

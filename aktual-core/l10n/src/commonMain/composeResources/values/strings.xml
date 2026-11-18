@@ -2434,7 +2434,11 @@
   <string name="budget_nav_menu_privacy_on">Enable privacy mode</string>
   <string name="budget_nav_menu_privacy_off">Disable privacy mode</string>
 
-  <string name="budget_nav_accounts_all">All accounts</string>
+  <string name="budget_nav_accounts">Accounts</string>
+  <string name="budget_nav_accounts_expand_all">Expand all groups</string>
+  <string name="budget_nav_accounts_collapse_all">Collapse all groups</string>
+  <string name="budget_nav_accounts_find">Find account</string>
+  <string name="budget_nav_accounts_find_close">Close search</string>
   <string name="budget_nav_accounts_on_budget">On budget</string>
   <string name="budget_nav_accounts_off_budget">Off budget</string>
   <string name="budget_nav_accounts_closed">Closed accounts</string>
@@ -2442,6 +2446,9 @@
   <string name="budget_nav_accounts_collapse">Collapse %1$s</string>
 
   <string name="budget_nav_demo">Demo mode</string>
+  <string name="budget_nav_sync_synced">Synced</string>
+  <string name="budget_nav_sync_syncing">Syncing…</string>
+  <string name="budget_nav_sync_error">Sync error</string>
 
   <string name="budget_nav_rename_placeholder">Budget name</string>
   <string name="budget_nav_rename_confirm">Rename</string>

@@ -5,6 +5,7 @@ import aktual.core.theme.Colors
 import aktual.core.theme.CustomColors
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
+import aktual.core.theme.LightSidebarColors
 import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.Image
@@ -31,7 +32,8 @@ fun PageBackground(modifier: Modifier = Modifier) =
 @Composable
 private fun backgroundImage(colors: Colors) =
   when (colors) {
-    LightColors -> Drawables.wavyBackgroundLight
+    LightColors,
+    LightSidebarColors -> Drawables.wavyBackgroundLight
     DarkColors -> Drawables.wavyBackgroundDark
     MidnightColors -> Drawables.wavyBackgroundMidnight
     is CustomColors ->

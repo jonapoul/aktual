@@ -14,8 +14,9 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
 import aktual.budget.model.SyncResponse
-import aktual.budget.model.SyncState
 import aktual.budget.model.localChange
+import aktual.budget.navrail.vm.SidebarAccountsAction.Search
+import aktual.budget.navrail.vm.SidebarAccountsAction.ToggleSection
 import aktual.budget.schedules.domain.UnpostedSchedules
 import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.BudgetServer
@@ -195,9 +196,9 @@ class BudgetNavRailViewModelTest {
     insertAccount("a")
     viewModel(None, scope).accounts.test {
       assertThat(awaitLoadedState()).all {
-        transform { it.isOpen(SidebarSection.OnBudgetAccounts) }.isTrue()
-        transform { it.isOpen(SidebarSection.OffBudgetAccounts) }.isTrue()
-        transform { it.isOpen(SidebarSection.ClosedAccounts) }.isFalse()
+        transform { it.isOpen(OnBudgetAccounts) }.isTrue()
+        transform { it.isOpen(OffBudgetAccounts) }.isTrue()
+        transform { it.isOpen(ClosedAccounts) }.isFalse()
         prop(SidebarAccountsState::allOpen).isTrue()
       }
     }
@@ -211,15 +212,15 @@ class BudgetNavRailViewModelTest {
     viewModel.accounts.test {
       awaitLoaded()
 
-      viewModel.toggleSection(SidebarSection.OnBudgetAccounts)
+      viewModel.onAccountsAction(ToggleSection(OnBudgetAccounts))
       assertThat(awaitItem()).all {
-        transform { it.isOpen(SidebarSection.OnBudgetAccounts) }.isFalse()
+        transform { it.isOpen(OnBudgetAccounts) }.isFalse()
         prop(SidebarAccountsState::allOpen).isFalse()
       }
       assertThat(prefs[SidebarAccountsOpenState]).isEqualTo(mapOf("onbudget" to false))
 
-      viewModel.toggleSection(SidebarSection.ClosedAccounts)
-      assertThat(awaitItem().isOpen(SidebarSection.ClosedAccounts)).isTrue()
+      viewModel.onAccountsAction(ToggleSection(ClosedAccounts))
+      assertThat(awaitItem().isOpen(ClosedAccounts)).isTrue()
       assertThat(prefs[SidebarAccountsOpenState])
         .isEqualTo(mapOf("onbudget" to false, "closed" to true))
     }
@@ -233,19 +234,19 @@ class BudgetNavRailViewModelTest {
     viewModel.accounts.test {
       awaitLoaded()
 
-      viewModel.toggleAllSections()
+      viewModel.onAccountsAction(ToggleAllSections)
       assertThat(awaitItem()).all {
-        transform { it.isOpen(SidebarSection.OnBudgetAccounts) }.isFalse()
-        transform { it.isOpen(SidebarSection.OffBudgetAccounts) }.isFalse()
+        transform { it.isOpen(OnBudgetAccounts) }.isFalse()
+        transform { it.isOpen(OffBudgetAccounts) }.isFalse()
       }
 
-      viewModel.toggleSection(SidebarSection.OnBudgetAccounts)
+      viewModel.onAccountsAction(ToggleSection(OnBudgetAccounts))
       skipItems(1)
-      viewModel.toggleAllSections()
+      viewModel.onAccountsAction(ToggleAllSections)
       assertThat(awaitItem()).all {
         prop(SidebarAccountsState::allOpen).isTrue()
         // Not part of expand/collapse all
-        transform { it.isOpen(SidebarSection.ClosedAccounts) }.isFalse()
+        transform { it.isOpen(ClosedAccounts) }.isFalse()
       }
     }
   }
@@ -258,28 +259,28 @@ class BudgetNavRailViewModelTest {
 
     viewModel.accounts.test {
       awaitLoaded()
-      viewModel.toggleSection(SidebarSection.OnBudgetAccounts)
+      viewModel.onAccountsAction(ToggleSection(OnBudgetAccounts))
       skipItems(1)
 
-      viewModel.search("")
+      viewModel.onAccountsAction(Search(""))
       assertThat(awaitItem()).all {
         prop(SidebarAccountsState::search).isEqualTo("")
         prop(SidebarAccountsState::isSearching).isFalse()
       }
 
-      viewModel.search("sav")
+      viewModel.onAccountsAction(Search("sav"))
       assertThat(awaitItem()).all {
         transform { it.accounts.onBudget.accounts.map(DrawerAccount::name) }
           .containsExactly("Savings")
-        transform { it.isOpen(SidebarSection.OnBudgetAccounts) }.isTrue()
+        transform { it.isOpen(OnBudgetAccounts) }.isTrue()
         // Totals still cover the whole section
         transform { it.accounts.onBudget.accountCount }.isEqualTo(2)
       }
 
-      viewModel.search(null)
+      viewModel.onAccountsAction(Search(null))
       assertThat(awaitItem()).all {
         transform { it.accounts.onBudget.accounts.size }.isEqualTo(2)
-        transform { it.isOpen(SidebarSection.OnBudgetAccounts) }.isFalse()
+        transform { it.isOpen(OnBudgetAccounts) }.isFalse()
       }
     }
   }
@@ -287,21 +288,22 @@ class BudgetNavRailViewModelTest {
   @Test
   fun `Sync status follows the server and sync state`() = runDatabaseTest { scope ->
     viewModel(None, scope).headerState.test {
-      assertThat(awaitItem().syncStatus).isEqualTo(SidebarSyncStatus.LocalOnly)
+      assertThat(awaitItem().syncStatus).isEqualTo(LocalOnly)
     }
 
     viewModel(REMOTE, scope).headerState.test {
-      assertThat(awaitItem().syncStatus).isEqualTo(SidebarSyncStatus.Synced)
+      assertThat(awaitItem().syncStatus).isEqualTo(Synced)
 
-      syncStateHolder.update { SyncState.Syncing }
-      assertThat(awaitItem().syncStatus).isEqualTo(SidebarSyncStatus.Syncing)
+      syncStateHolder.update { Syncing }
+      assertThat(awaitItem().syncStatus).isEqualTo(Syncing)
 
-      syncStateHolder.update { SyncState.ClockDrift }
-      assertThat(awaitItem().syncStatus).isEqualTo(SidebarSyncStatus.SyncError)
+      syncStateHolder.update { ClockDrift }
+      assertThat(awaitItem().syncStatus).isEqualTo(SyncError)
     }
   }
 
-  private suspend fun ReceiveTurbine<SidebarAccountsState>.awaitLoadedState(): SidebarAccountsState {
+  private suspend fun ReceiveTurbine<SidebarAccountsState>.awaitLoadedState():
+    SidebarAccountsState {
     var item = awaitItem()
     while (item.accounts == DrawerAccounts()) item = awaitItem()
     return item
@@ -315,7 +317,7 @@ class BudgetNavRailViewModelTest {
 
   private fun section(vararg accounts: DrawerAccount) =
     DrawerAccountSection(
-      persistentListOf(DrawerAccountBucket(group = null, persistentListOf(*accounts)))
+      persistentListOf(DrawerAccountBucket(group = null, persistentListOf(*accounts))),
     )
 
   private suspend fun BudgetDatabase.insertAccount(

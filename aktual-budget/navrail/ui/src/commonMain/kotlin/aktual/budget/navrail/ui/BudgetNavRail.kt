@@ -43,6 +43,7 @@ import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.budgetTabOf
 import aktual.core.theme.Colors
+import aktual.core.theme.LightColors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -84,6 +85,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemColors
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -129,6 +131,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@Suppress("LongMethod")
 @Composable
 internal fun BudgetNavRail(
   appStack: NavStack<NavKey>,
@@ -194,6 +197,7 @@ internal fun BudgetNavRail(
       },
       // Stays open, so the balances can be seen changing
       onSetPrivacyMode = viewModel::setPrivacyMode,
+      onAccountsAction = viewModel::onAccountsAction,
       onAction = { action ->
         close()
         onMenuAction(action)
@@ -483,12 +487,18 @@ private fun SidebarNavLayout(
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.fillMaxSize()) {
-    PermanentDrawerSheet(
-      modifier = Modifier.width(SidebarWidth),
-      drawerContainerColor = colors.sidebarBackground,
-      drawerContentColor = colors.sidebarItemText,
-      content = sidebar,
-    )
+    // Upstream only borders the sidebar in the light theme, where it's white like the page
+    val showBorder = colors == LightColors
+    val borderColor = colors.sidebarRedesignRightBorder
+    ProvideSidebarColors {
+      PermanentDrawerSheet(
+        modifier = Modifier.width(SidebarWidth),
+        drawerContainerColor = colors.sidebarBackground,
+        drawerContentColor = colors.sidebarItemText,
+        content = sidebar,
+      )
+    }
+    if (showBorder) VerticalDivider(thickness = 2.dp, color = borderColor)
     BudgetNavDisplay(
       contributors = contributors,
       appStack = appStack,
@@ -559,7 +569,7 @@ private fun SideNavRail(
   onSelectTab: (BudgetTab) -> Unit,
   onMenuClick: () -> Unit,
   modifier: Modifier = Modifier,
-) {
+) = ProvideSidebarColors {
   NavigationRail(
     modifier = modifier,
     containerColor = colors.sidebarBackground,
@@ -598,7 +608,7 @@ private fun Colors.navRailItem(): NavigationRailItemColors =
   NavigationRailItemColors(
     selectedIconColor = sidebarItemTextSelected,
     selectedTextColor = sidebarItemTextSelected,
-    selectedIndicatorColor = sidebarItemTextSelected.disabled,
+    selectedIndicatorColor = sidebarItemBackgroundSelected,
     unselectedIconColor = sidebarItemText,
     unselectedTextColor = sidebarItemText,
     disabledIconColor = sidebarItemText.disabled,

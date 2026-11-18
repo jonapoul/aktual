@@ -56,7 +56,7 @@ data class DrawerAccountBucket(
   val group: DrawerAccountGroup?,
   val accounts: ImmutableList<DrawerAccount>,
   val total: Amount = accounts.sumOf { it.balance },
-  val failedCount: Int = accounts.count { it.syncState is AccountSyncState.Failed },
+  val failedCount: Int = accounts.count { it.syncState is Failed },
 )
 
 @Immutable data class DrawerAccountGroup(val id: AccountGroupId, val name: String)
@@ -91,9 +91,10 @@ private fun List<GetAllWithBalances>.toSection(
   newTransactions: Map<AccountId, Int>,
 ): DrawerAccountSection {
   val groupIds = groups.mapTo(mutableSetOf()) { it.id }
-  val byGroup =
-    groupBy { row -> row.account_group_id?.takeIf { it in groupIds } }
-      .mapValues { (_, rows) -> rows.map { it.toDrawerAccount(newTransactions) } }
+  val byGroup = groupBy { row ->
+    row.account_group_id?.takeIf { it in groupIds }
+  }
+    .mapValues { (_, rows) -> rows.map { it.toDrawerAccount(newTransactions) } }
 
   val buckets = buildList {
     byGroup[null]?.let { add(DrawerAccountBucket(group = null, it.toImmutableList())) }
@@ -114,8 +115,8 @@ private fun GetAllWithBalances.toDrawerAccount(newTransactions: Map<AccountId, I
   )
 
 /**
- * Keeps the accounts whose name, or group name, contains [query]. As upstream's
- * filterSidebarTree, groups left empty are dropped.
+ * Keeps the accounts whose name, or group name, contains [query]. As upstream's filterSidebarTree,
+ * groups left empty are dropped.
  */
 internal fun DrawerAccounts.filter(query: String): DrawerAccounts {
   val trimmed = query.trim()
@@ -137,5 +138,5 @@ private fun DrawerAccountSection.filter(query: String): DrawerAccountSection =
             bucket.accounts.filter { "$groupName ${it.name}".contains(query, ignoreCase = true) }
           if (accounts.isEmpty()) null else bucket.copy(accounts = accounts.toImmutableList())
         }
-        .toImmutableList()
+        .toImmutableList(),
   )

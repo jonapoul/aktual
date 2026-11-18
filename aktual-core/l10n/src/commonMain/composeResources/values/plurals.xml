@@ -231,4 +231,10 @@
     <item quantity="one">%1$d transfer to another account becomes a normal transaction</item>
     <item quantity="other">%1$d transfers to other accounts become normal transactions</item>
   </plurals>
+
+  <!-- other -->
+  <plurals name="budget_nav_accounts_failed">
+    <item quantity="one">%1$d account needs attention</item>
+    <item quantity="other">%1$d accounts need attention</item>
+  </plurals>
 </resources>

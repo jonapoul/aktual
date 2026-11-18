@@ -7,7 +7,7 @@ data class DrawerHeaderState(
   val budgetName: String?,
   val serverHost: String?,
   val canManageApiKeys: Boolean = false,
-  val syncStatus: SidebarSyncStatus = SidebarSyncStatus.Synced,
+  val syncStatus: SidebarSyncStatus = Synced,
 ) {
   val isDemo: Boolean
     get() = serverHost == null

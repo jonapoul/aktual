@@ -4,9 +4,9 @@ import aktual.api.client.BudgetSyncApi
 import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.AccountGroupDao
-import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
 import aktual.budget.model.SyncState
 import aktual.budget.model.localChange
 import aktual.budget.schedules.domain.UnpostedSchedules
@@ -42,6 +42,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @Stable
+@Suppress("LongParameterList") // One source per part of the sidebar
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
 class BudgetNavRailViewModel
@@ -103,20 +104,21 @@ internal constructor(
       }
       .stateIn(viewModelScope, Eagerly, initialValue = SidebarAccountsState())
 
-  fun toggleSection(section: SidebarSection) {
-    val isOpen = accounts.value.isOpen(section)
-    saveOpenSections(mapOf(section.key to !isOpen))
-  }
+  val hasUnpostedSchedules: StateFlow<Boolean> = unpostedSchedules.hasUnposted
 
-  fun toggleAllSections() {
-    val state = accounts.value
-    val open = !state.allOpen
-    saveOpenSections(state.toggleableSections.associate { it.key to open })
-  }
-
-  // Null hides the search field
-  fun search(query: String?) {
-    search.update { query }
+  fun onAccountsAction(action: SidebarAccountsAction) {
+    when (action) {
+      is ToggleSection -> {
+        val isOpen = accounts.value.isOpen(action.section)
+        saveOpenSections(mapOf(action.section.key to !isOpen))
+      }
+      ToggleAllSections -> {
+        val state = accounts.value
+        val open = !state.allOpen
+        saveOpenSections(state.toggleableSections.associate { it.key to open })
+      }
+      is Search -> search.update { action.query }
+    }
   }
 
   private fun saveOpenSections(changes: Map<String, Boolean>) {
@@ -125,8 +127,6 @@ internal constructor(
       metadata.set(SidebarAccountsOpenState, current + changes)
     }
   }
-
-  val hasUnpostedSchedules: StateFlow<Boolean> = unpostedSchedules.hasUnposted
 
   fun postUnpostedSchedules() = unpostedSchedules.post()
 
@@ -160,7 +160,7 @@ internal constructor(
     } else {
       when (state) {
         is SyncState.Error -> SyncError
-        Syncing -> SidebarSyncStatus.Syncing
+        Syncing -> Syncing
         Inactive -> Synced
       }
     }

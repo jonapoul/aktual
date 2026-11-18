@@ -43,7 +43,8 @@ class DbMetadataKey<T : Any>(
     val UserId = stringKey("userId")
     val EncryptKeyId = stringKey("encryptKeyId")
     val TransactionDensity = serializableKey<TransactionsDensity>("transactionDensity")
-    val SidebarAccountsOpenState = serializableKey<Map<String, Boolean>>("sidebar.accountsOpenState")
+    val SidebarAccountsOpenState =
+      serializableKey<Map<String, Boolean>>("sidebar.accountsOpenState")
 
     fun boolKey(name: String): DbMetadataKey<Boolean> =
       DbMetadataKey(name, decode = { it.jsonPrimitive.boolean }, encode = { JsonPrimitive(it) })
