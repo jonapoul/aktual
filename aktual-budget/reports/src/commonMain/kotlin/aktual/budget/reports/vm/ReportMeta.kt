@@ -25,6 +25,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
+import org.intellij.lang.annotations.Language
 
 // From packages/loot-core/src/types/models/dashboard.ts
 @Immutable
@@ -117,7 +118,7 @@ data class SummaryReportMeta(
   @SerialName("conditions") val conditions: List<Condition>? = null,
   @SerialName("conditionsOp") val conditionsOp: ConditionOp? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
-  @SerialName("content") val content: String? = null,
+  @SerialName("content") @Language("JSON") val content: String? = null,
 ) : ReportMeta
 
 @Serializable

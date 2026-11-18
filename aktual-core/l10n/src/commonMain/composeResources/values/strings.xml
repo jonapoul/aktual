@@ -1388,6 +1388,8 @@
   <string name="reports_summary_num_years">number of years</string>
   <string name="reports_summary_num_transactions">number of transactions</string>
   <string name="reports_summary_all_time_divisor">All time divisor</string>
+  <string name="reports_summary_divisor_match">Divisor match</string>
+  <string name="reports_summary_divisor_conditions">Divisor conditions</string>
 
   <string name="reports_calendar_income">Income:</string>
   <string name="reports_calendar_expenses">Expenses:</string>

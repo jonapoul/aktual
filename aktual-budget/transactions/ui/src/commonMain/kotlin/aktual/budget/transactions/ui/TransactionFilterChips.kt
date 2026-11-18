@@ -4,8 +4,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionSet
 import aktual.budget.model.Field
 import aktual.budget.rules.components.ConditionSheet
+import aktual.budget.rules.components.description
 import aktual.budget.rules.components.label
-import aktual.budget.rules.components.valueLabel
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionEntityLists
@@ -212,13 +212,7 @@ private fun ConditionChip(
   onClick: () -> Unit,
   onRemove: () -> Unit,
 ) {
-  val label =
-    listOfNotNull(
-        condition.field.label().replaceFirstChar { it.titlecase() },
-        condition.operator.label(),
-        condition.valueLabel(names),
-      )
-      .joinToString(separator = " ")
+  val label = condition.description(names)
 
   Chip(colors = ChipDefaults.selectableColors(isSelected = true), onClick = onClick) {
     Text(

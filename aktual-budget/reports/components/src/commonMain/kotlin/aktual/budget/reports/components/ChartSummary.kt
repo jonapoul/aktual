@@ -1,12 +1,16 @@
 package aktual.budget.reports.components
 
 import aktual.budget.model.Amount
+import aktual.budget.model.Condition
+import aktual.budget.model.ConditionSet
 import aktual.budget.reports.vm.DateRange
 import aktual.budget.reports.vm.PercentageDivisor
 import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.SummaryData
+import aktual.budget.reports.vm.SummaryFilter
 import aktual.budget.reports.vm.SummaryReportMeta
 import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.rules.components.description
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloseBracket
 import aktual.core.icons.Equals
@@ -20,6 +24,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.Chip
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
@@ -61,7 +66,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
@@ -69,6 +76,8 @@ import kotlinx.datetime.Month.JANUARY
 import kotlinx.datetime.Month.JULY
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.yearMonth
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
 
 @Composable
 internal fun SummaryChart(
@@ -181,7 +190,7 @@ private fun RegularPerMonth(
           verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay()
+          FilterDisplay(data.filter)
         }
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -249,7 +258,7 @@ private fun RegularPerYear(
           verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay()
+          FilterDisplay(data.filter)
         }
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -317,7 +326,7 @@ private fun RegularPerTransaction(
           verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay()
+          FilterDisplay(data.filter)
         }
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -386,7 +395,7 @@ private fun RegularPercent(
           verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay()
+          FilterDisplay(data.filter)
         }
 
         HorizontalDivider(thickness = 2.dp, color = colors.pageText)
@@ -397,7 +406,7 @@ private fun RegularPercent(
           verticalAlignment = CenterVertically,
         ) {
           SumColumn(data.divisor)
-          FilterDisplay()
+          FilterDisplay(data.divisorFilter)
         }
       }
 
@@ -446,7 +455,7 @@ private fun RegularSum(
       verticalAlignment = CenterVertically,
     ) {
       SumColumn(data)
-      FilterDisplay()
+      FilterDisplay(data.filter)
     }
 
     Result { CompactAmount(data.value) }
@@ -545,7 +554,7 @@ private fun DivisorCheckbox(
 }
 
 @Composable
-private fun FilterDisplay() =
+private fun FilterDisplay(filter: SummaryFilter) =
   Row(modifier = Modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
     Icon(
       modifier = Modifier.size(50.dp),
@@ -553,14 +562,38 @@ private fun FilterDisplay() =
       contentDescription = null,
     )
 
-    // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
-    Text(
-      modifier = Modifier.weight(1f, fill = false),
-      text = Strings.reportsSummaryAll,
-      fontSize = textSizes.heading,
-      textAlign = Center,
-      color = colors.pageTextPositive,
-    )
+    val conditions = filter.conditions.conditions
+    if (conditions.isEmpty()) {
+      Text(
+        modifier = Modifier.weight(1f, fill = false),
+        text = Strings.reportsSummaryAll,
+        fontSize = textSizes.heading,
+        textAlign = Center,
+        color = colors.pageTextPositive,
+      )
+    } else {
+      Column(
+        modifier = Modifier.weight(1f, fill = false),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+      ) {
+        if (conditions.size > 1) {
+          Text(
+            text =
+              if (filter.conditions.op == Or) {
+                Strings.reportsFormulaQueryMatchAny
+              } else {
+                Strings.reportsFormulaQueryMatchAll
+              },
+            style = typography.bodySmall,
+            color = colors.pageTextSubdued,
+          )
+        }
+        conditions.fastForEach { condition ->
+          Chip(text = condition.description(filter.names), size = Small)
+        }
+      }
+    }
 
     Icon(
       modifier = Modifier.size(50.dp),
@@ -625,6 +658,11 @@ private class SummaryChartProvider :
     SummaryChartParams(SUM_DATA, compact = true),
     SummaryChartParams(SUM_DATA, compact = false),
     SummaryChartParams(SUM_DATA, compact = false, private = true),
+    SummaryChartParams(SUM_DATA.copy(filter = PREVIEW_FILTER), compact = false),
+    SummaryChartParams(
+      PERCENT_DATA.copy(filter = PREVIEW_FILTER, divisorFilter = PREVIEW_DIVISOR_FILTER),
+      compact = false,
+    ),
     SummaryChartParams(PERCENT_DATA, compact = true),
     SummaryChartParams(PER_MONTH_DATA, compact = true),
     SummaryChartParams(PER_MONTH_DATA, compact = false),
@@ -643,6 +681,27 @@ private class SummaryChartProvider :
       compact = false,
       private = true,
     ),
+  )
+
+private val PREVIEW_FILTER =
+  SummaryFilter(
+    conditions =
+      ConditionSet(
+        listOf(
+          Condition(Category, OneOf, JsonArray(listOf(JsonPrimitive("food")))),
+          Condition(Notes, Contains, JsonPrimitive("weekly shop")),
+        ),
+        op = Or,
+      ),
+    names = persistentMapOf("food" to "Food", "spending" to "Spending"),
+  )
+
+private val PREVIEW_DIVISOR_FILTER =
+  PREVIEW_FILTER.copy(
+    conditions =
+      ConditionSet(
+        listOf(Condition(CategoryGroup, OneOf, JsonArray(listOf(JsonPrimitive("spending"))))),
+      ),
   )
 
 private val SUM_DATA =

@@ -15,6 +15,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -231,12 +232,14 @@ sealed interface SankeyColor {
 @Immutable
 sealed interface SummaryData : ChartData, DateRange {
   val title: String
+  val filter: SummaryFilter
 
   data class Sum(
     override val title: String,
     override val start: LocalDate,
     override val end: LocalDate,
     val value: Amount,
+    override val filter: SummaryFilter = All,
   ) : SummaryData
 
   data class AveragePerMonth(
@@ -246,6 +249,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val numMonths: Float,
     val total: Amount,
     val average: Amount,
+    override val filter: SummaryFilter = All,
   ) : SummaryData
 
   data class AveragePerYear(
@@ -255,6 +259,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val numYears: Float,
     val total: Amount,
     val average: Amount,
+    override val filter: SummaryFilter = All,
   ) : SummaryData
 
   data class AveragePerTransaction(
@@ -264,6 +269,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val numTransactions: Int,
     val total: Amount,
     val average: Amount,
+    override val filter: SummaryFilter = All,
   ) : SummaryData
 
   data class Percentage(
@@ -274,7 +280,20 @@ sealed interface SummaryData : ChartData, DateRange {
     val denominator: Amount,
     val percent: Percent,
     val divisor: PercentageDivisor,
+    override val filter: SummaryFilter = All,
+    val divisorFilter: SummaryFilter = All,
   ) : SummaryData
+}
+
+// The conditions a summary's transactions match, with the names of the entities they point to
+@Immutable
+data class SummaryFilter(
+  val conditions: ConditionSet,
+  val names: ImmutableMap<String, String> = persistentMapOf(),
+) {
+  companion object {
+    val All = SummaryFilter(ConditionSet(emptyList()))
+  }
 }
 
 @Immutable

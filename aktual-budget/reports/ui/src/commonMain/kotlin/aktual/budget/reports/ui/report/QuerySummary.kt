@@ -6,8 +6,7 @@ import aktual.budget.reports.vm.FormulaReportMeta
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
-import aktual.budget.rules.components.label
-import aktual.budget.rules.components.valueLabel
+import aktual.budget.rules.components.description
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.core.l10n.Strings
 import aktual.core.ui.stringShort
@@ -25,16 +24,10 @@ import kotlinx.serialization.json.put
 @Composable
 internal fun FormulaQuery.conditionsSummary(names: ImmutableMap<String, String>): String {
   if (conditions.isEmpty()) return Strings.reportsFormulaViewerNoConditions
-  val shown = conditions.take(MAX_SUMMARY_CONDITIONS).map { it.summary(names) }
+  val shown = conditions.take(MAX_SUMMARY_CONDITIONS).map { it.description(names) }
   val hidden = conditions.size - shown.size
   val more = if (hidden > 0) Strings.reportsFormulaViewerMoreConditions(hidden) else null
   return (shown + listOfNotNull(more)).joinToString(SEPARATOR)
-}
-
-@Composable
-private fun Condition.summary(names: ImmutableMap<String, String>): String {
-  val field = field.label().replaceFirstChar { it.titlecase() }
-  return listOfNotNull(field, operator.label(), valueLabel(names)).joinToString(" ")
 }
 
 // A query with no time frame isn't filtered by date, so it shows as all time

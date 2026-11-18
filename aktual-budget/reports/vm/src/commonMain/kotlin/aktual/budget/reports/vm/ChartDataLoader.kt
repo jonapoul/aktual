@@ -37,6 +37,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.WidgetType
 import aktual.budget.model.parseScheduleAmount
+import aktual.budget.rules.domain.ConditionEntitiesLoader
 import aktual.budget.rules.domain.TransactionFilter
 import aktual.budget.rules.domain.TransactionFilterCompiler
 import aktual.core.model.Percent
@@ -84,6 +85,7 @@ internal class ChartDataLoader(
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
   private val compiler: TransactionFilterCompiler,
+  private val entities: ConditionEntitiesLoader,
 ) {
   fun load(meta: ReportMeta): Flow<ChartData> =
     when (meta) {
@@ -414,7 +416,20 @@ internal class ChartDataLoader(
   // summarySpreadsheet()
   fun summary(meta: SummaryReportMeta): Flow<ChartData> {
     val content = parseSummaryContent(meta.content)
-    val filter = compiler.compile(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    val conditions = ConditionSet(meta.conditions.orEmpty(), meta.conditionsOp ?: And)
+    val divisorConditions =
+      ConditionSet(
+        if (content.type == Percentage) content.divisorConditions.orEmpty() else emptyList(),
+        content.divisorOp,
+      )
+    val filter = compiler.compile(conditions.conditions, conditions.op)
+    // Only needed to show the conditions
+    val names =
+      if (conditions.conditions.isEmpty() && divisorConditions.conditions.isEmpty()) {
+        flowOf(persistentMapOf())
+      } else {
+        entities.observe().map { it.names }
+      }
     return dao
       .observeTransactionDateBounds()
       .flatMapLatest { bounds ->
@@ -445,8 +460,13 @@ internal class ChartDataLoader(
           } else {
             flowOf(emptyList())
           }
-        combine(amounts, divisorAmounts) { rows, divisor ->
-          calculateSummary(params, rows.amountsMatching(filter), divisor)
+        combine(amounts, divisorAmounts, names) { rows, divisor, names ->
+          val named =
+            params.copy(
+              filter = SummaryFilter(conditions, names),
+              divisorFilter = SummaryFilter(divisorConditions, names),
+            )
+          calculateSummary(named, rows.amountsMatching(filter), divisor)
         }
       }
       .flowOn(contexts.default)
