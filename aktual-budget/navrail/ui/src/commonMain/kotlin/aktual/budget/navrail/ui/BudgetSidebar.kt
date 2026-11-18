@@ -85,7 +85,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -479,20 +478,14 @@ private fun AccountGroupBucket(
       tint = colors.sidebarTextSubdued,
     )
 
-    Text(
-      modifier = Modifier.weight(1f, fill = false).semantics { heading() },
-      text = group.name,
+    HeaderTitle(
+      title = group.name,
+      accountCount = bucket.accounts.size.takeUnless { isExpanded },
+      failedCount = bucket.failedCount,
       style = typography.labelMedium,
-      fontWeight = SemiBold,
       color = colors.sidebarTextSubdued,
-      maxLines = 1,
-      overflow = Ellipsis,
+      modifier = Modifier.weight(1f),
     )
-
-    if (!isExpanded) CountPill(bucket.accounts.size)
-    SyncErrorRollup(bucket.failedCount)
-
-    Spacer(Modifier.weight(1f))
 
     BalanceText(
       amount = bucket.total,
@@ -592,24 +585,50 @@ private fun AccountSectionHeader(
       )
     }
 
+    HeaderTitle(
+      title = title,
+      accountCount = accountCount.takeUnless { isExpanded },
+      failedCount = failedCount,
+      style = typography.labelLarge,
+      color = color,
+      modifier = Modifier.weight(1f),
+    )
+
+    if (total != null) {
+      BalanceText(amount = total, style = typography.labelLarge, color = color)
+    }
+  }
+}
+
+// Fills the row's free space, so the title only shortens when it has to and the balance stays put
+@Composable
+private fun HeaderTitle(
+  title: String,
+  accountCount: Int?,
+  failedCount: Int,
+  style: TextStyle,
+  color: Color,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier,
+    horizontalArrangement = spacedBy(6.dp),
+    verticalAlignment = CenterVertically,
+  ) {
     Text(
       modifier = Modifier.weight(1f, fill = false).semantics { heading() },
       text = title,
-      style = typography.labelLarge,
+      style = style,
       fontWeight = SemiBold,
       color = color,
       maxLines = 1,
       overflow = Ellipsis,
     )
 
-    if (!isExpanded) CountPill(accountCount)
-    SyncErrorRollup(failedCount)
-
-    Spacer(Modifier.weight(1f))
-
-    if (total != null) {
-      BalanceText(amount = total, style = typography.labelLarge, color = color)
+    if (accountCount != null) {
+      CountPill(accountCount)
     }
+    SyncErrorRollup(failedCount)
   }
 }
 
