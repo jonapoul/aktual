@@ -23,6 +23,7 @@ class SyncedPrefKeyGlobalTest {
         SyncedPrefKey.Global.NumberFormat,
         ShowHiddenTags,
         SyncTransferDate,
+        TransactionTableColumns,
         UpcomingScheduledTransactionLength,
       ),
   ) {

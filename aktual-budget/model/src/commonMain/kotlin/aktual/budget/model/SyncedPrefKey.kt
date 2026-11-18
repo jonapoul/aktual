@@ -41,6 +41,9 @@ sealed interface SyncedPrefKey {
     /** [Boolean], whether editing a transfer's date also moves the other side */
     SyncTransferDate("sync-transfer-date"),
 
+    /** Transaction table columns as JSON, for views with none of their own */
+    TransactionTableColumns("transaction-table-columns"),
+
     /** [aktual.budget.model.UpcomingLength] */
     UpcomingScheduledTransactionLength("upcomingScheduledTransactionLength"),
   }
@@ -77,7 +80,14 @@ sealed interface SyncedPrefKey {
      */
     data class CustomSyncMappings(override val id: AccountId) : PerAccount("custom-sync-mappings")
 
-    /** [Boolean], the running balance of each transaction */
+    /**
+     * Transaction table columns as JSON, overriding [Global.TransactionTableColumns]. Upstream also
+     * keys it by views that aren't accounts, e.g. "all-accounts"
+     */
+    data class TransactionTableColumns(override val id: AccountId) :
+      PerAccount("transaction-table-columns")
+
+    /** [Boolean], the running balance of each transaction. Superseded by the table columns */
     data class ShowBalances(override val id: AccountId) : PerAccount("show-balances")
 
     /** [Boolean], the account's cleared and uncleared totals */
@@ -110,6 +120,7 @@ sealed interface SyncedPrefKey {
         ?: fromId(key, "custom-sync-mappings", PerAccount::CustomSyncMappings)
         ?: fromId(key, "show-extra-balances", PerAccount::ShowExtraBalances)
         ?: fromId(key, NEW_TRANSACTIONS_SEEN_PREFIX, PerAccount::NewTransactionsSeen)
+        ?: fromId(key, "transaction-table-columns", PerAccount::TransactionTableColumns)
         ?: Other(key)
 
     private fun fromId(
