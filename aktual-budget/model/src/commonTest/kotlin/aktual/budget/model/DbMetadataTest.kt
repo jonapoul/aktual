@@ -136,6 +136,7 @@ class DbMetadataTest {
         "sidebar.accountsOpenState": { "onbudget": false, "closed": true, "group-abc-on": false }
       }
       """
+        .trimIndent()
     val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
     assertThat(decoded[SidebarAccountsOpenState])
       .isEqualTo(mapOf("onbudget" to false, "closed" to true, "group-abc-on" to false))
