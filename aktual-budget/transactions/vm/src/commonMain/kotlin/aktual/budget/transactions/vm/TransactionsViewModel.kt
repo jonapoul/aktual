@@ -17,7 +17,6 @@ import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.DbMetadataKey.Companion.TransactionDensity
 import aktual.budget.model.SyncedPrefKey.PerAccount.HideReconciled
-import aktual.budget.model.SyncedPrefKey.PerAccount.ShowBalances
 import aktual.budget.model.SyncedPrefKey.PerAccount.ShowExtraBalances
 import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
@@ -181,7 +180,7 @@ internal constructor(
       MutableStateFlow(null)
     } else {
       combine(
-          viewPrefs.observe(ShowBalances(accountId)),
+          viewPrefs.observeRunningBalance(accountId),
           viewPrefs.observe(HideReconciled(accountId)),
           viewPrefs.observe(ShowExtraBalances(accountId)),
           ::AccountViewOptions,
@@ -429,16 +428,16 @@ internal constructor(
 
   fun setAccountOption(option: AccountOption, enabled: Boolean) {
     val account = accountId ?: return
-    val key =
-      when (option) {
-        RunningBalance -> ShowBalances(account)
-        HideReconciledRows -> HideReconciled(account)
-        ExtraBalances -> ShowExtraBalances(account)
-      }
     viewModelScope.launch {
       runCatchingCancellable(
-        attempt = { viewPrefs.set(key, enabled) },
-        onFailure = { e -> log.w(e) { "Failed setting $key" } },
+        attempt = {
+          when (option) {
+            RunningBalance -> viewPrefs.setRunningBalance(account, enabled)
+            HideReconciledRows -> viewPrefs.set(HideReconciled(account), enabled)
+            ExtraBalances -> viewPrefs.set(ShowExtraBalances(account), enabled)
+          }
+        },
+        onFailure = { e -> log.w(e) { "Failed setting $option" } },
       )
     }
   }

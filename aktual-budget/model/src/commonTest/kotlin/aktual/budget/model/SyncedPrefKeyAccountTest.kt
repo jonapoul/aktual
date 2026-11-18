@@ -9,6 +9,7 @@ import aktual.budget.model.SyncedPrefKey.PerAccount.ShowExtraBalances
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportPending
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportTransactions
 import aktual.budget.model.SyncedPrefKey.PerAccount.SyncUpdateDates
+import aktual.budget.model.SyncedPrefKey.PerAccount.TransactionTableColumns
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
@@ -36,5 +37,6 @@ class SyncedPrefKeyAccountTest {
     assertThat(decode("hide-reconciled-abc-123")).isEqualTo(HideReconciled(id))
     assertThat(decode("show-balances-abc-123")).isEqualTo(ShowBalances(id))
     assertThat(decode("show-extra-balances-abc-123")).isEqualTo(ShowExtraBalances(id))
+    assertThat(decode("transaction-table-columns-abc-123")).isEqualTo(TransactionTableColumns(id))
   }
 }
