@@ -3,6 +3,7 @@ package aktual.api.client
 import aktual.api.model.banksync.ExternalBankAccount
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
+import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -60,7 +61,7 @@ internal fun enableBankingAccounts(accounts: JsonArray): List<ExternalBankAccoun
       institution = json.string("institution"),
       orgId = id,
       orgDomain = null,
-      balance = json.number(BALANCE)?.roundToLong()?.let(::Amount),
+      balance = externalBalance(json.number(BALANCE), inCents = true),
     )
   }
 
@@ -72,7 +73,7 @@ private fun simpleFin(json: JsonObject): ExternalBankAccount? {
     institution = org?.string(NAME),
     orgId = org?.string(ID),
     orgDomain = org?.string("domain"),
-    balance = json.number(BALANCE)?.let(::Amount),
+    balance = externalBalance(json.number(BALANCE), inCents = false),
   )
 }
 
@@ -95,7 +96,7 @@ private fun pluggyAi(json: JsonObject): ExternalBankAccount? {
     institution = name,
     orgId = json.string(ID),
     orgDomain = null,
-    balance = balance?.let(::Amount),
+    balance = externalBalance(balance, inCents = false),
   )
 }
 
@@ -107,8 +108,18 @@ private fun akahu(json: JsonObject): ExternalBankAccount? {
     institution = connection?.string(NAME),
     orgId = connection?.string(AKAHU_ID),
     orgDomain = connection?.string(NAME),
-    balance = (json[BALANCE] as? JsonObject)?.number("current")?.let(::Amount),
+    balance = externalBalance((json[BALANCE] as? JsonObject)?.number("current"), inCents = false),
   )
+}
+
+// A provider balance in cents, or null if it's missing, invalid or too large to format. Enable
+// Banking already reports cents, the others decimal amounts. Ported from externalBalanceToInteger()
+// in upstream's packages/desktop-client/src/components/modals/SelectLinkedAccountsModal.tsx
+// (actualbudget/actual#9529)
+internal fun externalBalance(balance: Double?, inCents: Boolean): Amount? {
+  if (balance == null || !balance.isFinite()) return null
+  val cents = if (inCents) balance else (balance * CENTS_PER_UNIT).roundToLong().toDouble()
+  return if (cents % 1.0 == 0.0 && abs(cents) <= MAX_SAFE_NUMBER) Amount(cents.toLong()) else null
 }
 
 private fun JsonObject.string(key: String): String? = get(key).primitive()?.contentOrNull
@@ -120,6 +131,10 @@ private fun JsonObject.number(key: String): Double? =
   }
 
 private fun JsonElement?.primitive(): JsonPrimitive? = this as? JsonPrimitive
+
+// Upstream's MAX_SAFE_NUMBER in packages/loot-core/src/shared/util.ts: 2^51 - 1
+private const val MAX_SAFE_NUMBER = 2251799813685247.0
+private const val CENTS_PER_UNIT = 100.0
 
 private const val NAME = "name"
 private const val ID = "id"
