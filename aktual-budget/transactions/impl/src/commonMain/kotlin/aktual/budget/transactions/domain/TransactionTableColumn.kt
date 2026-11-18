@@ -84,6 +84,7 @@ private fun savedColumns(raw: String?): List<TransactionTableColumn> {
     }
   return array
     .orEmpty()
+    .asSequence()
     .mapNotNull { element ->
       val obj = element as? JsonObject ?: return@mapNotNull null
       val id = (obj["id"] as? JsonPrimitive)?.contentOrNull?.takeIf { it in COLUMN_IDS }
@@ -92,4 +93,5 @@ private fun savedColumns(raw: String?): List<TransactionTableColumn> {
       id?.let { TransactionTableColumn(it, hidden) }
     }
     .distinctBy { it.id }
+    .toList()
 }
