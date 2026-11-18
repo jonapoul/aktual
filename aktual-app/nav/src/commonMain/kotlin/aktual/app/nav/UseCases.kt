@@ -90,7 +90,6 @@ data class FormatConfig(
 
 @Inject
 class FormatConfigUseCase(
-  private val prefs: AppPreferences,
   private val formats: FormatPreferences,
   private val runLevelState: RunLevelState,
 ) {
@@ -103,7 +102,6 @@ class FormatConfigUseCase(
 
     return scope.launchMolecule(Immediate) {
       val budget by budgetFormats.collectAsState(initial = BudgetFormats())
-      val isPrivacyEnabled by prefs.isPrivacyEnabled.collectAsStateFlow(scope)
       val distanceUnit by formats.distanceUnit.collectAsStateFlow(scope)
       FormatConfig(
         dateFormat = budget.dateFormat,
@@ -112,7 +110,7 @@ class FormatConfigUseCase(
         currency = budget.currency,
         symbolPosition = budget.symbolPosition,
         spaceBetweenAmountAndSymbol = budget.spaceBetweenAmountAndSymbol,
-        isPrivacyEnabled = isPrivacyEnabled,
+        isPrivacyEnabled = budget.isPrivacyEnabled,
         distanceUnit = distanceUnit,
       )
     }
@@ -126,6 +124,7 @@ class FormatConfigUseCase(
     val currency: Currency = Default,
     val symbolPosition: CurrencySymbolPosition = Default,
     val spaceBetweenAmountAndSymbol: Boolean = false,
+    val isPrivacyEnabled: Boolean = false,
   )
 
   private fun BudgetFormatPreferences.observe(): Flow<BudgetFormats> =
@@ -145,6 +144,9 @@ class FormatConfigUseCase(
         )
       }
       .combine(dateFormat.asFlow()) { formats, dateFormat -> formats.copy(dateFormat = dateFormat) }
+      .combine(isPrivacyEnabled.asFlow()) { formats, enabled ->
+        formats.copy(isPrivacyEnabled = enabled)
+      }
 }
 
 /** Gives code outside the budget graph, like [FormatConfigUseCase], the open budget's formats */

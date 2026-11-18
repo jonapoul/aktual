@@ -73,6 +73,9 @@ internal constructor(
       encode = { it.value.toString() },
     )
 
+  override val isPrivacyEnabled: Preference<Boolean> =
+    booleanPref(SyncedPrefKey.Global.IsPrivacyEnabled, default = false)
+
   override suspend fun changeCurrency(currency: Currency) {
     val changes = buildList {
       add(change(SyncedPrefKey.Global.DefaultCurrencyCode, currency.code))

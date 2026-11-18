@@ -19,6 +19,7 @@ internal class FakeBudgetFormatPreferences : BudgetFormatPreferences {
   override val spaceBetweenAmountAndSymbol = InMemoryPreference(false)
   override val dateFormat = InMemoryPreference(DateFormat.Default)
   override val firstDayOfWeek = InMemoryPreference(FirstDayOfWeek.Default)
+  override val isPrivacyEnabled = InMemoryPreference(false)
 
   override suspend fun changeCurrency(currency: Currency) = this.currency.set(currency)
 }
