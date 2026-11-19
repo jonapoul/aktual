@@ -7,7 +7,9 @@ import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.model.AccountId
+import aktual.budget.model.Amount
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.core.utils.Calendar
@@ -24,7 +26,9 @@ import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
@@ -118,6 +122,57 @@ class EditScheduleViewModelTest {
       scope.advanceUntilIdle()
 
       assertThatNextEmissionIsEqualTo(Created)
+    }
+  }
+
+  @Test
+  fun `Setting the amount type converts the amount`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Current")
+    val viewModel = createViewModel(scope, ScheduleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+
+      viewModel.setAmountType(Between)
+      assertThat(awaitLoaded())
+        .prop(EditScheduleState.Loaded::form)
+        .prop(ScheduleForm::amount)
+        .isEqualTo(ScheduleAmount.Between(Amount(-1_000L), Amount(-1_000L)))
+    }
+  }
+
+  @Test
+  fun `Skipping weekends does nothing for a one-off date`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Current")
+    val viewModel = createViewModel(scope, ScheduleId("a"))
+
+    viewModel.state.test {
+      awaitLoaded()
+
+      viewModel.setSkipWeekend(true)
+      scope.advanceUntilIdle()
+      expectNoEvents()
+    }
+  }
+
+  @Test
+  fun `Skipping weekends updates a recurring date`() = runDatabaseTest { scope ->
+    insertSchedule(id = "b", name = "Power", payee = "Energy", account = "Current")
+    val viewModel = createViewModel(scope, scheduleId = null)
+
+    viewModel.state.test {
+      awaitLoaded()
+
+      viewModel.setSkipWeekend(true)
+      assertThat(awaitLoaded()).all {
+        prop(EditScheduleState.Loaded::hasChanges).isTrue()
+        prop(EditScheduleState.Loaded::form)
+          .prop(ScheduleForm::date)
+          .isInstanceOf<ScheduleDate.Recurring>()
+          .prop(ScheduleDate.Recurring::config)
+          .prop(RecurConfig::skipWeekend)
+          .isEqualTo(true)
+      }
     }
   }
 

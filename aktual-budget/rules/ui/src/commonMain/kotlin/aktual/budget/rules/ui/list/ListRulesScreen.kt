@@ -41,6 +41,7 @@ import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -59,12 +60,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -175,23 +174,6 @@ private fun ListRulesScaffold(
       }
     }
   }
-}
-
-// True until the list scrolls down, then again once it scrolls back up
-@Composable
-private fun LazyListState.isScrollingUp(): Boolean {
-  var isUp by remember(this) { mutableStateOf(true) }
-  LaunchedEffect(this) {
-    var previous = firstVisibleItemIndex to firstVisibleItemScrollOffset
-    snapshotFlow { firstVisibleItemIndex to firstVisibleItemScrollOffset }
-      .collect { position ->
-        if (position != previous) {
-          isUp = compareValuesBy(position, previous, { it.first }, { it.second }) < 0
-          previous = position
-        }
-      }
-  }
-  return isUp
 }
 
 @Composable

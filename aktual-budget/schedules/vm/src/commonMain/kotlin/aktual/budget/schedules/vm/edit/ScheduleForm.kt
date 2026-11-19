@@ -7,7 +7,6 @@ import aktual.budget.model.RecurConfig
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 
-/** The editable parts of a schedule */
 @Immutable
 data class ScheduleForm(
   val name: String,
@@ -50,6 +49,38 @@ fun ScheduleAmount.withDeposit(deposit: Boolean): ScheduleAmount {
     }
   }
 }
+
+enum class ScheduleAmountType {
+  Exactly,
+  Approximately,
+  Between,
+}
+
+val ScheduleAmount.type: ScheduleAmountType
+  get() =
+    when (this) {
+      is Exactly -> Exactly
+      is Approximately -> Approximately
+      is Between -> Between
+    }
+
+// Keeps the value, taking the end of a range nearest zero. A new range starts and ends on the value
+fun ScheduleAmount.withType(type: ScheduleAmountType): ScheduleAmount {
+  if (type == this.type) return this
+  val single =
+    when (this) {
+      is Exactly -> amount
+      is Approximately -> amount
+      is Between -> if (from.abs() <= to.abs()) from else to
+    }
+  return when (type) {
+    Exactly -> ScheduleAmount.Exactly(single)
+    Approximately -> ScheduleAmount.Approximately(single)
+    Between -> ScheduleAmount.Between(single, single)
+  }
+}
+
+private fun Amount.abs(): Amount = if (this < Zero) -this else this
 
 @Immutable
 sealed interface ScheduleDate {

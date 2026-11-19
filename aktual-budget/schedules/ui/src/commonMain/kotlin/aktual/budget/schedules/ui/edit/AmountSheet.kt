@@ -5,6 +5,7 @@ import aktual.budget.model.parseAmountInput
 import aktual.budget.model.toInputText
 import aktual.budget.schedules.vm.edit.ScheduleAmount
 import aktual.budget.schedules.vm.edit.isDeposit
+import aktual.budget.schedules.vm.edit.type
 import aktual.budget.schedules.vm.edit.withDeposit
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
@@ -24,13 +25,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
-
-private enum class AmountOp {
-  Exactly,
-  Approximately,
-  Between,
-}
 
 @Composable
 internal fun AmountSheet(
@@ -40,9 +34,11 @@ internal fun AmountSheet(
   modifier: Modifier = Modifier,
 ) {
   var isDeposit by remember { mutableStateOf(amount.isDeposit) }
-  var op by remember { mutableStateOf(amount.op) }
+  // The type is picked on the screen, so this only edits the values and whether it's paid or
+  // received
+  val type = amount.type
   val firstText = amount.first.toInputText()
-  val secondText = amount.second?.toInputText().orEmpty()
+  val secondText = amount.second()?.toInputText().orEmpty()
   val first = rememberTextFieldState(initialText = firstText)
   val second = rememberTextFieldState(initialText = secondText)
 
@@ -50,7 +46,7 @@ internal fun AmountSheet(
   val firstAmount = parseAmountInput(first.text.toString())
   val secondAmount = parseAmountInput(second.text.toString())
   val result =
-    when (op) {
+    when (type) {
       Exactly -> firstAmount?.let(ScheduleAmount::Exactly)
       Approximately -> firstAmount?.let(ScheduleAmount::Approximately)
       Between ->
@@ -64,8 +60,7 @@ internal fun AmountSheet(
   // The sheet can't show a range that crosses zero, so an untouched amount is kept exactly as it
   // was
   val isUnchanged =
-    op == amount.op &&
-      isDeposit == amount.isDeposit &&
+    isDeposit == amount.isDeposit &&
       first.text.toString() == firstText &&
       second.text.toString() == secondText
 
@@ -86,15 +81,7 @@ internal fun AmountSheet(
       },
     )
 
-    AktualSlidingToggleButton(
-      modifier = Modifier.fillMaxWidth(),
-      selected = op,
-      options = AmountOp.entries.toImmutableList(),
-      onSelect = { op = it },
-      string = { it.string() },
-    )
-
-    if (op == Between) {
+    if (type == Between) {
       Row(
         horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
         verticalAlignment = CenterVertically,
@@ -116,7 +103,7 @@ internal fun AmountSheet(
 
     Text(
       text =
-        when (op) {
+        when (type) {
           Exactly -> Strings.editScheduleAmountHintExactly
           Approximately -> Strings.editScheduleAmountHintApprox
           Between -> Strings.editScheduleAmountHintBetween
@@ -127,22 +114,6 @@ internal fun AmountSheet(
   }
 }
 
-@Composable
-private fun AmountOp.string(): String =
-  when (this) {
-    Exactly -> Strings.editScheduleAmountOpExactly
-    Approximately -> Strings.editScheduleAmountOpApprox
-    Between -> Strings.editScheduleAmountOpBetween
-  }
-
-private val ScheduleAmount.op: AmountOp
-  get() =
-    when (this) {
-      is Exactly -> Exactly
-      is Approximately -> Approximately
-      is Between -> Between
-    }
-
 private val ScheduleAmount.first: Amount
   get() =
     when (this) {
@@ -151,7 +122,7 @@ private val ScheduleAmount.first: Amount
       is Between -> minOf(from.abs(), to.abs())
     }
 
-private val ScheduleAmount.second: Amount?
-  get() = (this as? Between)?.let { maxOf(it.from.abs(), it.to.abs()) }
+private fun ScheduleAmount.second(): Amount? =
+  (this as? Between)?.let { maxOf(it.from.abs(), it.to.abs()) }
 
 private fun Amount.abs(): Amount = if (this < Zero) -this else this

@@ -11,7 +11,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,6 +59,7 @@ fun DiscardChangesDialog(
   )
 }
 
+// Collapses to its icon and fades a little while the content scrolls down, like AktualFab
 @Composable
 fun SaveFab(
   isVisible: Boolean,
@@ -68,6 +68,7 @@ fun SaveFab(
   isLoading: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  isExpanded: Boolean = true,
 ) {
   AnimatedVisibility(
     modifier = modifier,
@@ -75,13 +76,11 @@ fun SaveFab(
     enter = slideInVertically { it } + scaleIn(initialScale = FAB_INITIAL_SCALE) + fadeIn(),
     exit = slideOutVertically { it } + scaleOut(targetScale = FAB_INITIAL_SCALE) + fadeOut(),
   ) {
-    AktualButton(
+    AktualFab(
       modifier = Modifier.padding(end = Dimens.Huge, bottom = Dimens.Huge),
       text = text,
       icon = AktualIcons.Check,
-      kind = Primary,
-      shape = CardShape,
-      contentPadding = SaveFabPadding,
+      isExpanded = isExpanded,
       isEnabled = isEnabled,
       isLoading = isLoading,
       onClick = onClick,
@@ -94,4 +93,3 @@ private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
 }
 
 private const val FAB_INITIAL_SCALE = 0.8f
-private val SaveFabPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)

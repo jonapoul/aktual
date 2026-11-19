@@ -6,27 +6,33 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.components.ScheduleStatusBadge
+import aktual.budget.schedules.components.frequencyDescription
+import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.vm.edit.EditScheduleError
 import aktual.budget.schedules.vm.edit.EditScheduleState
 import aktual.budget.schedules.vm.edit.EditScheduleViewModel
 import aktual.budget.schedules.vm.edit.NamedEntity
 import aktual.budget.schedules.vm.edit.ScheduleAmount
-import aktual.budget.schedules.vm.edit.ScheduleDate
+import aktual.budget.schedules.vm.edit.ScheduleAmountType
 import aktual.budget.schedules.vm.edit.ScheduleForm
+import aktual.budget.schedules.vm.edit.isDeposit
+import aktual.budget.schedules.vm.edit.type
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
-import aktual.core.icons.CheveronRight
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Trash
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.edit_schedule_saved
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -51,22 +57,32 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SaveFab
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingDivider
+import aktual.core.ui.SettingRow
+import aktual.core.ui.ShimmerBlock
+import aktual.core.ui.ShimmerLine
+import aktual.core.ui.TextFieldShape
 import aktual.core.ui.formatted
+import aktual.core.ui.formattedString
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
-import aktual.core.ui.normalButton
+import aktual.core.ui.isScrollingUp
+import aktual.core.ui.redacted
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.showSuccessSnackbar
-import aktual.core.ui.stringInitial
+import aktual.core.ui.stringShort
 import aktual.core.ui.switch
+import aktual.core.ui.tabular
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -81,8 +97,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -92,7 +106,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -103,16 +119,21 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.End
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.getString
 
@@ -154,6 +175,8 @@ internal fun EditScheduleScreen(
         is SetPayee -> viewModel.setPayee(action.id)
         is SetAccount -> viewModel.setAccount(action.id)
         is SetAmount -> viewModel.setAmount(action.amount)
+        is SetAmountType -> viewModel.setAmountType(action.type)
+        is SetSkipWeekend -> viewModel.setSkipWeekend(action.skip)
         is SetDate -> viewModel.setDate(action.date)
         is SetPostsTransaction -> viewModel.setPostsTransaction(action.posts)
       }
@@ -258,8 +281,11 @@ private fun EditScheduleScaffold(
 
       // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
       // when the button hides after saving
-      Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
-        SaveButton(state = loaded, onAction = onAction)
+      Column(
+        modifier = Modifier.align(BottomEnd).fillMaxWidth(),
+        horizontalAlignment = Alignment.End,
+      ) {
+        SaveButton(state = loaded, scrollState = scrollState, onAction = onAction)
         SnackbarHost(
           hostState = snackbarHostState,
           modifier = Modifier.align(CenterHorizontally),
@@ -279,13 +305,18 @@ private fun EditScheduleScaffold(
 
 // New schedules always show it, since there's nothing saved to compare against
 @Composable
-private fun SaveButton(state: EditScheduleState.Loaded?, onAction: OnAction<EditScheduleAction>) {
+private fun SaveButton(
+  state: EditScheduleState.Loaded?,
+  scrollState: ScrollState,
+  onAction: OnAction<EditScheduleAction>,
+) {
   SaveFab(
     isVisible = state != null && (state.isNew || state.hasChanges),
     text = if (state?.isNew == true) Strings.editScheduleCreate else Strings.editScheduleSave,
     isEnabled = state?.canSave == true,
     isLoading = state?.isWorking == true,
     onClick = { onAction(SaveSchedule) },
+    isExpanded = scrollState.isScrollingUp(),
   )
 }
 
@@ -363,41 +394,41 @@ private fun EditScheduleContent(
   onAction: OnAction<EditScheduleAction>,
   modifier: Modifier = Modifier,
 ) {
-  var sheet by remember { mutableStateOf<SentencePart?>(null) }
+  var sheet by remember { mutableStateOf<ScheduleSheet?>(null) }
+  val form = state.form
+  // Everything on a new schedule is new, so only edits to a saved one are marked
+  val changes = if (state.isNew) NoChanges else changesBetween(form, state.saved)
 
   Column(
     modifier =
       modifier
         .fillMaxSize()
-        .verticalScroll(scrollState)
+        .verticalScrollWithBar(scrollState)
         .padding(contentPadding)
         .padding(Dimens.ScreenPadding),
-    verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
   ) {
-    state.status?.let { ScheduleStatusBadge(it) }
-
-    NameField(name = state.form.name, onNameChange = { onAction(SetName(it)) })
-
-    Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing)) {
-      ScheduleSentence(state = state, activePart = sheet, onClick = { part -> sheet = part })
-
-      Text(
-        text = Strings.editScheduleHint,
-        style = typography.bodySmall,
-        color = colors.pageTextSubdued,
-      )
-    }
-
-    PostsTransactionRow(
-      posts = state.form.postsTransaction,
-      onChange = { onAction(SetPostsTransaction(it)) },
-    )
-
-    UpcomingDates(dates = state.upcomingDates)
+    NameField(name = form.name, onNameChange = { onAction(SetName(it)) })
 
     if (!state.isNew) {
-      val title = state.form.name.ifBlank { Strings.listSchedulesUnnamedSchedule }
-      ViewTransactionsLink(onClick = { onAction(ViewTransactions(title)) })
+      StatusRow(status = state.status, nextDate = state.upcomingDates.firstOrNull())
+    }
+
+    TransactionSection(state, changes, onAction, onOpenSheet = { sheet = it })
+    ScheduleSection(form, changes, onAction, onOpenSheet = { sheet = it })
+
+    Section(label = Strings.editScheduleUpcoming) { UpcomingDates(dates = state.upcomingDates) }
+
+    if (!state.isNew) {
+      val title = form.name.ifBlank { Strings.listSchedulesUnnamedSchedule }
+      Card(modifier = Modifier.padding(top = EditScheduleDS.sectionSpacing)) {
+        SettingRow(onClick = { onAction(ViewTransactions(title)) }) {
+          Text(
+            text = Strings.editScheduleViewTransactions,
+            style = typography.bodyLarge,
+            color = colors.tableText,
+          )
+        }
+      }
     }
 
     // Room to scroll the last item out from under the save button
@@ -408,77 +439,393 @@ private fun EditScheduleContent(
   EditScheduleSheet(sheet = sheet, state = state, onAction = onAction, onDismiss = { sheet = null })
 }
 
-// Stands in for the header, sentence and upcoming dates while the schedule loads
+@Composable
+private fun TransactionSection(
+  state: EditScheduleState.Loaded,
+  changes: Changes,
+  onAction: OnAction<EditScheduleAction>,
+  onOpenSheet: (ScheduleSheet) -> Unit,
+) =
+  Section(label = Strings.editScheduleSectionTransaction) {
+    ValueRow(
+      label = Strings.editSchedulePayee,
+      value = state.payeeName ?: Strings.editSchedulePayeeNone,
+      isChanged = changes.payee,
+      onClick = { onOpenSheet(Payee) },
+    )
+    SettingDivider()
+    ValueRow(
+      label = Strings.editScheduleAccount,
+      value = state.accountName ?: Strings.editScheduleAccountNone,
+      isChanged = changes.account,
+      onClick = { onOpenSheet(Account) },
+    )
+    SettingDivider()
+    AmountTypeRow(
+      type = state.form.amount.type,
+      isChanged = changes.amountType,
+      onSelect = { onAction(SetAmountType(it)) },
+    )
+    SettingDivider()
+    ValueRow(
+      label = Strings.editScheduleAmountTitle,
+      value = state.form.amount.text(),
+      valueColor = state.form.amount.color(),
+      isChanged = changes.amount,
+      onClick = { onOpenSheet(ScheduleSheet.Amount) },
+    )
+  }
+
+@Composable
+private fun ScheduleSection(
+  form: ScheduleForm,
+  changes: Changes,
+  onAction: OnAction<EditScheduleAction>,
+  onOpenSheet: (ScheduleSheet) -> Unit,
+) =
+  Section(label = Strings.editScheduleSectionSchedule) {
+    val recurring = form.date as? Recurring
+    ValueRow(
+      label = Strings.editScheduleWhenRepeats,
+      value = recurring?.config?.frequencyDescription() ?: Strings.editScheduleRepeatsNever,
+      isChanged = changes.repeats,
+      onClick = { onOpenSheet(When) },
+    )
+    SettingDivider()
+    ValueRow(
+      label =
+        if (recurring == null) Strings.editScheduleWhenDate else Strings.editScheduleWhenStarts,
+      value = form.date.start.formatted(),
+      isChanged = changes.start,
+      onClick = { onOpenSheet(When) },
+    )
+    if (recurring != null) {
+      SettingDivider()
+      ValueRow(
+        label = Strings.editScheduleEnds,
+        value = recurring.config.endText(),
+        isChanged = changes.ends,
+        onClick = { onOpenSheet(When) },
+      )
+      SettingDivider()
+      SwitchRow(
+        label = Strings.editScheduleWeekendMove,
+        isChecked = recurring.config.skipWeekend == true,
+        isChanged = changes.skipWeekend,
+        onChange = { onAction(SetSkipWeekend(it)) },
+      )
+    }
+    SettingDivider()
+    SwitchRow(
+      label = Strings.editSchedulePostsTransaction,
+      isChecked = form.postsTransaction,
+      isChanged = changes.postsTransaction,
+      onChange = { onAction(SetPostsTransaction(it)) },
+    )
+  }
+
+// Which rows differ from the saved schedule
+@Immutable
+private data class Changes(
+  val payee: Boolean = false,
+  val account: Boolean = false,
+  val amountType: Boolean = false,
+  val amount: Boolean = false,
+  val repeats: Boolean = false,
+  val start: Boolean = false,
+  val ends: Boolean = false,
+  val skipWeekend: Boolean = false,
+  val postsTransaction: Boolean = false,
+)
+
+private val NoChanges = Changes()
+
+private fun changesBetween(form: ScheduleForm, saved: ScheduleForm): Changes {
+  val config = (form.date as? Recurring)?.config
+  val savedConfig = (saved.date as? Recurring)?.config
+  return Changes(
+    payee = form.payee != saved.payee,
+    account = form.account != saved.account,
+    amountType = form.amount.type != saved.amount.type,
+    amount = form.amount.values != saved.amount.values,
+    repeats = config?.repeatKey != savedConfig?.repeatKey,
+    start = form.date.start != saved.date.start,
+    ends = config?.endKey != savedConfig?.endKey,
+    skipWeekend = config?.skipWeekend != savedConfig?.skipWeekend,
+    postsTransaction = form.postsTransaction != saved.postsTransaction,
+  )
+}
+
+private val ScheduleAmount.values: List<Amount>
+  get() =
+    when (this) {
+      is Exactly -> listOf(amount)
+      is Approximately -> listOf(amount)
+      is Between -> listOf(from, to)
+    }
+
+private val RecurConfig.repeatKey: List<Any?>
+  get() = listOf(frequency, interval ?: 1, patterns)
+
+// Unknown modes are shown as never ending, so they compare the same
+private val RecurConfig.endKey: List<Any?>
+  get() =
+    when (endMode) {
+      AfterNOccurrences -> listOf(endMode, endOccurrences)
+      OnDate -> listOf(endMode, endDate)
+      Never,
+      Unknown,
+      null -> emptyList()
+    }
+
+@Composable
+private fun NameField(name: String, onNameChange: (String) -> Unit, modifier: Modifier = Modifier) {
+  val textState = rememberTextFieldState(initialText = name)
+  val latestOnNameChange by rememberUpdatedState(onNameChange)
+  // The view model owns the name, so follow it if it changes from elsewhere
+  SideEffect {
+    if (textState.text.toString() != name) textState.setTextAndPlaceCursorAtEnd(name)
+  }
+  LaunchedEffect(textState) {
+    snapshotFlow { textState.text.toString() }.collect { latestOnNameChange(it) }
+  }
+
+  AktualTextField(
+    modifier = modifier.fillMaxWidth(),
+    state = textState,
+    placeholderText = Strings.editScheduleNamePlaceholder,
+    singleLine = true,
+    keyboardOptions = KeyboardOptions(capitalization = Sentences),
+  )
+}
+
+@Composable
+private fun StatusRow(
+  status: ScheduleStatus?,
+  nextDate: LocalDate?,
+  modifier: Modifier = Modifier,
+) {
+  if (status == null && nextDate == null) return
+  Row(
+    modifier = modifier.padding(top = EditScheduleDS.fieldSpacing),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.badgeSpacing),
+  ) {
+    status?.let { ScheduleStatusBadge(it) }
+    nextDate?.let { date ->
+      Text(
+        text = Strings.editScheduleNextDue(date.formatted()),
+        style = typography.bodyMedium,
+        color = colors.pageTextSubdued,
+      )
+    }
+  }
+}
+
+@Composable
+private fun Section(label: String, content: @Composable ColumnScope.() -> Unit) =
+  Column(modifier = Modifier.padding(top = EditScheduleDS.sectionSpacing)) {
+    SectionLabel(label)
+    Card(content = content)
+  }
+
+@Composable
+private fun Card(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) =
+  Column(
+    modifier = modifier.fillMaxWidth().clip(CardShape).background(colors.tableBackground),
+    content = content,
+  )
+
+@Composable
+private fun ValueRow(
+  label: String,
+  value: String,
+  isChanged: Boolean,
+  onClick: () -> Unit,
+  valueColor: Color = colors.tableHeaderText,
+) =
+  SettingRow(modifier = Modifier.changedEdge(colors, isChanged), onClick = onClick) {
+    Text(text = label, style = typography.bodyLarge, color = colors.tableText)
+    Text(
+      modifier = Modifier.weight(1f),
+      text = value.redacted(),
+      style = typography.bodyMedium,
+      color = valueColor,
+      textAlign = End,
+      maxLines = 1,
+      overflow = Ellipsis,
+    )
+  }
+
+@Composable
+private fun SwitchRow(
+  label: String,
+  isChecked: Boolean,
+  isChanged: Boolean,
+  onChange: (Boolean) -> Unit,
+) =
+  SettingRow(
+    modifier = Modifier.changedEdge(colors, isChanged),
+    onClick = { onChange(!isChecked) },
+    showChevron = false,
+  ) {
+    Text(
+      modifier = Modifier.weight(1f),
+      text = label,
+      style = typography.bodyLarge,
+      color = colors.tableText,
+    )
+    Switch(checked = isChecked, onCheckedChange = onChange, colors = colors.switch())
+  }
+
+@Composable
+private fun AmountTypeRow(
+  type: ScheduleAmountType,
+  isChanged: Boolean,
+  onSelect: (ScheduleAmountType) -> Unit,
+) {
+  AktualSlidingToggleButton(
+    modifier =
+      Modifier.changedEdge(colors, isChanged).padding(EditScheduleDS.rowPadding).fillMaxWidth(),
+    selected = type,
+    options = ScheduleAmountType.entries.toImmutableList(),
+    onSelect = onSelect,
+    string = { it.string() },
+  )
+}
+
+private fun Modifier.changedEdge(colors: Colors, isChanged: Boolean) = drawBehind {
+  if (isChanged) {
+    drawRect(
+      color = colors.pageTextLinkLight,
+      size = Size(EditScheduleDS.changedEdge.toPx(), size.height),
+    )
+  }
+}
+
+@Composable
+internal fun ScheduleAmountType.string(): String =
+  when (this) {
+    Exactly -> Strings.editScheduleAmountOpExactly
+    Approximately -> Strings.editScheduleAmountOpApprox
+    Between -> Strings.editScheduleAmountOpBetween
+  }
+
+@Composable
+private fun ScheduleAmount.text(): String =
+  when (this) {
+    is Exactly -> amount.formattedString(includeSign = true)
+    is Approximately -> amount.formattedString(includeSign = true)
+    is Between ->
+      Strings.editScheduleAmountRange(
+        from.formattedString(includeSign = true),
+        to.formattedString(includeSign = true),
+      )
+  }
+
+@Composable
+@ReadOnlyComposable
+private fun ScheduleAmount.color(): Color =
+  when {
+    values.all { it.toLong() == 0L } -> colors.tableHeaderText
+    isDeposit -> colors.numberPositive
+    else -> colors.numberNegative
+  }
+
+@Composable
+private fun RecurConfig.endText(): String =
+  when (endMode) {
+    AfterNOccurrences -> {
+      val count = endOccurrences ?: 1
+      Plurals.editScheduleEndsAfterCount(count, count)
+    }
+    OnDate -> endDate?.formatted() ?: Strings.editScheduleEndsNever
+    Never,
+    Unknown,
+    null -> Strings.editScheduleEndsNever
+  }
+
+// Stands in for the content while the schedule loads
 /** Keep in sync with [EditScheduleContent] */
 @Composable
 private fun ShimmerSchedule(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, CardShape)
+  val shimmer = rememberShimmer(Window)
 
-  Column(
-    modifier =
-      modifier.fillMaxSize().padding(Dimens.ScreenPadding).shimmer(rememberShimmer(Window)),
-    verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
-  ) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.badgeSpacing),
-    ) {
-      Box(modifier = bar.fillMaxWidth(fraction = 0.5f).height(EditScheduleDS.shimmerHeaderHeight))
-      Box(
-        modifier =
-          bar.size(
+  Column(modifier = modifier.fillMaxSize().padding(Dimens.ScreenPadding)) {
+    Column(modifier = Modifier.shimmer(shimmer)) {
+      ShimmerBlock(
+        modifier = Modifier.fillMaxWidth().height(EditScheduleDS.shimmerNameHeight),
+        shape = TextFieldShape,
+      )
+      Row(
+        modifier = Modifier.padding(top = EditScheduleDS.fieldSpacing),
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.badgeSpacing),
+      ) {
+        ShimmerBlock(
+          Modifier.size(
             width = EditScheduleDS.shimmerBadgeWidth,
             height = EditScheduleDS.shimmerBadgeHeight,
           ),
-      )
+        )
+        ShimmerLine(
+          modifier = Modifier.width(EditScheduleDS.shimmerValueWidth),
+          style = typography.bodyMedium,
+        )
+      }
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.shimmerSentenceSpacing)) {
-      Box(modifier = bar.fillMaxWidth().height(EditScheduleDS.shimmerSentenceHeight))
-      Box(modifier = bar.fillMaxWidth(fraction = 0.9f).height(EditScheduleDS.shimmerSentenceHeight))
-      Box(modifier = bar.fillMaxWidth(fraction = 0.6f).height(EditScheduleDS.shimmerSentenceHeight))
-    }
+    ShimmerSection(rows = SHIMMER_TRANSACTION_ROWS, shimmer = shimmer)
+    ShimmerSection(rows = SHIMMER_SCHEDULE_ROWS, shimmer = shimmer)
+    ShimmerSection(rows = SHIMMER_UPCOMING_ROWS, shimmer = shimmer)
+  }
+}
 
-    Box(modifier = bar.fillMaxWidth(fraction = 0.7f).height(EditScheduleDS.shimmerTextHeight))
-
-    Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.labelSpacing)) {
-      Box(
-        modifier =
-          bar.width(EditScheduleDS.shimmerLabelWidth).height(EditScheduleDS.shimmerTextHeight),
-      )
-
-      CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
-        repeat(EditScheduleDS.SHIMMER_UPCOMING_ROWS) { index ->
-          if (index > 0) HorizontalDivider()
+@Composable
+private fun ShimmerSection(rows: Int, shimmer: Shimmer, modifier: Modifier = Modifier) =
+  Column(modifier = modifier.padding(top = EditScheduleDS.sectionSpacing)) {
+    ShimmerLine(
+      modifier =
+        Modifier.shimmer(shimmer)
+          .padding(EditScheduleDS.sectionLabelPadding)
+          .width(EditScheduleDS.shimmerLabelWidth),
+      style = typography.labelMedium,
+    )
+    Card {
+      repeat(rows) { index ->
+        if (index > 0) SettingDivider()
+        SettingRow(onClick = null) {
           Row(
-            modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
-            horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
+            modifier = Modifier.weight(1f).shimmer(shimmer),
+            horizontalArrangement = Arrangement.SpaceBetween,
           ) {
-            Box(
-              modifier =
-                bar.width(EditScheduleDS.shimmerDayWidth).height(EditScheduleDS.shimmerTextHeight),
+            ShimmerLine(
+              modifier = Modifier.width(EditScheduleDS.shimmerLabelWidth),
+              style = typography.bodyLarge,
             )
-            Box(
-              modifier =
-                bar.width(EditScheduleDS.shimmerDateWidth).height(EditScheduleDS.shimmerTextHeight),
+            ShimmerLine(
+              modifier = Modifier.width(EditScheduleDS.shimmerValueWidth),
+              style = typography.bodyMedium,
             )
           }
         }
       }
     }
   }
-}
+
+private const val SHIMMER_TRANSACTION_ROWS = 4
+private const val SHIMMER_SCHEDULE_ROWS = 5
+private const val SHIMMER_UPCOMING_ROWS = 3
 
 @Composable
 private fun EditScheduleSheet(
-  sheet: SentencePart?,
+  sheet: ScheduleSheet?,
   state: EditScheduleState.Loaded,
   onAction: OnAction<EditScheduleAction>,
   onDismiss: () -> Unit,
 ) {
   when (sheet) {
-    SentencePart.Amount ->
+    ScheduleSheet.Amount ->
       AmountSheet(
         amount = state.form.amount,
         onDismiss = onDismiss,
@@ -536,114 +883,37 @@ private fun <T : Any> EntitySheet(
 }
 
 @Composable
-private fun NameField(name: String, onNameChange: (String) -> Unit, modifier: Modifier = Modifier) {
-  val textState = rememberTextFieldState(initialText = name)
-  val latestOnNameChange by rememberUpdatedState(onNameChange)
-
-  // The view model owns the name, so follow it if it changes from elsewhere (e.g. a discard)
-  SideEffect {
-    if (textState.text.toString() != name) textState.setTextAndPlaceCursorAtEnd(name)
-  }
-  LaunchedEffect(textState) {
-    snapshotFlow { textState.text.toString() }.collect { latestOnNameChange(it) }
-  }
-
-  Column(
-    modifier = modifier.fillMaxWidth(),
-    verticalArrangement = Arrangement.spacedBy(EditScheduleDS.labelSpacing),
-  ) {
-    Text(text = Strings.editScheduleNameLabel, style = typography.labelLarge)
-    AktualTextField(
-      modifier = Modifier.fillMaxWidth(),
-      state = textState,
-      placeholderText = Strings.editScheduleNamePlaceholder,
-      singleLine = true,
-      keyboardOptions = KeyboardOptions(capitalization = Sentences),
-    )
-  }
-}
-
-@Composable
-private fun PostsTransactionRow(
-  posts: Boolean,
-  onChange: (Boolean) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
-  ) {
-    Column(modifier = Modifier.weight(1f)) {
-      Text(text = Strings.editSchedulePostsTransaction, style = typography.bodyLarge)
+private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = Modifier) =
+  CardColumn(modifier = modifier.fillMaxWidth(), contentPadding = Zero) {
+    if (dates.isEmpty()) {
       Text(
-        text = Strings.editSchedulePostsTransactionHint,
-        style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        modifier = Modifier.padding(EditScheduleDS.rowPadding),
+        text = Strings.editScheduleUpcomingNone,
+        style = typography.bodyMedium,
+        color = colors.tableText,
       )
     }
-    Switch(checked = posts, onCheckedChange = onChange, colors = colors.switch())
-  }
-}
 
-@Composable
-private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = Modifier) {
-  Column(
-    modifier = modifier.fillMaxWidth(),
-    verticalArrangement = Arrangement.spacedBy(EditScheduleDS.labelSpacing),
-  ) {
-    Text(text = Strings.editScheduleUpcoming, style = typography.labelLarge)
-
-    CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
-      if (dates.isEmpty()) {
+    dates.fastForEachIndexed { index, date ->
+      if (index > 0) SettingDivider()
+      Row(
+        modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
+        horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
+      ) {
         Text(
-          modifier = Modifier.padding(EditScheduleDS.rowPadding),
-          text = Strings.editScheduleUpcomingNone,
-          style = typography.bodyMedium,
+          modifier = Modifier.width(EditScheduleDS.dayWidth),
+          text = date.dayOfWeek.stringShort(),
+          style = typography.bodyMedium.tabular(),
+          color = colors.tableHeaderText,
         )
-      }
-
-      dates.forEachIndexed { index, date ->
-        if (index > 0) HorizontalDivider(color = colors.cardShadow)
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(EditScheduleDS.rowPadding),
-          horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
-        ) {
-          Text(
-            text = date.dayOfWeek.stringInitial(),
-            style = typography.bodyMedium,
-          )
-          Text(text = date.formatted(), style = typography.bodyMedium)
-        }
+        Text(
+          text = date.formatted(),
+          style = typography.bodyMedium.tabular(),
+          color = colors.tableText,
+        )
       }
     }
   }
-}
-
-@Composable
-private fun ViewTransactionsLink(onClick: () -> Unit, modifier: Modifier = Modifier) {
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .normalButton(colors)
-        .clickable(onClick = onClick)
-        .padding(EditScheduleDS.rowPadding),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing),
-  ) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = Strings.editScheduleViewTransactions,
-      style = typography.bodyMedium,
-    )
-    Icon(
-      modifier = Modifier.size(EditScheduleDS.linkIconSize),
-      imageVector = AktualIcons.CheveronRight,
-      contentDescription = null,
-    )
-  }
-}
 
 @Composable
 private fun ConfirmDialog(
@@ -700,65 +970,13 @@ private fun PreviewEditScheduleScaffold(
     EditScheduleScaffold(state = this, error = null, onAction = {})
   }
 
-private val PreviewPayee = NamedEntity(PayeeId("landlord"), "Landlord Ltd")
-private val PreviewAccount = NamedEntity(AccountId("current"), "Current account")
-
-internal val PreviewLoaded =
-  EditScheduleState.Loaded(
-    form =
-      ScheduleForm(
-        name = "Rent",
-        payee = PreviewPayee.id,
-        account = PreviewAccount.id,
-        amount = ScheduleAmount.Exactly(Amount(-120_000L)),
-        date =
-          ScheduleDate.Recurring(
-            RecurConfig(
-              frequency = Monthly,
-              start = LocalDate(2025, 1, 1),
-              interval = 1,
-              skipWeekend = true,
-              weekendSolveMode = Before,
-              endMode = Never,
-            ),
-          ),
-        postsTransaction = false,
-      ),
-    isNew = false,
-    hasChanges = false,
-    isWorking = false,
-    status = Due,
-    payeeName = PreviewPayee.name,
-    accountName = PreviewAccount.name,
-    payees = persistentListOf(PreviewPayee),
-    accounts = persistentListOf(PreviewAccount),
-    upcomingDates =
-      persistentListOf(LocalDate(2026, 10, 1), LocalDate(2026, 10, 30), LocalDate(2026, 12, 1)),
-  )
-
 private class EditScheduleStateProvider :
   ColorParamsProvider<EditScheduleState>(
+    PreviewLoaded,
+    PreviewDirty,
+    PreviewDirty.copy(isWorking = true),
+    PreviewNew,
+    PreviewOnce,
     Loading,
     NotFound,
-    PreviewLoaded,
-    PreviewLoaded.copy(hasChanges = true),
-    PreviewLoaded.copy(hasChanges = true, isWorking = true),
-    PreviewNew,
-  )
-
-private val PreviewOnceDate = LocalDate(2026, 11, 5)
-
-private val PreviewNew =
-  PreviewLoaded.copy(
-    form =
-      PreviewLoaded.form.copy(
-        name = "",
-        payee = null,
-        amount = ScheduleAmount.Between(Amount(4_000L), Amount(6_000L)),
-        date = ScheduleDate.Once(PreviewOnceDate),
-      ),
-    isNew = true,
-    status = null,
-    payeeName = null,
-    upcomingDates = persistentListOf(PreviewOnceDate),
   )

@@ -19,4 +19,24 @@ class ScheduleFormTest {
     assertThat(range.withDeposit(true))
       .isEqualTo(ScheduleAmount.Between(Amount(1_000L), Amount(5_000L)))
   }
+
+  @Test
+  fun `Changing type to a range starts and ends on the value`() {
+    val amount = ScheduleAmount.Exactly(Amount(-1_000L))
+    assertThat(amount.withType(Between))
+      .isEqualTo(ScheduleAmount.Between(Amount(-1_000L), Amount(-1_000L)))
+  }
+
+  @Test
+  fun `Changing a range to one value keeps the end nearest zero`() {
+    val range = ScheduleAmount.Between(Amount(-5_000L), Amount(-1_000L))
+    assertThat(range.withType(Approximately))
+      .isEqualTo(ScheduleAmount.Approximately(Amount(-1_000L)))
+  }
+
+  @Test
+  fun `Changing to the same type keeps the amount`() {
+    val range = ScheduleAmount.Between(Amount(1_000L), Amount(5_000L))
+    assertThat(range.withType(Between)).isEqualTo(range)
+  }
 }

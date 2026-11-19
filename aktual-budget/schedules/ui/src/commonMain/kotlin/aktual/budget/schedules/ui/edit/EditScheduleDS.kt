@@ -1,24 +1,25 @@
 package aktual.budget.schedules.ui.edit
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 
 internal object EditScheduleDS {
   val sectionSpacing = 20.dp
   val fieldSpacing = 12.dp
-  val labelSpacing = 6.dp
-  val rowPadding = 12.dp
-  val sheetSpacing = 16.dp
   val badgeSpacing = 10.dp
-  val linkIconSize = 16.dp
+  val dayWidth = 36.dp
+  val changedEdge = 3.dp
 
-  val shimmerHeaderHeight = 32.dp
-  val shimmerBadgeWidth = 56.dp
-  val shimmerBadgeHeight = 24.dp
-  val shimmerSentenceHeight = 20.dp
-  val shimmerSentenceSpacing = 12.dp
-  val shimmerTextHeight = 15.dp
+  // Lines up with SettingRow's content
+  val rowPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
+
+  // Matches SectionLabel's padding
+  val sectionLabelPadding = PaddingValues(start = 4.dp, end = 4.dp, bottom = 8.dp)
+
+  // AktualTextField's minimum height
+  val shimmerNameHeight = 40.dp
+  val shimmerBadgeWidth = 72.dp
+  val shimmerBadgeHeight = 22.dp
   val shimmerLabelWidth = 80.dp
-  val shimmerDayWidth = 32.dp
-  val shimmerDateWidth = 96.dp
-  const val SHIMMER_UPCOMING_ROWS = 3
+  val shimmerValueWidth = 110.dp
 }

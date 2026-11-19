@@ -166,6 +166,10 @@
     <item quantity="one">%1$d time</item>
     <item quantity="other">%1$d times</item>
   </plurals>
+  <plurals name="edit_schedule_ends_after_count">
+    <item quantity="one">After %1$d time</item>
+    <item quantity="other">After %1$d times</item>
+  </plurals>
   <plurals name="edit_schedule_interval_days">
     <item quantity="one">Every %1$d day</item>
     <item quantity="other">Every %1$d days</item>
