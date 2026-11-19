@@ -2,6 +2,7 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.RuleId
 import aktual.budget.rules.domain.Rule
+import aktual.budget.rules.ui.DeleteRuleDialog
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
@@ -103,7 +104,7 @@ fun ListRulesScreen(
   }
 
   pendingDelete?.let { id ->
-    DeleteRulesDialog(
+    DeleteRuleDialog(
       onConfirm = {
         viewModel.delete(id)
         pendingDelete = null

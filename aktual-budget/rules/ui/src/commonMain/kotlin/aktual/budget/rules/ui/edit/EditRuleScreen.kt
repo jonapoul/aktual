@@ -10,6 +10,7 @@ import aktual.budget.rules.domain.hasUnknownValues
 import aktual.budget.rules.domain.newCondition
 import aktual.budget.rules.domain.nextAction
 import aktual.budget.rules.domain.splitIndex
+import aktual.budget.rules.ui.DeleteRuleDialog
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition2
 import aktual.budget.rules.ui.PreviewRule1
@@ -226,6 +227,7 @@ private fun EditRuleScaffold(
   val listState = rememberLazyListState()
   var showMatches by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
+  var showDeleteDialog by remember { mutableStateOf(false) }
   val hasChanges = state is Success && state.hasChanges
 
   BackHandler(enabled = hasChanges) { showDiscardDialog = true }
@@ -256,7 +258,7 @@ private fun EditRuleScaffold(
             canDelete = mode == Edit && state is Success && state.canDelete,
             isEnabled = state is Success && !state.isWorking,
             onShowMatches = { showMatches = true },
-            onAction = onAction,
+            onDelete = { showDeleteDialog = true },
           )
         },
       )
@@ -323,6 +325,16 @@ private fun EditRuleScaffold(
     }
   }
 
+  if (showDeleteDialog) {
+    DeleteRuleDialog(
+      onConfirm = {
+        showDeleteDialog = false
+        onAction(Delete)
+      },
+      onDismiss = { showDeleteDialog = false },
+    )
+  }
+
   if (showDiscardDialog) {
     DiscardChangesDialog(
       onDiscard = {
@@ -380,7 +392,7 @@ private fun MoreMenu(
   canDelete: Boolean,
   isEnabled: Boolean,
   onShowMatches: () -> Unit,
-  onAction: OnAction<EditRuleAction>,
+  onDelete: () -> Unit,
 ) = Box {
   var showMenu by remember { mutableStateOf(false) }
 
@@ -409,7 +421,7 @@ private fun MoreMenu(
         text = { Text(string, color = red) },
         onClick = {
           showMenu = false
-          onAction(Delete)
+          onDelete()
         },
         leadingIcon = {
           Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
