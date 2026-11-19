@@ -5,9 +5,7 @@
 <p align="center">
   <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
   <a href="https://android-arsenal.com/api?level=28"><img alt="API" src="https://img.shields.io/badge/API-28%2B-brightgreen.svg?style=flat"/></a>
-  <a href="https://github.com/jonapoul/aktual/releases"><img alt="Release" src="https://img.shields.io/github/v/release/jonapoul/aktual"/></a>
   <a href="https://github.com/jonapoul/aktual"><img alt="Coverage" src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/jonapoul/6bf1b7a292bc61bcca966bee22e8b456/raw/coverage-badge.json"/></a>
-  <a href="https://github.com/jonapoul/aktual"><img alt="Downloads" src="https://img.shields.io/github/downloads/jonapoul/aktual/total"/></a>
   <a href="https://nightly.link/jonapoul/aktual/workflows/nightly/main/android.zip"><img alt="Nightly APK" src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/jonapoul/6bf1b7a292bc61bcca966bee22e8b456/raw/nightly-android-badge.json"/></a>
 </p>
 
