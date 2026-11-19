@@ -235,32 +235,14 @@ private fun EditRuleScaffold(
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
-      TopAppBar(
+      EditRuleTopBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
-        colors = colors.transparentTopAppBarColors(),
-        navigationIcon = {
-          if (hasChanges) {
-            BasicIconButton(
-              imageVector = AktualIcons.Delete,
-              contentDescription = Strings.editRuleDiscardConfirm,
-              colors = DiscardColors,
-              onClick = { showDiscardDialog = true },
-            )
-          } else {
-            NavBackIconButton { onAction(NavBack) }
-          }
-        },
-        title = {
-          Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
-        },
-        actions = {
-          MoreMenu(
-            canDelete = mode == Edit && state is Success && state.canDelete,
-            isEnabled = state is Success && !state.isWorking,
-            onShowMatches = { showMatches = true },
-            onDelete = { showDeleteDialog = true },
-          )
-        },
+        state = state,
+        mode = mode,
+        onDiscard = { showDiscardDialog = true },
+        onShowMatches = { showMatches = true },
+        onDelete = { showDeleteDialog = true },
+        onAction = onAction,
       )
     },
   ) { innerPadding ->
@@ -344,6 +326,45 @@ private fun EditRuleScaffold(
       onCancel = { showDiscardDialog = false },
     )
   }
+}
+
+@Composable
+private fun EditRuleTopBar(
+  state: EditRuleState,
+  mode: Mode,
+  onDiscard: () -> Unit,
+  onShowMatches: () -> Unit,
+  onDelete: () -> Unit,
+  onAction: OnAction<EditRuleAction>,
+  modifier: Modifier = Modifier,
+) {
+  TopAppBar(
+    modifier = modifier,
+    colors = colors.transparentTopAppBarColors(),
+    navigationIcon = {
+      if (state is Success && state.hasChanges) {
+        BasicIconButton(
+          imageVector = AktualIcons.Delete,
+          contentDescription = Strings.editRuleDiscardConfirm,
+          colors = DiscardColors,
+          onClick = onDiscard,
+        )
+      } else {
+        NavBackIconButton { onAction(NavBack) }
+      }
+    },
+    title = {
+      Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
+    },
+    actions = {
+      MoreMenu(
+        canDelete = mode == Edit && state is Success && state.canDelete,
+        isEnabled = state is Success && !state.isWorking,
+        onShowMatches = onShowMatches,
+        onDelete = onDelete,
+      )
+    },
+  )
 }
 
 @Composable
