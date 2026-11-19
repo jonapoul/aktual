@@ -5,7 +5,6 @@ import aktual.budget.model.ScheduleId
 import aktual.budget.rules.components.ConditionValue
 import aktual.budget.rules.components.EntitySheet
 import aktual.budget.rules.components.QuerySheetPage
-import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.components.label
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntityLists
@@ -32,6 +31,7 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.SectionLabel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope

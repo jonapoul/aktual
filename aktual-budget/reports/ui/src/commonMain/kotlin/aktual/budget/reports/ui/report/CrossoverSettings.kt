@@ -7,14 +7,14 @@ import aktual.budget.reports.ui.montecarlo.PERCENT_SCALE
 import aktual.budget.reports.vm.CrossoverReportMeta
 import aktual.budget.reports.vm.ProjectionType
 import aktual.budget.reports.vm.QueryEditorData
-import aktual.budget.rules.components.Divider
 import aktual.budget.rules.components.QuerySheet
-import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.components.label
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingDivider
 import aktual.core.ui.checkbox
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
@@ -126,7 +126,7 @@ private fun InputsSection(
     ) {
       onPick(Categories)
     }
-    Divider()
+    SettingDivider()
     val selectedAccounts = meta.selectedAccounts(editorData).size
     SettingValueRow(
       Strings.reportsCrossoverIncomeAccounts,
@@ -135,7 +135,7 @@ private fun InputsSection(
     ) {
       onPick(Accounts)
     }
-    Divider()
+    SettingDivider()
     SwitchRow(Strings.reportsCustomEditorShowHidden, meta.showHiddenCategories == true) { show ->
       onEdit { it.copy(showHiddenCategories = show) }
     }
@@ -157,7 +157,7 @@ private fun ProjectionSection(
         onCommit = { rate -> onEdit { it.copy(safeWithdrawalRate = rate) } },
       )
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(
       Strings.reportsCrossoverProjectionType,
       meta.projectionType.orDefault().label(),
@@ -165,7 +165,7 @@ private fun ProjectionSection(
     ) {
       onPickProjection()
     }
-    Divider()
+    SettingDivider()
     NumberRow(Strings.reportsCrossoverTargetIncome, Strings.reportsCrossoverTargetIncomeHelp) {
       NumberField(
         value = meta.expenseAdjustmentFactor,
@@ -176,7 +176,7 @@ private fun ProjectionSection(
         onCommit = { factor -> onEdit { it.copy(expenseAdjustmentFactor = factor) } },
       )
     }
-    Divider()
+    SettingDivider()
     val customGrowth = meta.estimatedReturn != null || meta.expectedContribution != null
     SwitchRow(
       label = Strings.reportsCrossoverCustomGrowth,
@@ -186,7 +186,7 @@ private fun ProjectionSection(
       onEdit { it.withCustomGrowth(enabled) }
     }
     if (customGrowth) {
-      Divider()
+      SettingDivider()
       NumberRow(
         Strings.reportsCrossoverExpectedReturn,
         Strings.reportsCrossoverExpectedReturnHelp,
@@ -199,7 +199,7 @@ private fun ProjectionSection(
           onCommit = { rate -> onEdit { it.copy(estimatedReturn = rate) } },
         )
       }
-      Divider()
+      SettingDivider()
       NumberRow(
         Strings.reportsCrossoverExpectedContribution,
         Strings.reportsCrossoverExpectedContributionHelp,

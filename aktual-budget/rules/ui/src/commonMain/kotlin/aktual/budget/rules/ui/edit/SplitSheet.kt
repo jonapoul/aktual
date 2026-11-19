@@ -3,7 +3,6 @@ package aktual.budget.rules.ui.edit
 import aktual.budget.model.RuleAction
 import aktual.budget.rules.components.ConditionValue
 import aktual.budget.rules.components.QuerySheetPage
-import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.domain.isEditableSplitAmount
 import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.domain.withSplitMethod
@@ -18,6 +17,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.SectionLabel
 import aktual.core.ui.slider
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -40,16 +40,16 @@ import aktual.budget.reports.vm.withStaticMonths
 import aktual.budget.reports.vm.withTagScope
 import aktual.budget.rules.components.ConditionSheetAt
 import aktual.budget.rules.components.ConditionsList
-import aktual.budget.rules.components.Divider
 import aktual.budget.rules.components.QuerySheet
-import aktual.budget.rules.components.SectionLabel
-import aktual.budget.rules.components.SettingRow
 import aktual.budget.rules.components.label
 import aktual.budget.tags.domain.TagLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingDivider
+import aktual.core.ui.SettingRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -181,30 +181,30 @@ private fun DisplaySection(
         string = { it.label() },
       )
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsCustomEditorGraph, draft.graphType.label()) {
       open(Graph)
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsCustomEditorSplit, draft.groupBy.label()) {
       open(Split)
     }
     if (draft.groupBy == Tag && editorData != null) {
-      Divider()
+      SettingDivider()
       SettingValueRow(Strings.reportsCustomEditorTags, tagScopeLabel(draft, editorData)) {
         open(TagScope)
       }
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsCustomEditorType, draft.balanceType.label()) {
       open(Type)
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsCustomEditorInterval, draft.interval.label()) {
       open(Interval)
     }
     if (draft.showsSort) {
-      Divider()
+      SettingDivider()
       SettingValueRow(Strings.reportsCustomEditorSort, draft.sortBy.label()) {
         open(Sort)
       }
@@ -239,13 +239,13 @@ private fun DatesSection(
         },
       )
     }
-    Divider()
+    SettingDivider()
     when (dates) {
       is Live -> {
         SettingValueRow(Strings.reportsCustomEditorRange, dates.type.string()) {
           open(Range)
         }
-        Divider()
+        SettingDivider()
         SwitchRow(
           label = Strings.reportsCustomEditorIncludeCurrent,
           isChecked = dates.includeCurrent && draft.canIncludeCurrent,
@@ -302,7 +302,7 @@ private fun OptionsSection(
     SwitchRow(Strings.reportsCustomEditorShowHidden, draft.showHidden) { show ->
       edit { it.copy(showHidden = show) }
     }
-    Divider()
+    SettingDivider()
     SwitchRow(
       label = Strings.reportsCustomEditorShowEmpty,
       isChecked = draft.showEmpty,
@@ -310,19 +310,19 @@ private fun OptionsSection(
     ) { show ->
       edit { it.copy(showEmpty = show) }
     }
-    Divider()
+    SettingDivider()
     SwitchRow(Strings.reportsCustomEditorShowOffBudget, draft.showOffBudget) { show ->
       edit { it.copy(showOffBudget = show) }
     }
-    Divider()
+    SettingDivider()
     SwitchRow(Strings.reportsCustomEditorShowUncategorised, draft.showUncategorized) { show ->
       edit { it.copy(showUncategorized = show) }
     }
-    Divider()
+    SettingDivider()
     SwitchRow(Strings.reportsCustomEditorTrimIntervals, draft.trimIntervals) { trim ->
       edit { it.copy(trimIntervals = trim) }
     }
-    Divider()
+    SettingDivider()
     SwitchRow(
       label = Strings.reportsCustomEditorShowTrendLines,
       isChecked = draft.showTrendLines && draft.canShowTrendLines,

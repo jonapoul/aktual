@@ -5,11 +5,11 @@ import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode
 import aktual.budget.rules.components.QuerySheet
-import aktual.budget.rules.components.SectionLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.SectionLabel
 import aktual.core.ui.radioButton
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background

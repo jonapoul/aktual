@@ -23,8 +23,8 @@ import aktual.budget.reports.vm.withDivisorConditions
 import aktual.budget.reports.vm.withSummaryType
 import aktual.budget.rules.components.ConditionSheetAt
 import aktual.budget.rules.components.ConditionsList
-import aktual.budget.rules.components.Divider
 import aktual.core.l10n.Strings
+import aktual.core.ui.SettingDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -151,7 +151,7 @@ private fun SummarySettings(
     Section(label = Strings.reportsCustomEditorDisplay) {
       SettingValueRow(Strings.reportsSummaryType, meta.summaryType.label()) { showTypes = true }
       if (isPercentage) {
-        Divider()
+        SettingDivider()
         SwitchRow(Strings.reportsSummaryAllTimeDivisor, meta.allTimeDivisor) { allTime ->
           onEdit { it.withAllTimeDivisor(allTime) }
         }

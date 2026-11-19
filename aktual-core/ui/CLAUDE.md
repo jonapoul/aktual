@@ -25,6 +25,10 @@ Spacing uses `Dimens` (dp), not `AktualTheme`.
 
 Use the `CardColumn` (column) or `CardRow` composable for card containers, passing `contentPadding` and `onClick` rather than chaining `padding`/`clickable` yourself. `Modifier.card` is for cases `CardColumn` can't cover, like applying the card style conditionally or adding `shimmer()` after the padding.
 
+## Setting rows
+
+For a card of settings (label on the left, value or switch on the right), use `SectionLabel` above a card holding `SettingRow`s separated by `SettingDivider`s, all from `SettingRows.kt`. `SettingRow` adds the trailing chevron when it's clickable.
+
 ## Loading shimmers
 
 - Build placeholders from `ShimmerLine` (a bar the height of one line of a `TextStyle`), `ShimmerBlock` (icons, switches, charts) and `ShimmerChip` (`Shimmer.kt`). Don't hardcode bar heights in dp. Pass `ShimmerLine` the same font size and weight as the text it replaces.
