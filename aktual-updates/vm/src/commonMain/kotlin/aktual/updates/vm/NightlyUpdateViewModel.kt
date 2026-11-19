@@ -34,7 +34,7 @@ internal constructor(
       .map { build -> build?.toState() ?: None }
       .stateIn(viewModelScope, Eagerly, initialValue = None)
 
-  private fun NightlyBuild.toState() =
+  private fun NightlyBuild.toState(): NightlyUpdateState =
     NightlyUpdateState.Available(
       installed = Version(name = buildConfig.baseVersionName, gitHash = buildConfig.gitHash),
       nightly =

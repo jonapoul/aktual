@@ -28,15 +28,6 @@ internal constructor(
   scope: AppCoroutineScope,
   canInstallApk: Boolean,
 ) : NightlyUpdates {
-  @Inject
-  internal constructor(
-    githubApi: GithubApi,
-    buildConfig: BuildConfig,
-    contexts: CoroutineContexts,
-    preferences: AppPreferences,
-    scope: AppCoroutineScope,
-  ) : this(githubApi, buildConfig, contexts, preferences, scope, CanInstallApk)
-
   // Nightlies are release builds, so they'd only install over another release build
   override val isSupported: Boolean = buildConfig.isRelease && canInstallApk
 
@@ -46,6 +37,15 @@ internal constructor(
       .distinctUntilChanged()
       .mapLatest { enabled -> if (enabled && isSupported) fetch() else null }
       .stateIn(scope, Lazily, initialValue = null)
+
+  @Inject
+  internal constructor(
+    githubApi: GithubApi,
+    buildConfig: BuildConfig,
+    contexts: CoroutineContexts,
+    preferences: AppPreferences,
+    scope: AppCoroutineScope,
+  ) : this(githubApi, buildConfig, contexts, preferences, scope, CanInstallApk)
 
   private suspend fun fetch(): NightlyBuild? =
     runCatchingCancellable(
