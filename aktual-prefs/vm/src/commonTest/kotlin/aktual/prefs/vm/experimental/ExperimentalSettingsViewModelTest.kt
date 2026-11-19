@@ -4,7 +4,7 @@ import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.prefs.vm.FakeBudgetFeatureFlags
+import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.assertThat

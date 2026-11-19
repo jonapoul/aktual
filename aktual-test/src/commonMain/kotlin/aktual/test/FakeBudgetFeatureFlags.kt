@@ -1,11 +1,11 @@
-package aktual.prefs.vm
+package aktual.test
 
 import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.prefs.BudgetFeatureFlags
 import aktual.prefs.Preference
 
-internal class FakeBudgetFeatureFlags : BudgetFeatureFlags {
-  private val prefs = FeatureFlag.entries.associateWith { InMemoryPreference(false) }
+class FakeBudgetFeatureFlags(enabled: Set<FeatureFlag> = emptySet()) : BudgetFeatureFlags {
+  private val prefs = FeatureFlag.entries.associateWith { InMemoryPreference(it in enabled) }
 
   override fun get(flag: FeatureFlag): Preference<Boolean> = prefs.getValue(flag)
 }

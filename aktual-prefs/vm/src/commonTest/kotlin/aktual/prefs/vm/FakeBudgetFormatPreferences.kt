@@ -6,10 +6,7 @@ import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.prefs.BudgetFormatPreferences
-import aktual.prefs.Preference
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import aktual.test.InMemoryPreference
 
 internal class FakeBudgetFormatPreferences : BudgetFormatPreferences {
   override val numberFormat = InMemoryPreference(NumberFormat.Default)
@@ -22,14 +19,4 @@ internal class FakeBudgetFormatPreferences : BudgetFormatPreferences {
   override val isPrivacyEnabled = InMemoryPreference(false)
 
   override suspend fun changeCurrency(currency: Currency) = this.currency.set(currency)
-}
-
-internal class InMemoryPreference<T : Any>(override val default: T) : Preference<T> {
-  private val state = MutableStateFlow(default)
-
-  override suspend fun get(): T = state.value
-
-  override suspend fun set(value: T?) = state.update { value ?: default }
-
-  override fun asFlow(): Flow<T> = state
 }

@@ -8,6 +8,7 @@ import aktual.di.newScope
 import aktual.prefs.BudgetFeatureFlags
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.collectAsState
+import aktual.prefs.vm.launchAndSet
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +17,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 @Stable
 @ViewModelKey
@@ -44,7 +44,7 @@ internal constructor(
                     value = values.getValue(flag),
                     enabled = flag in Supported,
                     visible = isVisible(flag, values),
-                    onChange = { value -> set(flag, value) },
+                    onChange = { value -> launchAndSet(flags[flag], value) },
                   ),
               )
             }
@@ -67,14 +67,6 @@ internal constructor(
       BudgetAnalysisReport,
       MonteCarloReport -> true
     }
-
-  // Like upstream, turning goal templates off also turns off their UI
-  private fun set(flag: FeatureFlag, value: Boolean) {
-    viewModelScope.launch {
-      flags[flag].set(value)
-      if (flag == GoalTemplates && !value) flags[GoalTemplatesUi].set(false)
-    }
-  }
 
   private companion object {
     // Features Aktual has, so toggling them here does what it says. The rest only sync to upstream
