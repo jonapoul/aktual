@@ -57,8 +57,8 @@ import kotlinx.datetime.LocalDate
 
 /**
  * The schedule as one sentence, e.g. "Pay £1,200.00 to Landlord from Current account every month on
- * the 1st, starting 1 Oct 2026." While editing, each highlighted part is drawn as a chip that opens
- * the editor for that part, with the chip for [activePart] filled in.
+ * the 1st, starting 1 Oct 2026." Each highlighted part is drawn as a chip that opens the editor for
+ * that part, with the chip for [activePart] filled in.
  */
 @Composable
 internal fun ScheduleSentence(
@@ -66,10 +66,7 @@ internal fun ScheduleSentence(
   activePart: SentencePart?,
   onClick: (SentencePart) -> Unit,
   modifier: Modifier = Modifier,
-  style: TextStyle =
-    typography.titleSmall.copy(
-      lineHeight = if (state.isEditing) EditingLineHeight else ViewingLineHeight,
-    ),
+  style: TextStyle = typography.titleSmall.copy(lineHeight = SentenceLineHeight),
 ) {
   val text = rememberScheduleSentence(state, activePart, onClick).redacted()
   val chipColors =
@@ -162,20 +159,13 @@ private fun rememberScheduleSentence(
   onClick: (SentencePart) -> Unit,
 ): AnnotatedString {
   val form = state.form
-  val isEditing = state.isEditing
   val isDeposit = form.amount.isDeposit
 
   val strongColor = colors.pageText
   val activeColor = colors.buttonPrimaryText
-  val amountColor =
-    when {
-      isEditing -> strongColor
-      isDeposit -> colors.numberPositive
-      else -> colors.numberNegative
-    }
   val plainColor = colors.pageTextSubdued
 
-  val amount = Token(form.amount.text(), SentencePart.Amount, amountColor)
+  val amount = Token(form.amount.text(), SentencePart.Amount, strongColor)
   val payee = Token(state.payeeName ?: Strings.editSchedulePayeeUnset, Payee, strongColor)
   val account = Token(state.accountName ?: Strings.editScheduleAccountUnset, Account, strongColor)
 
@@ -225,13 +215,11 @@ private fun rememberScheduleSentence(
     dateToken,
     repeatToken,
     weekend,
-    isEditing,
     activePart,
     plainColor,
     activeColor,
   ) {
-    val styles =
-      SentenceStyles(isEditing, activePart, plainColor, activeColor) { latestOnClick.value(it) }
+    val styles = SentenceStyles(activePart, plainColor, activeColor) { latestOnClick.value(it) }
     buildAnnotatedString {
       appendTemplate(
         text = template,
@@ -254,7 +242,6 @@ private fun rememberScheduleSentence(
 }
 
 private data class SentenceStyles(
-  val isEditing: Boolean,
   val activePart: SentencePart?,
   val plainColor: Color,
   val activeColor: Color,
@@ -288,11 +275,6 @@ private fun AnnotatedString.Builder.appendTemplate(
 
 private fun AnnotatedString.Builder.appendToken(token: Token, styles: SentenceStyles) {
   val style = SpanStyle(color = token.color, fontWeight = SemiBold)
-  if (!styles.isEditing) {
-    withStyle(style) { append(token.text) }
-    return
-  }
-
   // The chip is drawn behind the link's range, so the padding spaces sit inside it
   val color = if (token.part == styles.activePart) styles.activeColor else token.color
   val link =
@@ -356,8 +338,7 @@ private val BorderWidth = 1.dp
 private val ActiveBorderWidth = 2.dp
 private val DashLength = 4.dp
 // Leaves room for the chips while editing
-private val EditingLineHeight = 38.sp
-private val ViewingLineHeight = 30.sp
+private val SentenceLineHeight = 38.sp
 
 @Preview(widthDp = 390)
 @Composable
@@ -378,12 +359,10 @@ private data class SentencePreview(
   val activePart: SentencePart? = null,
 )
 
-private val PreviewEditing = PreviewLoaded.copy(isEditing = true)
-
 private val PreviewLongNames =
-  PreviewEditing.copy(
+  PreviewLoaded.copy(
     form =
-      PreviewEditing.form.copy(
+      PreviewLoaded.form.copy(
         amount = ScheduleAmount.Approximately(Amount(-14_000L)),
         date =
           ScheduleDate.Recurring(
@@ -403,9 +382,9 @@ private val PreviewLongNames =
   )
 
 private val PreviewDeposit =
-  PreviewEditing.copy(
+  PreviewLoaded.copy(
     form =
-      PreviewEditing.form.copy(
+      PreviewLoaded.form.copy(
         amount = ScheduleAmount.Between(Amount(4_000L), Amount(6_000L)),
         date = ScheduleDate.Once(LocalDate(2026, 11, 5)),
       ),
@@ -415,8 +394,7 @@ private val PreviewDeposit =
 private class ScheduleSentenceProvider :
   ColorParamsProvider<SentencePreview>(
     SentencePreview(PreviewLoaded),
-    SentencePreview(PreviewEditing),
-    SentencePreview(PreviewEditing, activePart = SentencePart.Amount),
+    SentencePreview(PreviewLoaded, activePart = SentencePart.Amount),
     SentencePreview(PreviewLongNames, activePart = When),
     SentencePreview(PreviewDeposit),
   )

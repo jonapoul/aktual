@@ -2013,12 +2013,11 @@
   <string name="list_schedules_sort_status">Status</string>
   <string name="edit_schedule_toolbar_edit">Edit Schedule</string>
   <string name="edit_schedule_toolbar_create">Create Schedule</string>
-  <string name="edit_schedule_toolbar_view">Schedule</string>
-  <string name="edit_schedule_edit">Edit schedule</string>
   <string name="edit_schedule_save">Save</string>
   <string name="edit_schedule_create">Create</string>
   <string name="edit_schedule_delete">Delete</string>
-  <string name="edit_schedule_stop_editing">Stop editing</string>
+  <string name="edit_schedule_menu">Menu</string>
+  <string name="edit_schedule_saved">Saved the schedule</string>
   <string name="edit_schedule_name_label">Name</string>
   <string name="edit_schedule_name_placeholder">Name (optional)</string>
   <string name="edit_schedule_hint">Tap a highlighted part to change it.</string>
@@ -2038,8 +2037,6 @@
   <string name="edit_schedule_upcoming_none">No more dates</string>
   <string name="edit_schedule_posts_transaction">Add transactions automatically</string>
   <string name="edit_schedule_posts_transaction_hint">Adds the transaction on the date, instead of waiting for a matching one</string>
-  <string name="edit_schedule_posts_transaction_on">Adds transactions automatically</string>
-  <string name="edit_schedule_posts_transaction_off">Waits for matching transactions</string>
   <string name="edit_schedule_view_transactions">View transactions</string>
   <string name="edit_schedule_amount_title">Amount</string>
   <string name="edit_schedule_amount_payment">Payment</string>

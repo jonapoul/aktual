@@ -10,10 +10,6 @@ import androidx.compose.runtime.Immutable
 
 internal data object NavigateBack : EditScheduleAction
 
-internal data object StartEditing : EditScheduleAction
-
-internal data object StopEditing : EditScheduleAction
-
 internal data object SaveSchedule : EditScheduleAction
 
 internal data object DeleteSchedule : EditScheduleAction

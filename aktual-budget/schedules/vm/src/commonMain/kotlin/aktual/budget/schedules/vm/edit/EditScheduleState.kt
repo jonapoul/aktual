@@ -20,7 +20,6 @@ sealed interface EditScheduleState {
   data class Loaded(
     val form: ScheduleForm,
     val isNew: Boolean,
-    val isEditing: Boolean,
     val hasChanges: Boolean,
     val isWorking: Boolean,
     val status: ScheduleStatus?,
@@ -47,6 +46,8 @@ sealed interface EditScheduleError {
 
 sealed interface EditScheduleEvent {
   data object Created : EditScheduleEvent
+
+  data object Saved : EditScheduleEvent
 
   data object Deleted : EditScheduleEvent
 }
