@@ -12,7 +12,6 @@ dependencies {
   implementation(project(":aktual-core:l10n"))
   implementation(project(":aktual-di:core"))
   implementation(project(":aktual-prefs:impl"))
-  implementation(project(":aktual-updates:domain"))
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.prefsCore)
   implementation(libs.kotlinx.datetime)

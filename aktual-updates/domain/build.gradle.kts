@@ -4,7 +4,6 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
     api(libs.kotlinx.coroutines.core)
-    api(libs.okio)
     implementation(libs.ktor.core)
     implementation(project(":aktual-api"))
     implementation(project(":aktual-core:logging"))

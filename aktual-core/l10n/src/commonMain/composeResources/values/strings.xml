@@ -2644,12 +2644,10 @@
 
   <!-- updates -->
   <string name="updates_nightly_title">Nightly build available</string>
-  <string name="updates_nightly_message">A newer nightly build of Aktual is available. Installing it replaces this version and keeps your data.</string>
+  <string name="updates_nightly_message">A newer nightly build of Aktual is available. Download the APK and open it to install it over this version. Your data is kept.</string>
   <string name="updates_nightly_installed">Installed</string>
   <string name="updates_nightly_latest">Latest nightly</string>
   <string name="updates_nightly_version">%1$s (%2$s)</string>
-  <string name="updates_nightly_downloading">Downloading</string>
-  <string name="updates_nightly_failed">Download failed. Check your connection and try again.</string>
   <string name="updates_nightly_later">Later</string>
-  <string name="updates_nightly_install">Download and install</string>
+  <string name="updates_nightly_download">Download APK</string>
 </resources>

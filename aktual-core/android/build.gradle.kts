@@ -6,7 +6,6 @@ dependencies {
   implementation(project(":aktual-core:utils"))
   implementation(project(":aktual-di:core"))
   implementation(project(":aktual-prefs"))
-  implementation(project(":aktual-updates:domain"))
   implementation(libs.androidx.core)
   implementation(libs.logcat)
   implementation(libs.okio)

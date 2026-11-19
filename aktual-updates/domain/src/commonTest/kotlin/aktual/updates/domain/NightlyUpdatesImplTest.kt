@@ -56,10 +56,11 @@ class NightlyUpdatesImplTest {
       assertThat(awaitItem())
         .isEqualTo(
           NightlyBuild(
-            runId = 123,
             gitHash = "dbc10893",
             commitTime = Instant.parse("2026-11-18T21:23:52Z"),
             commitsAhead = 3,
+            apkUrl =
+              "https://github.com/jonapoul/aktual/releases/download/nightly/aktual-nightly.apk",
           ),
         )
     }
@@ -156,9 +157,9 @@ class NightlyUpdatesImplTest {
       githubApi = GithubApiImpl(testHttpClient(mockEngine, GithubJson)),
       buildConfig = buildConfig,
       contexts = TestCoroutineContexts(unconfinedDispatcher),
-      installer = FakeApkInstaller(),
       preferences = FakeAppPreferences(checkForNightlyUpdates = enabled),
       scope = AppCoroutineScope(backgroundScope),
+      canInstallApk = true,
     )
 
   @Language("JSON")

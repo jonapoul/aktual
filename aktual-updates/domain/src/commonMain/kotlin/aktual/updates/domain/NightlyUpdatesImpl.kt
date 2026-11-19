@@ -8,6 +8,7 @@ import aktual.log
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import github.api.GithubApi
 import kotlinx.coroutines.flow.StateFlow
@@ -23,12 +24,21 @@ internal constructor(
   private val githubApi: GithubApi,
   private val buildConfig: BuildConfig,
   private val contexts: CoroutineContexts,
-  installer: ApkInstaller,
   preferences: AppPreferences,
   scope: AppCoroutineScope,
+  canInstallApk: Boolean,
 ) : NightlyUpdates {
+  @Inject
+  internal constructor(
+    githubApi: GithubApi,
+    buildConfig: BuildConfig,
+    contexts: CoroutineContexts,
+    preferences: AppPreferences,
+    scope: AppCoroutineScope,
+  ) : this(githubApi, buildConfig, contexts, preferences, scope, CanInstallApk)
+
   // Nightlies are release builds, so they'd only install over another release build
-  override val isSupported: Boolean = buildConfig.isRelease && installer.isSupported
+  override val isSupported: Boolean = buildConfig.isRelease && canInstallApk
 
   override val latest: StateFlow<NightlyBuild?> =
     preferences.checkForNightlyUpdates
@@ -60,10 +70,10 @@ internal constructor(
     if (comparison.status != AHEAD) return null
 
     return NightlyBuild(
-      runId = run.id,
       gitHash = run.headSha.take(buildConfig.gitHash.length),
       commitTime = run.headCommit.timestamp,
       commitsAhead = comparison.aheadBy,
+      apkUrl = "https://github.com/${buildConfig.repoName}/releases/download/$TAG/$APK",
     )
   }
 
@@ -72,5 +82,9 @@ internal constructor(
     const val BRANCH = "main"
     const val SUCCESS = "success"
     const val AHEAD = "ahead"
+
+    // Published by the release job in nightly.yml
+    const val TAG = "nightly"
+    const val APK = "aktual-nightly.apk"
   }
 }

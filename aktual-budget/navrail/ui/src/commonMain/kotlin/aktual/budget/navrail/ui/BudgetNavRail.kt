@@ -246,7 +246,6 @@ internal fun BudgetNavRail(
     onDismiss = { dialog = null },
     onPostSchedules = viewModel::postUnpostedSchedules,
     onDismissSchedules = viewModel::dismissUnpostedSchedules,
-    onInstallNightly = nightlyViewModel::install,
   )
 }
 
@@ -265,7 +264,6 @@ private fun BudgetNavRailDialogs(
   onDismiss: () -> Unit,
   onPostSchedules: () -> Unit,
   onDismissSchedules: () -> Unit,
-  onInstallNightly: () -> Unit,
 ) {
   if (dialog == Rename) {
     RenameBudgetDialog(
@@ -279,7 +277,7 @@ private fun BudgetNavRailDialogs(
   }
 
   if (dialog == NightlyUpdate && nightlyUpdate is Available) {
-    NightlyUpdateDialog(state = nightlyUpdate, onInstall = onInstallNightly, onDismiss = onDismiss)
+    NightlyUpdateDialog(state = nightlyUpdate, onDismiss = onDismiss)
   }
 
   if (hasUnpostedSchedules) {
