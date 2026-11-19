@@ -7,5 +7,5 @@ runs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       with:
-        add-job-summary: on-failure
+        add-job-summary: always
         cache-encryption-key: ${{ env.GRADLE_ENCRYPTION_KEY }}
