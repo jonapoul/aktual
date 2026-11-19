@@ -4,6 +4,8 @@ import aktual.budget.model.DashboardPageId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.DashboardSync
+import aktual.budget.reports.vm.enabledTypes
+import aktual.budget.reports.vm.featureFlag
 import aktual.core.l10n.Res
 import aktual.core.l10n.StringLookup
 import aktual.core.l10n.reports_text_default
@@ -13,6 +15,7 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
+import aktual.prefs.BudgetFeatureFlags
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,13 +25,18 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
@@ -43,6 +51,7 @@ internal constructor(
   private val uuidGenerator: UuidGenerator,
   private val sync: DashboardSync,
   private val strings: StringLookup,
+  flags: BudgetFeatureFlags,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private var job: Job? = null
@@ -51,6 +60,17 @@ internal constructor(
 
   val shouldNavigateEvent: Flow<ShouldNavigateEvent> = shouldNavigateChannel.receiveAsFlow()
   val dialog: StateFlow<ChooseReportTypeDialog?> = mutableDialog.asStateFlow()
+
+  // Types behind an experimental flag are hidden while it's off, like upstream
+  val types: StateFlow<ImmutableList<WidgetType>> =
+    flags
+      .enabledTypes()
+      .map { it.toImmutableList() }
+      .stateIn(
+        viewModelScope,
+        Eagerly,
+        WidgetType.known.filter { it.featureFlag == null }.toImmutableList(),
+      )
 
   override fun onCleared() {
     job?.cancel()

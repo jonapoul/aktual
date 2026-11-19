@@ -10,6 +10,9 @@ sealed interface FormulaReportState {
 
   data object NotFound : FormulaReportState
 
+  // Formula mode is off in experimental settings
+  data object FeatureDisabled : FormulaReportState
+
   // The draft matches the saved card unless editing. The preview is null until the draft's first
   // evaluation finishes
   data class Loaded(

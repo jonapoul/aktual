@@ -8,12 +8,14 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.vm.AllFlagsOn
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.McIncomeStream
 import aktual.budget.reports.vm.McPot
 import aktual.budget.reports.vm.dashboard.DashboardItemDecoder
 import aktual.budget.reports.vm.keepsSurplus
 import aktual.budget.reports.vm.runSyncedDatabaseTest
+import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
@@ -57,6 +59,17 @@ class MonteCarloViewModelTest {
       }
     }
   }
+
+  @Test
+  fun `Shows as disabled while its flag is off`() =
+    runMonteCarloTest(flags = FakeBudgetFeatureFlags()) { viewModel, _, _ ->
+      viewModel.state.test {
+        var state = awaitItem()
+        while (state == MonteCarloState.Loading) state = awaitItem()
+        assertThat(state).isEqualTo(MonteCarloState.FeatureDisabled)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
 
   @Test
   fun `Reports a missing widget`() =
@@ -197,6 +210,7 @@ class MonteCarloViewModelTest {
 
   private fun runMonteCarloTest(
     insert: Boolean = true,
+    flags: FakeBudgetFeatureFlags = AllFlagsOn,
     action:
       suspend (
         MonteCarloViewModel,
@@ -224,6 +238,7 @@ class MonteCarloViewModelTest {
         decoder = DashboardItemDecoder(),
         sync = sync,
         uuidGenerator = { "new-id" },
+        flags = flags,
         contexts = contexts,
         viewModelContext = scope.viewModelContext,
       )

@@ -94,6 +94,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -330,6 +331,11 @@ internal fun FormulaReportScaffold(
         NotFound -> {
           Box(modifier = contentModifier, contentAlignment = Center) {
             Text(text = Strings.reportsNotFound)
+          }
+        }
+        FeatureDisabled -> {
+          Box(modifier = contentModifier, contentAlignment = Center) {
+            Text(text = Strings.reportsUnsupportedFeatureDisabled, textAlign = TextAlign.Center)
           }
         }
         is Loaded -> {

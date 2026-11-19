@@ -43,6 +43,7 @@ import aktual.budget.rules.domain.TransactionFilterCompiler
 import aktual.core.model.Percent
 import aktual.core.utils.Calendar
 import aktual.log
+import aktual.prefs.BudgetFeatureFlags
 import aktual.prefs.BudgetFormatPreferences
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
@@ -56,6 +57,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -86,8 +88,17 @@ internal class ChartDataLoader(
   private val contexts: CoroutineContexts,
   private val compiler: TransactionFilterCompiler,
   private val entities: ConditionEntitiesLoader,
+  private val flags: BudgetFeatureFlags,
 ) {
-  fun load(meta: ReportMeta): Flow<ChartData> =
+  // Reports behind an experimental flag show as disabled while it's off
+  fun load(meta: ReportMeta): Flow<ChartData> {
+    val flag = meta.typeAndName().first.featureFlag ?: return loadEnabled(meta)
+    return flags[flag].asFlow().distinctUntilChanged().flatMapLatest { isEnabled ->
+      if (isEnabled) loadEnabled(meta) else unsupported(meta, FeatureDisabled)
+    }
+  }
+
+  private fun loadEnabled(meta: ReportMeta): Flow<ChartData> =
     when (meta) {
       is AgeOfMoneyReportMeta -> ageOfMoney(meta)
       is BalanceForecastReportMeta -> balanceForecast(meta)
@@ -1109,27 +1120,29 @@ internal class ChartDataLoader(
     flowOf(unsupportedData(meta, reason))
 
   private fun unsupportedData(meta: ReportMeta, reason: UnsupportedReason): UnsupportedData {
-    val (type, name) =
-      when (meta) {
-        is AgeOfMoneyReportMeta -> WidgetType.AgeOfMoney to meta.name
-        is BalanceForecastReportMeta -> WidgetType.BalanceForecast to meta.name
-        is BudgetAnalysisReportMeta -> WidgetType.BudgetAnalysis to meta.name
-        is CalendarReportMeta -> WidgetType.Calendar to meta.name
-        is CashFlowReportMeta -> WidgetType.CashFlow to meta.name
-        is CrossoverReportMeta -> WidgetType.Crossover to meta.name
-        is CustomReportMeta -> WidgetType.Custom to null
-        is FormulaReportMeta -> WidgetType.Formula to meta.name
-        is MarkdownReportMeta -> WidgetType.Markdown to null
-        is MonteCarloReportMeta -> WidgetType.MonteCarlo to meta.name
-        is NetWorthReportMeta -> WidgetType.NetWorth to meta.name
-        is SankeyReportMeta -> WidgetType.Sankey to meta.name
-        is SpendingReportMeta -> WidgetType.Spending to meta.name
-        is SummaryReportMeta -> WidgetType.Summary to meta.name
-        is UnsupportedReportMeta -> meta.type to (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
-      }
+    val (type, name) = meta.typeAndName()
     val stackTrace = (meta as? UnsupportedReportMeta)?.stackTrace
     return UnsupportedData(reason, type, name, stackTrace)
   }
+
+  private fun ReportMeta.typeAndName(): Pair<WidgetType, String?> =
+    when (val meta = this) {
+      is AgeOfMoneyReportMeta -> WidgetType.AgeOfMoney to meta.name
+      is BalanceForecastReportMeta -> WidgetType.BalanceForecast to meta.name
+      is BudgetAnalysisReportMeta -> WidgetType.BudgetAnalysis to meta.name
+      is CalendarReportMeta -> WidgetType.Calendar to meta.name
+      is CashFlowReportMeta -> WidgetType.CashFlow to meta.name
+      is CrossoverReportMeta -> WidgetType.Crossover to meta.name
+      is CustomReportMeta -> WidgetType.Custom to null
+      is FormulaReportMeta -> WidgetType.Formula to meta.name
+      is MarkdownReportMeta -> WidgetType.Markdown to null
+      is MonteCarloReportMeta -> WidgetType.MonteCarlo to meta.name
+      is NetWorthReportMeta -> WidgetType.NetWorth to meta.name
+      is SankeyReportMeta -> WidgetType.Sankey to meta.name
+      is SpendingReportMeta -> WidgetType.Spending to meta.name
+      is SummaryReportMeta -> WidgetType.Summary to meta.name
+      is UnsupportedReportMeta -> meta.type to (meta.raw["name"] as? JsonPrimitive)?.contentOrNull
+    }
 
   private fun YearMonth.toLong(): Long = year * YEAR_MONTH_FACTOR + month.ordinal + 1L
 

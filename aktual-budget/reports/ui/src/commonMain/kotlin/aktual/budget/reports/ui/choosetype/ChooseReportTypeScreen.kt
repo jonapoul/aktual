@@ -76,6 +76,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -92,8 +93,10 @@ fun ChooseReportTypeScreen(
   }
 
   val dialog by viewModel.dialog.collectAsStateWithLifecycle()
+  val types by viewModel.types.collectAsStateWithLifecycle()
 
   ChooseReportTypeScaffold(
+    types = types,
     dialog = dialog,
     onAction = { action ->
       when (action) {
@@ -116,6 +119,7 @@ private fun chooseReportTypeViewModel(page: DashboardPageId) =
 
 @Composable
 internal fun ChooseReportTypeScaffold(
+  types: ImmutableList<WidgetType>,
   dialog: ChooseReportTypeDialog?,
   onAction: OnAction<ChooseReportTypeAction>,
   modifier: Modifier = Modifier,
@@ -135,6 +139,7 @@ internal fun ChooseReportTypeScaffold(
   ) { innerPadding ->
     ChooseReportTypeContent(
       modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+      types = types,
       dialog = dialog,
       contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
       lazyListState = lazyListState,
@@ -145,6 +150,7 @@ internal fun ChooseReportTypeScaffold(
 
 @Composable
 private fun ChooseReportTypeContent(
+  types: ImmutableList<WidgetType>,
   dialog: ChooseReportTypeDialog?,
   onAction: OnAction<ChooseReportTypeAction>,
   contentPadding: PaddingValues,
@@ -162,7 +168,7 @@ private fun ChooseReportTypeContent(
       verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
       contentPadding = contentPadding,
     ) {
-      items(WidgetType.known) { type ->
+      items(types) { type ->
         WidgetType(
           modifier = Modifier.fillMaxWidth(),
           type = type,
@@ -271,7 +277,7 @@ private fun PreviewChooseReportTypeScaffold(
   params: ColorParams<ChooseReportTypeScaffoldParams>,
 ) =
   PreviewWithColorParams(params) {
-    ChooseReportTypeScaffold(dialog = dialog, onAction = {})
+    ChooseReportTypeScaffold(types = WidgetType.known, dialog = dialog, onAction = {})
   }
 
 private data class ChooseReportTypeScaffoldParams(val dialog: ChooseReportTypeDialog?)

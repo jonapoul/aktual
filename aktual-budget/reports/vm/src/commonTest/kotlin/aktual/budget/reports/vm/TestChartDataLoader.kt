@@ -12,11 +12,14 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
 import aktual.budget.rules.domain.TransactionFilterCompilerImpl
 import aktual.core.utils.Calendar
+import aktual.prefs.BudgetFeatureFlags
 import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.Preference
+import aktual.test.FakeBudgetFeatureFlags
 import alakazam.kotlin.CoroutineContexts
 import kotlinx.coroutines.flow.flowOf
 
@@ -24,6 +27,7 @@ internal fun BudgetDatabase.chartDataLoader(
   contexts: CoroutineContexts,
   calendar: Calendar,
   formatPreferences: BudgetFormatPreferences = TestFormatPreferences,
+  flags: BudgetFeatureFlags = AllFlagsOn,
 ) =
   ChartDataLoader(
     dao = ReportsDao(this, contexts),
@@ -42,7 +46,11 @@ internal fun BudgetDatabase.chartDataLoader(
     contexts = contexts,
     compiler = TransactionFilterCompilerImpl(),
     entities = ConditionEntitiesLoaderImpl(this),
+    flags = flags,
   )
+
+internal val AllFlagsOn: FakeBudgetFeatureFlags
+  get() = FakeBudgetFeatureFlags(FeatureFlag.entries.toSet())
 
 internal object TestFormatPreferences : BudgetFormatPreferences {
   override val numberFormat = fixed(NumberFormat.Default)

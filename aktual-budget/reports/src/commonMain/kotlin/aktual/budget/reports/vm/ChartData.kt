@@ -421,6 +421,7 @@ enum class UnsupportedReason {
   CustomBudgeted,
   MissingReport,
   ReportType,
+  FeatureDisabled,
 }
 
 /**

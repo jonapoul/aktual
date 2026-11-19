@@ -51,6 +51,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -175,6 +176,11 @@ internal fun MonteCarloScaffold(
         NotFound ->
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
             Text(text = Strings.reportsNotFound)
+          }
+
+        FeatureDisabled ->
+          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
+            Text(text = Strings.reportsUnsupportedFeatureDisabled, textAlign = TextAlign.Center)
           }
 
         is Loaded ->

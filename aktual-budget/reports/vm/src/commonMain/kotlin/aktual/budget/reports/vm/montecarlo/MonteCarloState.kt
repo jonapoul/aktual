@@ -15,6 +15,9 @@ sealed interface MonteCarloState {
 
   data object NotFound : MonteCarloState
 
+  // The Monte Carlo report is off in experimental settings
+  data object FeatureDisabled : MonteCarloState
+
   data class Loaded(
     val title: String?,
     // The plan being edited, with linked pots taking their accounts' live balances

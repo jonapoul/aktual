@@ -17,6 +17,7 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
+import aktual.prefs.BudgetFeatureFlags
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -52,6 +53,7 @@ internal constructor(
   queryEditorDataLoader: QueryEditorDataLoader,
   private val sync: DashboardSync,
   private val budgetScope: BudgetCoroutineScope,
+  flags: BudgetFeatureFlags,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val saved: StateFlow<SavedMeta> =
@@ -79,24 +81,39 @@ internal constructor(
       .stateIn(viewModelScope, Eagerly, initialValue = null)
 
   val state: StateFlow<FormulaReportState> =
-    combine(saved, draft, preview, isEditing) { saved, draft, preview, isEditing ->
-        when (saved) {
-          Loading -> FormulaReportState.Loading
-          NotFound -> FormulaReportState.NotFound
-          is Found ->
-            if (draft == null) {
-              FormulaReportState.Loading
-            } else {
-              FormulaReportState.Loaded(
-                draft = draft,
-                preview = preview,
-                isEditing = isEditing,
-                hasChanges = isEditing && draft != saved.meta.toEdits(),
-              )
-            }
-        }
-      }
+    combine(saved, draft, preview, isEditing, flags[FormulaMode].asFlow(), ::state)
       .stateIn(viewModelScope, Eagerly, Loading)
+
+  private fun state(
+    saved: SavedMeta,
+    draft: FormulaEdits?,
+    preview: FormulaData?,
+    isEditing: Boolean,
+    isEnabled: Boolean,
+  ): FormulaReportState =
+    if (isEnabled) state(saved, draft, preview, isEditing) else FeatureDisabled
+
+  private fun state(
+    saved: SavedMeta,
+    draft: FormulaEdits?,
+    preview: FormulaData?,
+    isEditing: Boolean,
+  ): FormulaReportState =
+    when (saved) {
+      Loading -> FormulaReportState.Loading
+      NotFound -> FormulaReportState.NotFound
+      is Found ->
+        if (draft == null) {
+          FormulaReportState.Loading
+        } else {
+          FormulaReportState.Loaded(
+            draft = draft,
+            preview = preview,
+            isEditing = isEditing,
+            hasChanges = isEditing && draft != saved.meta.toEdits(),
+          )
+        }
+    }
 
   // Null until loaded, and only loaded while something shows query conditions
   val queryEditorData: StateFlow<QueryEditorData?> =

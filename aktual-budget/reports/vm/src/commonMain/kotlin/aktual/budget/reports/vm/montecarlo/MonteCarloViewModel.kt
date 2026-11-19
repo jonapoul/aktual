@@ -27,6 +27,7 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
+import aktual.prefs.BudgetFeatureFlags
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -75,6 +76,7 @@ internal constructor(
   decoder: DashboardItemDecoder,
   private val sync: DashboardSync,
   private val uuidGenerator: UuidGenerator,
+  flags: BudgetFeatureFlags,
   contexts: CoroutineContexts,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -146,8 +148,12 @@ internal constructor(
     }
     .stateIn(viewModelScope, Eagerly, persistentListOf())
 
+  private val isEnabled: StateFlow<Boolean?> =
+    flags[MonteCarloReport].asFlow().stateIn(viewModelScope, Eagerly, initialValue = null)
+
   val state: StateFlow<MonteCarloState> =
     viewModelScope.launchMolecule(Immediate) {
+      val isEnabled by isEnabled.collectAsState()
       val saved by saved.collectAsState()
       val config by resolvedConfig.collectAsState()
       val edited by mutableConfig.collectAsState()
@@ -161,30 +167,34 @@ internal constructor(
       val cashflowPercentile by mutableCashflowPercentile.collectAsState()
       val selectedRun by mutableSelectedRun.collectAsState()
 
-      when (val s = saved) {
-        Loading -> MonteCarloState.Loading
+      if (isEnabled == false) {
+        MonteCarloState.FeatureDisabled
+      } else {
+        when (val s = saved) {
+          Loading -> MonteCarloState.Loading
 
-        NotFound -> MonteCarloState.NotFound
+          NotFound -> MonteCarloState.NotFound
 
-        is Found -> {
-          val current = config
-          if (current == null) {
-            MonteCarloState.Loading
-          } else {
-            MonteCarloState.Loaded(
-              title = s.meta.name,
-              config = current,
-              accounts = accounts,
-              hasChanges = edited != s.meta.toConfig(),
-              showTodaysMoney = showTodaysMoney,
-              collapsedSections = collapsedSections,
-              resultsView = resultsView,
-              graphView = graphView,
-              cashflowPercentile = cashflowPercentile,
-              results = simulation?.results,
-              selectedRun = selectedRun?.takeIf { it.config == edited }?.index,
-              runDetail = runDetail,
-            )
+          is Found -> {
+            val current = config
+            if (current == null || isEnabled == null) {
+              MonteCarloState.Loading
+            } else {
+              MonteCarloState.Loaded(
+                title = s.meta.name,
+                config = current,
+                accounts = accounts,
+                hasChanges = edited != s.meta.toConfig(),
+                showTodaysMoney = showTodaysMoney,
+                collapsedSections = collapsedSections,
+                resultsView = resultsView,
+                graphView = graphView,
+                cashflowPercentile = cashflowPercentile,
+                results = simulation?.results,
+                selectedRun = selectedRun?.takeIf { it.config == edited }?.index,
+                runDetail = runDetail,
+              )
+            }
           }
         }
       }

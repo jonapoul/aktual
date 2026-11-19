@@ -8,6 +8,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.DashboardPageId
 import aktual.budget.model.SORT_INCREMENT
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.vm.AllFlagsOn
 import aktual.budget.reports.vm.DashboardSync
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaOutput
@@ -19,6 +20,7 @@ import aktual.budget.reports.vm.runSyncedDatabaseTest
 import aktual.budget.rules.domain.ConditionEntitiesLoaderImpl
 import aktual.core.utils.Calendar
 import aktual.di.BudgetCoroutineScope
+import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.viewModelContext
 import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.ReceiveTurbine
@@ -41,6 +43,16 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 
 class FormulaReportViewModelTest {
+  @Test
+  fun `Shows as disabled while formula mode is off`() =
+    runFormulaTest(flags = FakeBudgetFeatureFlags()) {
+      viewModel.state.test {
+        var state = awaitItem()
+        while (state == FormulaReportState.Loading) state = awaitItem()
+        assertThat(state).isEqualTo(FormulaReportState.FeatureDisabled)
+      }
+    }
+
   @Test
   fun `Starts viewing the saved card`() = runFormulaTest {
     viewModel.state.test {
@@ -165,40 +177,44 @@ class FormulaReportViewModelTest {
     val scope: TestScope,
   )
 
-  private fun runFormulaTest(meta: JsonObject? = META, action: suspend Harness.() -> Unit) =
-    runSyncedDatabaseTest { scope, controller ->
-      dashboardPagesQueries.withoutResult {
-        insert(
-          Dashboard_pages(PAGE, "Main", tombstone = false, sort_order = SORT_INCREMENT.toDouble()),
-        )
-      }
-      val dispatcher = StandardTestDispatcher(scope.testScheduler)
-      // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
-      val contexts = TestCoroutineContexts(dispatcher)
-      val calendar = Calendar { LocalDate(2026, 1, 1) }
-      val dao = DashboardDao(this, contexts)
-      val sync = DashboardSync(dao, controller)
-      if (meta != null) sync.insertWidget(ID, PAGE, Formula, x = 0, y = 0, meta = meta)
-      val viewModel =
-        FormulaReportViewModel(
-          id = ID,
-          dashboardDao = dao,
-          decoder = DashboardItemDecoder(),
-          chartDataLoader = chartDataLoader(contexts, calendar),
-          queryEditorDataLoader =
-            QueryEditorDataLoader(
-              database = this,
-              entityLoader = ConditionEntitiesLoaderImpl(this),
-              reports = ReportsDao(this, contexts),
-              calendar = calendar,
-            ),
-          sync = sync,
-          budgetScope = BudgetCoroutineScope(scope),
-          viewModelContext = scope.viewModelContext,
-        )
-      Harness(viewModel, dao, sync, scope).action()
-      scope.advanceUntilIdle()
+  private fun runFormulaTest(
+    meta: JsonObject? = META,
+    flags: FakeBudgetFeatureFlags = AllFlagsOn,
+    action: suspend Harness.() -> Unit,
+  ) = runSyncedDatabaseTest { scope, controller ->
+    dashboardPagesQueries.withoutResult {
+      insert(
+        Dashboard_pages(PAGE, "Main", tombstone = false, sort_order = SORT_INCREMENT.toDouble()),
+      )
     }
+    val dispatcher = StandardTestDispatcher(scope.testScheduler)
+    // Keep viewModelScope on the test scheduler, so its queries can't outlive the database
+    val contexts = TestCoroutineContexts(dispatcher)
+    val calendar = Calendar { LocalDate(2026, 1, 1) }
+    val dao = DashboardDao(this, contexts)
+    val sync = DashboardSync(dao, controller)
+    if (meta != null) sync.insertWidget(ID, PAGE, Formula, x = 0, y = 0, meta = meta)
+    val viewModel =
+      FormulaReportViewModel(
+        id = ID,
+        dashboardDao = dao,
+        decoder = DashboardItemDecoder(),
+        chartDataLoader = chartDataLoader(contexts, calendar),
+        queryEditorDataLoader =
+          QueryEditorDataLoader(
+            database = this,
+            entityLoader = ConditionEntitiesLoaderImpl(this),
+            reports = ReportsDao(this, contexts),
+            calendar = calendar,
+          ),
+        sync = sync,
+        budgetScope = BudgetCoroutineScope(scope),
+        flags = flags,
+        viewModelContext = scope.viewModelContext,
+      )
+    Harness(viewModel, dao, sync, scope).action()
+    scope.advanceUntilIdle()
+  }
 
   private companion object {
     val PAGE = DashboardPageId("page")
