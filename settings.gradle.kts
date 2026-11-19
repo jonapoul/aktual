@@ -67,8 +67,13 @@ if (url.isPresent && cacheBucket.isPresent) {
   logger.warn("Remote caching disabled!")
 }
 
+val isGithubActions = providers.environmentVariable("GITHUB_ACTIONS").isPresent
+
 develocity.buildScan {
-  if (!gradle.startParameter.isBuildScan) {
+  if (isGithubActions) {
+    termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+    termsOfUseAgree = "yes"
+  } else if (!gradle.startParameter.isBuildScan) {
     publishing.onlyIf { it.isAuthenticated }
   }
 
