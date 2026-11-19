@@ -6,7 +6,6 @@ import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
-import aktual.core.icons.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.l10n.Strings
@@ -18,7 +17,6 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -26,17 +24,17 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.DiscardChangesDialog
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
-import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TextFieldShape
-import aktual.core.ui.bareIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -221,6 +219,10 @@ private fun EditTagScaffold(
 
       if (showDiscardDialog) {
         DiscardChangesDialog(
+          title = Strings.tagsDiscardTitle,
+          message = Strings.tagsDiscardMessage,
+          confirm = Strings.tagsDiscardConfirm,
+          cancel = Strings.tagsDiscardCancel,
           onDiscard = {
             showDiscardDialog = false
             onAction(NavigateBack)
@@ -251,10 +253,8 @@ private fun EditTagTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {
-        BasicIconButton(
-          imageVector = AktualIcons.Delete,
+        DiscardChangesButton(
           contentDescription = Strings.tagsDiscardConfirm,
-          colors = DiscardColors,
           onClick = onRequestDiscard,
         )
       } else {
@@ -271,20 +271,6 @@ private fun EditTagTopBar(
         SaveButton(onAction = onAction, enabled = saveEnabled)
       }
     },
-  )
-}
-
-@Composable
-private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
-  AktualAlertDialog(
-    title = Strings.tagsDiscardTitle,
-    highlight = colors.warningText,
-    onDismissRequest = onCancel,
-    buttons = {
-      DialogTextButton(text = Strings.tagsDiscardCancel, onClick = onCancel)
-      DialogTextButton(kind = Destructive, text = Strings.tagsDiscardConfirm, onClick = onDiscard)
-    },
-    content = { Text(Strings.tagsDiscardMessage) },
   )
 }
 
@@ -483,7 +469,3 @@ private class EditTagStateProvider :
     ),
     EditTagState.Failure(cause = null),
   )
-
-private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
-  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
-}

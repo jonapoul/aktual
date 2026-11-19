@@ -22,8 +22,6 @@ import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.edit.RuleMatchesState
 import aktual.budget.schedules.domain.Schedule
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Check
-import aktual.core.icons.Delete
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.ViewShow
 import aktual.core.icons.material.DeleteForever
@@ -36,8 +34,6 @@ import aktual.core.l10n.edit_rule_matches_apply_failed
 import aktual.core.l10n.edit_rule_saved
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditScheduleNavigator
-import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
@@ -45,25 +41,24 @@ import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.DiscardChangesDialog
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SaveFab
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
-import aktual.core.ui.bareIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -73,13 +68,6 @@ import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -319,6 +307,10 @@ private fun EditRuleScaffold(
 
   if (showDiscardDialog) {
     DiscardChangesDialog(
+      title = Strings.editRuleDiscardTitle,
+      message = Strings.editRuleDiscardMessage,
+      confirm = Strings.editRuleDiscardConfirm,
+      cancel = Strings.editRuleDiscardCancel,
       onDiscard = {
         showDiscardDialog = false
         onAction(NavBack)
@@ -343,10 +335,8 @@ private fun EditRuleTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (state is Success && state.hasChanges) {
-        BasicIconButton(
-          imageVector = AktualIcons.Delete,
+        DiscardChangesButton(
           contentDescription = Strings.editRuleDiscardConfirm,
-          colors = DiscardColors,
           onClick = onDiscard,
         )
       } else {
@@ -368,44 +358,15 @@ private fun EditRuleTopBar(
 }
 
 @Composable
-private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
-  AktualAlertDialog(
-    title = Strings.editRuleDiscardTitle,
-    highlight = colors.warningText,
-    onDismissRequest = onCancel,
-    buttons = {
-      DialogTextButton(text = Strings.editRuleDiscardCancel, onClick = onCancel)
-      DialogTextButton(
-        kind = Destructive,
-        text = Strings.editRuleDiscardConfirm,
-        onClick = onDiscard,
-      )
-    },
-    content = { Text(Strings.editRuleDiscardMessage) },
-  )
-}
-
-// Only shown once there's something to save
-@Composable
 private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<EditRuleAction>) {
-  AnimatedVisibility(
-    visible = state is Success && state.hasChanges,
-    enter = slideInVertically { it } + scaleIn(initialScale = FabInitialScale) + fadeIn(),
-    exit = slideOutVertically { it } + scaleOut(targetScale = FabInitialScale) + fadeOut(),
-  ) {
-    val success = state as? Success ?: return@AnimatedVisibility
-    AktualButton(
-      modifier = Modifier.padding(end = Dimens.Huge, bottom = Dimens.Huge),
-      text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-      icon = AktualIcons.Check,
-      kind = Primary,
-      shape = CardShape,
-      contentPadding = FabPadding,
-      isEnabled = success.canSave,
-      isLoading = success.isWorking,
-      onClick = { onAction(Save) },
-    )
-  }
+  val success = state as? Success
+  SaveFab(
+    isVisible = success?.hasChanges == true,
+    text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+    isEnabled = success?.canSave == true,
+    isLoading = success?.isWorking == true,
+    onClick = { onAction(Save) },
+  )
 }
 
 @Composable
@@ -611,14 +572,6 @@ private fun LoadedContent(
     )
   }
 }
-
-private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
-  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
-}
-
-private const val FabInitialScale = 0.8f
-private val FabPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
-private val FabClearance = 72.dp
 
 @PortraitPreview
 @Composable

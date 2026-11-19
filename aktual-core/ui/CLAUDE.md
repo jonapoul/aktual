@@ -41,6 +41,10 @@ Use `AktualButton` and `AktualIconButton` (`AktualButtons.kt`), picking a `Butto
 
 In `AktualAlertDialog` button slots (and `AktualDatePickerDialog` confirm/dismiss slots), use `DialogTextButton` instead: tinted text with no background, picking a `DialogButtonKind` (`Normal` for cancel/dismiss, `Primary` for confirm, `Destructive` for delete/discard).
 
+## Edit screens
+
+Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`: `DiscardChangesButton` in place of the back button once there are changes, `DiscardChangesDialog` (pass the screen's own strings) when it or `BackHandler` fires, and `SaveFab` bottom-end above the snackbar host. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FAB. `EditRuleScreen` is the reference.
+
 ## Tooltips
 
 Use `AktualTooltip` (`AktualTooltip.kt`) for an icon button that shows text when tapped, not Material's `TooltipBox`, whose popup lets taps outside it through on desktop. For a "?" beside a label explaining it, use `AktualHelpTooltip(text)`, which takes no more room than its 16dp icon.
