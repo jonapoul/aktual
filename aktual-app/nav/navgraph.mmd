@@ -20,6 +20,8 @@ flowchart TD
   dialogSettings["Dialog Settings"]
   appIconSettings["App Icon Settings"]
   updateSettings["Update Settings"]
+  advancedSettings["Advanced Settings"]
+  experimentalSettings["Experimental Settings"]
   themeSettings["Theme Settings"]
   customThemes["Custom Themes"]
   inspectTheme["Inspect Theme"]
@@ -101,6 +103,8 @@ flowchart TD
   searchSettings --tap result--> appIconSettings
   settings --tap updates, android release--> updateSettings
   searchSettings --tap result--> updateSettings
+  settings --tap advanced, budget open--> advancedSettings
+  settings --tap experimental, budget open--> experimentalSettings
   themeSettings --tap custom themes--> customThemes
   themeSettings --tap inspect--> inspectTheme
   customThemes --tap inspect--> inspectTheme

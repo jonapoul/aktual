@@ -41,3 +41,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TransactionSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey
+
+@Serializable data object AdvancedSettingsNavRoute : NavKey
+
+@Serializable data object ExperimentalSettingsNavRoute : NavKey

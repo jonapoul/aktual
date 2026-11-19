@@ -1,5 +1,7 @@
 package aktual.prefs.ui
 
+import aktual.core.nav.AdvancedSettingsNavRoute
+import aktual.core.nav.AdvancedSettingsNavigator
 import aktual.core.nav.AmountSettingsNavRoute
 import aktual.core.nav.AmountSettingsNavigator
 import aktual.core.nav.AppIconSettingsNavRoute
@@ -13,6 +15,8 @@ import aktual.core.nav.DateSettingsNavRoute
 import aktual.core.nav.DateSettingsNavigator
 import aktual.core.nav.DialogSettingsNavRoute
 import aktual.core.nav.DialogSettingsNavigator
+import aktual.core.nav.ExperimentalSettingsNavRoute
+import aktual.core.nav.ExperimentalSettingsNavigator
 import aktual.core.nav.FormatSettingsNavRoute
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.InspectThemeNavRoute
@@ -35,11 +39,13 @@ import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.nav.UpdateSettingsNavRoute
 import aktual.core.nav.UpdateSettingsNavigator
 import aktual.di.AppScope
+import aktual.prefs.ui.advanced.AdvancedSettingsScreen
 import aktual.prefs.ui.amounts.AmountSettingsScreen
 import aktual.prefs.ui.appicon.AppIconSettingsScreen
 import aktual.prefs.ui.bars.BarSettingsScreen
 import aktual.prefs.ui.dates.DateSettingsScreen
 import aktual.prefs.ui.dialogs.DialogSettingsScreen
+import aktual.prefs.ui.experimental.ExperimentalSettingsScreen
 import aktual.prefs.ui.format.FormatSettingsScreen
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.inspect.search.SearchThemeScreen
@@ -72,6 +78,8 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toAmountSettings = AmountSettingsNavigator(stack),
         toDateSettings = DateSettingsNavigator(stack),
         toUpdateSettings = UpdateSettingsNavigator(stack),
+        toAdvancedSettings = AdvancedSettingsNavigator(stack),
+        toExperimentalSettings = ExperimentalSettingsNavigator(stack),
       )
     }
 
@@ -119,6 +127,10 @@ class SettingsNavEntryContributor : NavEntryContributor {
     entry<UpdateSettingsNavRoute> { route ->
       UpdateSettingsScreen(BackNavigator(stack), route.highlight)
     }
+
+    entry<AdvancedSettingsNavRoute> { AdvancedSettingsScreen(BackNavigator(stack)) }
+
+    entry<ExperimentalSettingsNavRoute> { ExperimentalSettingsScreen(BackNavigator(stack)) }
 
     entry<AppIconSettingsNavRoute> { route ->
       AppIconSettingsScreen(BackNavigator(stack), route.highlight)

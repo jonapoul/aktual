@@ -3,7 +3,9 @@ package aktual.prefs.ui.root
 import aktual.budget.model.Amount
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudDownload
+import aktual.core.icons.Pylon
 import aktual.core.icons.SearchAlternate
+import aktual.core.icons.SettingsSliderAlternate
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Apps
@@ -14,10 +16,12 @@ import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Security
 import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
+import aktual.core.nav.AdvancedSettingsNavigator
 import aktual.core.nav.AmountSettingsNavigator
 import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.DateSettingsNavigator
+import aktual.core.nav.ExperimentalSettingsNavigator
 import aktual.core.nav.FormatSettingsNavigator
 import aktual.core.nav.SearchSettingsNavigator
 import aktual.core.nav.SecuritySettingsNavigator
@@ -58,6 +62,8 @@ fun SettingsScreen(
   toAmountSettings: AmountSettingsNavigator,
   toDateSettings: DateSettingsNavigator,
   toUpdateSettings: UpdateSettingsNavigator,
+  toAdvancedSettings: AdvancedSettingsNavigator,
+  toExperimentalSettings: ExperimentalSettingsNavigator,
   viewModel: SettingsViewModel = metroViewModel<SettingsViewModel>(),
 ) {
   val budgetName by viewModel.budgetName.collectAsStateWithLifecycle()
@@ -77,6 +83,8 @@ fun SettingsScreen(
         NavToAmountSettings -> toAmountSettings()
         NavToDateSettings -> toDateSettings()
         NavToUpdateSettings -> toUpdateSettings()
+        NavToAdvancedSettings -> toAdvancedSettings()
+        NavToExperimentalSettings -> toExperimentalSettings()
       }
     },
   )
@@ -101,35 +109,7 @@ private fun SettingsScaffold(
       )
     },
   ) {
-    // Greyed out with no budget open, since these belong to a budget
-    item {
-      val isBudgetOpen = budgetName != null
-      PreferenceGroup(
-        title =
-          when {
-            budgetName == null -> Strings.settingsBudgetGroup
-            budgetName.isBlank() -> Strings.settingsBudgetUnnamed
-            else -> budgetName
-          },
-        subtitle = if (isBudgetOpen) Strings.settingsBudgetSynced else Strings.settingsBudgetClosed,
-        enabled = isBudgetOpen,
-      ) {
-        SubSettingsItem(
-          title = Strings.settingsAmounts,
-          subtitle = AmountsExample.formattedString(isPrivacyEnabled = false),
-          icon = MaterialIcons.Speed125,
-          isEnabled = isBudgetOpen,
-          onClick = { onAction(NavToAmountSettings) },
-        )
-        SubSettingsItem(
-          title = Strings.settingsFormatDatesGroup,
-          subtitle = DatesExample.formatted(),
-          icon = MaterialIcons.CalendarViewWeek,
-          isEnabled = isBudgetOpen,
-          onClick = { onAction(NavToDateSettings) },
-        )
-      }
-    }
+    item { BudgetSettingsGroup(budgetName, onAction) }
 
     item {
       PreferenceGroup(
@@ -177,6 +157,49 @@ private fun SettingsScaffold(
         }
       }
     }
+  }
+}
+
+// Greyed out with no budget open, since these belong to a budget
+@Composable
+private fun BudgetSettingsGroup(budgetName: String?, onAction: OnAction<SettingsAction>) {
+  val isBudgetOpen = budgetName != null
+  PreferenceGroup(
+    title =
+      when {
+        budgetName == null -> Strings.settingsBudgetGroup
+        budgetName.isBlank() -> Strings.settingsBudgetUnnamed
+        else -> budgetName
+      },
+    subtitle = if (isBudgetOpen) Strings.settingsBudgetSynced else Strings.settingsBudgetClosed,
+    enabled = isBudgetOpen,
+  ) {
+    SubSettingsItem(
+      title = Strings.settingsAmounts,
+      subtitle = AmountsExample.formattedString(isPrivacyEnabled = false),
+      icon = MaterialIcons.Speed125,
+      isEnabled = isBudgetOpen,
+      onClick = { onAction(NavToAmountSettings) },
+    )
+    SubSettingsItem(
+      title = Strings.settingsFormatDatesGroup,
+      subtitle = DatesExample.formatted(),
+      icon = MaterialIcons.CalendarViewWeek,
+      isEnabled = isBudgetOpen,
+      onClick = { onAction(NavToDateSettings) },
+    )
+    SubSettingsItem(
+      title = Strings.settingsAdvanced,
+      icon = AktualIcons.SettingsSliderAlternate,
+      isEnabled = isBudgetOpen,
+      onClick = { onAction(NavToAdvancedSettings) },
+    )
+    SubSettingsItem(
+      title = Strings.settingsExperimental,
+      icon = AktualIcons.Pylon,
+      isEnabled = isBudgetOpen,
+      onClick = { onAction(NavToExperimentalSettings) },
+    )
   }
 }
 
