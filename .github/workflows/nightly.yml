@@ -161,9 +161,9 @@ jobs:
           gh run download "$RUN_ID" --name android --dir out
           cp out/*.apk aktual-nightly.apk
           NOTES="Android nightly build of $SHA. Replaced by every nightly run."
-          # Reuse one release rather than recreating it, so watchers aren't notified every night
+          # Reuse one release rather than recreating it, so watchers aren't notified every night. Its
+          # tag stays on the first nightly's commit, since moving it breaks pulls of local clones
           if gh release view nightly > /dev/null 2>&1; then
-            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/nightly" -f sha="$SHA" -F force=true
             gh release upload nightly aktual-nightly.apk --clobber
             gh release edit nightly --notes "$NOTES"
           else
