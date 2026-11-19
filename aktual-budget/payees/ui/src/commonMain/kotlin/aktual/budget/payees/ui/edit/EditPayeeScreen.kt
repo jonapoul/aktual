@@ -43,7 +43,6 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -51,10 +50,11 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.DiscardChangesDialog
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
-import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
@@ -63,7 +63,6 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.TextFieldShape
-import aktual.core.ui.bareIconButton
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -290,6 +289,10 @@ private fun EditPayeeScaffold(
 
       if (showDiscardDialog) {
         DiscardChangesDialog(
+          title = Strings.payeesDiscardTitle,
+          message = Strings.payeesDiscardMessage,
+          confirm = Strings.payeesDiscardConfirm,
+          cancel = Strings.payeesDiscardCancel,
           onDiscard = {
             showDiscardDialog = false
             onAction(NavigateBack)
@@ -320,10 +323,8 @@ private fun EditPayeeTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {
-        BasicIconButton(
-          imageVector = AktualIcons.Delete,
+        DiscardChangesButton(
           contentDescription = Strings.payeesDiscardConfirm,
-          colors = DiscardColors,
           onClick = onRequestDiscard,
         )
       } else {
@@ -341,20 +342,6 @@ private fun EditPayeeTopBar(
         )
       }
     },
-  )
-}
-
-@Composable
-private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
-  AktualAlertDialog(
-    title = Strings.payeesDiscardTitle,
-    highlight = colors.warningText,
-    onDismissRequest = onCancel,
-    buttons = {
-      DialogTextButton(text = Strings.payeesDiscardCancel, onClick = onCancel)
-      DialogTextButton(kind = Destructive, text = Strings.payeesDiscardConfirm, onClick = onDiscard)
-    },
-    content = { Text(Strings.payeesDiscardMessage) },
   )
 }
 
@@ -698,7 +685,3 @@ private class EditPayeeStateProvider :
     Editing(PayeesPreview.transfer),
     Failure(cause = null),
   )
-
-private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
-  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
-}

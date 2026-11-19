@@ -26,7 +26,6 @@ import aktual.budget.reports.vm.report.ReportViewModel
 import aktual.budget.reports.vm.withAllTimeDivisor
 import aktual.budget.reports.vm.withSummaryType
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Delete
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
@@ -45,6 +44,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.DiscardChangesButton
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
@@ -285,9 +285,8 @@ private fun ReportTopBar(
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {
-        AktualIconButton(
+        DiscardChangesButton(
           modifier = Modifier.testTag(Tags.DiscardReport),
-          imageVector = AktualIcons.Delete,
           contentDescription = Strings.reportsTextDiscard,
           onClick = { onAction(NavBack) },
         )
