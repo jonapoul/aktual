@@ -1,6 +1,7 @@
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleAction
 import aktual.budget.rules.domain.Rule
 import aktual.budget.rules.ui.DummyNameFetcher
@@ -101,7 +102,7 @@ internal fun ListRulesItemRow(
       modifier = modifier.ruleRow(colors, onClick = onClick),
       verticalArrangement = Arrangement.spacedBy(ItemSpacing),
     ) {
-      ListRulesItemConditions(rule.conditions, styles, query)
+      ListRulesItemConditions(rule.conditions, rule.conditionsOp, styles, query)
       ListRulesItemActions(rule.actions, styles, query)
     }
   } else {
@@ -110,7 +111,13 @@ internal fun ListRulesItemRow(
       horizontalArrangement = Arrangement.spacedBy(Dimens.Huge),
       verticalAlignment = Alignment.Top,
     ) {
-      ListRulesItemConditions(rule.conditions, styles, query, Modifier.weight(1f))
+      ListRulesItemConditions(
+        rule.conditions,
+        rule.conditionsOp,
+        styles,
+        query,
+        Modifier.weight(1f),
+      )
       ListRulesItemActions(rule.actions, styles, query, Modifier.weight(1f))
     }
   }
@@ -119,6 +126,7 @@ internal fun ListRulesItemRow(
 @Composable
 private fun ListRulesItemConditions(
   conditions: ImmutableList<Condition>,
+  conditionsOp: ConditionOp,
   styles: RuleSpanStyles,
   query: String,
   modifier: Modifier = Modifier,
@@ -131,7 +139,12 @@ private fun ListRulesItemConditions(
     val inlineContent = rememberNameInlineContent()
     conditions.fastForEachIndexed { index, condition ->
       Box(modifier = Modifier.rulePill(colors)) {
-        val prefix = if (index != 0) "and " else ""
+        val prefix =
+          when {
+            index == 0 -> ""
+            conditionsOp == Or -> "or "
+            else -> "and "
+          }
         Text(
           text = rememberConditionText(prefix, condition, styles, query),
           inlineContent = inlineContent,
