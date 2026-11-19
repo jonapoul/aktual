@@ -36,6 +36,7 @@ import io.ktor.client.engine.mock.MockEngine
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -83,7 +84,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runServerUrlTest {
-    viewModel.navDestination.receiveAsFlow().test {
+    viewModel.navDestination.receiveAsFlow().test(timeout = TURBINE_TIMEOUT) {
       // Given we're currently not navigating, and the API returns that we're bootstrapped
       advanceUntilIdle()
       ensureAllEventsConsumed()
@@ -104,7 +105,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runServerUrlTest {
-    viewModel.navDestination.receiveAsFlow().test {
+    viewModel.navDestination.receiveAsFlow().test(timeout = TURBINE_TIMEOUT) {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       advanceUntilIdle()
       ensureAllEventsConsumed()
@@ -129,18 +130,20 @@ class ServerUrlViewModelTest {
     advanceUntilIdle()
 
     // Then
-    viewModel.protocol.test {
+    viewModel.protocol.test(timeout = TURBINE_TIMEOUT) {
       var protocol = awaitItem()
       while (protocol != EXAMPLE_URL.protocol) {
         protocol = awaitItem()
       }
     }
-    viewModel.baseUrl.test { assertThatNextEmission().isEqualTo(EXAMPLE_URL.baseUrl) }
+    viewModel.baseUrl.test(timeout = TURBINE_TIMEOUT) {
+      assertThatNextEmission().isEqualTo(EXAMPLE_URL.baseUrl)
+    }
   }
 
   @Test
   fun `Show error message if bootstrap request gives failure response`() = runServerUrlTest {
-    viewModel.error.test {
+    viewModel.error.test(timeout = TURBINE_TIMEOUT) {
       // Given we're currently not navigating
       assertThatNextEmission().isNull()
 
@@ -174,7 +177,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Show error message if bootstrap request fails`() = runServerUrlTest {
-    viewModel.error.test {
+    viewModel.error.test(timeout = TURBINE_TIMEOUT) {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertThatNextEmission().isNull()
 
@@ -201,7 +204,7 @@ class ServerUrlViewModelTest {
   @Test
   fun `Clear saved token if the confirmed URL is different from previously-saved`() =
     runServerUrlTest {
-      appGraph.preferences.token.asFlow().test {
+      appGraph.preferences.token.asFlow().test(timeout = TURBINE_TIMEOUT) {
         // Given no token initially saved
         assertThatNextEmission().isNull()
 
@@ -229,7 +232,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Request local network permission before connecting`() = runServerUrlTest {
-    viewModel.localNetworkPermissionRequests.receiveAsFlow().test {
+    viewModel.localNetworkPermissionRequests.receiveAsFlow().test(timeout = TURBINE_TIMEOUT) {
       // Given the permission is needed for this server
       advanceUntilIdle()
       localNetworkPermission.isMissing = true
@@ -247,7 +250,7 @@ class ServerUrlViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
 
-    viewModel.navDestination.receiveAsFlow().test {
+    viewModel.navDestination.receiveAsFlow().test(timeout = TURBINE_TIMEOUT) {
       // When it's given
       localNetworkPermission.isMissing = false
       viewModel.onLocalNetworkPermissionResult(isGranted = true)
@@ -270,7 +273,7 @@ class ServerUrlViewModelTest {
 
     // Then nothing connects
     assertThat(mockEngine.requestHistory).isEmpty()
-    viewModel.isLoading.test { assertThatNextEmission().isFalse() }
+    viewModel.isLoading.test(timeout = TURBINE_TIMEOUT) { assertThatNextEmission().isFalse() }
   }
 
   @Test
@@ -296,7 +299,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Show local network error if connecting fails without the permission`() = runServerUrlTest {
-    viewModel.error.test {
+    viewModel.error.test(timeout = TURBINE_TIMEOUT) {
       // Given the permission is needed but denied, and the connection fails
       assertThatNextEmission().isNull()
       localNetworkPermission.isMissing = true
@@ -369,5 +372,11 @@ class ServerUrlViewModelTest {
 
   private companion object {
     val EXAMPLE_URL = ServerUrl(Http, "website.com")
+
+    // Turbine's timeout is wall-clock. The first response parsed in a JVM loads Ktor and
+    // serialization classes through Robolectric's instrumenting classloader, which can take
+    // longer than the 3s default on CI. A retried test runs in a fresh JVM, so it always starts
+    // cold
+    val TURBINE_TIMEOUT = 15.seconds
   }
 }
