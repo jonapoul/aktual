@@ -6,7 +6,6 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.components.ScheduleStatusBadge
-import aktual.budget.schedules.domain.ScheduleStatus
 import aktual.budget.schedules.vm.edit.EditScheduleError
 import aktual.budget.schedules.vm.edit.EditScheduleState
 import aktual.budget.schedules.vm.edit.EditScheduleViewModel
@@ -17,17 +16,18 @@ import aktual.budget.schedules.vm.edit.ScheduleForm
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
 import aktual.core.icons.CheveronRight
-import aktual.core.icons.Delete
-import aktual.core.icons.Pencil1
+import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Trash
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Save
-import aktual.core.icons.material.SaveAs
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.edit_schedule_saved
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -39,6 +39,9 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.DiscardChangesDialog
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
@@ -47,22 +50,17 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SaveFab
 import aktual.core.ui.formatted
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.normalButton
 import aktual.core.ui.rememberHazedTopBarState
+import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.stringInitial
 import aktual.core.ui.switch
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -71,6 +69,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -86,6 +85,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -100,6 +101,9 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -110,6 +114,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun EditScheduleScreen(
@@ -121,12 +126,14 @@ internal fun EditScheduleScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val error by viewModel.error.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         Created,
         Deleted -> back()
+        Saved -> snackbarHostState.showSuccessSnackbar(getString(Res.string.edit_schedule_saved))
       }
     }
   }
@@ -135,11 +142,10 @@ internal fun EditScheduleScreen(
     modifier = modifier,
     state = state,
     error = error,
+    snackbarHostState = snackbarHostState,
     onAction = { action ->
       when (action) {
         NavigateBack -> back()
-        StartEditing -> viewModel.startEditing()
-        StopEditing -> viewModel.stopEditing()
         SaveSchedule -> viewModel.save()
         DeleteSchedule -> viewModel.delete()
         DismissError -> viewModel.dismissError()
@@ -174,22 +180,12 @@ private fun EditScheduleScaffold(
   error: EditScheduleError?,
   onAction: OnAction<EditScheduleAction>,
   modifier: Modifier = Modifier,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val loaded = state as? Loaded
+  val hasChanges = loaded?.hasChanges == true
   var dialog by remember { mutableStateOf<Dialog?>(null) }
-
-  // Backing out of an edit drops back to viewing the schedule, checking first if that would lose
-  // any changes
-  fun onBack() {
-    if (loaded != null && loaded.isEditing && loaded.hasChanges) {
-      dialog = Discard
-    } else if (loaded != null && loaded.isEditing && !loaded.isNew) {
-      onAction(StopEditing)
-    } else {
-      onAction(NavigateBack)
-    }
-  }
-  BackHandler(enabled = loaded?.isEditing == true) { onBack() }
+  BackHandler(enabled = hasChanges) { dialog = Discard }
 
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
@@ -201,31 +197,27 @@ private fun EditScheduleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = {
-          EditModeContent(isEditing = loaded?.isEditing == true) { editing ->
-            if (editing) {
-              AktualIconButton(
-                imageVector = AktualIcons.Delete,
-                contentDescription = Strings.editScheduleStopEditing,
-                onClick = { onBack() },
-              )
-            } else {
-              NavBackIconButton(onClick = { onBack() })
-            }
+          if (hasChanges) {
+            DiscardChangesButton(
+              contentDescription = Strings.editScheduleDiscardConfirm,
+              onClick = { dialog = Discard },
+            )
+          } else {
+            NavBackIconButton(onClick = { onAction(NavigateBack) })
           }
         },
         title = {
-          val title = toolbarTitle(loaded)
-          EditModeContent(isEditing = loaded?.isEditing == true) { Text(text = title) }
+          Text(
+            if (loaded?.isNew == true) {
+              Strings.editScheduleToolbarCreate
+            } else {
+              Strings.editScheduleToolbarEdit
+            },
+          )
         },
         actions = {
-          if (loaded != null) {
-            EditModeContent(isEditing = loaded.isEditing, contentAlignment = CenterEnd) { editing ->
-              TopBarActions(
-                state = loaded.copy(isEditing = editing),
-                onAction = onAction,
-                onDelete = { dialog = Dialog.Delete },
-              )
-            }
+          if (loaded != null && !loaded.isNew) {
+            MoreMenu(isEnabled = !loaded.isWorking, onDelete = { dialog = Delete })
           }
         },
       )
@@ -264,12 +256,19 @@ private fun EditScheduleScaffold(
           )
       }
 
-      EditScheduleDialog(
-        dialog = dialog,
-        isNew = loaded?.isNew == true,
-        onAction = onAction,
-        onDismiss = { dialog = null },
-      )
+      // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
+      // when the button hides after saving
+      Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
+        SaveButton(state = loaded, onAction = onAction)
+        SnackbarHost(
+          hostState = snackbarHostState,
+          modifier = Modifier.align(CenterHorizontally),
+          snackbar = ::AktualSnackbar,
+        )
+        BottomSpacing()
+      }
+
+      EditScheduleDialog(dialog = dialog, onAction = onAction, onDismiss = { dialog = null })
 
       if (error != null) {
         ErrorDialog(error = error, onDismiss = { onAction(DismissError) })
@@ -278,18 +277,48 @@ private fun EditScheduleScaffold(
   }
 }
 
+// New schedules always show it, since there's nothing saved to compare against
 @Composable
-private fun toolbarTitle(loaded: EditScheduleState.Loaded?): String =
-  when {
-    loaded?.isNew == true -> Strings.editScheduleToolbarCreate
-    loaded?.isEditing == true -> Strings.editScheduleToolbarEdit
-    else -> Strings.editScheduleToolbarView
+private fun SaveButton(state: EditScheduleState.Loaded?, onAction: OnAction<EditScheduleAction>) {
+  SaveFab(
+    isVisible = state != null && (state.isNew || state.hasChanges),
+    text = if (state?.isNew == true) Strings.editScheduleCreate else Strings.editScheduleSave,
+    isEnabled = state?.canSave == true,
+    isLoading = state?.isWorking == true,
+    onClick = { onAction(SaveSchedule) },
+  )
+}
+
+@Composable
+private fun MoreMenu(isEnabled: Boolean, onDelete: () -> Unit) = Box {
+  var showMenu by remember { mutableStateOf(false) }
+
+  AktualIconButton(
+    onClick = { showMenu = true },
+    isEnabled = isEnabled,
+    imageVector = AktualIcons.DotsHorizontalTriple,
+    contentDescription = Strings.editScheduleMenu,
+  )
+
+  AktualDropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
+    val string = Strings.editScheduleDelete
+    val red = colors.errorText
+    AktualDropdownMenuItem(
+      text = { Text(string, color = red) },
+      onClick = {
+        showMenu = false
+        onDelete()
+      },
+      leadingIcon = {
+        Icon(imageVector = AktualIcons.Trash, contentDescription = string, tint = red)
+      },
+    )
   }
+}
 
 @Composable
 private fun EditScheduleDialog(
   dialog: Dialog?,
-  isNew: Boolean,
   onAction: OnAction<EditScheduleAction>,
   onDismiss: () -> Unit,
 ) {
@@ -309,53 +338,19 @@ private fun EditScheduleDialog(
       )
 
     Discard ->
-      ConfirmDialog(
+      DiscardChangesDialog(
         title = Strings.editScheduleDiscardTitle,
         message = Strings.editScheduleDiscardMessage,
         confirm = Strings.editScheduleDiscardConfirm,
         cancel = Strings.editScheduleDiscardCancel,
-        highlight = colors.warningText,
-        onConfirm = {
+        onDiscard = {
           onDismiss()
-          onAction(if (isNew) NavigateBack else StopEditing)
+          onAction(NavigateBack)
         },
         onCancel = onDismiss,
       )
 
     null -> Unit
-  }
-}
-
-@Composable
-private fun TopBarActions(
-  state: EditScheduleState.Loaded,
-  onAction: OnAction<EditScheduleAction>,
-  onDelete: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Row(modifier = modifier) {
-    if (state.isEditing) {
-      AktualIconButton(
-        imageVector = if (state.isNew) MaterialIcons.SaveAs else MaterialIcons.Save,
-        contentDescription =
-          if (state.isNew) Strings.editScheduleCreate else Strings.editScheduleSave,
-        isEnabled = state.canSave,
-        onClick = { onAction(SaveSchedule) },
-      )
-    } else {
-      AktualIconButton(
-        imageVector = AktualIcons.Pencil1,
-        contentDescription = Strings.editScheduleEdit,
-        isEnabled = !state.isWorking,
-        onClick = { onAction(StartEditing) },
-      )
-      AktualIconButton(
-        imageVector = AktualIcons.Trash,
-        contentDescription = Strings.editScheduleDelete,
-        isEnabled = !state.isWorking,
-        onClick = onDelete,
-      )
-    }
   }
 }
 
@@ -379,57 +374,34 @@ private fun EditScheduleContent(
         .padding(Dimens.ScreenPadding),
     verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing),
   ) {
-    EditModeContent(isEditing = state.isEditing) { editing ->
-      if (editing) {
-        NameField(name = state.form.name, onNameChange = { onAction(SetName(it)) })
-      } else {
-        Header(name = state.form.name, status = state.status)
-      }
-    }
+    state.status?.let { ScheduleStatusBadge(it) }
 
-    EditModeContent(isEditing = state.isEditing) { editing ->
-      ScheduleSentence(
-        state = state.copy(isEditing = editing),
-        activePart = sheet,
-        onClick = { part -> sheet = part },
+    NameField(name = state.form.name, onNameChange = { onAction(SetName(it)) })
+
+    Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.fieldSpacing)) {
+      ScheduleSentence(state = state, activePart = sheet, onClick = { part -> sheet = part })
+
+      Text(
+        text = Strings.editScheduleHint,
+        style = typography.bodySmall,
+        color = colors.pageTextSubdued,
       )
     }
 
-    EditModeContent(isEditing = state.isEditing) { editing ->
-      if (editing) {
-        Column(verticalArrangement = Arrangement.spacedBy(EditScheduleDS.sectionSpacing)) {
-          Text(
-            text = Strings.editScheduleHint,
-            style = typography.bodySmall,
-            color = colors.pageTextSubdued,
-          )
-
-          PostsTransactionRow(
-            posts = state.form.postsTransaction,
-            onChange = { onAction(SetPostsTransaction(it)) },
-          )
-        }
-      } else {
-        Text(
-          text =
-            if (state.form.postsTransaction) {
-              Strings.editSchedulePostsTransactionOn
-            } else {
-              Strings.editSchedulePostsTransactionOff
-            },
-          style = typography.bodySmall,
-          color = colors.pageTextSubdued,
-        )
-      }
-    }
+    PostsTransactionRow(
+      posts = state.form.postsTransaction,
+      onChange = { onAction(SetPostsTransaction(it)) },
+    )
 
     UpcomingDates(dates = state.upcomingDates)
 
-    AnimatedVisibility(visible = !state.isEditing && !state.isNew) {
+    if (!state.isNew) {
       val title = state.form.name.ifBlank { Strings.listSchedulesUnnamedSchedule }
       ViewTransactionsLink(onClick = { onAction(ViewTransactions(title)) })
     }
 
+    // Room to scroll the last item out from under the save button
+    Spacer(modifier = Modifier.height(FabClearance))
     BottomSpacing()
   }
 
@@ -564,28 +536,6 @@ private fun <T : Any> EntitySheet(
 }
 
 @Composable
-private fun Header(name: String, status: ScheduleStatus?, modifier: Modifier = Modifier) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(EditScheduleDS.badgeSpacing),
-  ) {
-    Text(
-      modifier = Modifier.weight(1f, fill = false),
-      text = name.ifBlank { Strings.listSchedulesUnnamedSchedule },
-      style = typography.headlineMedium,
-      color = if (name.isBlank()) colors.pageTextSubdued else colors.pageText,
-      maxLines = 2,
-      overflow = Ellipsis,
-    )
-
-    if (status != null) {
-      ScheduleStatusBadge(status)
-    }
-  }
-}
-
-@Composable
 private fun NameField(name: String, onNameChange: (String) -> Unit, modifier: Modifier = Modifier) {
   val textState = rememberTextFieldState(initialText = name)
   val latestOnNameChange by rememberUpdatedState(onNameChange)
@@ -667,28 +617,6 @@ private fun UpcomingDates(dates: ImmutableList<LocalDate>, modifier: Modifier = 
         }
       }
     }
-  }
-}
-
-// Swaps between the viewing and editing forms of a piece of the screen
-@Composable
-private fun EditModeContent(
-  isEditing: Boolean,
-  modifier: Modifier = Modifier,
-  contentAlignment: Alignment = TopStart,
-  content: @Composable (isEditing: Boolean) -> Unit,
-) {
-  AnimatedContent(
-    modifier = modifier,
-    targetState = isEditing,
-    contentAlignment = contentAlignment,
-    transitionSpec = {
-      val spec = tween<Float>(EditScheduleDS.MODE_SWITCH_MILLIS)
-      fadeIn(spec) togetherWith fadeOut(spec) using SizeTransform(clip = false)
-    },
-    label = "EditModeContent",
-  ) { editing ->
-    content(editing)
   }
 }
 
@@ -797,7 +725,6 @@ internal val PreviewLoaded =
         postsTransaction = false,
       ),
     isNew = false,
-    isEditing = false,
     hasChanges = false,
     isWorking = false,
     status = Due,
@@ -814,7 +741,8 @@ private class EditScheduleStateProvider :
     Loading,
     NotFound,
     PreviewLoaded,
-    PreviewLoaded.copy(isEditing = true, hasChanges = true),
+    PreviewLoaded.copy(hasChanges = true),
+    PreviewLoaded.copy(hasChanges = true, isWorking = true),
     PreviewNew,
   )
 
@@ -830,7 +758,6 @@ private val PreviewNew =
         date = ScheduleDate.Once(PreviewOnceDate),
       ),
     isNew = true,
-    isEditing = true,
     status = null,
     payeeName = null,
     upcomingDates = persistentListOf(PreviewOnceDate),

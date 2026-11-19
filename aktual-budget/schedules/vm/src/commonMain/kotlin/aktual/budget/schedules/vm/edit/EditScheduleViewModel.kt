@@ -63,11 +63,10 @@ internal constructor(
   private val today = calendar.today()
 
   // What's currently saved, so edits can be compared against it and thrown away
-  private val mutableSaved = MutableStateFlow<Saved?>(null)
+  private val mutableSaved = MutableStateFlow<SavedSchedule?>(null)
   private val mutableEntities = MutableStateFlow<Entities?>(null)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
   private val mutableForm = MutableStateFlow<ScheduleForm?>(null)
-  private val mutableIsEditing = MutableStateFlow(scheduleId == null)
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableError = MutableStateFlow<EditScheduleError?>(null)
 
@@ -88,9 +87,8 @@ internal constructor(
       val entities by mutableEntities.collectAsState()
       val failure by mutableFailure.collectAsState()
       val form by mutableForm.collectAsState()
-      val isEditing by mutableIsEditing.collectAsState()
       val isWorking by mutableIsWorking.collectAsState()
-      buildState(saved, entities, failure, form, isEditing, isWorking)
+      buildState(saved, entities, failure, form, isWorking)
     }
 
   init {
@@ -98,11 +96,10 @@ internal constructor(
   }
 
   private fun buildState(
-    saved: Saved?,
+    saved: SavedSchedule?,
     entities: Entities?,
     failure: Failure?,
     form: ScheduleForm?,
-    isEditing: Boolean,
     isWorking: Boolean,
   ): EditScheduleState {
     if (failure != null) return failure
@@ -110,7 +107,6 @@ internal constructor(
     return EditScheduleState.Loaded(
       form = form,
       isNew = scheduleId == null,
-      isEditing = isEditing,
       hasChanges = form != saved.form,
       isWorking = isWorking,
       status = saved.status,
@@ -169,7 +165,7 @@ internal constructor(
     )
   }
 
-  private suspend fun loadSaved(): Saved? {
+  private suspend fun loadSaved(): SavedSchedule? {
     if (scheduleId == null) {
       val form =
         ScheduleForm(
@@ -180,7 +176,7 @@ internal constructor(
           date = ScheduleDate.Recurring(defaultRecurConfig(start = today)),
           postsTransaction = false,
         )
-      return Saved(
+      return SavedSchedule(
         form,
         ruleId = null,
         conditions = emptyList(),
@@ -199,21 +195,13 @@ internal constructor(
         mappedPayee = row._payee,
         today = today,
       )
-    return Saved(
+    return SavedSchedule(
       form = form,
       ruleId = row.rule,
       conditions = conditions,
       actions = rule?.actions.orEmpty(),
       status = loader.load(scheduleId)?.status,
     )
-  }
-
-  fun startEditing() = mutableIsEditing.update { true }
-
-  // Throws away any edits
-  fun stopEditing() {
-    mutableForm.update { mutableSaved.value?.form ?: it }
-    mutableIsEditing.update { false }
   }
 
   fun setName(name: String) = updateForm { it.copy(name = name) }
@@ -253,7 +241,7 @@ internal constructor(
               mutableSaved.update { reloaded }
               mutableForm.update { reloaded.form }
             }
-            mutableIsEditing.update { false }
+            mutableEvents.tryEmit(Saved)
           }
         },
         onFailure = { e ->
@@ -290,7 +278,7 @@ internal constructor(
     }
   }
 
-  private data class Saved(
+  private data class SavedSchedule(
     val form: ScheduleForm,
     val ruleId: RuleId?,
     val conditions: List<Condition>,

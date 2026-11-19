@@ -10,7 +10,6 @@ internal object EditScheduleDS {
   val sheetSpacing = 16.dp
   val badgeSpacing = 10.dp
   val linkIconSize = 16.dp
-  const val MODE_SWITCH_MILLIS = 250
 
   val shimmerHeaderHeight = 32.dp
   val shimmerBadgeWidth = 56.dp
