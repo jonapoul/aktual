@@ -10,6 +10,7 @@ import aktual.budget.rules.domain.hasUnknownValues
 import aktual.budget.rules.domain.newCondition
 import aktual.budget.rules.domain.nextAction
 import aktual.budget.rules.domain.splitIndex
+import aktual.budget.rules.ui.DeleteRuleDialog
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewCondition2
 import aktual.budget.rules.ui.PreviewRule1
@@ -226,6 +227,7 @@ private fun EditRuleScaffold(
   val listState = rememberLazyListState()
   var showMatches by rememberSaveable { mutableStateOf(false) }
   var showDiscardDialog by remember { mutableStateOf(false) }
+  var showDeleteDialog by remember { mutableStateOf(false) }
   val hasChanges = state is Success && state.hasChanges
 
   BackHandler(enabled = hasChanges) { showDiscardDialog = true }
@@ -233,32 +235,14 @@ private fun EditRuleScaffold(
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
-      TopAppBar(
+      EditRuleTopBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
-        colors = colors.transparentTopAppBarColors(),
-        navigationIcon = {
-          if (hasChanges) {
-            BasicIconButton(
-              imageVector = AktualIcons.Delete,
-              contentDescription = Strings.editRuleDiscardConfirm,
-              colors = DiscardColors,
-              onClick = { showDiscardDialog = true },
-            )
-          } else {
-            NavBackIconButton { onAction(NavBack) }
-          }
-        },
-        title = {
-          Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
-        },
-        actions = {
-          MoreMenu(
-            canDelete = mode == Edit && state is Success && state.canDelete,
-            isEnabled = state is Success && !state.isWorking,
-            onShowMatches = { showMatches = true },
-            onAction = onAction,
-          )
-        },
+        state = state,
+        mode = mode,
+        onDiscard = { showDiscardDialog = true },
+        onShowMatches = { showMatches = true },
+        onDelete = { showDeleteDialog = true },
+        onAction = onAction,
       )
     },
   ) { innerPadding ->
@@ -323,6 +307,16 @@ private fun EditRuleScaffold(
     }
   }
 
+  if (showDeleteDialog) {
+    DeleteRuleDialog(
+      onConfirm = {
+        showDeleteDialog = false
+        onAction(Delete)
+      },
+      onDismiss = { showDeleteDialog = false },
+    )
+  }
+
   if (showDiscardDialog) {
     DiscardChangesDialog(
       onDiscard = {
@@ -332,6 +326,45 @@ private fun EditRuleScaffold(
       onCancel = { showDiscardDialog = false },
     )
   }
+}
+
+@Composable
+private fun EditRuleTopBar(
+  state: EditRuleState,
+  mode: Mode,
+  onDiscard: () -> Unit,
+  onShowMatches: () -> Unit,
+  onDelete: () -> Unit,
+  onAction: OnAction<EditRuleAction>,
+  modifier: Modifier = Modifier,
+) {
+  TopAppBar(
+    modifier = modifier,
+    colors = colors.transparentTopAppBarColors(),
+    navigationIcon = {
+      if (state is Success && state.hasChanges) {
+        BasicIconButton(
+          imageVector = AktualIcons.Delete,
+          contentDescription = Strings.editRuleDiscardConfirm,
+          colors = DiscardColors,
+          onClick = onDiscard,
+        )
+      } else {
+        NavBackIconButton { onAction(NavBack) }
+      }
+    },
+    title = {
+      Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
+    },
+    actions = {
+      MoreMenu(
+        canDelete = mode == Edit && state is Success && state.canDelete,
+        isEnabled = state is Success && !state.isWorking,
+        onShowMatches = onShowMatches,
+        onDelete = onDelete,
+      )
+    },
+  )
 }
 
 @Composable
@@ -380,7 +413,7 @@ private fun MoreMenu(
   canDelete: Boolean,
   isEnabled: Boolean,
   onShowMatches: () -> Unit,
-  onAction: OnAction<EditRuleAction>,
+  onDelete: () -> Unit,
 ) = Box {
   var showMenu by remember { mutableStateOf(false) }
 
@@ -409,7 +442,7 @@ private fun MoreMenu(
         text = { Text(string, color = red) },
         onClick = {
           showMenu = false
-          onAction(Delete)
+          onDelete()
         },
         leadingIcon = {
           Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = string, tint = red)
