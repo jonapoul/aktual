@@ -6,8 +6,6 @@ import aktual.budget.reports.vm.FormulaQuery
 import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.rules.components.ConditionsEditor
-import aktual.budget.rules.components.SectionLabel
-import aktual.budget.rules.components.SettingRow
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Pencil1
@@ -30,6 +28,8 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingRow
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar

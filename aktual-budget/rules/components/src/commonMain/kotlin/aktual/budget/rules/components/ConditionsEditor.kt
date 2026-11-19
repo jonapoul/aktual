@@ -15,6 +15,9 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingDivider
+import aktual.core.ui.SettingRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -109,7 +112,7 @@ fun ConditionsList(
         if (conditions.isNotEmpty()) {
           CardColumn(modifier = Modifier.fillMaxWidth(), contentPadding = Zero) {
             conditions.fastForEachIndexed { index, condition ->
-              if (index > 0) Divider()
+              if (index > 0) SettingDivider()
               ConditionRow(
                 condition = condition,
                 names = names,

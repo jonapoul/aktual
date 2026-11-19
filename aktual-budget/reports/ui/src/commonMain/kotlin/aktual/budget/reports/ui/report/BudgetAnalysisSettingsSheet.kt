@@ -7,11 +7,11 @@ import aktual.budget.reports.vm.QueryEditorData
 import aktual.budget.reports.vm.settings
 import aktual.budget.rules.components.ConditionSheetAt
 import aktual.budget.rules.components.ConditionsList
-import aktual.budget.rules.components.Divider
 import aktual.budget.rules.components.QuerySheet
-import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.components.label
 import aktual.core.l10n.Strings
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingDivider
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -91,15 +91,15 @@ internal fun BudgetAnalysisSettings(
       SettingValueRow(Strings.reportsCustomEditorGraph, settings.graphType.label()) {
         picker = Graph
       }
-      Divider()
+      SettingDivider()
       SwitchRow(Strings.reportsBudgetAnalysisShowBalance, settings.showBalance) { show ->
         onEdit { it.copy(showBalance = show) }
       }
-      Divider()
+      SettingDivider()
       SwitchRow(Strings.reportsBudgetAnalysisBalanceOnly, settings.balanceOnly) { only ->
         onEdit { it.copy(balanceOnly = only) }
       }
-      Divider()
+      SettingDivider()
       SwitchRow(Strings.reportsCustomEditorShowHidden, settings.showHiddenCategories) { show ->
         onEdit { it.copy(showHiddenCategories = show) }
       }

@@ -11,10 +11,10 @@ import aktual.budget.reports.vm.SankeyMode
 import aktual.budget.reports.vm.SankeyReportMeta
 import aktual.budget.reports.vm.normalizeSankeyLayers
 import aktual.budget.reports.vm.sankeyLayerChoices
-import aktual.budget.rules.components.Divider
 import aktual.budget.rules.components.label
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.SettingDivider
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -123,19 +123,19 @@ private fun SankeyDisplay(
     ) {
       onPick(TopCategories)
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsSankeySort, (meta.categorySort ?: PerGroup).label()) {
       onPick(Sort)
     }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsSankeyLayerFrom, layers.from.label()) { onPick(LayerFrom) }
-    Divider()
+    SettingDivider()
     SettingValueRow(Strings.reportsSankeyLayerTo, layers.to.label()) { onPick(LayerTo) }
-    Divider()
+    SettingDivider()
     SwitchRow(Strings.reportsSankeyPercentages, meta.showPercentages == true) { show ->
       onEdit { it.copy(showPercentages = show) }
     }
-    Divider()
+    SettingDivider()
     // Upstream only uses these in spent mode
     SwitchRow(
       Strings.reportsSankeyGroupAccounts,
@@ -144,7 +144,7 @@ private fun SankeyDisplay(
     ) { group ->
       onEdit { it.copy(groupAccounts = group) }
     }
-    Divider()
+    SettingDivider()
     SwitchRow(
       Strings.reportsSankeyTransfers,
       meta.showTransfers == true,

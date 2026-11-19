@@ -2,13 +2,13 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.ui.Tags
 import aktual.budget.reports.vm.FontSizeMode
-import aktual.budget.rules.components.SectionLabel
-import aktual.budget.rules.components.SettingRow
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualHelpTooltip
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
+import aktual.core.ui.SectionLabel
+import aktual.core.ui.SettingRow
 import aktual.core.ui.disambiguated
 import aktual.core.ui.switch
 import androidx.compose.animation.AnimatedContent

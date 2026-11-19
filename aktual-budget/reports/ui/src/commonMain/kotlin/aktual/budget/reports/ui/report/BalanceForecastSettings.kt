@@ -11,7 +11,6 @@ import aktual.budget.reports.vm.startsTodayMonths
 import aktual.budget.reports.vm.withSource
 import aktual.budget.reports.vm.withStartToday
 import aktual.budget.rules.components.QuerySheetPage
-import aktual.budget.rules.components.SectionLabel
 import aktual.budget.rules.components.label
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -21,6 +20,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SectionLabel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth

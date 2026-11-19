@@ -19,8 +19,6 @@ import aktual.budget.reports.vm.withNewQuery
 import aktual.budget.reports.vm.withQuery
 import aktual.budget.reports.vm.withQueryRenamed
 import aktual.budget.reports.vm.withoutQuery
-import aktual.budget.rules.components.Divider
-import aktual.budget.rules.components.SettingRow
 import aktual.budget.rules.components.label
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
@@ -44,6 +42,8 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SettingDivider
+import aktual.core.ui.SettingRow
 import aktual.core.ui.disambiguated
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -497,7 +497,7 @@ private fun Settings(
               draft.name.takeUnless { it.isNullOrBlank() } ?: Strings.reportsFormulaViewerNotSet,
           )
         }
-        Divider()
+        SettingDivider()
       }
     }
     SettingRow(onClick = open(EditFormula)) {
@@ -527,11 +527,11 @@ private fun Settings(
         isCode = draft.colorFormula.isNotBlank(),
       )
     }
-    Divider()
+    SettingDivider()
     ValueRow(label = Strings.reportsFormulaEditorFontSize, onClick = open(EditFontSize)) {
       Value(text = fontSizeString(draft.fontSizeMode, draft.staticFontSize))
     }
-    Divider()
+    SettingDivider()
     ShowTitleRow(showTitle = draft.showTitle, isEditing = isEditing, onAction = onAction)
   }
 
@@ -549,7 +549,7 @@ private fun Settings(
         }
       }
       draft.queries.entries.forEachIndexed { index, (name, query) ->
-        if (index > 0) Divider()
+        if (index > 0) SettingDivider()
         QueryRow(
           name = name,
           query = query,

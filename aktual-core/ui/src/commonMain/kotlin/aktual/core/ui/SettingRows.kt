@@ -1,4 +1,4 @@
-package aktual.budget.rules.components
+package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
@@ -77,7 +77,7 @@ fun SettingRow(
   }
 
 @Composable
-fun Divider(modifier: Modifier = Modifier) =
+fun SettingDivider(modifier: Modifier = Modifier) =
   Box(
     modifier =
       modifier

@@ -14,9 +14,9 @@ import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.rules.components.ConditionSheetAt
 import aktual.budget.rules.components.ConditionsList
 import aktual.budget.rules.components.QuerySheet
-import aktual.budget.rules.components.SectionLabel
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.SectionLabel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
