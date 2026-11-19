@@ -60,7 +60,7 @@ private fun NightlyUpdateDialogContent(
     content = {
       Column(verticalArrangement = spacedBy(12.dp)) {
         Text(text = Strings.updatesNightlyMessage)
-        Column(verticalArrangement = spacedBy(4.dp)) {
+        Column(verticalArrangement = spacedBy(8.dp)) {
           VersionRow(label = Strings.updatesNightlyInstalled, version = state.installed)
           VersionRow(label = Strings.updatesNightlyLatest, version = state.nightly)
           Text(
