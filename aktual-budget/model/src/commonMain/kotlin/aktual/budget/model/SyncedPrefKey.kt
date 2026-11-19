@@ -101,6 +101,22 @@ sealed interface SyncedPrefKey {
       PerAccount(NEW_TRANSACTIONS_SEEN_PREFIX)
   }
 
+  /** [Boolean] experimental feature toggles, false when unset. In upstream's settings order */
+  enum class FeatureFlag(override val key: String) : SyncedPrefKey {
+    GoalTemplates("flags.goalTemplatesEnabled"),
+    GoalTemplatesUi("flags.goalTemplatesUIEnabled"),
+    ActionTemplating("flags.actionTemplating"),
+    FormulaMode("flags.formulaMode"),
+    CurrencySupport("flags.currency"),
+    MobileCalculator("flags.mobileCalculator"),
+    NewSidebarUi("flags.newSidebarUI"),
+    SankeyReport("flags.sankeyReport"),
+    BalanceForecastReport("flags.balanceForecastReport"),
+    BudgetAnalysisReport("flags.budgetAnalysisReport"),
+    MonteCarloReport("flags.monteCarloReport"),
+    EnableBanking("flags.enableBanking"),
+  }
+
   data class Other(override val key: String) : SyncedPrefKey
 
   companion object {
@@ -111,6 +127,7 @@ sealed interface SyncedPrefKey {
 
     fun decode(key: String): SyncedPrefKey =
       Global.entries.firstOrNull { it.key == key }
+        ?: FeatureFlag.entries.firstOrNull { it.key == key }
         ?: fromId(key, "hide-cleared", PerAccount::HideCleared)
         ?: fromId(key, "hide-reconciled", PerAccount::HideReconciled)
         ?: fromId(key, "show-balances", PerAccount::ShowBalances)

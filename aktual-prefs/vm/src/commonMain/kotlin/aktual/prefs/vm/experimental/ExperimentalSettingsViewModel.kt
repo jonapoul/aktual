@@ -1,15 +1,92 @@
 package aktual.prefs.vm.experimental
 
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
+import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.prefs.BudgetFeatureFlags
+import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.collectAsState
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 @Stable
 @ViewModelKey
 @ContributesIntoMap(BudgetScope::class)
-class ExperimentalSettingsViewModel internal constructor(viewModelContext: ViewModelContext) :
-  ViewModel(viewModelContext.newScope())
+class ExperimentalSettingsViewModel
+internal constructor(
+  private val flags: BudgetFeatureFlags,
+  server: BudgetServer,
+  viewModelContext: ViewModelContext,
+) : ViewModel(viewModelContext.newScope()) {
+  private val isUsingServer = server is Remote
+
+  val state: StateFlow<ExperimentalSettingsState> =
+    viewModelScope.launchMolecule(Immediate) {
+      val values = FeatureFlag.entries.associateWith { flag -> collectAsState(flags[flag]).value }
+      ExperimentalSettingsState(
+        features =
+          FeatureFlag.entries
+            .map { flag ->
+              ExperimentalFeature(
+                flag = flag,
+                isSupported = flag in Supported,
+                preference =
+                  BooleanPreference(
+                    value = values.getValue(flag),
+                    enabled = flag in Supported,
+                    visible = isVisible(flag, values),
+                    onChange = { value -> set(flag, value) },
+                  ),
+              )
+            }
+            .toImmutableList(),
+      )
+    }
+
+  private fun isVisible(flag: FeatureFlag, values: Map<FeatureFlag, Boolean>): Boolean =
+    when (flag) {
+      GoalTemplatesUi -> values.getValue(GoalTemplates)
+      EnableBanking -> isUsingServer
+      GoalTemplates,
+      ActionTemplating,
+      FormulaMode,
+      CurrencySupport,
+      MobileCalculator,
+      NewSidebarUi,
+      SankeyReport,
+      BalanceForecastReport,
+      BudgetAnalysisReport,
+      MonteCarloReport -> true
+    }
+
+  // Like upstream, turning goal templates off also turns off their UI
+  private fun set(flag: FeatureFlag, value: Boolean) {
+    viewModelScope.launch {
+      flags[flag].set(value)
+      if (flag == GoalTemplates && !value) flags[GoalTemplatesUi].set(false)
+    }
+  }
+
+  private companion object {
+    // Features Aktual has, so toggling them here does what it says. The rest only sync to upstream
+    val Supported =
+      setOf<FeatureFlag>(
+        FormulaMode,
+        CurrencySupport,
+        SankeyReport,
+        BalanceForecastReport,
+        BudgetAnalysisReport,
+        MonteCarloReport,
+        EnableBanking,
+      )
+  }
+}

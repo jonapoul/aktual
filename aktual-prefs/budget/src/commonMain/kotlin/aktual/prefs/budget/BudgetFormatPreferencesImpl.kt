@@ -16,9 +16,6 @@ import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.Preference
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 
 @Inject
 @ContributesBinding(BudgetScope::class)
@@ -95,7 +92,7 @@ internal constructor(
   }
 
   private fun booleanPref(key: SyncedPrefKey, default: Boolean): Preference<Boolean> =
-    pref(key, default, decode = String::toBooleanStrictOrNull, encode = Boolean::toString)
+    booleanPref(dao, budgetSync, key, default)
 
   private fun <T : Any> pref(
     key: SyncedPrefKey,
@@ -113,23 +110,4 @@ internal constructor(
       BeforeAmount -> "before"
       AfterAmount -> "after"
     }
-
-  private class SyncedPreference<T : Any>(
-    private val dao: PreferencesDao,
-    private val budgetSync: BudgetSync,
-    private val key: SyncedPrefKey,
-    override val default: T,
-    private val decode: (String) -> T?,
-    private val encode: (T) -> String,
-  ) : Preference<T> {
-    override suspend fun get(): T = parse(dao[key])
-
-    override suspend fun set(value: T?) {
-      budgetSync(localChange(PREFERENCES, key.key, column = "value", value?.let(encode)))
-    }
-
-    override fun asFlow(): Flow<T> = dao.observe(key).map(::parse).distinctUntilChanged()
-
-    private fun parse(value: String?): T = value?.let(decode) ?: default
-  }
 }
