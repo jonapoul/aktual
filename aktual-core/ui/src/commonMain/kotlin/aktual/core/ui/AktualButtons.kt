@@ -124,37 +124,48 @@ fun AktualFab(
   modifier: Modifier = Modifier,
   kind: ButtonKind = Primary,
   isExpanded: Boolean = true,
+  isEnabled: Boolean = true,
+  isLoading: Boolean = false,
 ) {
   val themeColors = AktualTheme.colors
   val alpha by animateFloatAsState(if (isExpanded) 1f else FAB_COLLAPSED_ALPHA)
+  val enabled = isEnabled && !isLoading
 
   BasicTextButton(
     text = text,
     colors = { pressed -> themeColors.buttonColors(kind, pressed) },
     onClick = onClick,
     modifier = modifier.alpha(alpha),
+    isEnabled = enabled,
     contentPadding = FabPadding,
     shape = RounderCardShape,
-    border = themeColors.buttonBorder(kind, isEnabled = true),
+    border = themeColors.buttonBorder(kind, enabled),
   ) {
-    Row(modifier = Modifier.height(FabContentHeight), verticalAlignment = CenterVertically) {
-      Icon(
-        imageVector = icon,
-        contentDescription = text.takeUnless { isExpanded },
-        modifier = Modifier.size(FabIconSize),
+    LoadingTextButtonContent(isLoading, themeColors.buttonColors(kind, false).contentColor) {
+      FabContent(text, icon, isExpanded)
+    }
+  }
+}
+
+@Composable
+private fun FabContent(text: String, icon: ImageVector, isExpanded: Boolean) {
+  Row(modifier = Modifier.height(FabContentHeight), verticalAlignment = CenterVertically) {
+    Icon(
+      imageVector = icon,
+      contentDescription = text.takeUnless { isExpanded },
+      modifier = Modifier.size(FabIconSize),
+    )
+    AnimatedVisibility(
+      visible = isExpanded,
+      enter = expandHorizontally() + fadeIn(),
+      exit = shrinkHorizontally() + fadeOut(),
+    ) {
+      Text(
+        modifier = Modifier.padding(start = ButtonIconSpacing, end = FabTextEndPadding),
+        text = text,
+        style = typography.buttonTextStyle,
+        maxLines = 1,
       )
-      AnimatedVisibility(
-        visible = isExpanded,
-        enter = expandHorizontally() + fadeIn(),
-        exit = shrinkHorizontally() + fadeOut(),
-      ) {
-        Text(
-          modifier = Modifier.padding(start = ButtonIconSpacing, end = FabTextEndPadding),
-          text = text,
-          style = typography.buttonTextStyle,
-          maxLines = 1,
-        )
-      }
     }
   }
 }

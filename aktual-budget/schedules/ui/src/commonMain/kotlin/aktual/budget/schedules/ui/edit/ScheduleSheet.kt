@@ -1,6 +1,6 @@
 package aktual.budget.schedules.ui.edit
 
-internal enum class SentencePart {
+internal enum class ScheduleSheet {
   Amount,
   Payee,
   Account,

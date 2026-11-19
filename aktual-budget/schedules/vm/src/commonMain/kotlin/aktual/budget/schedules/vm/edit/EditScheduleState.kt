@@ -19,6 +19,7 @@ sealed interface EditScheduleState {
 
   data class Loaded(
     val form: ScheduleForm,
+    val saved: ScheduleForm,
     val isNew: Boolean,
     val hasChanges: Boolean,
     val isWorking: Boolean,

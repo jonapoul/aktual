@@ -3,6 +3,7 @@ package aktual.budget.schedules.ui.edit
 import aktual.budget.model.AccountId
 import aktual.budget.model.PayeeId
 import aktual.budget.schedules.vm.edit.ScheduleAmount
+import aktual.budget.schedules.vm.edit.ScheduleAmountType
 import aktual.budget.schedules.vm.edit.ScheduleDate
 import androidx.compose.runtime.Immutable
 
@@ -29,3 +30,7 @@ internal data object DismissError : EditScheduleAction
 @JvmInline internal value class SetDate(val date: ScheduleDate) : EditScheduleAction
 
 @JvmInline internal value class SetPostsTransaction(val posts: Boolean) : EditScheduleAction
+
+@JvmInline internal value class SetAmountType(val type: ScheduleAmountType) : EditScheduleAction
+
+@JvmInline internal value class SetSkipWeekend(val skip: Boolean) : EditScheduleAction

@@ -106,6 +106,7 @@ internal constructor(
     if (saved == null || entities == null || form == null) return Loading
     return EditScheduleState.Loaded(
       form = form,
+      saved = saved.form,
       isNew = scheduleId == null,
       hasChanges = form != saved.form,
       isWorking = isWorking,
@@ -213,6 +214,17 @@ internal constructor(
   fun setAmount(amount: ScheduleAmount) = updateForm { it.copy(amount = amount) }
 
   fun setDate(date: ScheduleDate) = updateForm { it.copy(date = date) }
+
+  fun setAmountType(type: ScheduleAmountType) = updateForm {
+    it.copy(amount = it.amount.withType(type))
+  }
+
+  fun setSkipWeekend(skip: Boolean) = updateForm { form ->
+    when (val date = form.date) {
+      is Once -> form
+      is Recurring -> form.copy(date = ScheduleDate.Recurring(date.config.copy(skipWeekend = skip)))
+    }
+  }
 
   fun setPostsTransaction(posts: Boolean) = updateForm { it.copy(postsTransaction = posts) }
 

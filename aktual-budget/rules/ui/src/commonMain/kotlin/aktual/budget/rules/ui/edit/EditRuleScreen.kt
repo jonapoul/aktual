@@ -62,6 +62,7 @@ import aktual.core.ui.WarningBanner
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
@@ -276,7 +277,7 @@ private fun EditRuleScaffold(
       // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
       // when the button hides after saving
       Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
-        SaveButton(state = state, mode = mode, onAction = onAction)
+        SaveButton(state = state, mode = mode, listState = listState, onAction = onAction)
         SnackbarHost(
           hostState = snackbarHostState,
           modifier = Modifier.align(CenterHorizontally),
@@ -358,7 +359,12 @@ private fun EditRuleTopBar(
 }
 
 @Composable
-private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<EditRuleAction>) {
+private fun SaveButton(
+  state: EditRuleState,
+  mode: Mode,
+  listState: LazyListState,
+  onAction: OnAction<EditRuleAction>,
+) {
   val success = state as? Success
   SaveFab(
     isVisible = success?.hasChanges == true,
@@ -366,6 +372,7 @@ private fun SaveButton(state: EditRuleState, mode: Mode, onAction: OnAction<Edit
     isEnabled = success?.canSave == true,
     isLoading = success?.isWorking == true,
     onClick = { onAction(Save) },
+    isExpanded = listState.isScrollingUp(),
   )
 }
 
