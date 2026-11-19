@@ -1829,6 +1829,8 @@
   <string name="rules_empty_create">Create new</string>
 
   <string name="rules_item_delete">Delete</string>
+  <string name="rules_item_conditions_and">and</string>
+  <string name="rules_item_conditions_or">or</string>
 
   <string name="rules_delete_dialog_title">Delete rule?</string>
   <string name="rules_delete_dialog_message">This can't be undone.</string>

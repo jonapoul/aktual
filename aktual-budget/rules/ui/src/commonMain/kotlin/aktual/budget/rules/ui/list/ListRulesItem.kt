@@ -142,8 +142,8 @@ private fun ListRulesItemConditions(
         val prefix =
           when {
             index == 0 -> ""
-            conditionsOp == Or -> "or "
-            else -> "and "
+            conditionsOp == Or -> "${Strings.rulesItemConditionsOr} "
+            else -> "${Strings.rulesItemConditionsAnd} "
           }
         Text(
           text = rememberConditionText(prefix, condition, styles, query),
