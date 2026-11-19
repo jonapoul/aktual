@@ -31,6 +31,7 @@ jobs:
       shell: ${{ steps.filter.outputs.shell }}
       kotlin: ${{ steps.filter.outputs.kotlin }}
       gradle: ${{ steps.gradle-filter.outputs.gradle }}
+      r8: ${{ steps.filter.outputs.r8 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -56,6 +57,14 @@ jobs:
               - '.editorconfig'
               - 'gradle/libs.versions.toml'
               - 'scripts/ktfmt.sh'
+            r8:
+              - '**/*.gradle.kts'
+              - '**/*.pro'
+              - '.github/actions/**'
+              - '.github/workflows/pr.yml'
+              - 'build-logic/**'
+              - 'gradle.properties'
+              - 'gradle/**'
       # Separate step because "every" needs all patterns to match, which breaks the filters above
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: gradle-filter
@@ -174,8 +183,11 @@ jobs:
           key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           key-password: ${{ secrets.ANDROID_KEY_PASSWORD }}
       # R8 fails on missing classes, e.g. a JVM-only module calling a library whose android
-      # artifact differs from its JVM one, which a debug build only finds at runtime
-      - run: ./gradlew :aktual-app:android:assembleCi :aktual-app:android:minifyReleaseWithR8 -Paktual.android.ciBuildType=true
+      # artifact differs from its JVM one, which a debug build only finds at runtime. Only
+      # dependency and build changes can cause that, so skip it otherwise
+      - env:
+          R8: ${{ needs.changed-files.outputs.r8 == 'true' && ':aktual-app:android:minifyReleaseWithR8' || '' }}
+        run: ./gradlew :aktual-app:android:assembleCi $R8 -Paktual.android.ciBuildType=true
       - name: Upload CI APK
         id: upload-apk
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
