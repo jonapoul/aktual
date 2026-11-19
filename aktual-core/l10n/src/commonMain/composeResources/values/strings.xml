@@ -2582,6 +2582,9 @@
   <string name="settings_sample_payee_supermarket">Supermarket</string>
   <string name="settings_sample_category_food">Food</string>
   <string name="settings_sample_category_household">Household</string>
+  <string name="settings_advanced">Advanced</string>
+  <string name="settings_experimental">Experimental</string>
+  <string name="settings_experimental_desc">These features are not fully tested and may not work as expected. THEY MAY CAUSE IRRECOVERABLE DATA LOSS. They may do nothing at all. Only enable them if you know what you are doing.</string>
   <string name="settings_updates">Updates</string>
   <string name="settings_updates_desc">Nightly builds are made from the latest code every day. They get new features first, but may have more bugs.</string>
   <string name="settings_updates_nightly">Check for nightly builds</string>

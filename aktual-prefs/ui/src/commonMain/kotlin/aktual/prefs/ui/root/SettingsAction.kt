@@ -23,3 +23,7 @@ internal data object NavToAmountSettings : SettingsAction
 internal data object NavToDateSettings : SettingsAction
 
 internal data object NavToUpdateSettings : SettingsAction
+
+internal data object NavToAdvancedSettings : SettingsAction
+
+internal data object NavToExperimentalSettings : SettingsAction

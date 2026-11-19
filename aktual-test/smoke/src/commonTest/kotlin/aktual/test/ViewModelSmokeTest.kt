@@ -45,11 +45,13 @@ import aktual.crashes.vm.CrashPromptViewModel
 import aktual.crashes.vm.CrashReportViewModel
 import aktual.crashes.vm.CrashReportsViewModel
 import aktual.metrics.vm.MetricsViewModel
+import aktual.prefs.vm.advanced.AdvancedSettingsViewModel
 import aktual.prefs.vm.amounts.AmountSettingsViewModel
 import aktual.prefs.vm.appicon.AppIconSettingsViewModel
 import aktual.prefs.vm.bars.BarSettingsViewModel
 import aktual.prefs.vm.dates.DateSettingsViewModel
 import aktual.prefs.vm.dialogs.DialogSettingsViewModel
+import aktual.prefs.vm.experimental.ExperimentalSettingsViewModel
 import aktual.prefs.vm.format.FormatSettingsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
@@ -226,6 +228,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun dialogSettings() = testVm<DialogSettingsViewModel>()
 
   @Test fun dateSettings() = testVm<DateSettingsViewModel>()
+
+  @Test fun advancedSettings() = testVm<AdvancedSettingsViewModel>()
+
+  @Test fun experimentalSettings() = testVm<ExperimentalSettingsViewModel>()
 
   @Test fun transactionSettings() = testVm<TransactionSettingsViewModel>()
 
