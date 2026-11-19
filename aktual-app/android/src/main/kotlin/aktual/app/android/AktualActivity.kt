@@ -30,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -156,6 +157,9 @@ private fun Content(
 
   val lockState by appLockManager.state.collectAsStateWithLifecycle()
   val isUnavailable by appLockManager.isUnavailable.collectAsStateWithLifecycle()
+  // Locking takes the app content out of composition, so hold onto its saveable state (nested tab
+  // stacks, selected tab, per-entry state) to restore it when unlocked again
+  val stateHolder = rememberSaveableStateHolder()
   when (lockState) {
     // The splash screen stays up until we know
     Unknown -> {}
@@ -169,9 +173,12 @@ private fun Content(
       )
     }
 
-    Unlocked -> UnlockedContent(viewModel)
+    Unlocked ->
+      stateHolder.SaveableStateProvider(UNLOCKED_CONTENT_KEY) { UnlockedContent(viewModel) }
   }
 }
+
+private const val UNLOCKED_CONTENT_KEY = "unlocked"
 
 @Composable
 @Suppress("ViewModelForwarding")
