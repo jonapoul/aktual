@@ -12,4 +12,5 @@ interface AppPreferences {
   val mostRecentNumBudgets: Preference<Int>
   val lastOpenedBudgetId: NullablePreference<BudgetId>
   val lastSeenCrash: NullablePreference<CrashFile>
+  val checkForNightlyUpdates: Preference<Boolean>
 }

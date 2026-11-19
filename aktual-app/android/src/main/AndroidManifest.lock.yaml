@@ -7,6 +7,7 @@ main:
   - android.permission.ACCESS_LOCAL_NETWORK
   - android.permission.ACCESS_NETWORK_STATE
   - android.permission.INTERNET
+  - android.permission.REQUEST_INSTALL_PACKAGES
   - android.permission.USE_BIOMETRIC
   - android.permission.USE_FINGERPRINT
   features:
@@ -71,4 +72,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 0f5bffd32a5edce4b3ccfe5e07605ea5
+fingerprint: f17daec3966649b58153422c6612e576

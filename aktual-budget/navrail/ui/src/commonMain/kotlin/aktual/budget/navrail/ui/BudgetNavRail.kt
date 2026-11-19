@@ -62,6 +62,8 @@ import aktual.core.ui.isExpandedWidth
 import aktual.core.ui.isMobileLandscape
 import aktual.core.ui.rememberSnackbars
 import aktual.core.ui.verticalScrollWithBar
+import aktual.updates.vm.NightlyUpdateState
+import aktual.updates.vm.NightlyUpdateViewModel
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -134,11 +136,13 @@ internal fun BudgetNavRail(
   onAction: OnAction<BudgetNavAction>,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),
+  nightlyViewModel: NightlyUpdateViewModel = metroViewModel(),
 ) {
   val contributors = viewModel.budgetNavEntryContributors
   val headerState by viewModel.headerState.collectAsState()
   val accounts by viewModel.accounts.collectAsState()
   val hasUnpostedSchedules by viewModel.hasUnpostedSchedules.collectAsState()
+  val nightlyUpdate by nightlyViewModel.state.collectAsState()
 
   val tabStacks = rememberTabStacks()
   val transactionsStack = tabStacks.getValue(Transactions)
@@ -167,6 +171,7 @@ internal fun BudgetNavRail(
     when (action) {
       RenameBudget -> dialog = Rename
       OpenApiKeys -> activeStack.push(ApiKeysNavRoute)
+      OpenNightlyUpdate -> dialog = NightlyUpdate
       is BudgetNavAction -> onAction(action)
     }
   }
@@ -192,6 +197,7 @@ internal fun BudgetNavRail(
         close()
         onMenuAction(action)
       },
+      hasNightlyUpdate = nightlyUpdate is Available,
     )
   }
 
@@ -235,15 +241,18 @@ internal fun BudgetNavRail(
     budgetName = headerState.budgetName,
     dialog = dialog,
     hasUnpostedSchedules = hasUnpostedSchedules,
+    nightlyUpdate = nightlyUpdate,
     onRename = viewModel::rename,
     onDismiss = { dialog = null },
     onPostSchedules = viewModel::postUnpostedSchedules,
     onDismissSchedules = viewModel::dismissUnpostedSchedules,
+    onInstallNightly = nightlyViewModel::install,
   )
 }
 
 private enum class NavRailDialog {
   Rename,
+  NightlyUpdate,
 }
 
 @Composable
@@ -251,10 +260,12 @@ private fun BudgetNavRailDialogs(
   budgetName: String?,
   dialog: NavRailDialog?,
   hasUnpostedSchedules: Boolean,
+  nightlyUpdate: NightlyUpdateState,
   onRename: (String) -> Unit,
   onDismiss: () -> Unit,
   onPostSchedules: () -> Unit,
   onDismissSchedules: () -> Unit,
+  onInstallNightly: () -> Unit,
 ) {
   if (dialog == Rename) {
     RenameBudgetDialog(
@@ -265,6 +276,10 @@ private fun BudgetNavRailDialogs(
       },
       onDismiss = onDismiss,
     )
+  }
+
+  if (dialog == NightlyUpdate && nightlyUpdate is Available) {
+    NightlyUpdateDialog(state = nightlyUpdate, onInstall = onInstallNightly, onDismiss = onDismiss)
   }
 
   if (hasUnpostedSchedules) {

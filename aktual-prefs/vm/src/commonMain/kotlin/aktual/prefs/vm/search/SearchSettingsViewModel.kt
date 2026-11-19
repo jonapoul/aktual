@@ -8,6 +8,7 @@ import aktual.di.newScope
 import aktual.prefs.vm.OpenBudgetName
 import aktual.prefs.vm.search.SearchSettingsState.Results
 import aktual.prefs.vm.security.ShouldShowSecuritySettings
+import aktual.updates.domain.NightlyUpdates
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -35,6 +36,7 @@ internal constructor(
   @Assisted private val savedState: SavedStateHandle,
   private val strings: StringLookup,
   private val locationProvider: LocationProvider,
+  private val nightlyUpdates: NightlyUpdates,
   openBudgetName: OpenBudgetName,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -68,10 +70,25 @@ internal constructor(
   }
 
   private suspend fun resolve(page: SettingsPage, entry: SettingsIndexEntry) =
-    if (page == Security && !ShouldShowSecuritySettings) {
+    if (!isShown(page)) {
       emptyList()
     } else {
       buildList { addEntry(page, entry, path = emptyList(), isPage = true) }
+    }
+
+  private fun isShown(page: SettingsPage): Boolean =
+    when (page) {
+      Security -> ShouldShowSecuritySettings
+      Updates -> nightlyUpdates.isSupported
+      Theme,
+      SystemUi,
+      Bars,
+      Dialogs,
+      Format,
+      Amounts,
+      Dates,
+      Transactions,
+      LauncherIcon -> true
     }
 
   private suspend fun MutableList<SettingsSearchResult>.addEntry(

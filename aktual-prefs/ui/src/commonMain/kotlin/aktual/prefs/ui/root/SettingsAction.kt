@@ -21,3 +21,5 @@ internal data object NavToAppIconSettings : SettingsAction
 internal data object NavToAmountSettings : SettingsAction
 
 internal data object NavToDateSettings : SettingsAction
+
+internal data object NavToUpdateSettings : SettingsAction

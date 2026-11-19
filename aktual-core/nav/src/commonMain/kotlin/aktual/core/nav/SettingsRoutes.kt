@@ -31,6 +31,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class DialogSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey
 
+@Serializable data class UpdateSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey
+
 // A setting to scroll to and flash on opening a settings page. group is the title of the card
 // holding it, or null for a card or setting at the top level of the page
 @Immutable @Serializable data class SettingsHighlight(val group: String?, val title: String)

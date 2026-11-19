@@ -31,6 +31,7 @@ kotlin {
     implementation(project(":aktual-metrics:vm"))
     implementation(project(":aktual-prefs:vm"))
     implementation(project(":aktual-test"))
+    implementation(project(":aktual-updates:vm"))
   }
 
   desktopTestDependencies {

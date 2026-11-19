@@ -1,5 +1,6 @@
 package aktual.prefs.vm.root
 
+import aktual.prefs.vm.FakeNightlyUpdates
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.viewModelContext
 import app.cash.turbine.test
@@ -12,7 +13,7 @@ class SettingsViewModelTest {
   @Test
   fun `Budget name follows the open budget`() = runTest {
     val openBudget = MutableStateFlow<String?>(null)
-    val viewModel = SettingsViewModel({ openBudget }, viewModelContext)
+    val viewModel = SettingsViewModel({ openBudget }, FakeNightlyUpdates(), viewModelContext)
 
     viewModel.budgetName.test {
       assertThatNextEmissionIsEqualTo(null)

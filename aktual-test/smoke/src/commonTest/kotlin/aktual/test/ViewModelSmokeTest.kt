@@ -60,6 +60,8 @@ import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import aktual.prefs.vm.transactions.TransactionSettingsViewModel
+import aktual.prefs.vm.updates.UpdateSettingsViewModel
+import aktual.updates.vm.NightlyUpdateViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -210,6 +212,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun securitySettings() = testVm<SecuritySettingsViewModel>()
 
   @Test fun systemUiSettings() = testVm<SystemUiSettingsViewModel>()
+
+  @Test fun updateSettings() = testVm<UpdateSettingsViewModel>()
+
+  @Test fun nightlyUpdate() = testVm<NightlyUpdateViewModel>()
 
   @Test fun appIconSettings() = testVm<AppIconSettingsViewModel>()
 

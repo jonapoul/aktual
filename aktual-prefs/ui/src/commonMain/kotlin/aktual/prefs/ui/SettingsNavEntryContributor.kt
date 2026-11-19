@@ -32,6 +32,8 @@ import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.nav.TransactionSettingsNavRoute
 import aktual.core.nav.TransactionSettingsNavigator
+import aktual.core.nav.UpdateSettingsNavRoute
+import aktual.core.nav.UpdateSettingsNavigator
 import aktual.di.AppScope
 import aktual.prefs.ui.amounts.AmountSettingsScreen
 import aktual.prefs.ui.appicon.AppIconSettingsScreen
@@ -49,6 +51,7 @@ import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
 import aktual.prefs.ui.transactions.TransactionSettingsScreen
+import aktual.prefs.ui.updates.UpdateSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -68,6 +71,7 @@ class SettingsNavEntryContributor : NavEntryContributor {
         toAppIconSettings = AppIconSettingsNavigator(stack),
         toAmountSettings = AmountSettingsNavigator(stack),
         toDateSettings = DateSettingsNavigator(stack),
+        toUpdateSettings = UpdateSettingsNavigator(stack),
       )
     }
 
@@ -110,6 +114,10 @@ class SettingsNavEntryContributor : NavEntryContributor {
 
     entry<AmountSettingsNavRoute> { route ->
       AmountSettingsScreen(BackNavigator(stack), route.highlight)
+    }
+
+    entry<UpdateSettingsNavRoute> { route ->
+      UpdateSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
     entry<AppIconSettingsNavRoute> { route ->
