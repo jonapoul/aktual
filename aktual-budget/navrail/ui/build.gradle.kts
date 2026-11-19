@@ -7,6 +7,7 @@ kotlin {
     api(libs.compose.animation)
     api(libs.compose.foundation)
     api(project(":aktual-budget:navrail:vm"))
+    api(project(":aktual-updates:vm"))
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.compose.navigation3.ui)
     implementation(libs.compose.runtime)

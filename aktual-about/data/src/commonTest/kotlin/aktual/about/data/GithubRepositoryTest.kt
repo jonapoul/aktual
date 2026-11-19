@@ -103,6 +103,21 @@ class GithubRepositoryTest {
   }
 
   @Test
+  fun `Debug builds skip the nightly pre-release`() = runTest {
+    // Given
+    val nightly =
+      """[{"name": "Nightly", "published_at": "2030-01-01T00:00:00Z", "html_url": "x", "tag_name": "nightly", "prerelease": true}]"""
+    buildRepo(TestBuildConfig.copy(isDebug = true))
+    mockEngine += { respondJson(nightly) }
+
+    // When
+    val state = githubRepository.fetchLatestRelease()
+
+    // Then
+    assertThat(state).isEqualTo(NoReleases)
+  }
+
+  @Test
   fun `Only drafts means no releases`() = runTest {
     // Given
     val drafts =

@@ -9,6 +9,8 @@ internal data object RenameBudget : BudgetMenuAction
 
 internal data object OpenApiKeys : BudgetMenuAction
 
+internal data object OpenNightlyUpdate : BudgetMenuAction
+
 @Immutable internal sealed interface BudgetNavAction : BudgetMenuAction
 
 internal data object SwitchFile : BudgetNavAction

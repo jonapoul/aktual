@@ -26,6 +26,7 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronDownUp
 import aktual.core.icons.CheveronUpDown
 import aktual.core.icons.CloudCheck
+import aktual.core.icons.CloudDownload
 import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.Code
@@ -62,6 +63,7 @@ import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
+import aktual.core.ui.NoticeBanner
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -168,6 +170,7 @@ internal fun ColumnScope.BudgetSidebarContent(
   onSetPrivacyMode: (Boolean) -> Unit,
   onAccountsAction: OnAction<SidebarAccountsAction>,
   onAction: OnAction<BudgetMenuAction>,
+  hasNightlyUpdate: Boolean = false,
 ) {
   Column(modifier = Modifier.weight(1f).verticalScrollWithBar().padding(12.dp)) {
     DrawerHeader(
@@ -175,6 +178,15 @@ internal fun ColumnScope.BudgetSidebarContent(
       onAction = onAction,
       modifier = Modifier.padding(bottom = 12.dp),
     )
+
+    if (hasNightlyUpdate) {
+      NoticeBanner(
+        modifier = Modifier.padding(bottom = 12.dp),
+        text = Strings.budgetNavNightlyBanner,
+        icon = AktualIcons.CloudDownload,
+        onClick = { onAction(OpenNightlyUpdate) },
+      )
+    }
 
     SidebarTabs.fastForEach { tab ->
       DrawerItem(
@@ -1030,6 +1042,7 @@ private fun PreviewBudgetDrawerSheet(@PreviewParameter(ColorParameters::class) c
           ),
         selectedTab = Transactions,
         transactionsRoot = AccountTransactionsNavRoute(AccountId("Joint Account")),
+        hasNightlyUpdate = true,
         onSelectTab = {},
         onOpenTransactions = {},
         onSetPrivacyMode = {},

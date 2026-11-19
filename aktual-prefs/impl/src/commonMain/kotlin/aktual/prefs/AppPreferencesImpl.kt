@@ -7,6 +7,7 @@ import aktual.core.model.Token
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.ContributesBinding
@@ -43,4 +44,9 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
       default = null,
       translator = toStringTranslator(::CrashFile),
     )
+
+  override val checkForNightlyUpdates: Preference<Boolean> =
+    dataStore
+      .boolean(key = booleanPreferencesKey("checkForNightlyUpdates"), default = false)
+      .required()
 }

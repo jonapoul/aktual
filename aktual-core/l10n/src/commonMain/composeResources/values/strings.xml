@@ -2441,6 +2441,8 @@
   <string name="budget_nav_menu_privacy_on">Enable privacy mode</string>
   <string name="budget_nav_menu_privacy_off">Disable privacy mode</string>
 
+  <string name="budget_nav_nightly_banner">A new nightly build is available</string>
+
   <string name="budget_nav_accounts">Accounts</string>
   <string name="budget_nav_accounts_expand_all">Expand all groups</string>
   <string name="budget_nav_accounts_collapse_all">Collapse all groups</string>
@@ -2580,6 +2582,10 @@
   <string name="settings_sample_payee_supermarket">Supermarket</string>
   <string name="settings_sample_category_food">Food</string>
   <string name="settings_sample_category_household">Household</string>
+  <string name="settings_updates">Updates</string>
+  <string name="settings_updates_desc">Nightly builds are made from the latest code every day. They get new features first, but may have more bugs.</string>
+  <string name="settings_updates_nightly">Check for nightly builds</string>
+  <string name="settings_updates_nightly_desc">On launch, ask GitHub whether there is a newer nightly build and show it in the side menu</string>
   <string name="settings_transactions">Transactions</string>
   <string name="settings_transactions_desc">Choose how transaction lists look. These also show in the view options on the transactions screen.</string>
   <string name="settings_dialogs_desc">Choose whether the screen behind a dialog is blurred, and by how much.</string>
@@ -2635,4 +2641,13 @@
   <string name="settings_security_timeout_minutes_1">1 minute</string>
   <string name="settings_security_timeout_minutes_5">5 minutes</string>
   <string name="settings_security_timeout_minutes_15">15 minutes</string>
+
+  <!-- updates -->
+  <string name="updates_nightly_title">Nightly build available</string>
+  <string name="updates_nightly_message">A newer nightly build of Aktual is available. Download the APK and open it to install it over this version. Your data is kept.</string>
+  <string name="updates_nightly_installed">Installed</string>
+  <string name="updates_nightly_latest">Latest nightly</string>
+  <string name="updates_nightly_version">%1$s (%2$s)</string>
+  <string name="updates_nightly_later">Later</string>
+  <string name="updates_nightly_download">Download APK</string>
 </resources>

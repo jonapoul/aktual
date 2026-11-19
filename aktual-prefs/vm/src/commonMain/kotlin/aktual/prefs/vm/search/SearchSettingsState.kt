@@ -24,6 +24,7 @@ enum class SettingsPage {
   Dates,
   Transactions,
   LauncherIcon,
+  Updates,
 }
 
 // Pages holding the open budget's synced settings rather than this device's

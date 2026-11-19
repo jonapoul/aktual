@@ -241,4 +241,9 @@
     <item quantity="one">%1$d account needs attention</item>
     <item quantity="other">%1$d accounts need attention</item>
   </plurals>
+  <!-- updates -->
+  <plurals name="updates_nightly_commits">
+    <item quantity="one">%1$d new commit</item>
+    <item quantity="other">%1$d new commits</item>
+  </plurals>
 </resources>

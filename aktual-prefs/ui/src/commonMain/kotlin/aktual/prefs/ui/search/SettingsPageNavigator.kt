@@ -12,6 +12,7 @@ import aktual.core.nav.SettingsHighlight
 import aktual.core.nav.SystemUiSettingsNavRoute
 import aktual.core.nav.ThemeSettingsNavRoute
 import aktual.core.nav.TransactionSettingsNavRoute
+import aktual.core.nav.UpdateSettingsNavRoute
 import aktual.prefs.vm.search.SettingsPage
 import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavKey
@@ -32,6 +33,7 @@ internal class SettingsPageNavigator(private val stack: NavStack<NavKey>) {
         Dates -> DateSettingsNavRoute(highlight)
         Transactions -> TransactionSettingsNavRoute(highlight)
         LauncherIcon -> AppIconSettingsNavRoute(highlight)
+        Updates -> UpdateSettingsNavRoute(highlight)
       },
     )
 }

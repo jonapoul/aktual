@@ -53,6 +53,8 @@ jobs:
     if: ${{ needs.check.outputs.should-build == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -141,8 +143,39 @@ jobs:
           path: out/*
           if-no-files-found: error
 
+  # A rolling pre-release, so the app's nightly update check can download the APK without a GitHub
+  # login. Waits for every build, so it matches the last successful run the app compares against
+  release:
+    needs: [ android, desktop ]
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          SHA: ${{ github.sha }}
+          VERSION: ${{ needs.android.outputs.version }}
+        run: |
+          gh run download "$RUN_ID" --name android --dir out
+          cp out/*.apk aktual-nightly.apk
+          NOTES="Android nightly build $VERSION, from $SHA. Replaced by every nightly run."
+          # Reuse one release rather than recreating it, so watchers aren't notified every night. Its
+          # tag stays on the first nightly's commit, since moving it breaks pulls of local clones
+          if gh release view nightly > /dev/null 2>&1; then
+            gh release upload nightly aktual-nightly.apk --clobber
+            gh release edit nightly --notes "$NOTES"
+          else
+            gh release create nightly aktual-nightly.apk --prerelease --latest=false \
+              --target "$SHA" --title "Nightly" --notes "$NOTES"
+          fi
+
   flag-failure:
-    needs: [ check, android, desktop ]
+    needs: [ check, android, desktop, release ]
     if: ${{ failure() && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     permissions:

@@ -41,6 +41,8 @@ import aktual.core.l10n.settings_ui_glass_corner_radius
 import aktual.core.l10n.settings_ui_glass_style
 import aktual.core.l10n.settings_ui_group
 import aktual.core.l10n.settings_ui_show_status
+import aktual.core.l10n.settings_updates
+import aktual.core.l10n.settings_updates_nightly
 import aktual.core.l10n.transactions_view_alternate_rows
 import aktual.core.l10n.transactions_view_expand_splits
 import org.jetbrains.compose.resources.StringResource
@@ -145,4 +147,6 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         entry(Res.string.transactions_view_expand_splits),
       ),
     SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),
+    SettingsPage.Updates to
+      entry(Res.string.settings_updates, entry(Res.string.settings_updates_nightly)),
   )

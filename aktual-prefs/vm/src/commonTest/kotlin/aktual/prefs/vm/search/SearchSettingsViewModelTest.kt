@@ -3,6 +3,7 @@ package aktual.prefs.vm.search
 import aktual.core.l10n.StringLookup
 import aktual.core.model.Coordinates
 import aktual.core.utils.LocationProvider
+import aktual.prefs.vm.FakeNightlyUpdates
 import aktual.prefs.vm.search.SearchSettingsState.Results
 import aktual.prefs.vm.security.ShouldShowSecuritySettings
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -141,6 +142,29 @@ class SearchSettingsViewModelTest {
   }
 
   @Test
+  fun `Update settings only shown where supported`() = runTest {
+    val viewModel = buildViewModel(updatesSupported = true)
+
+    viewModel.setQuery("nightly")
+
+    viewModel.state.test {
+      assertThat(awaitResults().map { it.page }).containsExactly(SettingsPage.Updates)
+    }
+  }
+
+  @Test
+  fun `Update settings hidden when unsupported`() = runTest {
+    val viewModel = buildViewModel(updatesSupported = false)
+
+    viewModel.setQuery("nightly")
+
+    viewModel.state.test {
+      advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isEqualTo(NoResults)
+    }
+  }
+
+  @Test
   fun `Budget settings disabled with no budget open`() = runTest {
     val viewModel = buildViewModel(budgetName = null)
 
@@ -188,11 +212,13 @@ class SearchSettingsViewModelTest {
   private fun TestScope.buildViewModel(
     locationSupported: Boolean = true,
     budgetName: String? = null,
+    updatesSupported: Boolean = false,
   ) =
     SearchSettingsViewModel(
       savedState = SavedStateHandle(),
       strings = FakeStringLookup,
       locationProvider = FakeLocationProvider(locationSupported),
+      nightlyUpdates = FakeNightlyUpdates(updatesSupported),
       openBudgetName = { flowOf(budgetName) },
       viewModelContext = viewModelContext,
     )

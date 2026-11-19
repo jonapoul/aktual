@@ -32,10 +32,13 @@ internal constructor(
         githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = PAGE_SIZE)
       }
 
-    // Pre-releases are only offered to debug builds
+    // Pre-releases are only offered to debug builds. The rolling nightly pre-release has its own
+    // check, since it's always newer than the build that was released
     val latest =
       releases
-        .filter { !it.isDraft && (buildConfig.isDebug || !it.isPrerelease) }
+        .filter {
+          !it.isDraft && it.tagName != NIGHTLY_TAG && (buildConfig.isDebug || !it.isPrerelease)
+        }
         .maxByOrNull { it.publishedAt ?: DISTANT_PAST }
     val publishedAt = latest?.publishedAt
     return when {
@@ -80,5 +83,6 @@ internal constructor(
 
     // Releases come newest first, with pre-releases and drafts among them
     const val PAGE_SIZE = 20
+    const val NIGHTLY_TAG = "nightly"
   }
 }
