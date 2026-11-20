@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.BudgetTab
 import androidx.compose.runtime.Immutable
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable

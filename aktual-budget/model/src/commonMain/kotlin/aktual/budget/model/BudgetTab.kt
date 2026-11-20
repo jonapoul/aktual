@@ -1,4 +1,4 @@
-package aktual.core.nav
+package aktual.budget.model
 
 enum class BudgetTab {
   Home,

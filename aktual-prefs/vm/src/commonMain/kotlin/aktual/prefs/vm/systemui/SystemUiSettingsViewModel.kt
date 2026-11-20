@@ -5,6 +5,7 @@ import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.prefs.SystemUiPreferences
 import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.collectAsState
 import aktual.prefs.vm.launchAndSet
 import androidx.compose.runtime.Stable
@@ -27,11 +28,17 @@ internal constructor(
   val state: StateFlow<SystemUiSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by collectAsState(preferences.showBottomBar)
+      val startTab by collectAsState(preferences.startTab)
       SystemUiSettingsState(
         showStatusBar =
           BooleanPreference(
             value = showBottomBar,
             onChange = { launchAndSet(preferences.showBottomBar, it) },
+          ),
+        startTab =
+          ListPreference(
+            value = startTab,
+            onChange = { launchAndSet(preferences.startTab, it) },
           ),
       )
     }

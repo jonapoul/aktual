@@ -4,6 +4,7 @@ import aktual.api.client.BudgetSyncApi
 import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.AccountGroupDao
+import aktual.budget.model.BudgetTab
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
@@ -21,6 +22,7 @@ import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
 import aktual.prefs.BudgetFormatPreferences
+import aktual.prefs.SystemUiPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,6 +42,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Stable
 @Suppress("LongParameterList") // One source per part of the sidebar
@@ -58,6 +61,7 @@ internal constructor(
   syncStateHolder: SyncStateHolder,
   private val formatPreferences: BudgetFormatPreferences,
   private val unpostedSchedules: UnpostedSchedules,
+  systemUiPreferences: SystemUiPreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
@@ -78,6 +82,12 @@ internal constructor(
         syncStatus = syncStatus(remote != null, syncState),
       )
     }
+
+  // Seeded with the stored value so the first frame opens on the right tab
+  val startTab: StateFlow<BudgetTab> =
+    systemUiPreferences.startTab
+      .asFlow()
+      .stateIn(viewModelScope, Eagerly, runBlocking { systemUiPreferences.startTab.get() })
 
   private val search = MutableStateFlow<String?>(null)
 

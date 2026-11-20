@@ -9,6 +9,7 @@ import aktual.budget.model.AccountSyncState
 import aktual.budget.model.AccountSyncState.Failed
 import aktual.budget.model.AccountSyncState.Ok
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetTab
 import aktual.budget.navrail.vm.DrawerAccount
 import aktual.budget.navrail.vm.DrawerAccountBucket
 import aktual.budget.navrail.vm.DrawerAccountGroup
@@ -47,7 +48,6 @@ import aktual.core.model.unaryPlus
 import aktual.core.nav.AccountGroupTransactionsNavRoute
 import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BudgetNavKey
-import aktual.core.nav.BudgetTab
 import aktual.core.nav.ManageAccountsNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.Colors
