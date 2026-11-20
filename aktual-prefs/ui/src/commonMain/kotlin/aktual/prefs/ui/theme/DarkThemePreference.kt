@@ -6,21 +6,17 @@ import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.DarkColors
 import aktual.core.theme.MidnightColors
-import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.DesktopPreview
 import aktual.core.ui.OnAction
-import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.isCompactWidth
 import aktual.prefs.components.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
@@ -30,7 +26,6 @@ internal fun DarkThemePreference(
   preference: ListPreference<ThemeId>,
   onAction: OnAction<ThemeSettingsAction>,
   modifier: Modifier = Modifier,
-  isCompact: Boolean = isCompactWidth(),
 ) {
   BasicPreferenceItem(
     modifier = modifier,
@@ -40,54 +35,27 @@ internal fun DarkThemePreference(
     enabled = preference.enabled,
     onClick = null,
     rightContent = {
-      if (!isCompact) {
-        DarkThemeContent(
-          modifier = Modifier.width(ToggleWidth),
-          preference = preference,
-          onAction = onAction,
-        )
-      }
-    },
-    bottomContent = {
-      if (isCompact) {
-        DarkThemeContent(
-          modifier = Modifier.fillMaxWidth(),
-          preference = preference,
-          onAction = onAction,
-        )
-      }
+      AktualExposedDropDownMenu(
+        modifier = Modifier.padding(end = 6.dp),
+        value = preference.value,
+        onValueChange = { id -> onAction(SetDarkTheme(id)) },
+        options = preference.options,
+        isEnabled = preference.enabled,
+        string = { id ->
+          when (id) {
+            DarkColors.id -> Strings.settingsThemeDark
+            MidnightColors.id -> Strings.settingsThemeMidnight
+            else -> error("No other IDs supported: $id")
+          }
+        },
+      )
     },
   )
 }
 
-private val ToggleWidth = 300.dp
-
+@Preview
 @Composable
-private fun DarkThemeContent(
-  preference: ListPreference<ThemeId>,
-  onAction: OnAction<ThemeSettingsAction>,
-  modifier: Modifier = Modifier,
-) {
-  AktualSlidingToggleButton(
-    modifier = modifier.padding(10.dp),
-    options = preference.options,
-    selected = preference.value,
-    isEnabled = preference.enabled,
-    onSelect = { id -> onAction(SetDarkTheme(id)) },
-    string = { id ->
-      when (id) {
-        DarkColors.id -> Strings.settingsThemeDark
-        MidnightColors.id -> Strings.settingsThemeMidnight
-        else -> error("No other IDs supported: $id")
-      }
-    },
-  )
-}
-
-@PortraitPreview
-@DesktopPreview
-@Composable
-private fun PreviewDarkColorsPreference(
+private fun PreviewDarkThemePreference(
   @PreviewParameter(DarkThemePreferenceProvider::class)
   params: ColorParams<DarkThemePreferenceParams>,
 ) =
@@ -108,7 +76,6 @@ private data class DarkThemePreferenceParams(val selected: ThemeId, val enabled:
 private class DarkThemePreferenceProvider :
   ColorParamsProvider<DarkThemePreferenceParams>(
     DarkThemePreferenceParams(selected = DarkColors.id, enabled = true),
-    DarkThemePreferenceParams(selected = DarkColors.id, enabled = false),
     DarkThemePreferenceParams(selected = MidnightColors.id, enabled = true),
     DarkThemePreferenceParams(selected = MidnightColors.id, enabled = false),
   )

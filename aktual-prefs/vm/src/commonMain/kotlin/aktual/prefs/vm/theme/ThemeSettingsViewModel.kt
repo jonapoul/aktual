@@ -44,7 +44,10 @@ internal constructor(
     cache
       .localThemes()
       .map { themes ->
-        themes.map { LocalTheme(it.id, it.name) }.sortedBy { it.name.lowercase() }.toImmutableList()
+        themes
+          .map { LocalTheme(it.id, it.name, it.swatch()) }
+          .sortedBy { it.name.lowercase() }
+          .toImmutableList()
       }
       .stateIn(viewModelScope, Eagerly, persistentListOf())
 

@@ -1,23 +1,24 @@
 package aktual.prefs.ui.theme
 
 import aktual.core.l10n.Strings
+import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CustomThemesNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.BooleanColorParameters
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.ColorParameters
+import aktual.core.ui.ColorParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -28,8 +29,10 @@ import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.ProvidePreferenceHighlight
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
+import aktual.prefs.vm.theme.LocalTheme
 import aktual.prefs.vm.theme.ThemeSettingsState
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
+import aktual.prefs.vm.theme.swatch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -132,23 +135,13 @@ private fun ThemeSettingsContent(
     }
 
     item {
-      BuiltInThemesPreference(
+      ThemesPreference(
+        localThemes = state.localThemes,
         selectedTheme = state.constantTheme,
         enabled = !state.useSystemDefault.value,
         onAction = onAction,
       )
     }
-
-    item {
-      LocalThemesPreference(
-        themes = state.localThemes,
-        selectedTheme = state.constantTheme,
-        enabled = !state.useSystemDefault.value,
-        onAction = onAction,
-      )
-    }
-
-    item { CustomThemesPreference(enabled = !state.useSystemDefault.value, onAction = onAction) }
 
     item { BottomSpacing() }
   }
@@ -156,20 +149,26 @@ private fun ThemeSettingsContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewColorsSettings(@PreviewParameter(ColorParameters::class) colors: Colors) =
-  PreviewWithColors(colors) {
+private fun PreviewColorsSettings(
+  @PreviewParameter(BooleanColorParameters::class) params: ColorParams<Boolean>,
+) =
+  PreviewWithColorParams(params) {
     ThemeSettingsScaffold(
       state =
         ThemeSettingsState(
-          useSystemDefault = BooleanPreference(value = false, enabled = true),
+          useSystemDefault = BooleanPreference(value = this, enabled = true),
           darkTheme =
             ListPreference(
-              value = DarkColors.id,
+              value = MidnightColors.id,
               options = persistentListOf(DarkColors.id, MidnightColors.id),
-              enabled = false,
+              enabled = this,
             ),
           constantTheme = LightColors.id,
-          localThemes = persistentListOf(),
+          localThemes =
+            persistentListOf(
+              LocalTheme(ThemeId("@local/a"), "Light (copy)", LightColors.swatch()),
+              LocalTheme(ThemeId("@local/b"), "Midnight with stripes", MidnightColors.swatch()),
+            ),
         ),
       onAction = {},
     )
