@@ -26,7 +26,7 @@ internal fun UseSystemDefaultPreference(
     value = preference.value,
     onValueChange = { value -> onAction(SetUseSystemDefault(value)) },
     title = Strings.settingsThemeUseSystem,
-    subtitle = null,
+    subtitle = Strings.settingsThemeUseSystemDesc,
     icon = AktualIcons.System,
     enabled = preference.enabled,
   )

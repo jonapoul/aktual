@@ -10,6 +10,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.settings_theme_downloaded
 import aktual.core.l10n.settings_theme_refresh_failure
 import aktual.core.l10n.settings_theme_refresh_success
 import aktual.core.model.ThemeId
@@ -136,6 +137,8 @@ fun CustomThemeSettingsScreen(
             getString(Res.string.settings_theme_refresh_failure, event.name, event.reason),
           )
         is CustomThemeEvent.InspectTheme -> toInspectTheme(event.id)
+        is ThemeDownloaded ->
+          snackbar.showSuccessSnackbar(getString(Res.string.settings_theme_downloaded, event.name))
       }
     }
   }
@@ -157,6 +160,7 @@ fun CustomThemeSettingsScreen(
         is ShowDownloadFailure -> downloadFailure = action.failure
         is InspectTheme -> viewModel.fetchAndNavigate(action.summary)
         is SelectTheme -> viewModel.select(action.summary)
+        is DownloadTheme -> viewModel.download(action.summary)
         is SetModeFilter -> viewModel.setFilter(action.mode)
         is SetSorting -> viewModel.setSorting(action.sorting)
       }
@@ -368,23 +372,35 @@ private fun CustomThemeItem(
         .clip(RowShape)
         .background(background, RowShape)
         .border(Hairline, colors.tableBorder, RowShape)
-        .selectable(
-          selected = item.isSelected,
-          enabled = enabled,
-          role = Role.RadioButton,
-          onClick = { onAction(SelectTheme(item.summary)) },
+        .then(
+          if (item.isSelectable) {
+            Modifier.selectable(
+              selected = item.isSelected,
+              enabled = enabled,
+              role = Role.RadioButton,
+              onClick = { onAction(SelectTheme(item.summary)) },
+            )
+          } else {
+            Modifier.clickable(
+              enabled = enabled,
+              role = Button,
+              onClick = { onAction(DownloadTheme(item.summary)) },
+            )
+          },
         )
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = CenterVertically,
   ) {
-    RadioButton(
-      modifier = Modifier.padding(8.dp),
-      enabled = enabled,
-      selected = item.isSelected,
-      onClick = null,
-      colors = colors.radioButton(),
-    )
+    if (item.isSelectable) {
+      RadioButton(
+        modifier = Modifier.padding(8.dp),
+        enabled = enabled,
+        selected = item.isSelected,
+        onClick = null,
+        colors = colors.radioButton(),
+      )
+    }
 
     Column(
       modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
@@ -505,6 +521,7 @@ private class CatalogItemProvider :
   ColorParamsProvider<CatalogItem>(
     PREVIEW_CATALOG_ITEM,
     PREVIEW_CATALOG_ITEM.copy(isSelected = true),
+    PREVIEW_CATALOG_ITEM.copy(isSelectable = false),
     PREVIEW_CATALOG_ITEM.copy(state = Remote),
     PREVIEW_CATALOG_ITEM.copy(state = Fetching),
     PREVIEW_CATALOG_ITEM.copy(state = CacheState.Failed("Something broke")),

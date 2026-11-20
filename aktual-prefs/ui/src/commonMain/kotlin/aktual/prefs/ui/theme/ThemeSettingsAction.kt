@@ -12,6 +12,8 @@ internal data object NavCustomThemes : ThemeSettingsAction
 
 @JvmInline internal value class SelectTheme(val id: ThemeId) : ThemeSettingsAction
 
+@JvmInline internal value class SetLightTheme(val value: ThemeId) : ThemeSettingsAction
+
 @JvmInline internal value class SetDarkTheme(val value: ThemeId) : ThemeSettingsAction
 
 @JvmInline internal value class SetUseSystemDefault(val value: Boolean) : ThemeSettingsAction

@@ -34,6 +34,7 @@ internal constructor(
   // Kept outside themesDir so clearing the cache doesn't wipe them
   private val localThemesDir = appDirectory.get() / "local-themes"
   private val localThemesVersion = MutableStateFlow(0)
+  private val downloadedThemesVersion = MutableStateFlow(0)
 
   init {
     fileSystem.createDirectory(themesDir)
@@ -112,6 +113,10 @@ internal constructor(
     repos.mapNotNull { theme(it) }
   }
 
+  override fun downloadedThemes(): Flow<List<CustomColors>> = downloadedThemesVersion.map { _ ->
+    repos().mapNotNull { theme(it) }
+  }
+
   override suspend fun save(summaries: List<CustomThemeSummary>) {
     try {
       val encoded = encode(summaries, SUMMARIES_SERIALIZER)
@@ -130,7 +135,7 @@ internal constructor(
     try {
       val encoded = encode(theme, THEME_SERIALIZER)
       write(encoded, themeFile)
-      if (theme.repo.isLocal) localThemesVersion.update { it + 1 }
+      theme.repo.version().update { it + 1 }
     } catch (e: IOException) {
       log.e(e) { "Failed writing theme to $themeFile" }
     } catch (e: SerializationException) {
@@ -142,7 +147,7 @@ internal constructor(
     val themeFile = repo.themeFile()
     try {
       withContext(contexts.io) { fileSystem.delete(themeFile) }
-      if (repo.isLocal) localThemesVersion.update { it + 1 }
+      repo.version().update { it + 1 }
     } catch (e: IOException) {
       log.e(e) { "Failed deleting theme $themeFile" }
     }
@@ -154,7 +159,11 @@ internal constructor(
       fileSystem.deleteRecursively(themesDir)
       fileSystem.createDirectory(themesDir)
     }
+    downloadedThemesVersion.update { it + 1 }
   }
+
+  private fun CustomThemeRepo.version() =
+    if (isLocal) localThemesVersion else downloadedThemesVersion
 
   private suspend fun <T> encode(value: T, serializer: SerializationStrategy<T>): String =
     withContext(contexts.default) { ThemeJson.encodeToString(serializer, value) }

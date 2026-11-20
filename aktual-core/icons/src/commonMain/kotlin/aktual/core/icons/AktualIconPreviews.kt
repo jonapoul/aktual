@@ -75,6 +75,7 @@ private val aktualIcons =
       Split,
       Subtract,
       Sum,
+      Sun,
       System,
       Tag,
       Trash,

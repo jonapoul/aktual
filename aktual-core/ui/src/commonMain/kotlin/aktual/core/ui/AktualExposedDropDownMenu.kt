@@ -130,7 +130,7 @@ fun <T> AktualExposedDropDownMenu(
         readOnly = true,
         enabled = isEnabled,
         singleLine = true,
-        textStyle = textStyle.copy(color = colors.formInputText),
+        textStyle = textStyle.copy(color = colors.formInputText.disabledIf(!isEnabled)),
         interactionSource = interactionSource,
         decorationBox = { innerTextField ->
           TextFieldDefaults.DecorationBox(
@@ -178,6 +178,18 @@ private fun PreviewDropDownMenu(@PreviewParameter(ColorParameters::class) colors
       value = value,
       onValueChange = { newValue -> value = newValue },
       options = options,
+    )
+  }
+
+@Preview
+@Composable
+private fun PreviewDropDownMenuDisabled(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    AktualExposedDropDownMenu(
+      value = "B",
+      onValueChange = {},
+      options = persistentListOf("A", "B"),
+      isEnabled = false,
     )
   }
 

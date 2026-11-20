@@ -6,12 +6,12 @@ import aktual.core.icons.CloudDownload
 import aktual.core.icons.Pylon
 import aktual.core.icons.SearchAlternate
 import aktual.core.icons.SettingsSliderAlternate
-import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.CalendarViewWeek
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
+import aktual.core.icons.material.Palette
 import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.Security
 import aktual.core.icons.material.Speed125
@@ -118,7 +118,7 @@ private fun SettingsScaffold(
       ) {
         SubSettingsItem(
           title = Strings.settingsTheme,
-          icon = AktualIcons.System,
+          icon = MaterialIcons.Palette,
           onClick = { onAction(NavToThemeSettings) },
         )
         SubSettingsItem(

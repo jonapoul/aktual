@@ -15,6 +15,7 @@ import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.asLoadedStateFlow
 import aktual.prefs.vm.theme.custom.CustomThemeEvent.FailedFetching
 import aktual.prefs.vm.theme.custom.CustomThemeEvent.InspectTheme
+import aktual.prefs.vm.theme.custom.CustomThemeEvent.ThemeDownloaded
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -56,6 +57,7 @@ internal constructor(
   private val mutableSummaries = MutableStateFlow(persistentListOf<CustomThemeSummary>())
   private val mutableCachedThemes = MutableStateFlow(persistentMapOf<ThemeId, CacheState>())
   private val selectedTheme = preferences.constantTheme.asLoadedStateFlow(viewModelScope)
+  private val useSystemDefault = preferences.useSystemDefault.asLoadedStateFlow(viewModelScope)
 
   private val mutableEvents =
     MutableSharedFlow<CustomThemeEvent>(
@@ -87,15 +89,17 @@ internal constructor(
       val summaries by mutableSummaries.collectAsState()
       val themes by mutableCachedThemes.collectAsState()
       val selected by selectedTheme.collectAsState()
+      val useSystemDefault by useSystemDefault.collectAsState()
 
       val items =
-        remember(filter, sorting, summaries, themes, selected) {
+        remember(filter, sorting, summaries, themes, selected, useSystemDefault) {
           buildItems(
             filter = filter,
             sorting = sorting,
             summaries = summaries,
             cachedThemes = themes,
             selected = selected,
+            isSelectable = !useSystemDefault,
           )
         }
       CatalogState.Success(items)
@@ -121,6 +125,16 @@ internal constructor(
           viewModelScope.launch { preferences.constantTheme.set(colors.id) }
         },
         onFailure = { reason -> log.e { "Failed selecting theme: $reason" } },
+      )
+    }
+  }
+
+  fun download(summary: CustomThemeSummary) {
+    viewModelScope.launch {
+      fetchThemeImpl(
+        summary = summary,
+        onSuccess = { mutableEvents.tryEmit(ThemeDownloaded(summary.name)) },
+        onFailure = { reason -> mutableEvents.tryEmit(FailedFetching(reason, summary.name)) },
       )
     }
   }
@@ -178,6 +192,7 @@ internal constructor(
     summaries: List<CustomThemeSummary>,
     cachedThemes: Map<ThemeId, CacheState>,
     selected: ThemeId?,
+    isSelectable: Boolean,
   ): ImmutableList<CatalogItem> =
     summaries
       .asSequence()
@@ -188,19 +203,21 @@ internal constructor(
           ByRepo -> summary.repo.toString().lowercase()
         }
       }
-      .map { summary -> toCatalogItem(summary, selected, cachedThemes) }
+      .map { summary -> toCatalogItem(summary, selected, isSelectable, cachedThemes) }
       .toImmutableList()
 
   private fun toCatalogItem(
     summary: CustomThemeSummary,
     selected: ThemeId?,
+    isSelectable: Boolean,
     cachedThemes: Map<ThemeId, CacheState>,
   ): CatalogItem {
     val themeId = summary.repo.toId()
     return CatalogItem(
       id = themeId,
       summary = summary,
-      isSelected = selected == themeId,
+      isSelected = isSelectable && selected == themeId,
+      isSelectable = isSelectable,
       state = cachedThemes[themeId] ?: Remote,
     )
   }

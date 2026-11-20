@@ -38,6 +38,7 @@ import aktual.core.l10n.settings_format_distance_group
 import aktual.core.l10n.settings_format_first_day
 import aktual.core.l10n.settings_format_group
 import aktual.core.l10n.settings_format_numbers
+import aktual.core.l10n.settings_light_theme
 import aktual.core.l10n.settings_security
 import aktual.core.l10n.settings_security_app_lock
 import aktual.core.l10n.settings_security_auto_save_locations
@@ -47,9 +48,8 @@ import aktual.core.l10n.settings_security_lock_group
 import aktual.core.l10n.settings_security_look_up_addresses
 import aktual.core.l10n.settings_security_timeout
 import aktual.core.l10n.settings_theme
-import aktual.core.l10n.settings_theme_built_in
-import aktual.core.l10n.settings_theme_custom_title
-import aktual.core.l10n.settings_theme_local_title
+import aktual.core.l10n.settings_theme_catalog
+import aktual.core.l10n.settings_theme_list
 import aktual.core.l10n.settings_theme_system_group
 import aktual.core.l10n.settings_theme_use_system
 import aktual.core.l10n.settings_transactions
@@ -91,11 +91,10 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         entry(
           Res.string.settings_theme_system_group,
           entry(Res.string.settings_theme_use_system),
+          entry(Res.string.settings_light_theme),
           entry(Res.string.settings_dark_theme),
         ),
-        entry(Res.string.settings_theme_built_in),
-        entry(Res.string.settings_theme_local_title),
-        entry(Res.string.settings_theme_custom_title),
+        entry(Res.string.settings_theme_list, entry(Res.string.settings_theme_catalog)),
       ),
     SettingsPage.SystemUi to
       entry(

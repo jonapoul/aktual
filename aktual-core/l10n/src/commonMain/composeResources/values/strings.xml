@@ -2478,19 +2478,23 @@
   <string name="settings_search_no_results">No settings match “%1$s”</string>
 
   <string name="settings_theme">App theme</string>
+  <string name="settings_light_theme">Light theme</string>
   <string name="settings_dark_theme">Dark theme</string>
 
   <string name="settings_theme_toolbar">Theme</string>
-  <string name="settings_theme_use_system">Use System Default</string>
+  <string name="settings_theme_use_system">Match system</string>
+  <string name="settings_theme_use_system_desc">Follow your device\'s light or dark mode. Catalog themes show up here once downloaded</string>
   <string name="settings_theme_system_group">System theme</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>
 
-  <string name="settings_theme_built_in">Built-in themes</string>
+  <string name="settings_theme_list">Themes</string>
+  <string name="settings_theme_list_desc">Used when Match system is off</string>
+  <string name="settings_theme_local_badge">Local</string>
+  <string name="settings_theme_catalog">Theme catalog</string>
   <string name="settings_theme_preview">Preview %1$s theme</string>
   <string name="settings_theme_custom_title">Custom Themes</string>
-  <string name="settings_theme_custom_button">View catalog</string>
   <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
   <string name="settings_theme_refresh_prefix">Error</string>
   <string name="settings_theme_refresh_failure">Failed fetching catalog</string>
@@ -2504,6 +2508,7 @@
   <string name="settings_theme_sort_by_repo">By repository</string>
   <string name="settings_theme_sort_by_name">By name</string>
 
+  <string name="settings_theme_downloaded">Downloaded %1$s</string>
   <string name="settings_theme_download_failed_title">Failed downloading %1$s</string>
   <string name="settings_theme_download_failed_show">Show download error for %1$s</string>
   <string name="settings_theme_download_failed_ok">OK</string>
@@ -2535,8 +2540,6 @@
   <string name="settings_theme_inspect_edit_save">Save</string>
   <string name="settings_theme_inspect_edit_placeholder">#RRGGBB or #AARRGGBB</string>
   <string name="settings_theme_inspect_edit_invalid">Invalid hex code</string>
-  <string name="settings_theme_local_title">My themes</string>
-  <string name="settings_theme_local_empty">Duplicate any theme from its preview screen to make a copy you can edit</string>
 
   <string name="settings_format_group">Formatting</string>
   <string name="settings_format_dates_group">Dates</string>

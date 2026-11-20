@@ -59,6 +59,23 @@ class ColorsResolverImplTest {
   }
 
   @Test
+  fun `System default in light mode returns day theme`() = runThemeTest {
+    cache.putTheme(ShadesOfCoffeeTheme)
+    preferences.dayTheme.set(ShadesOfCoffeeTheme.id)
+    resolver.activeColors(isSystemInDarkTheme = false).test {
+      assertThat(awaitItem()).isEqualTo(ShadesOfCoffeeTheme)
+    }
+  }
+
+  @Test
+  fun `System default in dark mode ignores day theme preference`() = runThemeTest {
+    preferences.dayTheme.set(MidnightColors.id)
+    resolver.activeColors(isSystemInDarkTheme = true).test {
+      assertThat(awaitItem()).isSameInstanceAs(DarkColors)
+    }
+  }
+
+  @Test
   fun `System default with custom night theme resolves from cache`() = runThemeTest {
     cache.putTheme(ShadesOfCoffeeTheme)
     preferences.nightTheme.set(ShadesOfCoffeeTheme.id)
