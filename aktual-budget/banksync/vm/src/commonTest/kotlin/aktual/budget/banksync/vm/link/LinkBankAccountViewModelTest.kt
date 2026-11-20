@@ -34,12 +34,14 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSync
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.BudgetCoroutineScope
+import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.TestBuildConfig
 import aktual.test.inMemoryDriverFactory
 import aktual.test.viewModelContext
@@ -372,6 +374,17 @@ class LinkBankAccountViewModelTest {
     }
 
   @Test
+  fun `Enable Banking isn't offered while its flag is off`() =
+    runLinkTest(enableBanking = true) {
+      flags[FeatureFlag.EnableBanking].set(false)
+      api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
+
+      createViewModel().state.test {
+        assertThat(awaitChoosing().providers).containsExactly(PluggyAi, Akahu)
+      }
+    }
+
+  @Test
   fun `Enable Banking logins time out`() =
     runLinkTest(enableBanking = true) {
       enableBankingApi.banks["GB"] = EnableBankingBanksResponse.Success(listOf(NORDEA))
@@ -427,6 +440,7 @@ class LinkBankAccountViewModelTest {
           BankSyncStatusResponse.Success(configured = enableBanking),
       )
     val controller = FakeBankSyncController()
+    val flags = FakeBudgetFeatureFlags(setOf(FeatureFlag.EnableBanking))
     val enableBankingApi = FakeEnableBankingApi()
     private val syncDao = SyncDao(database, driver, Clock.System)
 
@@ -481,6 +495,7 @@ class LinkBankAccountViewModelTest {
           scope = BudgetCoroutineScope(scope.backgroundScope),
         ),
       server = server,
+      flags = flags,
       waiter = GoCardlessLoginWaiterImpl(api),
       enableBanking = enableBankingApi,
       buildConfig = TestBuildConfig,
