@@ -492,7 +492,7 @@
   <string name="bank_sync_settings_update_dates">Update dates</string>
   <string name="bank_sync_settings_update_dates_hint">By enabling this, the transaction date will be overwritten by the one provided by the bank.</string>
   <string name="bank_sync_settings_investment">Investment account</string>
-  <string name="bank_sync_settings_investment_hint">Selecting this option will disable importing transactions and only import the account balance for use in reconciliation</string>
+  <string name="bank_sync_settings_investment_hint">Selecting this option will disable importing transactions and only import the account balance for use in reconciliation.</string>
   <string name="bank_sync_settings_unlink">Unlink account</string>
   <string name="bank_sync_settings_unlink_failed">Couldn’t unlink account: %1$s</string>
   <string name="bank_sync_settings_unlink_title">Confirm unlink</string>
@@ -2251,7 +2251,7 @@
   <string name="transactions_view_hide_reconciled">Hide reconciled transactions</string>
   <string name="transactions_view_extra_balances">Show cleared and uncleared totals</string>
   <string name="transactions_view_alternate_rows">Alternate row colors</string>
-  <string name="transactions_view_alternate_rows_unsupported">Your theme has no alternate row color</string>
+  <string name="transactions_view_alternate_rows_unsupported">Your theme has no alternate row color.</string>
   <string name="transactions_view_expand_splits">Expand split transactions</string>
   <string name="transactions_header_cleared">Cleared</string>
   <string name="transactions_header_uncleared">Uncleared</string>
@@ -2466,12 +2466,12 @@
 
   <!-- settings -->
   <string name="settings_toolbar">App Settings</string>
-  <string name="settings_budget_synced">Synced to every device using this budget</string>
+  <string name="settings_budget_synced">Synced to every device using this budget.</string>
   <string name="settings_budget_unnamed">This budget</string>
   <string name="settings_budget_group">Budget</string>
   <string name="settings_budget_closed">Open a budget to change these. Each budget keeps its own, synced to every device using it.</string>
   <string name="settings_device_group">This device</string>
-  <string name="settings_device_desc">Only changes this app on this device</string>
+  <string name="settings_device_desc">Only changes this app on this device.</string>
   <string name="settings_search">Search settings</string>
   <string name="settings_search_placeholder">Search settings</string>
   <string name="settings_search_prompt">Enter some text to search settings and groups</string>
@@ -2483,14 +2483,14 @@
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Match system</string>
-  <string name="settings_theme_use_system_desc">Follow your device\'s light or dark mode</string>
+  <string name="settings_theme_use_system_desc">Follow your device's light or dark mode.</string>
   <string name="settings_theme_system_group">System theme</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>
 
   <string name="settings_theme_list">Themes</string>
-  <string name="settings_theme_list_desc">Used when Match system is off</string>
+  <string name="settings_theme_list_desc">Used when Match system is off.</string>
   <string name="settings_theme_local_badge">Local</string>
   <string name="settings_theme_catalog">Theme catalog</string>
   <string name="settings_theme_catalog_subtitle">Community-created themes, hosted on GitHub at actualbudget/actual. Themes will be downloaded and cached locally when you tap on each one.</string>
@@ -2577,7 +2577,7 @@
   <string name="settings_ui_group">System UI</string>
   <string name="settings_ui_show_status">Show bottom status bar</string>
   <string name="settings_ui_start_tab">Start page</string>
-  <string name="settings_ui_start_tab_desc">The page shown when a budget opens</string>
+  <string name="settings_ui_start_tab_desc">The page shown when a budget opens.</string>
   <string name="settings_ui_bars_title">App bars</string>
   <string name="settings_bars_desc">Choose how the bars at the top and bottom of the screen look. Content scrolls behind them.</string>
   <string name="settings_sample_payee_groceries">Groceries</string>
@@ -2602,7 +2602,7 @@
   <string name="settings_advanced_reset_sync">Sync</string>
   <string name="settings_advanced_reset_sync_desc">Reset sync will remove all local data used to track changes for syncing, and create a fresh sync ID on the server. This file on other devices will have to be re-downloaded to use the new sync ID. Use this if there is a problem with syncing and you want to start fresh. This can also improve performance on large budgets.</string>
   <string name="settings_advanced_reset_sync_button">Reset sync</string>
-  <string name="settings_advanced_unsupported">Not supported in Aktual yet</string>
+  <string name="settings_advanced_unsupported">Not supported in Aktual yet.</string>
   <string name="settings_advanced_repair">Split transactions and transfers</string>
   <string name="settings_advanced_repair_desc">If you are experiencing bugs relating to split transactions or transfers, this tool may fix them. Some examples of bugs include seeing blank payees on splits or incorrect account balances.</string>
   <string name="settings_advanced_repair_button">Repair transactions</string>
@@ -2620,7 +2620,7 @@
   <string name="settings_experimental_synced">Synced with this budget</string>
   <string name="settings_experimental_synced_desc">Changing these here also changes them in Actual on the web and on your other devices.</string>
   <string name="settings_experimental_docs">Read about each experimental feature in the Actual docs</string>
-  <string name="settings_experimental_unsupported">Not supported in Aktual yet</string>
+  <string name="settings_experimental_unsupported">Not supported in Aktual yet.</string>
   <string name="settings_experimental_goal_templates">Goal templates</string>
   <string name="settings_experimental_goal_templates_ui">Budget automations UI</string>
   <string name="settings_experimental_action_templating">Rule action templating</string>
@@ -2636,7 +2636,7 @@
   <string name="settings_updates">Updates</string>
   <string name="settings_updates_desc">Nightly builds are made from the latest code every day. They get new features first, but may have more bugs.</string>
   <string name="settings_updates_nightly">Check for nightly builds</string>
-  <string name="settings_updates_nightly_desc">On launch, ask GitHub whether there is a newer nightly build and show it in the side menu</string>
+  <string name="settings_updates_nightly_desc">On launch, ask GitHub whether there is a newer nightly build and show it in the side menu.</string>
   <string name="settings_transactions">Transactions</string>
   <string name="settings_transactions_desc">Choose how transaction lists look. These also show in the view options on the transactions screen.</string>
   <string name="settings_dialogs_desc">Choose whether the screen behind a dialog is blurred, and by how much.</string>
