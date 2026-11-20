@@ -28,6 +28,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -103,10 +104,14 @@ internal fun BudgetCategoryScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val latestBack by rememberUpdatedState(back)
+  val snackbars = LocalSnackbars.current
 
-  // Undoing isn't offered, as the screen closes once its category is gone
+  // The snackbar host sits above the screens, so its undo stays up after a delete closes this one
   LaunchedEffect(editor) {
-    editor.events.collect { event -> if (event is Deleted) latestBack() }
+    editor.events.collect { event ->
+      snackbars.show(key = editor) { showUpdated(onUndo = { editor.undo(event.token) }) }
+      if (event is Deleted) latestBack()
+    }
   }
 
   BudgetCategoryScaffold(

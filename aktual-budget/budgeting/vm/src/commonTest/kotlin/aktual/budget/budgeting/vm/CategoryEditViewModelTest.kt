@@ -8,6 +8,7 @@ import aktual.budget.budgeting.domain.OrderedGroup
 import aktual.budget.budgeting.domain.UndoToken
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.di.BudgetCoroutineScope
 import aktual.test.unconfinedViewModelContext
 import app.cash.turbine.test
 import assertk.assertThat
@@ -21,6 +22,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 
 class CategoryEditViewModelTest {
@@ -157,6 +159,7 @@ class CategoryEditViewModelTest {
       val token = event.token
       viewModel.undo(token)
       viewModel.undo(token)
+      runCurrent()
       assertThat(budgetWriter.calls).containsExactly(listOf("undo", token))
     }
   }
@@ -173,7 +176,13 @@ class CategoryEditViewModelTest {
 
   private fun runEditTest(action: suspend TestScope.(CategoryEditViewModel) -> Unit) = runTest {
     val viewModel =
-      CategoryEditViewModel(writer, budgetWriter, FakeCategoryOrder, unconfinedViewModelContext)
+      CategoryEditViewModel(
+        categoryWriter = writer,
+        budgetWriter = budgetWriter,
+        order = FakeCategoryOrder,
+        budgetScope = BudgetCoroutineScope(backgroundScope),
+        viewModelContext = unconfinedViewModelContext,
+      )
     action(viewModel)
   }
 

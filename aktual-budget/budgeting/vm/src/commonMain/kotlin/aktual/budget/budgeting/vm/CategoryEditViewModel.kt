@@ -9,6 +9,7 @@ import aktual.budget.budgeting.domain.UndoToken
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.core.utils.runCatchingCancellable
+import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -42,6 +43,7 @@ internal constructor(
   private val categoryWriter: CategoryWriter,
   private val budgetWriter: BudgetWriter,
   private val order: CategoryOrder,
+  private val budgetScope: BudgetCoroutineScope,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableDialog = MutableStateFlow<CategoryDialog?>(null)
@@ -161,11 +163,12 @@ internal constructor(
     }
   }
 
-  // Does nothing once a later change has been made
+  // Does nothing once a later change has been made. Runs in the budget's scope, as a delete from
+  // the category screen closes it and its view model before the snackbar's undo is pressed
   fun undo(token: UndoToken) {
     if (lastUndo !== token) return
     lastUndo = null
-    viewModelScope.launch {
+    budgetScope.launch {
       runCatchingCancellable(
         attempt = { budgetWriter.undo(token) },
         onFailure = { e -> log.e(e) { "Failed to undo" } },

@@ -619,7 +619,7 @@ private fun BudgetMenu(
   }
 }
 
-private suspend fun SnackbarHostState.showUpdated(onUndo: () -> Unit) {
+internal suspend fun SnackbarHostState.showUpdated(onUndo: () -> Unit) {
   val result =
     showSnackbar(
       message = getString(Res.string.budgeting_updated),
