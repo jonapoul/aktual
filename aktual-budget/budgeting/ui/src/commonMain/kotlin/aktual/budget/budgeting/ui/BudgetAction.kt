@@ -33,6 +33,17 @@ internal data object ReorderCategories : BudgetAction
 
 internal data class OpenCategory(val month: YearMonth, val category: CategoryId) : BudgetAction
 
+// Handled by CategoryEditViewModel
+internal sealed interface CategoryEdit : BudgetAction
+
+internal data object AddCategory : CategoryEdit
+
+internal data class RenameGroup(val id: CategoryGroupId, val name: String) : CategoryEdit
+
+internal data class SetGroupHidden(val id: CategoryGroupId, val hidden: Boolean) : CategoryEdit
+
+internal data class DeleteGroup(val id: CategoryGroupId, val name: String) : CategoryEdit
+
 // Handled by the scaffold, which shows the sheet
 internal data class OpenSheet(val sheet: SheetRequest) : BudgetAction
 

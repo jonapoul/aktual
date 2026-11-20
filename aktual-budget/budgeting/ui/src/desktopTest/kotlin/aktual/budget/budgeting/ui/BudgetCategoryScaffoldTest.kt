@@ -15,6 +15,7 @@ import kotlin.test.Test
 @OptIn(ExperimentalTestApi::class)
 class BudgetCategoryScaffoldTest {
   private val hidden = mutableListOf<Boolean>()
+  private val edits = mutableListOf<String>()
 
   @Test
   fun `Hides the category from its menu`() =
@@ -36,9 +37,22 @@ class BudgetCategoryScaffoldTest {
     }
 
   @Test
-  fun `No menu when the group is hidden`() =
+  fun `No hide option when the group is hidden`() =
     runCategoryTest(PREVIEW_CATEGORY.copy(isHidden = true, isGroupHidden = true)) {
-      onNodeWithTag(BudgetTags.CategoryMenu).assertDoesNotExist()
+      onNodeWithTag(BudgetTags.CategoryMenu).performClick()
+      onNodeWithText("Unhide category").assertDoesNotExist()
+      onNodeWithText("Rename category").assertExists()
+    }
+
+  @Test
+  fun `Renames and deletes from the menu`() =
+    runCategoryTest(PREVIEW_CATEGORY) {
+      onNodeWithTag(BudgetTags.CategoryMenu).performClick()
+      onNodeWithText("Rename category").performClick()
+      onNodeWithTag(BudgetTags.CategoryMenu).performClick()
+      onNodeWithText("Delete category").performClick()
+
+      assertThat(edits).containsExactly("rename Groceries", "delete Groceries")
     }
 
   private fun runCategoryTest(state: BudgetCategoryState, test: ComposeUiTest.() -> Unit) =
@@ -50,6 +64,8 @@ class BudgetCategoryScaffoldTest {
           onSelect = {},
           onViewTransactions = {},
           onHide = { hidden += it },
+          onRename = { edits += "rename $it" },
+          onDelete = { edits += "delete $it" },
         )
       }
       test()

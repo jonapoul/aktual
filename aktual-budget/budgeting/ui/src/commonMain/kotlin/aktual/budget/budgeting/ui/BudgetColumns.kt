@@ -19,12 +19,14 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.FabClearance
 import aktual.core.ui.OnAction
 import aktual.core.ui.StuckHeaders
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
 import aktual.core.ui.stuckHeader
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -134,7 +136,11 @@ internal fun BudgetColumns(
       contentPadding = BudgetDS.listPadding(top = topPadding),
     ) {
       budgetColumns(state, columns, layout, cursor, grid, stuck, onAction)
-      item(key = "bottom") { BottomSpacing() }
+      item(key = "bottom") {
+        // Room to scroll the last row out from under the add button
+        VerticalSpacer(FabClearance)
+        BottomSpacing()
+      }
     }
   }
 }
@@ -164,6 +170,7 @@ private fun LazyListScope.budgetColumns(
       GroupHeaderRow(
         modifier = modifier,
         group = group,
+        isIncome = false,
         onAction = onAction,
         nameWidth = ColumnsDS.categoryWidth,
       ) {
@@ -235,6 +242,7 @@ private fun LazyListScope.incomeColumns(
     GroupHeaderRow(
       modifier = modifier,
       group = income,
+      isIncome = true,
       onAction = onAction,
       nameWidth = ColumnsDS.categoryWidth,
     ) {

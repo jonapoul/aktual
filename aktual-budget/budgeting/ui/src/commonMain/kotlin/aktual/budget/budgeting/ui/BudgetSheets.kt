@@ -3,10 +3,12 @@ package aktual.budget.budgeting.ui
 import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetSummary
 import aktual.budget.budgeting.vm.CategoryRow
+import aktual.budget.budgeting.vm.GroupRow
 import aktual.budget.budgeting.vm.MonthBudget
 import aktual.budget.budgeting.vm.category
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetType
+import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
@@ -73,6 +75,9 @@ internal sealed interface SheetRequest {
 
   data class CoverOverbudgetedSheet(override val month: YearMonth) : SheetRequest
 
+  // The group menu on compact widths. Expanded widths use a popup menu instead
+  data class GroupSheet(override val month: YearMonth, val group: CategoryGroupId) : SheetRequest
+
   // Picks which overspent category to cover, from the overspending banner
   data class OverspentSheet(override val month: YearMonth) : SheetRequest
 
@@ -126,6 +131,8 @@ internal fun BudgetSheets(
 
     is CoverOverbudgetedSheet ->
       envelope?.let { CoverOverbudgetedBudgetSheet(month, budget, it, onAction, onDismiss) }
+
+    is GroupSheet -> GroupMenuSheet(budget, request.group, onAction, onDismiss)
 
     is OverspentSheet -> OverspentMenuSheet(month, budget, onAction, onDismiss)
 
@@ -342,6 +349,46 @@ internal fun balanceActions(
       },
     onClick = { onAction(ToggleCarryover(month, category.id, !category.carryover)) },
   )
+}
+  .toImmutableList()
+
+@Composable
+private fun GroupMenuSheet(
+  budget: MonthBudget,
+  id: CategoryGroupId,
+  onAction: OnAction<BudgetAction>,
+  onDismiss: () -> Unit,
+) {
+  val group = (budget.groups + listOfNotNull(budget.income)).firstOrNull { it.id == id } ?: return
+  MenuSheet(
+    title = group.name,
+    items = groupActions(group, isIncome = group.id == budget.income?.id, onAction),
+    onDismiss = onDismiss,
+  )
+}
+
+// packages/desktop-client/src/components/modals/CategoryGroupMenuModal.tsx. The income group can
+// only be renamed, as upstream
+@Composable
+internal fun groupActions(
+  group: GroupRow,
+  isIncome: Boolean,
+  onAction: OnAction<BudgetAction>,
+): ImmutableList<MenuItem> = buildList {
+  +MenuItem(
+    label = Strings.budgetingGroupRename,
+    onClick = { onAction(RenameGroup(group.id, group.name)) },
+  )
+  if (!isIncome) {
+    +MenuItem(
+      label = if (group.isHidden) Strings.budgetingGroupUnhide else Strings.budgetingGroupHide,
+      onClick = { onAction(SetGroupHidden(group.id, !group.isHidden)) },
+    )
+    +MenuItem(
+      label = Strings.budgetingGroupDelete,
+      onClick = { onAction(DeleteGroup(group.id, group.name)) },
+    )
+  }
 }
   .toImmutableList()
 
