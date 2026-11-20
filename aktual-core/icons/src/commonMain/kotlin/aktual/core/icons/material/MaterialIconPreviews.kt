@@ -56,6 +56,7 @@ private val materialIcons =
       Numbers,
       OfflinePin,
       Opacity,
+      Palette,
       OpenInNew,
       Pause,
       PlayArrow,

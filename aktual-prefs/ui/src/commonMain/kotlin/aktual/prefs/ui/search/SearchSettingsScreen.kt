@@ -2,7 +2,6 @@ package aktual.prefs.ui.search
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudDownload
-import aktual.core.icons.ColorPalette
 import aktual.core.icons.Pylon
 import aktual.core.icons.SettingsSliderAlternate
 import aktual.core.icons.Tuning
@@ -12,6 +11,7 @@ import aktual.core.icons.material.CalendarViewWeek
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Numbers
+import aktual.core.icons.material.Palette
 import aktual.core.icons.material.ReceiptLong
 import aktual.core.icons.material.SearchOff
 import aktual.core.icons.material.Security
@@ -235,7 +235,7 @@ private fun SettingsSearchResult.highlight(): SettingsHighlight? =
 @Stable
 private fun SettingsPage.icon(): ImageVector =
   when (this) {
-    Theme -> AktualIcons.ColorPalette
+    Theme -> MaterialIcons.Palette
     SystemUi -> AktualIcons.Tuning
     SettingsPage.Security -> MaterialIcons.Security
     Format -> MaterialIcons.Numbers
