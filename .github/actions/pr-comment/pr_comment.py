@@ -25,6 +25,9 @@ MAX_BODY = 60000
 MAX_LOG_LINES = 20
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 DETEKT_ISSUE = re.compile(r"^file://(\S+):(\d+):\d+ \[(\w+)\] (.*)$")
+RUNNING_MODULES = re.compile(r"^Running \S+ on \d+ modules?:$")
+FAILED_TASKS = re.compile(r"^Failed task\(s\):$")
+MODULES_REASON = re.compile(r"^(Forced - |Build/config files changed |Version catalog changed - )")
 KOTLIN_ERROR = re.compile(r"^e: (?:file://)?(\S+?\.kts?):(\d+):\d+ (.*)$")
 
 REPO = os.environ["GITHUB_REPOSITORY"]
@@ -134,13 +137,13 @@ def parse_detekt():
 
 
 def parse_log():
-    """Returns (errors, excerpt) from the failing step's output, kept by run-step.sh"""
+    """Returns (errors, excerpt, modules) from the failing step's output, kept by run-step.sh"""
     path = os.path.join(os.environ.get("RUNNER_TEMP", ""), "failed-step.log")
     try:
         with open(path, errors="replace") as f:
             lines = [ANSI.sub("", line.rstrip()) for line in f]
     except OSError:
-        return [], []
+        return [], [], ""
     errors = {}
     for line in lines:
         if match := KOTLIN_ERROR.match(line):
@@ -160,7 +163,38 @@ def parse_log():
             excerpt.append(line)
     if not excerpt:
         excerpt = lines[-MAX_LOG_LINES:]
-    return list(errors), excerpt[:MAX_LOG_LINES]
+    return list(errors), excerpt[:MAX_LOG_LINES], modules_block(lines)
+
+
+def indented_after(lines, header):
+    """The indented lines straight after the first line matching header, as printed by modules.sh"""
+    for i, line in enumerate(lines):
+        if header.match(line):
+            items = []
+            for item in lines[i + 1:]:
+                if not item.startswith("  "):
+                    break
+                items.append(item.strip())
+            return line, items
+    return None, []
+
+
+def modules_block(lines):
+    """Lists the modules scripts/lib/modules.sh ran the task on, marking the failed ones"""
+    header, tasks = indented_after(lines, RUNNING_MODULES)
+    if not header:
+        return ""
+    failed = {task.rsplit(":", 1)[0] for task in indented_after(lines, FAILED_TASKS)[1]}
+    reason = next((line for line in lines if MODULES_REASON.match(line)), None)
+    modules = [task.rsplit(":", 1)[0] for task in tasks]
+    count = len(modules)
+    items = [f":x: `{module}`" if module in failed else f"`{module}`" for module in modules]
+    parts = [f"<details><summary>Ran on {count} module{'' if count == 1 else 's'}, {len(failed)} failed</summary>", ""]
+    if reason:
+        parts += [escape(reason), ""]
+    parts += [f"- {item}" for item in items]
+    parts += ["", "</details>"]
+    return "\n".join(parts)
 
 
 def code_block(lines):
@@ -180,7 +214,7 @@ def section(out_path):
     title = os.environ.get("TITLE", "")
     if not body and status not in ("", "success"):
         tests, checks = parse_reports()
-        errors, excerpt = parse_log()
+        errors, excerpt, modules = parse_log()
         parts = [f"#### :x: {title} ([logs]({job_url()}))"]
         if errors:
             parts.append(f"{len(errors)} error(s):\n{bullets(errors)}")
@@ -190,6 +224,8 @@ def section(out_path):
             parts.append(f"{len(checks)} issue(s):\n{bullets(checks)}")
         if not errors and not tests and not checks:
             parts.append(code_block(excerpt) if excerpt else "See the logs for details.")
+        if modules:
+            parts.append(modules)
         body = "\n\n".join(parts)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w") as f:
