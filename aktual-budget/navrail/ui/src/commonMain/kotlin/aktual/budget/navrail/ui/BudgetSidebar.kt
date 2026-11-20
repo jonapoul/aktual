@@ -778,8 +778,9 @@ private const val COLLAPSED_ROTATION = -90f
 
 private val AccountItemHeight = 30.dp
 
-private val SectionHeaderStart = 4.dp
-private val SectionChevronSize = 40.dp
+private val SectionHeaderStart = 8.dp
+// Fits inside DrawerItemHeight so the button stays square
+private val SectionChevronSize = 32.dp
 private val HeaderGap = 6.dp
 
 // Section titles, account names and group titles share one left edge, with chevrons and sync dots
