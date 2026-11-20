@@ -2,6 +2,13 @@ package aktual.prefs.vm.search
 
 import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.Res
+import aktual.core.l10n.settings_advanced
+import aktual.core.l10n.settings_advanced_budget_file
+import aktual.core.l10n.settings_advanced_budget_id
+import aktual.core.l10n.settings_advanced_repair
+import aktual.core.l10n.settings_advanced_reset_sync
+import aktual.core.l10n.settings_advanced_sync_id
+import aktual.core.l10n.settings_advanced_troubleshooting
 import aktual.core.l10n.settings_amounts
 import aktual.core.l10n.settings_app_icon
 import aktual.core.l10n.settings_currency
@@ -170,6 +177,20 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
     SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),
     SettingsPage.Updates to
       entry(Res.string.settings_updates, entry(Res.string.settings_updates_nightly)),
+    SettingsPage.Advanced to
+      entry(
+        Res.string.settings_advanced,
+        entry(
+          Res.string.settings_advanced_budget_file,
+          entry(Res.string.settings_advanced_budget_id),
+          entry(Res.string.settings_advanced_sync_id),
+        ),
+        entry(
+          Res.string.settings_advanced_troubleshooting,
+          entry(Res.string.settings_advanced_reset_sync),
+          entry(Res.string.settings_advanced_repair),
+        ),
+      ),
     SettingsPage.Experimental to
       entry(
         Res.string.settings_experimental,

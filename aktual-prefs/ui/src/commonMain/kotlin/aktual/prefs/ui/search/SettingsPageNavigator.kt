@@ -1,5 +1,6 @@
 package aktual.prefs.ui.search
 
+import aktual.core.nav.AdvancedSettingsNavRoute
 import aktual.core.nav.AmountSettingsNavRoute
 import aktual.core.nav.AppIconSettingsNavRoute
 import aktual.core.nav.BarSettingsNavRoute
@@ -35,6 +36,7 @@ internal class SettingsPageNavigator(private val stack: NavStack<NavKey>) {
         Transactions -> TransactionSettingsNavRoute(highlight)
         LauncherIcon -> AppIconSettingsNavRoute(highlight)
         Updates -> UpdateSettingsNavRoute(highlight)
+        Advanced -> AdvancedSettingsNavRoute(highlight)
         Experimental -> ExperimentalSettingsNavRoute(highlight)
       },
     )

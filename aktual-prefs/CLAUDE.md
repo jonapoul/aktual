@@ -10,6 +10,8 @@ Upstream's experimental feature flags (`SyncedPrefKey.FeatureFlag`, stored as `f
 
 The experimental page is in settings search as `SettingsPage.Experimental`, a budget page. `SettingsIndex` lists every flag by the same title the screen shows (`FeatureFlag.title` there must match `ExperimentalSettingsScreen`), so a new flag needs a title in both places. An index entry with a `flag` only shows in search, with everything in it, while the open budget has that flag on, read through `OpenBudgetFlags`. The currency group uses it for `CurrencySupport`, and `GoalTemplatesUi` for `GoalTemplates`.
 
+The advanced page (`AdvancedSettingsViewModel`, a budget page) follows upstream's: the budget and sync IDs from `BudgetLocalPreferences`, and the troubleshooting tools. "Repair transactions" runs `TransactionRepairer` (`aktual-budget:transactions`), upstream's `tools/fix-split-transactions`. "Reset sync" shows disabled, since Aktual can't upload a budget file yet. Upstream's "Reset budget cache" is left out, as Aktual has no spreadsheet cache.
+
 `FormatConfigUseCase` (`aktual-app:nav`) reads the open budget's formats through `BudgetFormatPreferencesGraph`, falling back to upstream's defaults with no budget open.
 
 ## Adding a new setting

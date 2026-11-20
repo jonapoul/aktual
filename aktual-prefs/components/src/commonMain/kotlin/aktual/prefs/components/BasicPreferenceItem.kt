@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -58,6 +59,7 @@ fun BasicPreferenceItem(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   enabled: Boolean = true,
   includeBackground: Boolean = true,
+  backgroundColor: Color? = null,
   headerStyle: TextStyle = typography.bodyLarge,
   topRightContent: (@Composable BoxScope.() -> Unit)? = null,
   rightContent: (@Composable RowScope.() -> Unit)? = null,
@@ -66,6 +68,8 @@ fun BasicPreferenceItem(
   val contentColor = colors.settingsCardText.disabledIf(!enabled)
   val groupTitle = LocalPreferenceGroupTitle.current
   val shouldIncludeBackground = includeBackground && groupTitle == null
+  val background =
+    backgroundColor ?: colors.settingsCardBackground.takeIf { shouldIncludeBackground }
 
   val isHighlighted = isHighlightTarget(groupTitle, title)
   val highlightAnimation = remember { Animatable(0f) }
@@ -81,11 +85,15 @@ fun BasicPreferenceItem(
     modifier =
       modifier
         .clip(CardShape)
-        .ifTrue(shouldIncludeBackground) { background(colors.settingsCardBackground, CardShape) }
+        .ifNotNull(background) { background(it, CardShape) }
         .ifTrue(shouldIncludeBackground) { border(1.dp, colors.settingsCardBorder, CardShape) }
         .ifTrue(highlightFraction > 0f) {
           background(
-            lerp(colors.settingsCardBackground, colors.settingsCardText, highlightFraction),
+            lerp(
+              background ?: colors.settingsCardBackground,
+              colors.settingsCardText,
+              highlightFraction,
+            ),
             CardShape,
           )
         }
@@ -93,7 +101,7 @@ fun BasicPreferenceItem(
         .ifNotNull(onClick) {
           clickable(enabled, onClick = it, interactionSource = interactionSource)
         }
-        .ifTrue(shouldIncludeBackground) { padding(5.dp) },
+        .ifNotNull(background) { padding(5.dp) },
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = CenterVertically,
   ) {
@@ -137,8 +145,8 @@ fun BasicPreferenceItem(
       }
 
       if (bottomContent != null) {
-        if (shouldIncludeBackground) {
-          ProvideSurfaceColor(colors.settingsCardBackground) { Column(content = bottomContent) }
+        if (background != null) {
+          ProvideSurfaceColor(background) { Column(content = bottomContent) }
         } else {
           Column(content = bottomContent)
         }

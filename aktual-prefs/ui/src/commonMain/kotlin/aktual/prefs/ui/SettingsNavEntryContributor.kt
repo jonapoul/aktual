@@ -128,7 +128,9 @@ class SettingsNavEntryContributor : NavEntryContributor {
       UpdateSettingsScreen(BackNavigator(stack), route.highlight)
     }
 
-    entry<AdvancedSettingsNavRoute> { AdvancedSettingsScreen(BackNavigator(stack)) }
+    entry<AdvancedSettingsNavRoute> { route ->
+      AdvancedSettingsScreen(BackNavigator(stack), route.highlight)
+    }
 
     entry<ExperimentalSettingsNavRoute> { route ->
       ExperimentalSettingsScreen(BackNavigator(stack), route.highlight)

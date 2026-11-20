@@ -25,11 +25,12 @@ enum class SettingsPage {
   Transactions,
   LauncherIcon,
   Updates,
+  Advanced,
   Experimental,
 }
 
 // Pages holding the open budget's synced settings rather than this device's
-val BudgetSettingsPages: Set<SettingsPage> = setOf(Amounts, Dates, Experimental)
+val BudgetSettingsPages: Set<SettingsPage> = setOf(Amounts, Dates, Advanced, Experimental)
 
 enum class SettingsSearchKind {
   Page,

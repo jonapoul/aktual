@@ -3,6 +3,7 @@ package aktual.prefs.ui.search
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudDownload
 import aktual.core.icons.Pylon
+import aktual.core.icons.SettingsSliderAlternate
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Apps
@@ -245,6 +246,7 @@ private fun SettingsPage.icon(): ImageVector =
     SettingsPage.Dialogs -> MaterialIcons.Dialogs
     LauncherIcon -> MaterialIcons.Apps
     Updates -> AktualIcons.CloudDownload
+    Advanced -> AktualIcons.SettingsSliderAlternate
     Experimental -> AktualIcons.Pylon
   }
 

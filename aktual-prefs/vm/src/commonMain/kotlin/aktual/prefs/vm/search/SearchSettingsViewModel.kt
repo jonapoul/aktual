@@ -92,6 +92,7 @@ internal constructor(
       Dates,
       Transactions,
       LauncherIcon,
+      Advanced,
       Experimental -> true
     }
 
