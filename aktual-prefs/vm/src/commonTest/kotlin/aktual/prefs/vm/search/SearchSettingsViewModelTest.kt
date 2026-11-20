@@ -231,6 +231,41 @@ class SearchSettingsViewModelTest {
   }
 
   @Test
+  fun `Finds advanced tools in the open budget`() = runTest {
+    val viewModel = buildViewModel(budgetName = "My Budget")
+
+    viewModel.setQuery("repair")
+
+    viewModel.state.test {
+      val results = awaitResults()
+      assertThat(results)
+        .containsExactly(
+          SettingsSearchResult(
+            title = "advanced repair",
+            kind = Preference,
+            page = Advanced,
+            path = persistentListOf("advanced", "advanced troubleshooting"),
+            budgetName = "My Budget",
+          ),
+        )
+      assertThat(results.single().isEnabled).isTrue()
+    }
+  }
+
+  @Test
+  fun `Advanced settings disabled with no budget open`() = runTest {
+    val viewModel = buildViewModel(budgetName = null)
+
+    viewModel.setQuery("budget id")
+
+    viewModel.state.test {
+      val results = awaitResults()
+      assertThat(results.map { it.page }).containsExactly(SettingsPage.Advanced)
+      assertThat(results.single().isEnabled).isFalse()
+    }
+  }
+
+  @Test
   fun `Budget settings carry the open budget's name`() = runTest {
     val viewModel = buildViewModel(budgetName = "My Budget")
 

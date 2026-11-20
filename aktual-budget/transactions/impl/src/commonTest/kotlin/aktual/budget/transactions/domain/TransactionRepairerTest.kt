@@ -127,7 +127,7 @@ internal class TransactionRepairerTest {
     val plain = writer.write { insert(NewTransaction(ACCOUNT, DATE, Amount(-5))) }
     invoke(
       listOf(
-        localChange(TRANSACTIONS, plain.value, "error", """{"type":"SplitTransactionError"}"""),
+        localChange(TRANSACTIONS, plain.value, "error", SPLIT_ERROR),
         localChange(TRANSACTIONS, parent.value, "category", GROCERIES.value),
       ),
     )
@@ -140,6 +140,92 @@ internal class TransactionRepairerTest {
     }
     assertThat(transactionDao.row(plain)).isNotNull().prop(Transactions::error).isNull()
     assertThat(transactionDao.row(parent)).isNotNull().prop(Transactions::category).isNull()
+  }
+
+  @Test
+  fun `Split parts keep a payee of their own`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    val (tesco, aldi) = writer.write { insertPayee("Tesco") to insertPayee("Aldi") }
+    val (parent, parts) = insertSplit(amount = -100, parts = listOf(-60, -40))
+    writer.write {
+      update(TransactionUpdate(parent, payee = Patch.To(tesco)))
+      update(TransactionUpdate(parts[0], payee = Patch.To(aldi)))
+      update(TransactionUpdate(parts[1], payee = Patch.To(aldi)))
+    }
+
+    val result = repairer().repair()
+
+    assertThat(result.blankPayees).isEqualTo(0)
+    parts.forEach { part ->
+      assertThat(transactionDao.row(part))
+        .isNotNull()
+        .prop(Transactions::description)
+        .isEqualTo(aldi)
+    }
+  }
+
+  @Test
+  fun `Split parts stay blank when the parent has no payee`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    val (_, parts) = insertSplit(amount = -100, parts = listOf(-60, -40))
+
+    val result = repairer().repair()
+
+    assertThat(result.blankPayees).isEqualTo(0)
+    assertThat(transactionDao.row(parts[0])).isNotNull().prop(Transactions::description).isNull()
+  }
+
+  @Test
+  fun `Parts already deleted aren't counted again`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    val (parent, parts) = insertSplit(amount = -100, parts = listOf(-60, -40))
+    invoke(
+      listOf(
+        localChange(TRANSACTIONS, parent.value, "tombstone", 1L),
+        localChange(TRANSACTIONS, parts[0].value, "tombstone", 1L),
+      ),
+    )
+
+    val result = repairer().repair()
+
+    assertThat(result.deleted).isEqualTo(1)
+  }
+
+  @Test
+  fun `Transfers to an off-budget account keep their category`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    insertAccount(OFF_BUDGET, offBudget = true)
+    insertCategory(GROCERIES, name = "Groceries")
+    val from = writer.write { insert(NewTransaction(ACCOUNT, DATE, Amount(-100))) }
+    val to = writer.write {
+      insert(NewTransaction(OFF_BUDGET, DATE, Amount(100), transferId = from))
+    }
+    invoke(
+      listOf(
+        localChange(TRANSACTIONS, from.value, "transferred_id", to.value),
+        localChange(TRANSACTIONS, from.value, "category", GROCERIES.value),
+      ),
+    )
+
+    val result = repairer().repair()
+
+    assertThat(result.transfers).isEqualTo(0)
+    assertThat(transactionDao.row(from))
+      .isNotNull()
+      .prop(Transactions::category)
+      .isEqualTo(GROCERIES)
+  }
+
+  @Test
+  fun `Split parents keep their error`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    val (parent, _) = insertSplit(amount = -100, parts = listOf(-60, -40))
+    invoke(listOf(localChange(TRANSACTIONS, parent.value, "error", SPLIT_ERROR)))
+
+    val result = repairer().repair()
+
+    assertThat(result.nonParentErrors).isEqualTo(0)
+    assertThat(transactionDao.row(parent)).isNotNull().prop(Transactions::error).isNotNull()
   }
 
   private fun WriterTestScope.repairer() =
@@ -159,7 +245,9 @@ internal class TransactionRepairerTest {
   private companion object {
     val ACCOUNT = AccountId("account")
     val OTHER = AccountId("other")
+    val OFF_BUDGET = AccountId("off-budget")
     val GROCERIES = CategoryId("groceries")
     val DATE = LocalDate(2026, 10, 1)
+    const val SPLIT_ERROR = """{"type":"SplitTransactionError"}"""
   }
 }
