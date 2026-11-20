@@ -246,6 +246,16 @@ private fun SettingsPage.icon(): ImageVector =
 
 @PortraitPreview
 @Composable
+private fun PreviewResultItem(
+  @PreviewParameter(SearchSettingsScaffoldProvider::class)
+  params: ColorParams<SearchSettingsParams>,
+) =
+  PreviewWithColorParams(params) {
+    ResultItem(query = query, state = state, onAction = {})
+  }
+
+@PortraitPreview
+@Composable
 private fun PreviewSearchSettingsScaffold(
   @PreviewParameter(SearchSettingsScaffoldProvider::class)
   params: ColorParams<SearchSettingsParams>,
