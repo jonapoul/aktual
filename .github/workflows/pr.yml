@@ -13,6 +13,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
+  actions: read
   contents: read
   pull-requests: write
   security-events: write
@@ -32,10 +33,24 @@ jobs:
       kotlin: ${{ steps.filter.outputs.kotlin }}
       gradle: ${{ steps.gradle-filter.outputs.gradle }}
       r8: ${{ steps.filter.outputs.r8 }}
+      comment-id: ${{ steps.comment.outputs.id }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # One comment per PR collects failures and the APK link. Fork PRs can't comment
+      - id: comment
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        continue-on-error: true
+        env:
+          PR: ${{ github.event.pull_request.number }}
+        run: echo "id=$(python3 .github/actions/pr-comment/pr_comment.py create)" >> "$GITHUB_OUTPUT"
+      - if: ${{ steps.comment.outputs.id }}
+        uses: ./.github/actions/pr-comment
+        with:
+          comment-id: ${{ steps.comment.outputs.id }}
+          section: status
+          body: ':hourglass: Checks running on ${{ github.event.pull_request.head.sha }}'
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
@@ -156,17 +171,38 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - run: |
-          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ needs.changed-files.outputs.comment-id }}
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/actions
+      - id: check
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          failed=$(jq -r '[to_entries[] | select(.value.result == "failure" or .value.result == "cancelled") | "`\(.key)`"] | join(", ")' <<< "$NEEDS")
+          if [[ -n "$failed" ]]; then
+            echo "body=#### :x: Validation failed: $failed ([run]($RUN_URL))" >> "$GITHUB_OUTPUT"
             echo "One or more validation jobs failed or were cancelled"
             exit 1
           fi
+      - uses: ./.github/actions/pr-comment
+        if: ${{ !cancelled() && needs.changed-files.outputs.comment-id }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: validation
+          body: ${{ steps.check.outputs.body }}
 
   assemble-android:
     needs: [ changed-files, validation ]
     if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        # Keeps a failing step's output for the PR comment
+        shell: bash .github/actions/pr-comment/run-step.sh {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -196,31 +232,31 @@ jobs:
           path: aktual-app/android/build/outputs/apk/ci/*.apk
           if-no-files-found: error
       - name: Comment APK link
-        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-        env:
-          PR: ${{ github.event.pull_request.number }}
-          SHA: ${{ github.event.pull_request.head.sha }}
+        if: ${{ needs.changed-files.outputs.comment-id }}
+        uses: ./.github/actions/pr-comment
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: apk
           # nightly.link skips GitHub's login wall and the mobile app's link handling, but only
           # serves zipped artifacts
-          URL: https://nightly.link/${{ github.repository }}/actions/artifacts/${{ steps.upload-apk.outputs.artifact-id }}.zip
-        run: |
-          marker='<!-- debug-apk -->'
-          body="$marker"$'\n'"[CI APK]($URL) for ${SHA::7}"
-          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
-            --jq "[.[] | select(.body | startswith(\"$marker\"))][0].id // empty" | head -n 1)
-          if [[ -n "$id" ]]; then
-            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -f body="$body"
-          else
-            gh pr comment "$PR" --body "$body"
-          fi
+          body: ':package: [CI APK](https://nightly.link/${{ github.repository }}/actions/artifacts/${{ steps.upload-apk.outputs.artifact-id }}.zip) for ${{ github.event.pull_request.head.sha }}'
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: assemble-android
+          title: Android build
+          status: ${{ job.status }}
 
   assemble-desktop:
     needs: [ changed-files, validation ]
     if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        # Keeps a failing step's output for the PR comment
+        shell: bash .github/actions/pr-comment/run-step.sh {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -231,12 +267,21 @@ jobs:
       - run: ./gradlew :aktual-app:desktop:assemble
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: assemble-desktop
+          title: Desktop build
+          status: ${{ job.status }}
 
   detekt:
     needs: [ changed-files, validation ]
     if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        # Keeps a failing step's output for the PR comment
+        shell: bash .github/actions/pr-comment/run-step.sh {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -249,12 +294,21 @@ jobs:
       - run: ./scripts/detekt.sh origin/main
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: detekt
+          title: Detekt
+          status: ${{ job.status }}
 
   lint:
     needs: [ changed-files, validation ]
     if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        # Keeps a failing step's output for the PR comment
+        shell: bash .github/actions/pr-comment/run-step.sh {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -267,12 +321,21 @@ jobs:
       - run: ./scripts/lint.sh origin/main
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: lint
+          title: Lint
+          status: ${{ job.status }}
 
   tests:
     needs: [ changed-files, validation ]
     if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        # Keeps a failing step's output for the PR comment
+        shell: bash .github/actions/pr-comment/run-step.sh {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -285,12 +348,21 @@ jobs:
       - run: ./scripts/test.sh origin/main
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: tests
+          title: Tests
+          status: ${{ job.status }}
 
   other-checks:
     needs: [ changed-files, validation ]
     if: ${{ !cancelled() && needs.validation.result == 'success' && needs.changed-files.outputs.gradle == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    defaults:
+      run:
+        # Keeps a failing step's output for the PR comment
+        shell: bash .github/actions/pr-comment/run-step.sh {0}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -316,10 +388,16 @@ jobs:
       - run: ./scripts/unusedStrings.sh
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: other-checks
+          title: Other checks
+          status: ${{ job.status }}
 
   finish:
     if: ${{ !cancelled() }}
     needs:
+      - changed-files
       - validation
       - assemble-android
       - assemble-desktop
@@ -333,15 +411,30 @@ jobs:
     outputs:
       result: ${{ steps.check.outputs.result }}
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: ${{ needs.changed-files.outputs.comment-id }}
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/actions
       - id: check
+        env:
+          SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
             echo "result=failure" >> "$GITHUB_OUTPUT"
+            echo "body=:x: Checks failed on $SHA" >> "$GITHUB_OUTPUT"
             echo "One or more jobs failed or were cancelled"
             exit 1
           else
             echo "result=success" >> "$GITHUB_OUTPUT"
+            echo "body=:white_check_mark: Checks passed on $SHA" >> "$GITHUB_OUTPUT"
           fi
+      - uses: ./.github/actions/pr-comment
+        if: ${{ !cancelled() && needs.changed-files.outputs.comment-id }}
+        with:
+          comment-id: ${{ needs.changed-files.outputs.comment-id }}
+          section: status
+          body: ${{ steps.check.outputs.body }}
 
   claude-review:
     needs: validation

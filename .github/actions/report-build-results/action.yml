@@ -1,5 +1,19 @@
 name: Report Build Results
-description: Publish build report annotations
+description: Publish build report annotations, and update the PR comment when given one
+
+inputs:
+  comment-id:
+    description: ID of the PR comment to update. Skipped when empty
+    default: ''
+  section:
+    description: Section key in the PR comment
+    default: ''
+  title:
+    description: Heading for the failure section in the PR comment
+    default: ''
+  status:
+    description: The job status
+    default: ''
 
 runs:
   using: composite
@@ -10,3 +24,10 @@ runs:
       with:
         filterPassedTests: true
         invalidFileAction: report
+    - uses: ./.github/actions/pr-comment
+      if: ${{ !cancelled() && inputs.comment-id != '' }}
+      with:
+        comment-id: ${{ inputs.comment-id }}
+        section: ${{ inputs.section }}
+        title: ${{ inputs.title }}
+        status: ${{ inputs.status }}
