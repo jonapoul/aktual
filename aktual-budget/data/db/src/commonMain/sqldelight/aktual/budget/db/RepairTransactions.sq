@@ -1,0 +1,79 @@
+-- The queries of packages/loot-core/src/server/tools/app.ts fixSplitTransactions(). Upstream reads
+-- v_transactions_internal, whose computed columns SQLDelight can't type, so these inline its
+-- filters: a row is in that view when it has a date and an account, and is either not a child or
+-- has a parent_id
+
+-- Split children with no payee whose parent has one
+blankPayees:
+SELECT t.id, pp.targetId AS parentPayee
+FROM transactions t
+LEFT JOIN payee_mapping tp ON tp.id = t.description
+JOIN transactions p ON p.id = t.parent_id
+JOIN payee_mapping pp ON pp.id = p.description
+WHERE
+  t.isChild = 1 AND t.parent_id IS NOT NULL AND t.date IS NOT NULL AND t.acct IS NOT NULL AND
+  tp.targetId IS NULL AND
+  p.date IS NOT NULL AND p.acct IS NOT NULL AND (p.isChild = 0 OR p.parent_id IS NOT NULL) AND
+  pp.targetId IS NOT NULL;
+
+-- Split children whose cleared flag differs from their parent's
+mismatchedCleared:
+SELECT t.id, p.cleared
+FROM transactions t
+JOIN transactions p ON p.id = t.parent_id
+WHERE
+  t.isChild = 1 AND t.parent_id IS NOT NULL AND t.date IS NOT NULL AND t.acct IS NOT NULL AND
+  p.date IS NOT NULL AND p.acct IS NOT NULL AND (p.isChild = 0 OR p.parent_id IS NOT NULL) AND
+  t.cleared != p.cleared;
+
+-- Live split children whose parent is deleted or missing
+orphanedChildren:
+SELECT t.id
+FROM transactions t
+LEFT JOIN transactions p ON
+  p.id = t.parent_id AND
+  p.date IS NOT NULL AND p.acct IS NOT NULL AND (p.isChild = 0 OR p.parent_id IS NOT NULL)
+WHERE
+  t.isChild = 1 AND t.parent_id IS NOT NULL AND t.date IS NOT NULL AND t.acct IS NOT NULL AND
+  t.tombstone = 0 AND (p.tombstone = 1 OR p.id IS NULL);
+
+-- Live split parents whose live parts don't add up to their amount
+mismatchedSplits:
+SELECT p.id, p.date
+FROM transactions p
+WHERE
+  p.isParent = 1 AND IFNULL(p.tombstone, 0) = 0 AND p.date IS NOT NULL AND p.acct IS NOT NULL AND
+  (p.isChild = 0 OR p.parent_id IS NOT NULL) AND
+  IFNULL(p.amount, 0) != (
+    SELECT IFNULL(SUM(IFNULL(c.amount, 0)), 0)
+    FROM transactions c
+    WHERE
+      c.parent_id = p.id AND c.isChild = 1 AND IFNULL(c.tombstone, 0) = 0 AND
+      c.date IS NOT NULL AND c.acct IS NOT NULL
+  )
+ORDER BY p.date, p.id;
+
+-- Transfers between two on-budget or two off-budget accounts that have a category
+categorisedTransfers:
+SELECT t1.id
+FROM transactions t1
+LEFT JOIN category_mapping cm ON cm.id = t1.category
+JOIN accounts a1 ON a1.id = t1.acct
+JOIN transactions t2 ON t2.id = t1.transferred_id
+JOIN accounts a2 ON a2.id = t2.acct
+WHERE
+  t1.date IS NOT NULL AND (t1.isChild = 0 OR t1.parent_id IS NOT NULL) AND
+  t2.date IS NOT NULL AND (t2.isChild = 0 OR t2.parent_id IS NOT NULL) AND
+  a1.offbudget = a2.offbudget AND
+  t1.isParent != 1 AND cm.transferId IS NOT NULL;
+
+-- Transactions that aren't split parents but have an error
+nonParentErrors:
+SELECT id
+FROM transactions
+WHERE
+  date IS NOT NULL AND acct IS NOT NULL AND (isChild = 0 OR parent_id IS NOT NULL) AND
+  error IS NOT NULL AND isParent = 0;
+
+categorisedParents:
+SELECT id FROM transactions WHERE isParent = 1 AND category IS NOT NULL;
