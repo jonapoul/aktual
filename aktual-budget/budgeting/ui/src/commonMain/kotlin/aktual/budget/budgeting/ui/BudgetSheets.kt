@@ -12,6 +12,11 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toInputText
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Trash
+import aktual.core.icons.ViewHide
+import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
 import aktual.core.model.unaryPlus
 import aktual.core.ui.AktualAlertDialog
@@ -37,6 +42,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -46,6 +53,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
+import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -315,6 +325,8 @@ internal data class MenuItem(
   val onClick: () -> Unit,
   val trailing: String? = null,
   val opensSheet: Boolean = false,
+  val icon: ImageVector? = null,
+  val isDestructive: Boolean = false,
 )
 
 // packages/desktop-client/src/components/budget/envelope/BalanceMenu.tsx and
@@ -377,15 +389,19 @@ internal fun groupActions(
 ): ImmutableList<MenuItem> = buildList {
   +MenuItem(
     label = Strings.budgetingGroupRename,
+    icon = AktualIcons.Pencil1,
     onClick = { onAction(RenameGroup(group.id, group.name)) },
   )
   if (!isIncome) {
     +MenuItem(
       label = if (group.isHidden) Strings.budgetingGroupUnhide else Strings.budgetingGroupHide,
+      icon = if (group.isHidden) AktualIcons.ViewShow else AktualIcons.ViewHide,
       onClick = { onAction(SetGroupHidden(group.id, !group.isHidden)) },
     )
     +MenuItem(
       label = Strings.budgetingGroupDelete,
+      icon = AktualIcons.Trash,
+      isDestructive = true,
       onClick = { onAction(DeleteGroup(group.id, group.name)) },
     )
   }
@@ -407,9 +423,21 @@ private fun MenuSheet(
     )
     Column(modifier = Modifier.verticalScrollWithBar()) {
       for (item in items) {
+        val color = if (item.isDestructive) colors.errorText else Unspecified
         BottomSheetListItem(
           label = item.label,
+          labelColor = color,
           onClick = { if (item.opensSheet) item.onClick() else dismiss(item.onClick) },
+          leadingContent =
+            item.icon?.let { icon ->
+              {
+                Icon(
+                  imageVector = icon,
+                  contentDescription = null,
+                  tint = color.takeOrElse { LocalContentColor.current },
+                )
+              }
+            },
           trailingContent = item.trailing?.let { trailing -> { AmountLabel(trailing) } },
         )
       }
