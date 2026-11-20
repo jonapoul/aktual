@@ -300,7 +300,7 @@ internal constructor(
 
   private suspend fun configuredProviders(): ImmutableList<AccountSyncSource> {
     if (server !is Remote) return persistentListOf()
-    val enableBanking = flags[EnableBanking].get()
+    val enableBanking = EnableBanking in flags
     val configured = coroutineScope {
       PROVIDERS.filter { !server.isApiKeySession || it.supportsApiKeys }
         .filter { enableBanking || it != EnableBanking }

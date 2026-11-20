@@ -7,4 +7,6 @@ import androidx.compose.runtime.Stable
 @Stable
 interface BudgetFeatureFlags {
   operator fun get(flag: FeatureFlag): Preference<Boolean>
+
+  suspend operator fun contains(flag: FeatureFlag): Boolean
 }

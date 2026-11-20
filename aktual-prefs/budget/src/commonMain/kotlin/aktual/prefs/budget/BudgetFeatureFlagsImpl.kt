@@ -19,4 +19,6 @@ class BudgetFeatureFlagsImpl internal constructor(dao: PreferencesDao, budgetSyn
     }
 
   override fun get(flag: FeatureFlag): Preference<Boolean> = prefs.getValue(flag)
+
+  override suspend fun contains(flag: FeatureFlag): Boolean = get(flag).get()
 }
