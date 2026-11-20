@@ -21,11 +21,12 @@ internal constructor(
   override fun activeColors(isSystemInDarkTheme: Boolean): Flow<Colors> =
     combine(
         preferences.useSystemDefault.asFlow(),
+        preferences.dayTheme.asFlow(),
         preferences.nightTheme.asFlow(),
         preferences.constantTheme.asFlow(),
-      ) { useSystemDefault, nightThemeId, customThemeId ->
+      ) { useSystemDefault, dayThemeId, nightThemeId, customThemeId ->
         if (useSystemDefault) {
-          if (isSystemInDarkTheme) nightThemeId else LightColors.id
+          if (isSystemInDarkTheme) nightThemeId else dayThemeId
         } else {
           customThemeId ?: DarkColors.id
         }

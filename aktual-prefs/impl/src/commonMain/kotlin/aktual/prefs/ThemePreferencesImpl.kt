@@ -2,6 +2,7 @@ package aktual.prefs
 
 import aktual.core.model.ThemeId
 import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -13,6 +14,15 @@ import dev.zacsweers.metro.ContributesBinding
 class ThemePreferencesImpl(dataStore: DataStore<Preferences>) : ThemePreferences {
   override val useSystemDefault: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("theme.systemDefault"), default = true).required()
+
+  override val dayTheme: Preference<ThemeId> =
+    dataStore
+      .translated(
+        key = stringPreferencesKey("theme.dayTheme"),
+        default = LightColors.id,
+        translator = ThemeIdTranslator,
+      )
+      .required()
 
   override val nightTheme: Preference<ThemeId> =
     dataStore
