@@ -24,6 +24,7 @@ MAX_ITEMS = 15
 MAX_BODY = 60000
 MAX_LOG_LINES = 20
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
+DETEKT_ISSUE = re.compile(r"^file://(\S+):(\d+):\d+ \[(\w+)\] (.*)$")
 KOTLIN_ERROR = re.compile(r"^e: (?:file://)?(\S+?\.kts?):(\d+):\d+ (.*)$")
 
 REPO = os.environ["GITHUB_REPOSITORY"]
@@ -103,11 +104,6 @@ def parse_reports():
                 if problem is not None:
                     message = first_line(problem.get("message") or problem.text)
                     tests.append(f"`{case.get('classname')}.{case.get('name')}`: {message}")
-        elif root.tag == "checkstyle":
-            for file in root.iter("file"):
-                for error in file.iter("error"):
-                    rule = (error.get("source") or "").removeprefix("detekt.")
-                    checks.append(f"{file_link(file.get('name'), error.get('line'))} {escape(error.get('message'))} ({rule})")
         elif root.tag == "issues":
             for issue in root.iter("issue"):
                 if issue.get("severity") not in ("Error", "Fatal"):
@@ -118,7 +114,23 @@ def parse_reports():
                     file = os.path.join(path.split("/build/")[0], file)
                 line = location.get("line") if location is not None else None
                 checks.append(f"{file_link(file, line)} {escape(issue.get('message'))} ({issue.get('id')})")
+    checks += parse_detekt()
     return tests, checks
+
+
+def parse_detekt():
+    """Reads the merged issues written by DetektSummaryService"""
+    try:
+        with open(os.path.join(WORKSPACE, "build/reports/detekt/all-issues.txt")) as f:
+            lines = f.read().splitlines()
+    except OSError:
+        return []
+    issues = []
+    for line in lines:
+        if match := DETEKT_ISSUE.match(line):
+            file, number, rule, message = match.groups()
+            issues.append(f"{file_link(file, number)} {escape(message)} ({rule})")
+    return issues
 
 
 def parse_log():
