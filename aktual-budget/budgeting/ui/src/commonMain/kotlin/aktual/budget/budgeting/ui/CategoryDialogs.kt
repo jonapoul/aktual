@@ -12,6 +12,7 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualSlidingToggleButton
@@ -50,9 +51,18 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.drop
 
 @Composable
-internal fun CategoryEditDialog(dialog: CategoryDialog?, onAction: OnAction<CategoryEditAction>) {
+internal fun CategoryEditDialog(dialog: CategoryDialog, onAction: OnAction<CategoryEditAction>) {
+  AktualAlertDialog(onDismissRequest = { onAction(Dismiss) }) {
+    CategoryEditDialogContent(dialog, onAction)
+  }
+}
+
+@Composable
+private fun CategoryEditDialogContent(
+  dialog: CategoryDialog,
+  onAction: OnAction<CategoryEditAction>,
+) {
   when (dialog) {
-    null -> Unit
     is Add -> AddDialog(dialog, onAction)
     is Rename -> RenameDialog(dialog, onAction)
     is Delete -> DeleteDialog(dialog, onAction)
@@ -80,13 +90,12 @@ private fun AddDialog(dialog: CategoryDialog.Add, onAction: OnAction<CategoryEdi
     }
   }
 
-  AktualAlertDialog(
+  AktualAlertDialogContent(
     title =
       when (kind) {
         NewCategory -> Strings.budgetingAddCategory
         NewGroup -> Strings.budgetingAddGroup
       },
-    onDismissRequest = { onAction(Dismiss) },
     buttons = {
       DialogTextButton(
         text = Strings.budgetingEditCancel,
@@ -172,9 +181,8 @@ private fun RenameDialog(dialog: CategoryDialog.Rename, onAction: OnAction<Categ
   val save = { onAction(CategoryEditAction.Rename(name.text.toString())) }
   val isCategory = dialog.target is Category
 
-  AktualAlertDialog(
+  AktualAlertDialogContent(
     title = if (isCategory) Strings.budgetingCategoryRename else Strings.budgetingGroupRename,
-    onDismissRequest = { onAction(Dismiss) },
     buttons = {
       DialogTextButton(
         text = Strings.budgetingEditCancel,
@@ -251,10 +259,9 @@ private fun DeleteDialog(dialog: CategoryDialog.Delete, onAction: OnAction<Categ
       }
   val isCategory = dialog.target is Category
 
-  AktualAlertDialog(
+  AktualAlertDialogContent(
     title = Strings.budgetingDeleteTitle(dialog.target.name),
     highlight = colors.errorText,
-    onDismissRequest = { onAction(Dismiss) },
     buttons = {
       DialogTextButton(
         text = Strings.budgetingEditCancel,
@@ -361,4 +368,4 @@ private class CategoryDialogProvider :
 @Composable
 private fun PreviewCategoryEditDialog(
   @PreviewParameter(CategoryDialogProvider::class) params: ColorParams<CategoryDialog>,
-) = PreviewWithColorParams(params) { CategoryEditDialog(dialog = this, onAction = {}) }
+) = PreviewWithColorParams(params) { CategoryEditDialogContent(dialog = this, onAction = {}) }

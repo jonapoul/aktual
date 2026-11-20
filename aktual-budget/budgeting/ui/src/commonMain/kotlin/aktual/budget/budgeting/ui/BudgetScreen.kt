@@ -163,7 +163,7 @@ internal fun BudgetScreen(
   )
 
   val dialog by editor.dialog.collectAsStateWithLifecycle()
-  CategoryEditDialog(dialog = dialog, onAction = editor::onAction)
+  dialog?.let { CategoryEditDialog(dialog = it, onAction = editor::onAction) }
 }
 
 private fun CategoryEditViewModel.edit(action: CategoryEdit) {

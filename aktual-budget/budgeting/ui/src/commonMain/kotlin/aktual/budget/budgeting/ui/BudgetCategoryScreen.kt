@@ -126,7 +126,7 @@ internal fun BudgetCategoryScreen(
   )
 
   val dialog by editor.dialog.collectAsStateWithLifecycle()
-  CategoryEditDialog(dialog = dialog, onAction = editor::onAction)
+  dialog?.let { CategoryEditDialog(dialog = it, onAction = editor::onAction) }
 }
 
 @Composable
