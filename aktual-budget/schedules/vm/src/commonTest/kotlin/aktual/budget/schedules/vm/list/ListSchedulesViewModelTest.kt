@@ -440,7 +440,7 @@ class ListSchedulesViewModelTest {
         scheduleDao = ScheduleDao(this),
         budgetSync = sync,
         budgetPrefs = TestBudgetLocalPreferences(),
-        uuidGenerator = UuidGenerator { error("unused") },
+        uuidGenerator = { error("unused") },
         calendar = TODAY,
         clock = TestClock(NOW),
       )

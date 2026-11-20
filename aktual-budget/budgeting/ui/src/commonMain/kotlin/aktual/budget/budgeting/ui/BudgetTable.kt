@@ -13,6 +13,8 @@ import aktual.core.icons.CheveronDown
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
@@ -34,6 +36,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +59,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -63,6 +69,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.isSecondaryPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
@@ -114,6 +122,7 @@ internal fun LazyListScope.budgetTable(
         group = group,
         value = if (showSpent) group.spent else group.budgeted,
         onAction = onAction,
+        onOpenMenu = { onAction(OpenSheet(SheetRequest.GroupSheet(budget.month, group.id))) },
       )
     }
 
@@ -144,6 +153,7 @@ internal fun LazyListScope.budgetTable(
       group = income,
       isTracking = isTracking,
       onAction = onAction,
+      onOpenMenu = { onAction(OpenSheet(SheetRequest.GroupSheet(budget.month, income.id))) },
     )
   }
 
@@ -438,9 +448,16 @@ private fun GroupHeader(
   group: GroupRow,
   value: Amount,
   onAction: OnAction<BudgetAction>,
+  onOpenMenu: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  GroupHeaderRow(group = group, onAction = onAction, modifier = modifier) {
+  GroupHeaderRow(
+    group = group,
+    isIncome = false,
+    onAction = onAction,
+    modifier = modifier,
+    onOpenMenu = onOpenMenu,
+  ) {
     AmountText(amount = value, modifier = Modifier.width(BudgetDS.valueWidth), bold = true)
     AmountText(
       amount = group.balance,
@@ -456,9 +473,16 @@ private fun IncomeGroupHeader(
   group: GroupRow,
   isTracking: Boolean,
   onAction: OnAction<BudgetAction>,
+  onOpenMenu: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  GroupHeaderRow(group = group, onAction = onAction, modifier = modifier) {
+  GroupHeaderRow(
+    group = group,
+    isIncome = true,
+    onAction = onAction,
+    modifier = modifier,
+    onOpenMenu = onOpenMenu,
+  ) {
     if (isTracking) {
       AmountText(
         amount = group.budgeted,
@@ -470,15 +494,20 @@ private fun IncomeGroupHeader(
   }
 }
 
-// Without a name width, the name takes the space the amounts leave
+// Without a name width, the name takes the space the amounts leave. A long press or right click
+// opens the group's menu, as a popup unless [onOpenMenu] shows it somewhere else
 @Composable
 internal fun GroupHeaderRow(
   group: GroupRow,
+  isIncome: Boolean,
   onAction: OnAction<BudgetAction>,
   modifier: Modifier = Modifier,
   nameWidth: Dp? = null,
+  onOpenMenu: (() -> Unit)? = null,
   amounts: @Composable RowScope.() -> Unit,
 ) {
+  var isMenuOpen by remember { mutableStateOf(false) }
+  val openMenu = onOpenMenu ?: { isMenuOpen = true }
   val label =
     if (group.isCollapsed) {
       Strings.budgetingGroupExpand(group.name)
@@ -490,40 +519,96 @@ internal fun GroupHeaderRow(
 
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider()
-    TableRow(
-      modifier =
-        Modifier.alpha(if (group.isHidden) HIDDEN_ALPHA else 1f).clickable(
-          onClickLabel = label,
-          role = Button,
-        ) {
-          onAction(ToggleGroup(group.id))
-        },
-      height = BudgetDS.headerHeight,
-    ) {
-      Row(
-        modifier = if (nameWidth == null) Modifier.weight(1f) else Modifier.width(nameWidth),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = CenterVertically,
-      ) {
-        Icon(
-          modifier = Modifier.size(16.dp).rotate(rotation),
-          imageVector = AktualIcons.CheveronDown,
-          contentDescription = null,
-          tint = colors.tableRowHeaderText,
-        )
-        Text(
-          text = group.name,
-          fontSize = textSizes.medium,
-          fontWeight = SemiBold,
-          color = colors.tableRowHeaderText,
-          maxLines = 1,
-          overflow = Ellipsis,
-        )
+    Box {
+      GroupHeaderContent(
+        group = group,
+        label = label,
+        rotation = rotation,
+        nameWidth = nameWidth,
+        onAction = onAction,
+        onOpenMenu = openMenu,
+        amounts = amounts,
+      )
+
+      if (onOpenMenu == null) {
+        AktualDropdownMenu(expanded = isMenuOpen, onDismissRequest = { isMenuOpen = false }) {
+          groupActions(group, isIncome, onAction).fastForEach { action ->
+            AktualDropdownMenuItem(
+              text = action.label,
+              leadingIcon = action.icon,
+              color = if (action.isDestructive) colors.errorText else colors.menuItemText,
+              onClick = {
+                isMenuOpen = false
+                action.onClick()
+              },
+            )
+          }
+        }
       }
-      amounts()
     }
   }
 }
+
+@Composable
+private fun GroupHeaderContent(
+  group: GroupRow,
+  label: String,
+  rotation: Float,
+  nameWidth: Dp?,
+  onAction: OnAction<BudgetAction>,
+  onOpenMenu: () -> Unit,
+  amounts: @Composable RowScope.() -> Unit,
+) {
+  TableRow(
+    modifier =
+      Modifier.alpha(if (group.isHidden) HIDDEN_ALPHA else 1f)
+        .onSecondaryPress(onOpenMenu)
+        .combinedClickable(
+          onClickLabel = label,
+          role = Button,
+          onLongClickLabel = Strings.budgetingGroupOptions(group.name),
+          onLongClick = onOpenMenu,
+        ) {
+          onAction(ToggleGroup(group.id))
+        },
+    height = BudgetDS.headerHeight,
+  ) {
+    Row(
+      modifier = if (nameWidth == null) Modifier.weight(1f) else Modifier.width(nameWidth),
+      horizontalArrangement = Arrangement.spacedBy(4.dp),
+      verticalAlignment = CenterVertically,
+    ) {
+      Icon(
+        modifier = Modifier.size(16.dp).rotate(rotation),
+        imageVector = AktualIcons.CheveronDown,
+        contentDescription = null,
+        tint = colors.tableRowHeaderText,
+      )
+      Text(
+        text = group.name,
+        fontSize = textSizes.medium,
+        fontWeight = SemiBold,
+        color = colors.tableRowHeaderText,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+    }
+    amounts()
+  }
+}
+
+private fun Modifier.onSecondaryPress(onPress: () -> Unit): Modifier =
+  pointerInput(onPress) {
+    awaitPointerEventScope {
+      while (true) {
+        val event = awaitPointerEvent()
+        if (event.type == Press && event.buttons.isSecondaryPressed) {
+          event.changes.forEach { it.consume() }
+          onPress()
+        }
+      }
+    }
+  }
 
 // Only the budgeted amount can be edited, so Spent isn't tappable
 @Composable

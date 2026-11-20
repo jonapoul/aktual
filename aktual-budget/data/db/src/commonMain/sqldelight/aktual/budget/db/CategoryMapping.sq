@@ -9,3 +9,6 @@ insert:
   INSERT OR REPLACE
     INTO category_mapping(id, transferId)
     VALUES (?, ?);
+
+-- The category itself and the deleted ones forwarded to it
+mappedTo: SELECT id FROM category_mapping WHERE transferId = ?;

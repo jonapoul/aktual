@@ -81,6 +81,21 @@ SELECT id, amount, carryover FROM zero_budgets WHERE month = :month AND category
 reflectBudgetRow:
 SELECT id, amount, carryover FROM reflect_budgets WHERE month = :month AND category = :category LIMIT 1;
 
+-- packages/loot-core/src/server/budget/base.ts doTransfer(), the rows a deleted category's
+-- budget moves out of
+zeroBudgetsOfCategory:
+SELECT id, month, amount FROM zero_budgets WHERE category = :category AND amount != 0;
+
+reflectBudgetsOfCategory:
+SELECT id, month, amount FROM reflect_budgets WHERE category = :category AND amount != 0;
+
+-- packages/loot-core/src/server/budget/app.ts isCategoryTransferRequired()
+transactionsOfCategories:
+SELECT COUNT(t.id) AS count
+FROM transactions t
+LEFT JOIN category_mapping cm ON cm.id = t.category
+WHERE cm.transferId IN :categories AND t.tombstone = 0;
+
 -- packages/loot-core/src/server/budget/actions.ts getBudgetData()
 zeroBudgetsInMonth:
 SELECT b.category, b.amount, c.is_income, c.hidden, g.hidden AS group_hidden

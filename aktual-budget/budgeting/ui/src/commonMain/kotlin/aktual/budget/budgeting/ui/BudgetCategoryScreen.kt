@@ -2,11 +2,15 @@ package aktual.budget.budgeting.ui
 
 import aktual.budget.budgeting.vm.BudgetCategoryState
 import aktual.budget.budgeting.vm.BudgetCategoryViewModel
+import aktual.budget.budgeting.vm.CategoryEditViewModel
 import aktual.budget.budgeting.vm.CategoryHistoryMonth
+import aktual.budget.budgeting.vm.CategoryTarget
 import aktual.budget.model.Amount
 import aktual.budget.model.CategoryId
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Pencil1
+import aktual.core.icons.Trash
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.l10n.Strings
@@ -24,6 +28,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -55,9 +60,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -77,6 +84,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlin.math.abs
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -92,17 +100,33 @@ internal fun BudgetCategoryScreen(
   transactions: TransactionsNavigator,
   modifier: Modifier = Modifier,
   viewModel: BudgetCategoryViewModel = budgetCategoryViewModel(category, month),
+  editor: CategoryEditViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val latestBack by rememberUpdatedState(back)
+  val snackbars = LocalSnackbars.current
+
+  // The snackbar host sits above the screens, so its undo stays up after a delete closes this one
+  LaunchedEffect(editor) {
+    editor.events.collect { event ->
+      snackbars.show(key = editor) { showUpdated(onUndo = { editor.undo(event.token) }) }
+      if (event is Deleted) latestBack()
+    }
+  }
 
   BudgetCategoryScaffold(
     modifier = modifier,
     state = state,
-    onBack = { back() },
+    onBack = back::invoke,
     onSelect = viewModel::select,
     onViewTransactions = { selected -> transactions(category, selected) },
     onHide = viewModel::setHidden,
+    onRename = { name -> editor.startRename(CategoryTarget.Category(category, name)) },
+    onDelete = { name -> editor.startDelete(CategoryTarget.Category(category, name)) },
   )
+
+  val dialog by editor.dialog.collectAsStateWithLifecycle()
+  dialog?.let { CategoryEditDialog(dialog = it, onAction = editor::onAction) }
 }
 
 @Composable
@@ -120,6 +144,8 @@ internal fun BudgetCategoryScaffold(
   onSelect: (YearMonth) -> Unit,
   onViewTransactions: (YearMonth) -> Unit,
   onHide: (hide: Boolean) -> Unit,
+  onRename: (name: String) -> Unit,
+  onDelete: (name: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val hazeState = rememberHazedTopBarState()
@@ -158,10 +184,16 @@ internal fun BudgetCategoryScaffold(
           }
         },
         actions = {
-          // A category in a hidden group follows its group, as upstream
           val loaded = state as? Loaded
-          if (loaded != null && !loaded.isGroupHidden) {
-            CategoryMenu(isHidden = loaded.isHidden, onHide = onHide)
+          if (loaded != null) {
+            CategoryMenu(
+              isHidden = loaded.isHidden,
+              // A category in a hidden group follows its group, as upstream
+              canHide = !loaded.isGroupHidden,
+              onHide = onHide,
+              onRename = { onRename(loaded.name) },
+              onDelete = { onDelete(loaded.name) },
+            )
           }
         },
       )
@@ -211,7 +243,13 @@ internal fun BudgetCategoryScaffold(
 }
 
 @Composable
-private fun CategoryMenu(isHidden: Boolean, onHide: (hide: Boolean) -> Unit) {
+private fun CategoryMenu(
+  isHidden: Boolean,
+  canHide: Boolean,
+  onHide: (hide: Boolean) -> Unit,
+  onRename: () -> Unit,
+  onDelete: () -> Unit,
+) {
   var expanded by remember { mutableStateOf(false) }
   Box {
     AktualIconButton(
@@ -222,11 +260,30 @@ private fun CategoryMenu(isHidden: Boolean, onHide: (hide: Boolean) -> Unit) {
     )
     AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       AktualDropdownMenuItem(
-        text = if (isHidden) Strings.budgetingCategoryUnhide else Strings.budgetingCategoryHide,
-        leadingIcon = if (isHidden) AktualIcons.ViewShow else AktualIcons.ViewHide,
+        text = Strings.budgetingCategoryRename,
+        leadingIcon = AktualIcons.Pencil1,
         onClick = {
           expanded = false
-          onHide(!isHidden)
+          onRename()
+        },
+      )
+      if (canHide) {
+        AktualDropdownMenuItem(
+          text = if (isHidden) Strings.budgetingCategoryUnhide else Strings.budgetingCategoryHide,
+          leadingIcon = if (isHidden) AktualIcons.ViewShow else AktualIcons.ViewHide,
+          onClick = {
+            expanded = false
+            onHide(!isHidden)
+          },
+        )
+      }
+      AktualDropdownMenuItem(
+        text = Strings.budgetingCategoryDelete,
+        leadingIcon = AktualIcons.Trash,
+        color = colors.errorText,
+        onClick = {
+          expanded = false
+          onDelete()
         },
       )
     }
@@ -490,5 +547,7 @@ private fun PreviewBudgetCategory(
       onSelect = {},
       onViewTransactions = {},
       onHide = {},
+      onRename = {},
+      onDelete = {},
     )
   }

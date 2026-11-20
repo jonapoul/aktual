@@ -3,6 +3,9 @@ package aktual.budget.budgeting.ui
 import aktual.budget.budgeting.vm.BudgetEvent.Updated
 import aktual.budget.budgeting.vm.BudgetState
 import aktual.budget.budgeting.vm.BudgetViewModel
+import aktual.budget.budgeting.vm.CategoryEditViewModel
+import aktual.budget.budgeting.vm.CategoryTarget
+import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.DotsHorizontalTriple
@@ -20,14 +23,17 @@ import aktual.core.nav.ReorderCategoriesNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.OnAction
@@ -36,14 +42,17 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SheetHost
 import aktual.core.ui.StuckHeaders
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.isCompactWidth
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.topBarHazeOffset
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -74,6 +83,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -89,6 +99,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.YearMonth
@@ -104,6 +115,7 @@ internal fun BudgetScreen(
   reorder: ReorderCategoriesNavigator,
   modifier: Modifier = Modifier,
   viewModel: BudgetViewModel = budgetViewModel(month),
+  editor: CategoryEditViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
@@ -115,6 +127,12 @@ internal fun BudgetScreen(
         is Updated ->
           snackbars.show(key = viewModel) { showUpdated(onUndo = { viewModel.undo(event.token) }) }
       }
+    }
+  }
+
+  LaunchedEffect(editor) {
+    editor.events.collect { event ->
+      snackbars.show(key = editor) { showUpdated(onUndo = { editor.undo(event.token) }) }
     }
   }
 
@@ -139,10 +157,58 @@ internal fun BudgetScreen(
         // The scaffold opens the sheet
         is OpenSheet -> Unit
         is BudgetWrite -> viewModel.write(action)
+        is CategoryEdit -> editor.edit(action)
       }
     },
   )
+
+  val dialog by editor.dialog.collectAsStateWithLifecycle()
+  dialog?.let { CategoryEditDialog(dialog = it, onAction = editor::onAction) }
 }
+
+private fun CategoryEditViewModel.edit(action: CategoryEdit) {
+  when (action) {
+    AddCategory -> startAdd()
+    is RenameGroup -> startRename(CategoryTarget.Group(action.id, action.name))
+    is SetGroupHidden -> setGroupHidden(action.id, action.hidden)
+    is DeleteGroup -> startDelete(CategoryTarget.Group(action.id, action.name))
+  }
+}
+
+@Composable
+private fun TopBarActions(
+  state: BudgetState,
+  isCompact: Boolean,
+  onAction: OnAction<BudgetAction>,
+) {
+  if (state is Loaded) {
+    if (!isCompact && state.maxMonthCount > 1) {
+      MonthCountSelector(count = state.monthCount, max = state.maxMonthCount, onAction = onAction)
+    }
+    BudgetMenu(state = state, withMonthActions = isCompact, onAction = onAction)
+  } else if (state == Loading) {
+    AktualIconButton(
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.budgetingMenu,
+      isEnabled = false,
+      onClick = {},
+    )
+  }
+}
+
+@Composable
+private fun AddFab(listState: LazyListState?, onClick: () -> Unit, modifier: Modifier = Modifier) =
+  AktualFab(
+    modifier =
+      modifier.padding(
+        end = Dimens.Huge,
+        bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
+      ),
+    text = Strings.budgetingAdd,
+    icon = AktualIcons.Add,
+    isExpanded = listState?.isScrollingUp() != false,
+    onClick = onClick,
+  )
 
 private fun BudgetViewModel.write(action: BudgetWrite) {
   when (action) {
@@ -244,25 +310,7 @@ private fun BudgetScaffold(
             Text(text = Strings.budgetingTitle, maxLines = 1, overflow = Ellipsis)
           }
         },
-        actions = {
-          if (state is Loaded) {
-            if (!isCompact && state.maxMonthCount > 1) {
-              MonthCountSelector(
-                count = state.monthCount,
-                max = state.maxMonthCount,
-                onAction = handler,
-              )
-            }
-            BudgetMenu(state = state, withMonthActions = isCompact, onAction = handler)
-          } else if (state == Loading) {
-            AktualIconButton(
-              imageVector = AktualIcons.DotsHorizontalTriple,
-              contentDescription = Strings.budgetingMenu,
-              isEnabled = false,
-              onClick = {},
-            )
-          }
-        },
+        actions = { TopBarActions(state, isCompact, handler) },
       )
     },
   ) { innerPadding ->
@@ -280,6 +328,14 @@ private fun BudgetScaffold(
           listState = listState,
           pageListStates = pageListStates,
           onAction = handler,
+        )
+      }
+
+      if (state is Loaded) {
+        AddFab(
+          modifier = Modifier.align(BottomEnd),
+          listState = if (isCompact) pageListStates[visibleMonth] else listState,
+          onClick = { handler(AddCategory) },
         )
       }
     }
@@ -490,7 +546,11 @@ private fun BudgetPager(
         contentPadding = BudgetDS.listPadding(top = topPadding),
       ) {
         budgetTable(budget, state.type, state.showSpent, stuck, onAction)
-        item(key = "bottom") { BottomSpacing() }
+        item(key = "bottom") {
+          // Room to scroll the last row out from under the add button
+          VerticalSpacer(FabClearance)
+          BottomSpacing()
+        }
       }
     }
   }
@@ -559,7 +619,7 @@ private fun BudgetMenu(
   }
 }
 
-private suspend fun SnackbarHostState.showUpdated(onUndo: () -> Unit) {
+internal suspend fun SnackbarHostState.showUpdated(onUndo: () -> Unit) {
   val result =
     showSnackbar(
       message = getString(Res.string.budgeting_updated),

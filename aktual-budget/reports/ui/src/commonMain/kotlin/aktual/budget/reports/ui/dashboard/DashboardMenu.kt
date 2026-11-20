@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -164,10 +163,10 @@ private fun DashboardMenuItems(
   }
 
   if (hasPage && canDelete) {
-    val deleteText = Strings.reportsDashboardDeletePage
     AktualDropdownMenuItem(
-      text = { Text(deleteText, color = colors.errorText) },
-      leadingIcon = { Icon(AktualIcons.Trash, deleteText, tint = colors.errorText) },
+      text = Strings.reportsDashboardDeletePage,
+      leadingIcon = AktualIcons.Trash,
+      color = colors.errorText,
       onClick = { onClick(Delete) },
     )
   }

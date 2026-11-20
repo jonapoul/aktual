@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -62,8 +63,9 @@ fun AktualDropdownMenuItem(
   enabled: Boolean = true,
   contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
   interactionSource: MutableInteractionSource? = remember { MutableInteractionSource() },
+  color: Color = colors.menuItemText,
 ) {
-  val colors = colors.dropDownMenuItem()
+  val colors = colors.dropDownMenuItem(color)
   val textColor = if (enabled) colors.textColor else colors.disabledTextColor
   DropdownMenuItem(
     text = {
@@ -92,6 +94,8 @@ fun AktualDropdownMenuItem(
   enabled: Boolean = true,
   contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
   interactionSource: MutableInteractionSource? = remember { MutableInteractionSource() },
+  // Tints the text and icons, e.g. colors.errorText for a destructive item
+  color: Color = colors.menuItemText,
 ) {
   AktualDropdownMenuItem(
     text = { Text(text) },
@@ -102,5 +106,6 @@ fun AktualDropdownMenuItem(
     enabled = enabled,
     contentPadding = contentPadding,
     interactionSource = interactionSource,
+    color = color,
   )
 }

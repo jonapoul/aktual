@@ -13,7 +13,6 @@ import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
 import aktual.core.utils.Calendar
-import aktual.core.utils.UuidGenerator
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -207,7 +206,7 @@ class EditScheduleViewModelTest {
           scheduleDao = ScheduleDao(this),
           budgetSync = TestBudgetSync(),
           budgetPrefs = TestBudgetLocalPreferences(),
-          uuidGenerator = UuidGenerator { "id-${nextId++}" },
+          uuidGenerator = { "id-${nextId++}" },
           calendar = TODAY,
           clock = TestClock(NOW),
         ),
