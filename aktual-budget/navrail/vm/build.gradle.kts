@@ -13,4 +13,8 @@ kotlin {
     implementation(project(":aktual-budget:utils"))
     implementation(project(":aktual-core:logging"))
   }
+
+  commonTestDependencies {
+    implementation(project(":aktual-prefs:impl"))
+  }
 }

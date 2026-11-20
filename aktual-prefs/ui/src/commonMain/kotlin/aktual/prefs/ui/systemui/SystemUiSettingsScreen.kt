@@ -1,10 +1,12 @@
 package aktual.prefs.ui.systemui
 
+import aktual.budget.model.BudgetTab
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
+import aktual.core.icons.material.Home
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -17,10 +19,12 @@ import aktual.core.ui.LocalHazeConfig
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BooleanPreferenceItem
+import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.ui.bars.label
 import aktual.prefs.ui.root.SubSettingsItem
 import aktual.prefs.vm.BooleanPreference
+import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.systemui.SystemUiSettingsState
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import androidx.compose.runtime.Composable
@@ -62,6 +66,16 @@ private fun SystemUiSettingsScaffold(
     onBack = onBack,
   ) {
     item {
+      ListPreferenceItem(
+        preference = state.startTab,
+        optionString = { it.label() },
+        optionSuffix = null,
+        title = Strings.settingsUiStartTab,
+        subtitle = Strings.settingsUiStartTabDesc,
+        icon = MaterialIcons.Home,
+      )
+    }
+    item {
       BooleanPreferenceItem(
         preference = state.showStatusBar,
         title = Strings.settingsUiShowStatus,
@@ -93,6 +107,20 @@ private fun SystemUiSettingsScaffold(
   }
 }
 
+@Composable
+private fun BudgetTab.label(): String =
+  when (this) {
+    BudgetTab.Home -> Strings.homeTitle
+    Budget -> Strings.budgetingTitle
+    Transactions -> Strings.transactionsTitle
+    Reports -> Strings.reportsTitle
+    Schedules -> Strings.listSchedulesTitle
+    Rules -> Strings.rulesTitle
+    Tags -> Strings.tagsTitle
+    Payees -> Strings.payeesTitle
+    BankSync -> Strings.bankSyncTitle
+  }
+
 @PortraitPreview
 @Composable
 private fun PreviewSystemUiSettingsScaffold(
@@ -103,6 +131,10 @@ private fun PreviewSystemUiSettingsScaffold(
       onBack = {},
       onOpenBars = {},
       onOpenDialogs = {},
-      state = SystemUiSettingsState(showStatusBar = BooleanPreference(true)),
+      state =
+        SystemUiSettingsState(
+          showStatusBar = BooleanPreference(true),
+          startTab = ListPreference(BudgetTab.Home),
+        ),
     )
   }

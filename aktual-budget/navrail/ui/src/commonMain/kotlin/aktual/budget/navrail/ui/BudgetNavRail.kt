@@ -1,5 +1,6 @@
 package aktual.budget.navrail.ui
 
+import aktual.budget.model.BudgetTab
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
@@ -28,7 +29,6 @@ import aktual.core.nav.BudgetEntryScope
 import aktual.core.nav.BudgetNavEntryContributor
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetNavRoute
-import aktual.core.nav.BudgetTab
 import aktual.core.nav.HomeNavRoute
 import aktual.core.nav.ListPayeesNavRoute
 import aktual.core.nav.ListRulesNavRoute
@@ -143,11 +143,13 @@ internal fun BudgetNavRail(
   val accounts by viewModel.accounts.collectAsState()
   val hasUnpostedSchedules by viewModel.hasUnpostedSchedules.collectAsState()
   val nightlyUpdate by nightlyViewModel.state.collectAsState()
+  // Wait for the stored start tab, so the rail doesn't open on the default first
+  val startTab = viewModel.startTab.collectAsState().value ?: return
 
   val tabStacks = rememberTabStacks()
   val transactionsStack = tabStacks.getValue(Transactions)
 
-  var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(Home) }
+  var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(startTab) }
   var dialog by rememberSaveable { mutableStateOf<NavRailDialog?>(null) }
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
@@ -202,7 +204,7 @@ internal fun BudgetNavRail(
   }
 
   // NavDisplay only handles back when the stack has more than one entry
-  BackHandler(enabled = selectedTab != Home && activeStack.size == 1) { selectedTab = Home }
+  BackHandler(enabled = selectedTab != startTab && activeStack.size == 1) { selectedTab = startTab }
 
   if (isCompactWidth()) {
     DrawerNavLayout(

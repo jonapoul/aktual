@@ -22,11 +22,15 @@ import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.prefs.SystemUiPreferences
+import aktual.prefs.SystemUiPreferencesImpl
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestBudgetSync
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import aktual.test.viewModelContext
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
@@ -40,6 +44,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
@@ -351,9 +356,26 @@ class BudgetNavRailViewModelTest {
     }
   }
 
+  @Test
+  fun `Start tab follows the stored preference`() = runDatabaseTest { scope ->
+    val systemUiPreferences =
+      SystemUiPreferencesImpl(scope.buildPreferences(scope.unconfinedDispatcher))
+    systemUiPreferences.startTab.set(Schedules)
+    val viewModel = viewModel(None, scope, systemUiPreferences)
+
+    viewModel.startTab.filterNotNull().test {
+      assertThatNextEmissionIsEqualTo(Schedules)
+
+      systemUiPreferences.startTab.set(Budget)
+      assertThatNextEmissionIsEqualTo(Budget)
+    }
+  }
+
   private fun BudgetDatabase.viewModel(
     server: BudgetServer,
     scope: TestScope,
+    systemUiPreferences: SystemUiPreferences =
+      SystemUiPreferencesImpl(scope.buildPreferences(scope.unconfinedDispatcher)),
   ) =
     BudgetNavRailViewModel(
       contributors = emptySet(),
@@ -367,6 +389,7 @@ class BudgetNavRailViewModelTest {
       syncStateHolder = syncStateHolder,
       formatPreferences = formatPreferences,
       unpostedSchedules = unpostedSchedules,
+      systemUiPreferences = systemUiPreferences,
       viewModelContext = scope.viewModelContext,
     )
 

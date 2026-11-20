@@ -6,6 +6,7 @@ import aktual.test.viewModelContext
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import kotlin.test.Test
@@ -24,6 +25,23 @@ class SystemUiSettingsViewModelTest {
       assertThat(awaitItem().showStatusBar.value).isFalse()
 
       expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Start tab preference changes`() = runTest {
+    val preferences = SystemUiPreferencesImpl(buildPreferences(unconfinedDispatcher))
+    val viewModel = SystemUiSettingsViewModel(preferences, viewModelContext = viewModelContext)
+
+    viewModel.state.test {
+      val initial = awaitItem().startTab
+      assertThat(initial.value).isEqualTo(Home)
+
+      initial.onChange(Reports)
+      assertThat(awaitItem().startTab.value).isEqualTo(Reports)
+      assertThat(preferences.startTab.get()).isEqualTo(Reports)
+
       cancelAndIgnoreRemainingEvents()
     }
   }

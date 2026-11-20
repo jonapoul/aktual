@@ -16,6 +16,13 @@ inline fun <reified E : Enum<E>> enumOrdinalTranslator() =
     override fun decode(value: Int): E? = enumValues<E>().getOrNull(value)
   }
 
+internal inline fun <reified E : Enum<E>> enumNameTranslator() =
+  object : Translator<String, E> {
+    override fun encode(value: E): String = value.name
+
+    override fun decode(value: String): E? = enumValues<E>().firstOrNull { it.name == value }
+  }
+
 internal inline fun <reified E> enumStringTranslator() where E : Enum<E>, E : SerializableByString =
   object : Translator<String, E> {
     override fun encode(value: E): String = value.value

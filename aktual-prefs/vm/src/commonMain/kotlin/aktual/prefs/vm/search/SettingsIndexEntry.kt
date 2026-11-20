@@ -63,6 +63,7 @@ import aktual.core.l10n.settings_ui_glass_corner_radius
 import aktual.core.l10n.settings_ui_glass_style
 import aktual.core.l10n.settings_ui_group
 import aktual.core.l10n.settings_ui_show_status
+import aktual.core.l10n.settings_ui_start_tab
 import aktual.core.l10n.settings_updates
 import aktual.core.l10n.settings_updates_nightly
 import aktual.core.l10n.transactions_view_alternate_rows
@@ -99,6 +100,7 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
     SettingsPage.SystemUi to
       entry(
         Res.string.settings_ui_group,
+        entry(Res.string.settings_ui_start_tab),
         entry(Res.string.settings_ui_show_status),
         entry(Res.string.settings_ui_bars_title),
         entry(Res.string.settings_ui_dialogs_title),

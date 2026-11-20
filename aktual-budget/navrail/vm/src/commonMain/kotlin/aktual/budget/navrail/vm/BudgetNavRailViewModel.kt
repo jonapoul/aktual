@@ -4,6 +4,7 @@ import aktual.api.client.BudgetSyncApi
 import aktual.budget.banksync.domain.NewTransactions
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.AccountGroupDao
+import aktual.budget.model.BudgetTab
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
@@ -21,6 +22,7 @@ import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
 import aktual.prefs.BudgetFormatPreferences
+import aktual.prefs.SystemUiPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -58,6 +60,7 @@ internal constructor(
   syncStateHolder: SyncStateHolder,
   private val formatPreferences: BudgetFormatPreferences,
   private val unpostedSchedules: UnpostedSchedules,
+  systemUiPreferences: SystemUiPreferences,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   val budgetNavEntryContributors: ImmutableSet<BudgetNavEntryContributor> =
@@ -78,6 +81,10 @@ internal constructor(
         syncStatus = syncStatus(remote != null, syncState),
       )
     }
+
+  // Null until the stored value loads
+  val startTab: StateFlow<BudgetTab?> =
+    systemUiPreferences.startTab.asFlow().stateIn(viewModelScope, Eagerly, initialValue = null)
 
   private val search = MutableStateFlow<String?>(null)
 

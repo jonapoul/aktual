@@ -2,12 +2,14 @@ package aktual.prefs
 
 import aktual.budget.model.BarEffect
 import aktual.budget.model.BarGlassStyle
+import aktual.budget.model.BudgetTab
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.ContributesBinding
 
 @ContributesBinding(AppScope::class)
@@ -50,4 +52,13 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
 
   override val glassCornerRadius: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("glassCornerRadius"), default = 24f).required()
+
+  override val startTab: Preference<BudgetTab> =
+    dataStore
+      .translated(
+        key = stringPreferencesKey("startTab"),
+        default = BudgetTab.Home,
+        translator = enumNameTranslator(),
+      )
+      .required()
 }

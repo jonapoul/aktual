@@ -1,5 +1,6 @@
 package aktual.core.nav
 
+import aktual.budget.model.BudgetTab
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.EntryProviderScope
 

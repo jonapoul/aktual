@@ -2,6 +2,7 @@ package aktual.prefs
 
 import aktual.budget.model.BarEffect
 import aktual.budget.model.BarGlassStyle
+import aktual.budget.model.BudgetTab
 
 interface SystemUiPreferences {
   val showBottomBar: Preference<Boolean>
@@ -13,4 +14,5 @@ interface SystemUiPreferences {
   val dialogBlurAlpha: Preference<Float>
   val glassStyle: Preference<BarGlassStyle>
   val glassCornerRadius: Preference<Float>
+  val startTab: Preference<BudgetTab>
 }
