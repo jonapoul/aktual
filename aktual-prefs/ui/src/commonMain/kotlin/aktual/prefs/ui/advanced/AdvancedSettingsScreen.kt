@@ -118,7 +118,9 @@ private fun IdItem(title: String, subtitle: String, id: String?, onCopy: (String
     title = title,
     subtitle = subtitle,
     icon = null,
+    modifier = Modifier.padding(vertical = 2.dp),
     onClick = id?.let { { onCopy(it) } },
+    backgroundColor = id?.let { colors.tableRowBackgroundHover },
     bottomContent = {
       if (id != null) {
         Text(
