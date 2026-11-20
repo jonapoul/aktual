@@ -84,7 +84,7 @@ private fun AmountSettingsScaffold(
           },
       )
     }
-    item { CurrencyGroup(state) }
+    if (state.currency.visible) item { CurrencyGroup(state) }
   }
 }
 

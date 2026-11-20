@@ -3,9 +3,11 @@ package aktual.prefs.vm.amounts
 import aktual.budget.model.Currency
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.FakeBudgetFormatPreferences
 import aktual.prefs.vm.ListPreference
+import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.viewModelContext
 import app.cash.turbine.test
@@ -82,6 +84,33 @@ class AmountSettingsViewModelTest {
   }
 
   @Test
+  fun `Currency settings are hidden while the flag is off`() = runTest {
+    val flags = FakeBudgetFeatureFlags()
+    val viewModel = viewModel(flags = flags)
+
+    viewModel.state.test {
+      assertThat(awaitItem()).all {
+        prop(AmountSettingsState::currency).prop(ListPreference<*>::visible).isFalse()
+        prop(AmountSettingsState::symbolPosition).prop(ListPreference<*>::visible).isFalse()
+        prop(AmountSettingsState::spaceBetweenAmountAndSymbol)
+          .prop(BooleanPreference::visible)
+          .isFalse()
+      }
+
+      flags[FeatureFlag.CurrencySupport].set(true)
+      assertThat(awaitItem()).all {
+        prop(AmountSettingsState::currency).prop(ListPreference<*>::visible).isTrue()
+        prop(AmountSettingsState::symbolPosition).prop(ListPreference<*>::visible).isTrue()
+        prop(AmountSettingsState::spaceBetweenAmountAndSymbol)
+          .prop(BooleanPreference::visible)
+          .isTrue()
+      }
+
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Budget name comes from the open budget`() = runTest {
     val viewModel = viewModel()
 
@@ -106,10 +135,12 @@ class AmountSettingsViewModelTest {
 
   private fun TestScope.viewModel(
     preferences: FakeBudgetFormatPreferences = FakeBudgetFormatPreferences(),
+    flags: FakeBudgetFeatureFlags = FakeBudgetFeatureFlags(),
   ) =
     AmountSettingsViewModel(
       preferences = preferences,
       localPreferences = TestBudgetLocalPreferences(DbMetadata().set(BudgetName, BUDGET_NAME)),
+      flags = flags,
       viewModelContext = viewModelContext,
     )
 
