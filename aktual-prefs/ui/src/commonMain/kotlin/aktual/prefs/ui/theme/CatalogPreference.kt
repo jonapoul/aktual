@@ -14,9 +14,9 @@ import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
@@ -287,7 +287,7 @@ internal fun DownloadStateIcon(
   onAction: OnAction<ThemeSettingsAction>,
 ) {
   when (state) {
-    Downloading -> AnimatedLoading(StateIconModifier)
+    Downloading -> AktualProgressIndicator(Modifier.padding(4.dp), size = StateIconSize)
     Downloaded -> Icon(MaterialIcons.OfflinePin, null, StateIconModifier, colors.pageText)
     Remote -> Icon(AktualIcons.Cloud, null, StateIconModifier, colors.pageText)
     is Failed -> {
@@ -324,7 +324,8 @@ internal fun Palette(
 }
 
 private val ItemPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
-private val StateIconModifier = Modifier.padding(4.dp).size(25.dp)
+private val StateIconSize = 25.dp
+private val StateIconModifier = Modifier.padding(4.dp).size(StateIconSize)
 private val PaletteSpacing = 2.dp
 private val PaletteHeight = 16.dp
 

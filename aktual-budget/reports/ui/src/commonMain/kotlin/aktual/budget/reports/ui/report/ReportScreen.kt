@@ -45,6 +45,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
@@ -64,7 +65,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -367,10 +367,7 @@ private fun ReportContent(
   Column(modifier = modifier.padding(contentPadding).padding(Dimens.ScreenPadding)) {
     val contentModifier = Modifier.fillMaxWidth().weight(1f)
     when (state) {
-      Loading ->
-        Box(modifier = contentModifier, contentAlignment = Center) {
-          CircularProgressIndicator(color = colors.pageText)
-        }
+      Loading -> LoadingScreen(contentModifier)
 
       NotFound ->
         Box(modifier = contentModifier, contentAlignment = Center) {

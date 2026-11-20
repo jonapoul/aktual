@@ -1,5 +1,6 @@
 package aktual.budget.accounts.components
 
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.verticalScrollWithBar
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
@@ -51,7 +51,7 @@ fun SheetPage(
 @Composable
 fun SheetLoading(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxWidth().height(160.dp), contentAlignment = Center) {
-    CircularProgressIndicator(color = colors.pageTextSubdued)
+    AktualProgressIndicator(color = colors.pageTextSubdued)
   }
 }
 

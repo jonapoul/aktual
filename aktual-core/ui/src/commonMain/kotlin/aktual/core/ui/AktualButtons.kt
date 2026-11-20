@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.LocalContentColor
@@ -238,11 +237,7 @@ private fun LoadingTextButtonContent(
     )
 
     if (isLoading) {
-      CircularProgressIndicator(
-        modifier = Modifier.size(LoadingIndicatorSize),
-        color = indicatorColor,
-        strokeWidth = LoadingIndicatorStroke,
-      )
+      AktualProgressIndicator(size = LoadingIndicatorSize, color = indicatorColor)
     }
   }
 }
@@ -314,7 +309,6 @@ private const val SECONDARY_PRESSED_ALPHA = 0.12f
 private val SecondaryButtonBorder = 1.dp
 private val TonalButtonBorder = 1.dp
 private val LoadingIndicatorSize = 20.dp
-private val LoadingIndicatorStroke = 2.dp
 
 @Composable
 fun BasicTextButton(
@@ -409,11 +403,9 @@ fun AktualIconButton(
       )
 
       if (isLoading) {
-        CircularProgressIndicator(
-          modifier =
-            Modifier.size(size?.coerceAtMost(LoadingIndicatorSize) ?: LoadingIndicatorSize),
+        AktualProgressIndicator(
+          size = size?.coerceAtMost(LoadingIndicatorSize) ?: LoadingIndicatorSize,
           color = colors(AktualTheme.colors, isPressed = false).contentColor,
-          strokeWidth = LoadingIndicatorStroke,
         )
       }
     }

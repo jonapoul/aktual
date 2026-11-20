@@ -8,6 +8,7 @@ import aktual.budget.model.AccountSyncSource
 import aktual.core.icons.flags.Flag
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -30,7 +31,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetState
@@ -251,11 +251,7 @@ private fun LoginWaiting(
       horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing),
       verticalAlignment = CenterVertically,
     ) {
-      CircularProgressIndicator(
-        modifier = Modifier.size(BankSyncDS.progressSize),
-        color = colors.pageTextSubdued,
-        strokeWidth = BankSyncDS.progressStroke,
-      )
+      AktualProgressIndicator(size = BankSyncDS.progressSize, color = colors.pageTextSubdued)
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.bankSyncLinkLoginWaiting(status.bank),

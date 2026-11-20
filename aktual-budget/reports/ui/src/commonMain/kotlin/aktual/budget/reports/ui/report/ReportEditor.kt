@@ -16,6 +16,7 @@ import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -33,7 +34,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -143,7 +143,7 @@ private fun ChartCard(
 ) =
   Box(modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp)) {
     if (preview == null) {
-      CircularProgressIndicator(modifier = Modifier.align(Center), color = colors.pageText)
+      AktualProgressIndicator(Modifier.align(Center))
     } else {
       ReportChart(
         modifier = Modifier.fillMaxSize().dashboardItem(colors),

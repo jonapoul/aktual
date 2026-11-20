@@ -13,6 +13,7 @@ import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -41,7 +42,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -177,7 +177,7 @@ internal fun QueryScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
       if (data == null) {
-        CircularProgressIndicator(modifier = Modifier.align(Center), color = colors.pageText)
+        AktualProgressIndicator(Modifier.align(Center))
       } else {
         QueryContent(
           modifier = Modifier.padding(innerPadding),

@@ -19,6 +19,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -26,7 +27,6 @@ import aktual.core.ui.SheetHost
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -164,9 +164,7 @@ internal fun CustomReportScaffold(
       val contentModifier = Modifier.padding(innerPadding).fillMaxSize()
       when (state) {
         Loading -> {
-          Box(modifier = contentModifier, contentAlignment = Center) {
-            CircularProgressIndicator(color = colors.pageText)
-          }
+          LoadingScreen(contentModifier)
         }
         NotFound -> {
           Box(modifier = contentModifier, contentAlignment = Center) {

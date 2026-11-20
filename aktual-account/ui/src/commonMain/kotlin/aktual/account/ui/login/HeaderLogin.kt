@@ -2,6 +2,7 @@ package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParams
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -45,7 +45,7 @@ internal fun HeaderLogin(
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     if (isLoading) {
-      CircularProgressIndicator()
+      AktualProgressIndicator()
 
       Text(
         text = Strings.loginHeaderChecking,

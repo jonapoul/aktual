@@ -29,6 +29,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
@@ -55,7 +56,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -67,7 +67,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -321,9 +320,7 @@ private fun InspectThemeContent(
 ) {
   when (state) {
     is Loading -> {
-      Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
-        CircularProgressIndicator()
-      }
+      LoadingScreen(modifier)
     }
 
     is NotFound -> {

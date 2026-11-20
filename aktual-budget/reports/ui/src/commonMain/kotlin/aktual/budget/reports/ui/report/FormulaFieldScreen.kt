@@ -10,6 +10,7 @@ import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaOutput
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -42,7 +43,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -190,7 +190,7 @@ private fun Result(preview: FormulaData?) {
         color = colors.tableHeaderText,
       )
       if (preview == null || output == null) {
-        CircularProgressIndicator(modifier = Modifier.size(20.dp), color = colors.pageText)
+        AktualProgressIndicator(size = 20.dp)
       } else {
         Text(
           modifier = Modifier.testTag(Tags.FormulaResult),

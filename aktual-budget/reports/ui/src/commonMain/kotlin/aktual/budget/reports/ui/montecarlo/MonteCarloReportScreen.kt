@@ -22,6 +22,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
@@ -37,7 +38,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -51,7 +51,6 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -168,10 +167,7 @@ internal fun MonteCarloScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
       when (state) {
-        Loading ->
-          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-            CircularProgressIndicator(color = colors.pageText)
-          }
+        Loading -> LoadingScreen()
 
         NotFound ->
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
@@ -180,7 +176,7 @@ internal fun MonteCarloScaffold(
 
         FeatureDisabled ->
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Center) {
-            Text(text = Strings.reportsUnsupportedFeatureDisabled, textAlign = TextAlign.Center)
+            Text(text = Strings.reportsUnsupportedFeatureDisabled, textAlign = Center)
           }
 
         is Loaded ->
