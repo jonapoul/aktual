@@ -2,7 +2,6 @@ package aktual.prefs.ui.theme
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
-import aktual.core.icons.CloudDownload
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.Colors
@@ -21,7 +20,6 @@ import aktual.core.ui.disabled
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
 import aktual.prefs.components.PreferenceGroup
-import aktual.prefs.ui.root.SubSettingsItem
 import aktual.prefs.vm.theme.LocalTheme
 import aktual.prefs.vm.theme.ThemeSwatch
 import aktual.prefs.vm.theme.swatch
@@ -55,7 +53,6 @@ import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-// The catalog row stays enabled while matching the system, since browsing it changes nothing
 @Composable
 internal fun ThemesPreference(
   localThemes: ImmutableList<LocalTheme>,
@@ -95,13 +92,6 @@ internal fun ThemesPreference(
         )
       }
     }
-
-    ThemeDivider()
-    SubSettingsItem(
-      title = Strings.settingsThemeCatalog,
-      icon = AktualIcons.CloudDownload,
-      onClick = { onAction(NavCustomThemes) },
-    )
   }
 }
 

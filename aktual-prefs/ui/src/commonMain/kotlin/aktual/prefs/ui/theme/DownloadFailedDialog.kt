@@ -1,4 +1,4 @@
-package aktual.prefs.ui.theme.custom
+package aktual.prefs.ui.theme
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudWarning

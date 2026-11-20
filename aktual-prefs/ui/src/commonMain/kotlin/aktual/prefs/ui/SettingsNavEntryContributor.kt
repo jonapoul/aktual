@@ -9,8 +9,6 @@ import aktual.core.nav.AppIconSettingsNavigator
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BarSettingsNavRoute
 import aktual.core.nav.BarSettingsNavigator
-import aktual.core.nav.CustomThemeSettingsNavRoute
-import aktual.core.nav.CustomThemesNavigator
 import aktual.core.nav.DateSettingsNavRoute
 import aktual.core.nav.DateSettingsNavigator
 import aktual.core.nav.DialogSettingsNavRoute
@@ -55,7 +53,6 @@ import aktual.prefs.ui.search.SettingsPageNavigator
 import aktual.prefs.ui.security.SecuritySettingsScreen
 import aktual.prefs.ui.systemui.SystemUiSettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
 import aktual.prefs.ui.transactions.TransactionSettingsScreen
 import aktual.prefs.ui.updates.UpdateSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
@@ -143,14 +140,9 @@ class SettingsNavEntryContributor : NavEntryContributor {
     entry<ThemeSettingsNavRoute> { route ->
       ThemeSettingsScreen(
         back = BackNavigator(stack),
-        toCustomThemes = CustomThemesNavigator(stack),
         toInspectTheme = InspectThemeNavigator(stack),
         highlight = route.highlight,
       )
-    }
-
-    entry<CustomThemeSettingsNavRoute> {
-      CustomThemeSettingsScreen(BackNavigator(stack), InspectThemeNavigator(stack))
     }
 
     entry<InspectThemeNavRoute> { route ->

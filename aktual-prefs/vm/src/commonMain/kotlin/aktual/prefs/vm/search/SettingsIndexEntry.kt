@@ -94,7 +94,8 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
           entry(Res.string.settings_light_theme),
           entry(Res.string.settings_dark_theme),
         ),
-        entry(Res.string.settings_theme_list, entry(Res.string.settings_theme_catalog)),
+        entry(Res.string.settings_theme_list),
+        entry(Res.string.settings_theme_catalog),
       ),
     SettingsPage.SystemUi to
       entry(
