@@ -106,15 +106,12 @@ internal constructor(
     }
 
   init {
-    viewModelScope.launch { fetchCatalog(showSnackbar = false) }
+    viewModelScope.launch { fetchCatalog(useCache = true, showSnackbar = false) }
   }
 
-  fun clearCache() {
-    viewModelScope.launch {
-      cache.clear()
-      mutableCachedThemes.update { persistentMapOf() }
-      fetchCatalog(showSnackbar = true)
-    }
+  // Keeps the downloaded themes, so a failed refresh while offline doesn't lose them
+  fun refresh() {
+    viewModelScope.launch { fetchCatalog(useCache = false, showSnackbar = true) }
   }
 
   fun select(summary: CustomThemeSummary) {
@@ -222,15 +219,14 @@ internal constructor(
     )
   }
 
-  private suspend fun fetchCatalog(showSnackbar: Boolean) {
+  private suspend fun fetchCatalog(useCache: Boolean, showSnackbar: Boolean) {
     mutableIsFetchingCatalog.update { true }
     mutableSummaries.update { persistentListOf() }
     mutableFailure.update { null }
     runCatchingCancellable(
       attempt = {
         val summaries =
-          cache
-            .summaries()
+          (if (useCache) cache.summaries() else emptyList())
             .ifEmpty { themeApi.fetchCatalog().also { cache.save(it) } }
             .toPersistentList()
         mutableSummaries.update { summaries }

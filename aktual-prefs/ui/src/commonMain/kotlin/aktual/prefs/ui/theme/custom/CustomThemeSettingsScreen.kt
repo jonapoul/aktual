@@ -153,7 +153,7 @@ fun CustomThemeSettingsScreen(
     onAction = { action ->
       when (action) {
         NavBack -> back()
-        RetryFetchCatalog -> viewModel.clearCache()
+        RetryFetchCatalog -> viewModel.refresh()
         ShowSortFilterSheet -> showSortFilterSheet = true
         DismissBottomSheet -> showSortFilterSheet = false
         DismissDownloadFailure -> downloadFailure = null
