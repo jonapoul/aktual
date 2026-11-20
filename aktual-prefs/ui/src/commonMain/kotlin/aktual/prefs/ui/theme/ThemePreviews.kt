@@ -16,7 +16,12 @@ import aktual.prefs.vm.theme.ThemePreview
 import aktual.prefs.vm.theme.ThemePreviewMode
 import aktual.prefs.vm.theme.ThemeSwatch
 import aktual.prefs.vm.theme.swatch
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -33,17 +38,21 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.End
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
@@ -56,19 +65,39 @@ internal fun ThemePreviews(
   customThemeNames: ImmutableMap<ThemeId, String>,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(12.dp, CenterHorizontally),
-  ) {
-    previews.fastForEach { preview ->
-      Column(
-        modifier = Modifier.width(ThumbnailWidth),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-      ) {
-        Thumbnail(preview.swatch)
-        Label(name = themeName(preview.id, customThemeNames), mode = preview.mode)
+  // Keep showing the second preview while it fades out
+  val second = previews.getOrNull(1)
+  var lastSecond by remember { mutableStateOf(second) }
+  SideEffect { if (second != null) lastSecond = second }
+
+  // Centred, so the first preview slides across as the second one's space grows or shrinks
+  Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+    previews.firstOrNull()?.let { PreviewItem(it, customThemeNames) }
+
+    AnimatedVisibility(
+      visible = second != null,
+      enter = fadeIn() + expandHorizontally(expandFrom = Start, clip = false),
+      exit = fadeOut() + shrinkHorizontally(shrinkTowards = Start, clip = false),
+    ) {
+      (second ?: lastSecond)?.let { preview ->
+        PreviewItem(preview, customThemeNames, Modifier.padding(start = PreviewSpacing))
       }
     }
+  }
+}
+
+@Composable
+private fun PreviewItem(
+  preview: ThemePreview,
+  customThemeNames: ImmutableMap<ThemeId, String>,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier.width(ThumbnailWidth),
+    verticalArrangement = Arrangement.spacedBy(6.dp),
+  ) {
+    Thumbnail(preview.swatch)
+    Label(name = themeName(preview.id, customThemeNames), mode = preview.mode)
   }
 }
 
@@ -136,6 +165,7 @@ private fun Label(name: String, mode: ThemePreviewMode) {
 }
 
 private val ThumbnailWidth = 148.dp
+private val PreviewSpacing = 12.dp
 private val ThumbnailHeight = 92.dp
 private val ThumbnailShape = RoundedCornerShape(6.dp)
 private val BarShape = RoundedCornerShape(3.dp)
