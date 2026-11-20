@@ -778,7 +778,7 @@ private const val COLLAPSED_ROTATION = -90f
 private val AccountItemHeight = 30.dp
 
 // Lines account names up roughly under the section's title
-private val AccountNameIndent = 36.dp
+private val AccountNameIndent = 52.dp
 
 private val GroupHeaderIndent = 24.dp
 private val GroupChevronSize = 16.dp
