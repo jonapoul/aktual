@@ -108,6 +108,7 @@ fun ThemeSettingsScreen(
     }
   }
 
+  @Suppress("ComposeViewModelForwarding")
   ThemeSettingsScaffold(
     state = state,
     highlight = highlight,
