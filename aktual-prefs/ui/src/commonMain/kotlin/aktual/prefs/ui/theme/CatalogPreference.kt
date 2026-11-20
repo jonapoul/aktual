@@ -42,7 +42,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -84,6 +83,7 @@ internal fun CatalogPreference(
   PreferenceGroup(
     modifier = modifier,
     title = Strings.settingsThemeCatalog,
+    subtitle = Strings.settingsThemeCatalogSubtitle,
     actions = { CatalogActions(catalog.status, onAction) },
   ) {
     if (catalog.status == Failed) {
@@ -111,25 +111,22 @@ internal fun CatalogPreference(
 }
 
 @Composable
-private fun RowScope.CatalogActions(
+private fun CatalogActions(
   status: CatalogStatus,
   onAction: OnAction<ThemeSettingsAction>,
-) {
+) = Row {
   AktualIconButton(
     imageVector = AktualIcons.Tuning,
     contentDescription = Strings.settingsThemeSortFilter,
     onClick = { onAction(ShowCatalogOptions) },
   )
 
-  if (status == Loading) {
-    AnimatedLoading(StateIconModifier.padding(4.dp))
-  } else {
-    AktualIconButton(
-      imageVector = AktualIcons.Refresh,
-      contentDescription = Strings.settingsThemeRefresh,
-      onClick = { onAction(RefreshCatalog) },
-    )
-  }
+  AktualIconButton(
+    isLoading = status == Loading,
+    imageVector = AktualIcons.Refresh,
+    contentDescription = Strings.settingsThemeRefresh,
+    onClick = { onAction(RefreshCatalog) },
+  )
 }
 
 @Composable

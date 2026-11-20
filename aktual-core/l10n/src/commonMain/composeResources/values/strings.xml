@@ -2493,6 +2493,7 @@
   <string name="settings_theme_list_desc">Used when Match system is off</string>
   <string name="settings_theme_local_badge">Local</string>
   <string name="settings_theme_catalog">Theme catalog</string>
+  <string name="settings_theme_catalog_subtitle">Community-created themes, hosted on GitHub at actualbudget/actual. Themes will be downloaded and cached locally when you tap on each one.</string>
   <string name="settings_theme_preview">Preview %1$s theme</string>
   <string name="settings_theme_refresh">Refresh catalog</string>
   <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
