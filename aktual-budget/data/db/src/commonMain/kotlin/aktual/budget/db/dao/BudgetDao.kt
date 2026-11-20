@@ -12,6 +12,7 @@ import aktual.budget.model.BudgetType
 import aktual.budget.model.CategoryId
 import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOne
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
@@ -42,11 +43,14 @@ data class CategoryBudget(
 // The stored values of one budget row
 data class BudgetRow(val id: String, val amount: Amount, val carryover: Boolean)
 
+data class CategoryMonthAmount(val id: String, val month: YearMonth, val amount: Amount)
+
 private const val YEAR_MONTH_FACTOR = 100
 
 @Inject
 class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.budgetsQueries
+  private val mappings = database.categoryMappingQueries
 
   fun observeEarliestTransactionDate(): Flow<LocalDate?> =
     queries
@@ -151,6 +155,29 @@ class BudgetDao(database: BudgetDatabase, private val contexts: CoroutineContext
         }
       }
       ?.toYearMonth()
+
+  // The rows with a non-zero amount
+  suspend fun budgetsOfCategory(type: BudgetType, category: CategoryId): List<CategoryMonthAmount> =
+    queries.withResult {
+      when (type) {
+        Envelope -> zeroBudgetsOfCategory(category, ::categoryMonthAmount)
+        Tracking -> reflectBudgetsOfCategory(category, ::categoryMonthAmount)
+      }.awaitAsList()
+    }
+
+  // Live transactions in the categories, or in deleted ones forwarded to them
+  suspend fun transactionCount(categories: Collection<CategoryId>): Long = queries.withResult {
+    transactionsOfCategories(categories).awaitAsOne()
+  }
+
+  // The category itself and the deleted ones forwarded to it
+  suspend fun mappedTo(category: CategoryId): List<CategoryId> = mappings.withResult {
+    mappedTo(category).awaitAsList()
+  }
+
+  @Suppress("CanBeNonNullable")
+  private fun categoryMonthAmount(id: String, month: YearMonth?, amount: Amount?) =
+    CategoryMonthAmount(id = id, month = requireNotNull(month), amount = amount ?: Zero)
 
   private fun budgetRow(id: String, amount: Amount?, carryover: Long?) =
     BudgetRow(id = id, amount = amount ?: Zero, carryover = carryover == 1L)

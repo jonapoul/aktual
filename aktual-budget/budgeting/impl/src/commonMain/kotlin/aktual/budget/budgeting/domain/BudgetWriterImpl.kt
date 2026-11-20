@@ -400,9 +400,9 @@ private fun BudgetMonth.Envelope.name(id: CategoryId): String =
   categories.firstOrNull { it.id == id }?.name.orEmpty()
 
 private const val HALF = 0.5
-private const val DB_MONTH_FACTOR = 100
+internal const val DB_MONTH_FACTOR = 100
 
-private val YearMonth.dbMonth: Long
+internal val YearMonth.dbMonth: Long
   get() = year.toLong() * DB_MONTH_FACTOR + month.number
 
 private fun Long.toYearMonth(): YearMonth =

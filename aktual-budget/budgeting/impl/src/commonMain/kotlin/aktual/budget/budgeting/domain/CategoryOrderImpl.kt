@@ -121,7 +121,7 @@ private fun longestIncreasing(values: List<Double?>): Set<Int> {
   return generateSequence(best.takeIf { it >= 0 }) { previous[it].takeIf { p -> p >= 0 } }.toSet()
 }
 
-private const val SORT_INCREMENT = 16384.0
+internal const val SORT_INCREMENT = 16384.0
 
 // Below this, the items are renumbered rather than squeezed between their neighbours
 private const val MIN_GAP = 1.0
