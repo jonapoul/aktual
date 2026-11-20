@@ -7,13 +7,17 @@ import aktual.prefs.vm.ListPreference
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 
 @Immutable
 data class ThemeSettingsState(
   val useSystemDefault: BooleanPreference,
+  val dayTheme: ListPreference<ThemeId>,
   val darkTheme: ListPreference<ThemeId>,
   val constantTheme: ThemeId?,
   val localThemes: ImmutableList<LocalTheme>,
+  // Names of the local and downloaded themes. Built-in names come from the UI's strings
+  val customThemeNames: ImmutableMap<ThemeId, String>,
 )
 
 @Immutable data class LocalTheme(val id: ThemeId, val name: String, val swatch: ThemeSwatch)

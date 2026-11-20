@@ -38,6 +38,7 @@ import aktual.core.l10n.settings_format_distance_group
 import aktual.core.l10n.settings_format_first_day
 import aktual.core.l10n.settings_format_group
 import aktual.core.l10n.settings_format_numbers
+import aktual.core.l10n.settings_light_theme
 import aktual.core.l10n.settings_security
 import aktual.core.l10n.settings_security_app_lock
 import aktual.core.l10n.settings_security_auto_save_locations
@@ -90,6 +91,7 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         entry(
           Res.string.settings_theme_system_group,
           entry(Res.string.settings_theme_use_system),
+          entry(Res.string.settings_light_theme),
           entry(Res.string.settings_dark_theme),
         ),
         entry(Res.string.settings_theme_list, entry(Res.string.settings_theme_catalog)),

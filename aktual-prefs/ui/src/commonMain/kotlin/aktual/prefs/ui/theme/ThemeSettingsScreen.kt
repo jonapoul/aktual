@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 
 @Composable
 fun ThemeSettingsScreen(
@@ -73,6 +74,7 @@ fun ThemeSettingsScreen(
         is InspectTheme -> toInspectTheme(action.id)
         is SelectTheme -> viewModel.select(action.id)
         is SetUseSystemDefault -> viewModel.setUseSystemDefault(action.value)
+        is SetLightTheme -> viewModel.setLightTheme(action.value)
         is SetDarkTheme -> viewModel.setDarkTheme(action.value)
       }
     },
@@ -130,7 +132,16 @@ private fun ThemeSettingsContent(
     item {
       PreferenceGroup(title = Strings.settingsThemeSystemGroup) {
         UseSystemDefaultPreference(preference = state.useSystemDefault, onAction = onAction)
-        DarkThemePreference(preference = state.darkTheme, onAction = onAction)
+        LightThemePreference(
+          preference = state.dayTheme,
+          customThemeNames = state.customThemeNames,
+          onAction = onAction,
+        )
+        DarkThemePreference(
+          preference = state.darkTheme,
+          customThemeNames = state.customThemeNames,
+          onAction = onAction,
+        )
       }
     }
 
@@ -157,6 +168,12 @@ private fun PreviewColorsSettings(
       state =
         ThemeSettingsState(
           useSystemDefault = BooleanPreference(value = this, enabled = true),
+          dayTheme =
+            ListPreference(
+              value = LightColors.id,
+              options = persistentListOf(LightColors.id, PreviewLocalA),
+              enabled = this,
+            ),
           darkTheme =
             ListPreference(
               value = MidnightColors.id,
@@ -166,10 +183,18 @@ private fun PreviewColorsSettings(
           constantTheme = LightColors.id,
           localThemes =
             persistentListOf(
-              LocalTheme(ThemeId("@local/a"), "Light (copy)", LightColors.swatch()),
-              LocalTheme(ThemeId("@local/b"), "Midnight with stripes", MidnightColors.swatch()),
+              LocalTheme(PreviewLocalA, "Light (copy)", LightColors.swatch()),
+              LocalTheme(PreviewLocalB, "Midnight with stripes", MidnightColors.swatch()),
+            ),
+          customThemeNames =
+            persistentMapOf(
+              PreviewLocalA to "Light (copy)",
+              PreviewLocalB to "Midnight with stripes",
             ),
         ),
       onAction = {},
     )
   }
+
+private val PreviewLocalA = ThemeId("@local/a")
+private val PreviewLocalB = ThemeId("@local/b")

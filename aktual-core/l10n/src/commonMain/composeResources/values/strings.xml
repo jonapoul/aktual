@@ -2478,11 +2478,12 @@
   <string name="settings_search_no_results">No settings match “%1$s”</string>
 
   <string name="settings_theme">App theme</string>
+  <string name="settings_light_theme">Light theme</string>
   <string name="settings_dark_theme">Dark theme</string>
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Match system</string>
-  <string name="settings_theme_use_system_desc">Light by day, your dark theme by night</string>
+  <string name="settings_theme_use_system_desc">Follow your device\'s light or dark mode. Catalog themes show up here once downloaded</string>
   <string name="settings_theme_system_group">System theme</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
