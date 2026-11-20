@@ -113,7 +113,7 @@ private fun Thumbnail(swatch: ThemeSwatch) {
       Modifier.fillMaxWidth()
         .height(ThumbnailHeight)
         .clip(ThumbnailShape)
-        .border(1.dp, colors.settingsCardBorder, ThumbnailShape)
+        .border(1.dp, colors.pageTextSubdued, ThumbnailShape)
         .background(background),
   ) {
     Box(Modifier.fillMaxWidth().height(16.dp).background(header))
