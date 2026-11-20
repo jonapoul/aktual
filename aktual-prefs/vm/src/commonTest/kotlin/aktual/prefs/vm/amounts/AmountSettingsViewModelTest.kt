@@ -3,7 +3,6 @@ package aktual.prefs.vm.amounts
 import aktual.budget.model.Currency
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
-import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.FakeBudgetFormatPreferences
 import aktual.prefs.vm.ListPreference
@@ -97,7 +96,7 @@ class AmountSettingsViewModelTest {
           .isFalse()
       }
 
-      flags[FeatureFlag.CurrencySupport].set(true)
+      flags[CurrencySupport].set(true)
       assertThat(awaitItem()).all {
         prop(AmountSettingsState::currency).prop(ListPreference<*>::visible).isTrue()
         prop(AmountSettingsState::symbolPosition).prop(ListPreference<*>::visible).isTrue()

@@ -137,8 +137,7 @@ class BankSyncProvidersViewModelTest {
   private fun otherStatus(goCardless: BankSyncProviderStatus): BankSyncProviderStatus =
     if (goCardless == Checking) Checking else NotConfigured
 
-  private fun BankSyncProvidersState.providers() =
-    (this as BankSyncProvidersState.Loaded).providers.map { it.source }
+  private fun BankSyncProvidersState.providers() = (this as Loaded).providers.map { it.source }
 
   private fun TestScope.createViewModel(
     server: BudgetServer = SERVER,

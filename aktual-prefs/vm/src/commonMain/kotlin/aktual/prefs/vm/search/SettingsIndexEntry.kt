@@ -170,10 +170,7 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         Res.string.settings_experimental,
         SettingsIndexEntry(
           title = Res.string.settings_experimental_synced,
-          children =
-            FeatureFlag.entries
-              .filter { it != FeatureFlag.GoalTemplatesUi }
-              .map { entry(it.title) },
+          children = FeatureFlag.entries.filter { it != GoalTemplatesUi }.map { entry(it.title) },
         ),
       ),
   )

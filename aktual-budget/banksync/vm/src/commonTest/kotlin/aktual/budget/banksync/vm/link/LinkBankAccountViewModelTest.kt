@@ -34,7 +34,6 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.LocalChange
-import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.budget.transactions.domain.TransactionWriterImpl
 import aktual.budget.utils.BudgetSync
 import aktual.core.model.BudgetServer
@@ -376,7 +375,7 @@ class LinkBankAccountViewModelTest {
   @Test
   fun `Enable Banking isn't offered while its flag is off`() =
     runLinkTest(enableBanking = true) {
-      flags[FeatureFlag.EnableBanking].set(false)
+      flags[EnableBanking].set(false)
       api.accounts[PluggyAi] = BankSyncAccountsResponse.Success(listOf(CHECKING))
 
       createViewModel().state.test {
@@ -440,7 +439,7 @@ class LinkBankAccountViewModelTest {
           BankSyncStatusResponse.Success(configured = enableBanking),
       )
     val controller = FakeBankSyncController()
-    val flags = FakeBudgetFeatureFlags(setOf(FeatureFlag.EnableBanking))
+    val flags = FakeBudgetFeatureFlags(setOf(EnableBanking))
     val enableBankingApi = FakeEnableBankingApi()
     private val syncDao = SyncDao(database, driver, Clock.System)
 

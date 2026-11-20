@@ -302,8 +302,10 @@ internal constructor(
     if (server !is Remote) return persistentListOf()
     val enableBanking = EnableBanking in flags
     val configured = coroutineScope {
-      PROVIDERS.filter { !server.isApiKeySession || it.supportsApiKeys }
-        .filter { enableBanking || it != EnableBanking }
+      PROVIDERS.filter { source ->
+          (!server.isApiKeySession || source.supportsApiKeys) &&
+            (enableBanking || source != EnableBanking)
+        }
         .map { source -> async { source.takeIf { isConfigured(it) } } }
         .awaitAll()
     }
