@@ -27,6 +27,7 @@ import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.MaterialTheme.typography
@@ -42,6 +43,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardCapitalization.Companion.Sentences
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -233,6 +235,7 @@ private fun NameField(
     isEnabled = status != Saving,
     isError = error != null,
     supportingText = error?.let { text -> { Text(text = text, color = colors.errorText) } },
+    keyboardOptions = KeyboardOptions(capitalization = Sentences),
     onKeyboardAction = { onDone() },
   )
 }
