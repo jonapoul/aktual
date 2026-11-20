@@ -31,7 +31,6 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -41,7 +40,7 @@ import kotlinx.coroutines.launch
 class ThemeSettingsViewModel
 internal constructor(
   private val preferences: ThemePreferences,
-  private val cache: CustomThemeCache,
+  cache: CustomThemeCache,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val useSystemDefault = preferences.useSystemDefault.asLoadedStateFlow(viewModelScope)
@@ -49,11 +48,10 @@ internal constructor(
   private val nightTheme = preferences.nightTheme.asLoadedStateFlow(viewModelScope)
   private val constantTheme = preferences.constantTheme.asLoadedStateFlow(viewModelScope)
 
-  // Local and downloaded themes. Picking one from the catalog sets the constant theme, so reload
-  // then to pick up the download
   private val customThemes: StateFlow<ImmutableList<CustomColors>> =
-    combine(cache.localThemes(), preferences.constantTheme.asFlow()) { local, _ -> local }
-      .map { local -> loadCustomThemes(local) }
+    combine(cache.localThemes(), cache.downloadedThemes()) { local, downloaded ->
+        (local + downloaded).sortedBy { it.name.lowercase() }.toImmutableList()
+      }
       .stateIn(viewModelScope, Eagerly, persistentListOf())
 
   val state: StateFlow<ThemeSettingsState> =
@@ -91,14 +89,6 @@ internal constructor(
 
   fun setDarkTheme(value: ThemeId) {
     viewModelScope.launch { preferences.nightTheme.set(value) }
-  }
-
-  private suspend fun loadCustomThemes(local: List<CustomColors>): ImmutableList<CustomColors> {
-    val downloaded = cache.repos().filterNot { it.isLocal }.mapNotNull { cache.theme(it) }
-    return (local + downloaded)
-      .distinctBy { it.id }
-      .sortedBy { it.name.lowercase() }
-      .toImmutableList()
   }
 
   @Composable

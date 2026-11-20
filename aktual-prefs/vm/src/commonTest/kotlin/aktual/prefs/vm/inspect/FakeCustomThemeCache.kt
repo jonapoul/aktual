@@ -22,6 +22,10 @@ class FakeCustomThemeCache : CustomThemeCache {
     map.values.filter { it.repo.isLocal }
   }
 
+  override fun downloadedThemes(): Flow<List<CustomColors>> = themes.map { map ->
+    map.values.filterNot { it.repo.isLocal }
+  }
+
   override suspend fun save(summaries: List<CustomThemeSummary>) = Unit
 
   override suspend fun save(theme: CustomColors) {

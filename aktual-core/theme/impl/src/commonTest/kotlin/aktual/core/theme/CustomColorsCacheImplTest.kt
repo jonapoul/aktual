@@ -108,6 +108,25 @@ class CustomColorsCacheImplTest {
   }
 
   @Test
+  fun `downloaded themes are listed and updated on save, delete and clear`() = runCacheTest {
+    cache.downloadedThemes().test {
+      assertThat(awaitItem()).isEmpty()
+
+      cache.save(ShadesOfCoffeeTheme)
+      assertThat(awaitItem()).containsExactly(ShadesOfCoffeeTheme)
+
+      cache.delete(ShadesOfCoffeeTheme.repo)
+      assertThat(awaitItem()).isEmpty()
+
+      cache.save(ShadesOfCoffeeTheme)
+      assertThat(awaitItem()).containsExactly(ShadesOfCoffeeTheme)
+
+      cache.clear()
+      assertThat(awaitItem()).isEmpty()
+    }
+  }
+
+  @Test
   fun `local themes are kept apart from downloaded ones`() = runCacheTest {
     val local = LightColors.toCustomColors("Mine", CustomThemeRepo.local("abc"))
     cache.save(ShadesOfCoffeeTheme)

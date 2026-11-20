@@ -12,6 +12,9 @@ interface CustomThemeCache {
   /** Themes edited in-app, re-emitting whenever one is saved or deleted. */
   fun localThemes(): Flow<List<CustomColors>>
 
+  /** Themes downloaded from the catalog, re-emitting whenever one is saved or deleted. */
+  fun downloadedThemes(): Flow<List<CustomColors>>
+
   suspend fun save(summaries: List<CustomThemeSummary>)
 
   suspend fun save(theme: CustomColors)
