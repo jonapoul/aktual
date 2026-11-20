@@ -88,7 +88,8 @@ internal constructor(
       Amounts,
       Dates,
       Transactions,
-      LauncherIcon -> true
+      LauncherIcon,
+      Experimental -> true
     }
 
   private suspend fun MutableList<SettingsSearchResult>.addEntry(

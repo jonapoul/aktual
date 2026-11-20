@@ -178,6 +178,26 @@ class SearchSettingsViewModelTest {
   }
 
   @Test
+  fun `Finds experimental features in the open budget`() = runTest {
+    val viewModel = buildViewModel(budgetName = "My Budget")
+
+    viewModel.setQuery("sankey")
+
+    viewModel.state.test {
+      assertThat(awaitResults())
+        .containsExactly(
+          SettingsSearchResult(
+            title = "experimental sankey report",
+            kind = Preference,
+            page = Experimental,
+            path = persistentListOf("experimental", "experimental synced"),
+            budgetName = "My Budget",
+          ),
+        )
+    }
+  }
+
+  @Test
   fun `Budget settings carry the open budget's name`() = runTest {
     val viewModel = buildViewModel(budgetName = "My Budget")
 

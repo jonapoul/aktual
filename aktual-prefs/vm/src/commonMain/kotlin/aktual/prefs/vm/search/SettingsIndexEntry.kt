@@ -1,5 +1,6 @@
 package aktual.prefs.vm.search
 
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.Res
 import aktual.core.l10n.settings_amounts
 import aktual.core.l10n.settings_app_icon
@@ -8,6 +9,20 @@ import aktual.core.l10n.settings_currency_add_space
 import aktual.core.l10n.settings_currency_default
 import aktual.core.l10n.settings_currency_symbol_position
 import aktual.core.l10n.settings_dark_theme
+import aktual.core.l10n.settings_experimental
+import aktual.core.l10n.settings_experimental_action_templating
+import aktual.core.l10n.settings_experimental_balance_forecast_report
+import aktual.core.l10n.settings_experimental_budget_analysis_report
+import aktual.core.l10n.settings_experimental_currency
+import aktual.core.l10n.settings_experimental_enable_banking
+import aktual.core.l10n.settings_experimental_formula_mode
+import aktual.core.l10n.settings_experimental_goal_templates
+import aktual.core.l10n.settings_experimental_goal_templates_ui
+import aktual.core.l10n.settings_experimental_mobile_calculator
+import aktual.core.l10n.settings_experimental_monte_carlo_report
+import aktual.core.l10n.settings_experimental_new_sidebar
+import aktual.core.l10n.settings_experimental_sankey_report
+import aktual.core.l10n.settings_experimental_synced
 import aktual.core.l10n.settings_format_dates
 import aktual.core.l10n.settings_format_dates_group
 import aktual.core.l10n.settings_format_decimal
@@ -149,4 +164,33 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
     SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),
     SettingsPage.Updates to
       entry(Res.string.settings_updates, entry(Res.string.settings_updates_nightly)),
+    // The budget automations UI flag only shows once goal templates are on, so it's left out
+    SettingsPage.Experimental to
+      entry(
+        Res.string.settings_experimental,
+        SettingsIndexEntry(
+          title = Res.string.settings_experimental_synced,
+          children =
+            FeatureFlag.entries
+              .filter { it != FeatureFlag.GoalTemplatesUi }
+              .map { entry(it.title) },
+        ),
+      ),
   )
+
+private val FeatureFlag.title: StringResource
+  get() =
+    when (this) {
+      GoalTemplates -> Res.string.settings_experimental_goal_templates
+      GoalTemplatesUi -> Res.string.settings_experimental_goal_templates_ui
+      ActionTemplating -> Res.string.settings_experimental_action_templating
+      FormulaMode -> Res.string.settings_experimental_formula_mode
+      CurrencySupport -> Res.string.settings_experimental_currency
+      MobileCalculator -> Res.string.settings_experimental_mobile_calculator
+      NewSidebarUi -> Res.string.settings_experimental_new_sidebar
+      SankeyReport -> Res.string.settings_experimental_sankey_report
+      BalanceForecastReport -> Res.string.settings_experimental_balance_forecast_report
+      BudgetAnalysisReport -> Res.string.settings_experimental_budget_analysis_report
+      MonteCarloReport -> Res.string.settings_experimental_monte_carlo_report
+      EnableBanking -> Res.string.settings_experimental_enable_banking
+    }

@@ -5,6 +5,7 @@ import aktual.core.nav.AppIconSettingsNavRoute
 import aktual.core.nav.BarSettingsNavRoute
 import aktual.core.nav.DateSettingsNavRoute
 import aktual.core.nav.DialogSettingsNavRoute
+import aktual.core.nav.ExperimentalSettingsNavRoute
 import aktual.core.nav.FormatSettingsNavRoute
 import aktual.core.nav.NavStack
 import aktual.core.nav.SecuritySettingsNavRoute
@@ -34,6 +35,7 @@ internal class SettingsPageNavigator(private val stack: NavStack<NavKey>) {
         Transactions -> TransactionSettingsNavRoute(highlight)
         LauncherIcon -> AppIconSettingsNavRoute(highlight)
         Updates -> UpdateSettingsNavRoute(highlight)
+        Experimental -> ExperimentalSettingsNavRoute(highlight)
       },
     )
 }
