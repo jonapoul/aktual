@@ -28,5 +28,6 @@ internal val PREVIEW_CATALOG_ITEM =
     id = ThemeId("username/repo_name"),
     summary = PREVIEW_SUMMARY,
     isSelected = false,
+    isSelectable = true,
     state = CacheState.Cached(PREVIEW_SUMMARY),
   )

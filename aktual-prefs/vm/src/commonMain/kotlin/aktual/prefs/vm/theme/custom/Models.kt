@@ -21,6 +21,8 @@ data class CatalogItem(
   val id: ThemeId,
   val summary: CustomThemeSummary,
   val isSelected: Boolean,
+  // False while matching the system, which picks its themes elsewhere
+  val isSelectable: Boolean,
   val state: CacheState,
 )
 
@@ -51,6 +53,8 @@ sealed interface CustomThemeEvent {
   data object CacheRefreshed : CustomThemeEvent
 
   @JvmInline value class InspectTheme(val id: ThemeId) : CustomThemeEvent
+
+  @JvmInline value class ThemeDownloaded(val name: String) : CustomThemeEvent
 
   data class FailedFetching(val reason: String, val name: String) : CustomThemeEvent
 }

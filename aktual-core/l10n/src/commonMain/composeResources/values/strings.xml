@@ -2508,6 +2508,7 @@
   <string name="settings_theme_sort_by_repo">By repository</string>
   <string name="settings_theme_sort_by_name">By name</string>
 
+  <string name="settings_theme_downloaded">Downloaded %1$s</string>
   <string name="settings_theme_download_failed_title">Failed downloading %1$s</string>
   <string name="settings_theme_download_failed_show">Show download error for %1$s</string>
   <string name="settings_theme_download_failed_ok">OK</string>
