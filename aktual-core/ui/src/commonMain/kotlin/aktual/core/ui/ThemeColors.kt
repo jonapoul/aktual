@@ -51,14 +51,14 @@ fun Colors.transparentTopAppBarColors(): TopAppBarColors =
   )
 
 @Stable
-fun Colors.dropDownMenuItem(): MenuItemColors =
+fun Colors.dropDownMenuItem(content: Color = menuItemText): MenuItemColors =
   MenuItemColors(
-    textColor = menuItemText,
-    leadingIconColor = menuItemText,
-    trailingIconColor = menuItemText,
-    disabledTextColor = menuItemText.disabled,
-    disabledLeadingIconColor = menuItemText.disabled,
-    disabledTrailingIconColor = menuItemText.disabled,
+    textColor = content,
+    leadingIconColor = content,
+    trailingIconColor = content,
+    disabledTextColor = content.disabled,
+    disabledLeadingIconColor = content.disabled,
+    disabledTrailingIconColor = content.disabled,
   )
 
 @Composable

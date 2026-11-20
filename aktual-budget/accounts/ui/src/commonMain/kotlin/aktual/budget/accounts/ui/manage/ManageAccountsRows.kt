@@ -151,7 +151,8 @@ private fun GroupMenu(name: String, onRename: () -> Unit, onDelete: () -> Unit) 
         },
       )
       AktualDropdownMenuItem(
-        text = { Text(Strings.accountsManageGroupDelete, color = colors.errorText) },
+        text = Strings.accountsManageGroupDelete,
+        color = colors.errorText,
         onClick = {
           expanded = false
           onDelete()

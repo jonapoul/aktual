@@ -54,7 +54,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,8 +69,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Unspecified
-import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
@@ -536,19 +533,10 @@ internal fun GroupHeaderRow(
       if (onOpenMenu == null) {
         AktualDropdownMenu(expanded = isMenuOpen, onDismissRequest = { isMenuOpen = false }) {
           groupActions(group, isIncome, onAction).fastForEach { action ->
-            val color = if (action.isDestructive) colors.errorText else Unspecified
             AktualDropdownMenuItem(
-              text = { Text(text = action.label, color = color) },
-              leadingIcon =
-                action.icon?.let { icon ->
-                  {
-                    Icon(
-                      imageVector = icon,
-                      contentDescription = null,
-                      tint = color.takeOrElse { LocalContentColor.current },
-                    )
-                  }
-                },
+              text = action.label,
+              leadingIcon = action.icon,
+              color = if (action.isDestructive) colors.errorText else colors.menuItemText,
               onClick = {
                 isMenuOpen = false
                 action.onClick()
