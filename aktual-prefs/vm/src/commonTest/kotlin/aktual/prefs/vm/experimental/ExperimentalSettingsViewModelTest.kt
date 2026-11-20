@@ -41,7 +41,7 @@ class ExperimentalSettingsViewModelTest {
       assertThat(feature.preference.enabled).isTrue()
       feature.preference.onChange(true)
       assertThat(awaitItem()[SankeyReport].preference.value).isTrue()
-      assertThat(flags[SankeyReport].get()).isTrue()
+      assertThat(SankeyReport in flags).isTrue()
       cancelAndIgnoreRemainingEvents()
     }
   }

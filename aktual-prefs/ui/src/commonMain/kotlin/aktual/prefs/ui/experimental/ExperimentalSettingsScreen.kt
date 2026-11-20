@@ -3,6 +3,7 @@ package aktual.prefs.ui.experimental
 import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
+import aktual.core.nav.SettingsHighlight
 import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NoticeBanner
@@ -28,12 +29,14 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun ExperimentalSettingsScreen(
   back: BackNavigator,
+  highlight: SettingsHighlight?,
   viewModel: ExperimentalSettingsViewModel = metroViewModel<ExperimentalSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val uriHandler = LocalUriHandler.current
   ExperimentalSettingsScaffold(
     state = state,
+    highlight = highlight,
     onBack = back::invoke,
     onOpenDocs = { uriHandler.openUri(DOCS_URL) },
   )
@@ -44,11 +47,13 @@ private fun ExperimentalSettingsScaffold(
   state: ExperimentalSettingsState,
   onBack: () -> Unit,
   onOpenDocs: () -> Unit,
+  highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
     title = Strings.settingsExperimental,
     description = null,
     onBack = onBack,
+    highlight = highlight,
   ) {
     item { WarningBanner(text = Strings.settingsExperimentalDesc) }
 

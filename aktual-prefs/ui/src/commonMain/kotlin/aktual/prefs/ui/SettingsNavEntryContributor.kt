@@ -130,7 +130,9 @@ class SettingsNavEntryContributor : NavEntryContributor {
 
     entry<AdvancedSettingsNavRoute> { AdvancedSettingsScreen(BackNavigator(stack)) }
 
-    entry<ExperimentalSettingsNavRoute> { ExperimentalSettingsScreen(BackNavigator(stack)) }
+    entry<ExperimentalSettingsNavRoute> { route ->
+      ExperimentalSettingsScreen(BackNavigator(stack), route.highlight)
+    }
 
     entry<AppIconSettingsNavRoute> { route ->
       AppIconSettingsScreen(BackNavigator(stack), route.highlight)

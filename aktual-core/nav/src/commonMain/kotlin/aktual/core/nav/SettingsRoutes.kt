@@ -44,4 +44,5 @@ data class TransactionSettingsNavRoute(val highlight: SettingsHighlight? = null)
 
 @Serializable data object AdvancedSettingsNavRoute : NavKey
 
-@Serializable data object ExperimentalSettingsNavRoute : NavKey
+@Serializable
+data class ExperimentalSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey

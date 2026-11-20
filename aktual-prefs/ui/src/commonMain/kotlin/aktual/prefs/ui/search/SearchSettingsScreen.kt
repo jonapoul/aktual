@@ -2,6 +2,7 @@ package aktual.prefs.ui.search
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudDownload
+import aktual.core.icons.Pylon
 import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Apps
@@ -18,6 +19,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
@@ -67,6 +69,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -185,7 +188,7 @@ private fun ResultItem(
       tint = colors.tableTextLight.orDisabled(setting.isEnabled),
     )
 
-    Column(modifier = Modifier.weight(1f)) {
+    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
       Text(
         text = rememberHighlighted(setting.title, query),
         style = typography.bodyMedium,
@@ -198,6 +201,8 @@ private fun ResultItem(
         Text(
           text = breadcrumbs.joinToString(separator = " › "),
           style = typography.bodySmall,
+          // Tighter than bodySmall so wrapped breadcrumbs read as one block under the title
+          lineHeight = lineHeights.largePlus,
           color = colors.tableTextLight.orDisabled(setting.isEnabled),
         )
       }
@@ -240,16 +245,54 @@ private fun SettingsPage.icon(): ImageVector =
     SettingsPage.Dialogs -> MaterialIcons.Dialogs
     LauncherIcon -> MaterialIcons.Apps
     Updates -> AktualIcons.CloudDownload
+    Experimental -> AktualIcons.Pylon
   }
 
-@PortraitPreview
+private val PreviewSearchResults =
+  persistentListOf(
+    SettingsSearchResult(
+      title = "Blur behind dialogs",
+      kind = Preference,
+      page = SystemUi,
+      path = persistentListOf(SystemUiTitle, DialogsTitle),
+    ),
+    SettingsSearchResult(
+      title = "Blur strength",
+      kind = Preference,
+      page = SystemUi,
+      path = persistentListOf(SystemUiTitle, "App bars"),
+    ),
+    SettingsSearchResult(
+      title = "Blur strength",
+      kind = Preference,
+      page = SystemUi,
+      path = persistentListOf(SystemUiTitle, DialogsTitle),
+    ),
+    // No budget open, so it's disabled
+    SettingsSearchResult(
+      title = "First day of the week",
+      kind = Preference,
+      page = Dates,
+      path = persistentListOf("Dates"),
+    ),
+    SettingsSearchResult(
+      title = "Currency Support",
+      kind = Preference,
+      page = Experimental,
+      path = persistentListOf("Main Budget", "Experimental", "Synced with this budget"),
+    ),
+  )
+
+private class SettingsSearchResultProvider :
+  ColorParamsProvider<SettingsSearchResult>(PreviewSearchResults)
+
+@Preview
 @Composable
-private fun PreviewSearchSettingsScaffold(
-  @PreviewParameter(SearchSettingsScaffoldProvider::class)
-  params: ColorParams<SearchSettingsParams>,
+private fun PreviewResultItem(
+  @PreviewParameter(SettingsSearchResultProvider::class) params: ColorParams<SettingsSearchResult>,
 ) =
   PreviewWithColorParams(params) {
-    SearchSettingsScaffold(query = query, state = state, onAction = {})
+    ResultItem(setting = this, query = "", onClick = {})
   }
 
 private data class SearchSettingsParams(val query: String, val state: SearchSettingsState)
@@ -260,40 +303,19 @@ private class SearchSettingsScaffoldProvider :
     SearchSettingsParams(query = "xyz", state = NoResults),
     SearchSettingsParams(
       query = "blur",
-      state =
-        Results(
-          query = "blur",
-          settings =
-            persistentListOf(
-              SettingsSearchResult(
-                title = "Blur behind dialogs",
-                kind = Preference,
-                page = SystemUi,
-                path = persistentListOf(SystemUiTitle, DialogsTitle),
-              ),
-              SettingsSearchResult(
-                title = "Blur strength",
-                kind = Preference,
-                page = SystemUi,
-                path = persistentListOf(SystemUiTitle, "App bars"),
-              ),
-              SettingsSearchResult(
-                title = "Blur strength",
-                kind = Preference,
-                page = SystemUi,
-                path = persistentListOf(SystemUiTitle, DialogsTitle),
-              ),
-              // No budget open, so it's disabled
-              SettingsSearchResult(
-                title = "First day of the week",
-                kind = Preference,
-                page = Dates,
-                path = persistentListOf("Dates"),
-              ),
-            ),
-        ),
+      state = Results(query = "blur", settings = PreviewSearchResults),
     ),
   )
+
+@PortraitPreview
+@Composable
+private fun PreviewSearchSettingsScaffold(
+  @PreviewParameter(SearchSettingsScaffoldProvider::class)
+  params: ColorParams<SearchSettingsParams>,
+) =
+  PreviewWithColorParams(params) {
+    SearchSettingsScaffold(query = query, state = state, onAction = {})
+  }
 
 private const val SystemUiTitle = "System UI"
 private const val DialogsTitle = "Dialogs"

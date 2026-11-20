@@ -1,5 +1,6 @@
 package aktual.prefs.vm.search
 
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.StringLookup
 import aktual.core.model.Coordinates
 import aktual.core.utils.LocationProvider
@@ -178,6 +179,58 @@ class SearchSettingsViewModelTest {
   }
 
   @Test
+  fun `Currency settings only shown while currency support is on`() = runTest {
+    val hidden = buildViewModel(budgetName = "My Budget")
+    hidden.setQuery("symbol position")
+    hidden.state.test {
+      advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isEqualTo(NoResults)
+    }
+
+    val shown = buildViewModel(budgetName = "My Budget", flags = setOf(CurrencySupport))
+    shown.setQuery("symbol position")
+    shown.state.test {
+      assertThat(awaitResults().map { it.title }).containsExactly("currency symbol position")
+    }
+  }
+
+  @Test
+  fun `Budget automations UI flag only shown while goal templates are on`() = runTest {
+    val hidden = buildViewModel(budgetName = "My Budget")
+    hidden.setQuery("goal templates ui")
+    hidden.state.test {
+      advanceUntilIdle()
+      assertThat(expectMostRecentItem()).isEqualTo(NoResults)
+    }
+
+    val shown = buildViewModel(budgetName = "My Budget", flags = setOf(GoalTemplates))
+    shown.setQuery("goal templates ui")
+    shown.state.test {
+      assertThat(awaitResults().map { it.title }).containsExactly("experimental goal templates ui")
+    }
+  }
+
+  @Test
+  fun `Finds experimental features in the open budget`() = runTest {
+    val viewModel = buildViewModel(budgetName = "My Budget")
+
+    viewModel.setQuery("sankey")
+
+    viewModel.state.test {
+      assertThat(awaitResults())
+        .containsExactly(
+          SettingsSearchResult(
+            title = "experimental sankey report",
+            kind = Preference,
+            page = Experimental,
+            path = persistentListOf("experimental", "experimental synced"),
+            budgetName = "My Budget",
+          ),
+        )
+    }
+  }
+
+  @Test
   fun `Budget settings carry the open budget's name`() = runTest {
     val viewModel = buildViewModel(budgetName = "My Budget")
 
@@ -213,6 +266,7 @@ class SearchSettingsViewModelTest {
     locationSupported: Boolean = true,
     budgetName: String? = null,
     updatesSupported: Boolean = false,
+    flags: Set<FeatureFlag> = emptySet(),
   ) =
     SearchSettingsViewModel(
       savedState = SavedStateHandle(),
@@ -220,6 +274,7 @@ class SearchSettingsViewModelTest {
       locationProvider = FakeLocationProvider(locationSupported),
       nightlyUpdates = FakeNightlyUpdates(updatesSupported),
       openBudgetName = { flowOf(budgetName) },
+      openBudgetFlags = { flowOf(flags) },
       viewModelContext = viewModelContext,
     )
 

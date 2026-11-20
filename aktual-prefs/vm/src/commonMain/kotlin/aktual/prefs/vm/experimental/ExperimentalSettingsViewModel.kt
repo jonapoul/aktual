@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 @ContributesIntoMap(BudgetScope::class)
 class ExperimentalSettingsViewModel
 internal constructor(
-  private val flags: BudgetFeatureFlags,
+  flags: BudgetFeatureFlags,
   server: BudgetServer,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {

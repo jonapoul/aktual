@@ -1,5 +1,6 @@
 package aktual.prefs.vm.search
 
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.Res
 import aktual.core.l10n.settings_amounts
 import aktual.core.l10n.settings_app_icon
@@ -8,6 +9,20 @@ import aktual.core.l10n.settings_currency_add_space
 import aktual.core.l10n.settings_currency_default
 import aktual.core.l10n.settings_currency_symbol_position
 import aktual.core.l10n.settings_dark_theme
+import aktual.core.l10n.settings_experimental
+import aktual.core.l10n.settings_experimental_action_templating
+import aktual.core.l10n.settings_experimental_balance_forecast_report
+import aktual.core.l10n.settings_experimental_budget_analysis_report
+import aktual.core.l10n.settings_experimental_currency
+import aktual.core.l10n.settings_experimental_enable_banking
+import aktual.core.l10n.settings_experimental_formula_mode
+import aktual.core.l10n.settings_experimental_goal_templates
+import aktual.core.l10n.settings_experimental_goal_templates_ui
+import aktual.core.l10n.settings_experimental_mobile_calculator
+import aktual.core.l10n.settings_experimental_monte_carlo_report
+import aktual.core.l10n.settings_experimental_new_sidebar
+import aktual.core.l10n.settings_experimental_sankey_report
+import aktual.core.l10n.settings_experimental_synced
 import aktual.core.l10n.settings_format_dates
 import aktual.core.l10n.settings_format_dates_group
 import aktual.core.l10n.settings_format_decimal
@@ -48,11 +63,13 @@ import aktual.core.l10n.transactions_view_expand_splits
 import org.jetbrains.compose.resources.StringResource
 
 // Mirrors the layout of the settings screens. An entry with children is a group, one without is a
-// single preference. Keep it in sync when adding, moving or removing a setting.
+// single preference. Keep it in sync when adding, moving or removing a setting. An entry with a
+// flag, and everything in it, only shows while the open budget has that flag on
 internal data class SettingsIndexEntry(
   val title: StringResource,
   val children: List<SettingsIndexEntry> = emptyList(),
   val needsLocation: Boolean = false,
+  val flag: FeatureFlag? = null,
 )
 
 private fun entry(title: StringResource, vararg children: SettingsIndexEntry) =
@@ -133,11 +150,15 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
         Res.string.settings_amounts,
         entry(Res.string.settings_format_numbers),
         entry(Res.string.settings_format_decimal),
-        entry(
-          Res.string.settings_currency,
-          entry(Res.string.settings_currency_default),
-          entry(Res.string.settings_currency_symbol_position),
-          entry(Res.string.settings_currency_add_space),
+        SettingsIndexEntry(
+          title = Res.string.settings_currency,
+          children =
+            listOf(
+              entry(Res.string.settings_currency_default),
+              entry(Res.string.settings_currency_symbol_position),
+              entry(Res.string.settings_currency_add_space),
+            ),
+          flag = CurrencySupport,
         ),
       ),
     SettingsPage.Transactions to
@@ -149,4 +170,36 @@ internal val SettingsIndex: Map<SettingsPage, SettingsIndexEntry> =
     SettingsPage.LauncherIcon to entry(Res.string.settings_app_icon),
     SettingsPage.Updates to
       entry(Res.string.settings_updates, entry(Res.string.settings_updates_nightly)),
+    SettingsPage.Experimental to
+      entry(
+        Res.string.settings_experimental,
+        SettingsIndexEntry(
+          title = Res.string.settings_experimental_synced,
+          children =
+            FeatureFlag.entries.map { flag ->
+              // The budget automations UI flag only shows once goal templates are on
+              SettingsIndexEntry(
+                title = flag.title,
+                flag = if (flag == GoalTemplatesUi) GoalTemplates else null,
+              )
+            },
+        ),
+      ),
   )
+
+private val FeatureFlag.title: StringResource
+  get() =
+    when (this) {
+      GoalTemplates -> Res.string.settings_experimental_goal_templates
+      GoalTemplatesUi -> Res.string.settings_experimental_goal_templates_ui
+      ActionTemplating -> Res.string.settings_experimental_action_templating
+      FormulaMode -> Res.string.settings_experimental_formula_mode
+      CurrencySupport -> Res.string.settings_experimental_currency
+      MobileCalculator -> Res.string.settings_experimental_mobile_calculator
+      NewSidebarUi -> Res.string.settings_experimental_new_sidebar
+      SankeyReport -> Res.string.settings_experimental_sankey_report
+      BalanceForecastReport -> Res.string.settings_experimental_balance_forecast_report
+      BudgetAnalysisReport -> Res.string.settings_experimental_budget_analysis_report
+      MonteCarloReport -> Res.string.settings_experimental_monte_carlo_report
+      EnableBanking -> Res.string.settings_experimental_enable_banking
+    }

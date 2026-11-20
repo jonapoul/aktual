@@ -6,6 +6,7 @@ import aktual.budget.utils.BudgetLocalPreferences
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.prefs.BudgetFeatureFlags
 import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
@@ -31,6 +32,7 @@ class AmountSettingsViewModel
 internal constructor(
   preferences: BudgetFormatPreferences,
   localPreferences: BudgetLocalPreferences,
+  flags: BudgetFeatureFlags,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   val state: StateFlow<AmountSettingsState> =
@@ -40,6 +42,8 @@ internal constructor(
       val currency by collectAsState(preferences.currency)
       val symbolPosition by collectAsState(preferences.symbolPosition)
       val spaceBetweenAmountAndSymbol by collectAsState(preferences.spaceBetweenAmountAndSymbol)
+      // Hidden like upstream while the flag is off, but the stored currency still applies
+      val currencySupport by collectAsState(flags[CurrencySupport])
       val budgetName by remember {
         localPreferences.observe(BudgetName)
       }
@@ -60,18 +64,21 @@ internal constructor(
           ListPreference(
             value = currency,
             options = CurrencyOptions,
+            visible = currencySupport,
             onChange = { viewModelScope.launch { preferences.changeCurrency(it) } },
           ),
         symbolPosition =
           ListPreference(
             value = symbolPosition,
             enabled = currency != None,
+            visible = currencySupport,
             onChange = { launchAndSet(preferences.symbolPosition, it) },
           ),
         spaceBetweenAmountAndSymbol =
           BooleanPreference(
             value = spaceBetweenAmountAndSymbol,
             enabled = currency != None,
+            visible = currencySupport,
             onChange = { launchAndSet(preferences.spaceBetweenAmountAndSymbol, it) },
           ),
       )

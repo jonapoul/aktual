@@ -8,4 +8,6 @@ class FakeBudgetFeatureFlags(enabled: Set<FeatureFlag> = emptySet()) : BudgetFea
   private val prefs = FeatureFlag.entries.associateWith { InMemoryPreference(it in enabled) }
 
   override fun get(flag: FeatureFlag): Preference<Boolean> = prefs.getValue(flag)
+
+  override suspend fun contains(flag: FeatureFlag): Boolean = get(flag).get()
 }

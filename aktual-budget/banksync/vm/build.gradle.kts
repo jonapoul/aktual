@@ -5,6 +5,7 @@ kotlin {
     api(project(":aktual-budget:banksync"))
     api(project(":aktual-budget:data:db"))
     implementation(project(":aktual-core:utils"))
+    implementation(project(":aktual-prefs"))
   }
 
   commonTestDependencies {

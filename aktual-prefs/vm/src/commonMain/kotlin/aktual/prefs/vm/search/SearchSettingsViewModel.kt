@@ -1,10 +1,12 @@
 package aktual.prefs.vm.search
 
+import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.StringLookup
 import aktual.core.utils.LocationProvider
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.prefs.vm.OpenBudgetFlags
 import aktual.prefs.vm.OpenBudgetName
 import aktual.prefs.vm.search.SearchSettingsState.Results
 import aktual.prefs.vm.security.ShouldShowSecuritySettings
@@ -38,6 +40,7 @@ internal constructor(
   private val locationProvider: LocationProvider,
   private val nightlyUpdates: NightlyUpdates,
   openBudgetName: OpenBudgetName,
+  openBudgetFlags: OpenBudgetFlags,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   @AssistedFactory
@@ -52,10 +55,10 @@ internal constructor(
 
   val query: StateFlow<String> = savedState.getStateFlow(KEY_QUERY, initialValue = "")
 
-  private val settings = MutableStateFlow<List<SettingsSearchResult>>(emptyList())
+  private val settings = MutableStateFlow<List<IndexedResult>>(emptyList())
 
   val state: StateFlow<SearchSettingsState> =
-    combine(query, settings, openBudgetName.observe(), ::search)
+    combine(query, settings, openBudgetName.observe(), openBudgetFlags.observe(), ::search)
       .stateIn(viewModelScope, Eagerly, initialValue = NoQuery)
 
   init {
@@ -73,7 +76,7 @@ internal constructor(
     if (!isShown(page)) {
       emptyList()
     } else {
-      buildList { addEntry(page, entry, path = emptyList(), isPage = true) }
+      buildList { addEntry(page, entry, path = emptyList(), isPage = true, flag = null) }
     }
 
   private fun isShown(page: SettingsPage): Boolean =
@@ -88,16 +91,19 @@ internal constructor(
       Amounts,
       Dates,
       Transactions,
-      LauncherIcon -> true
+      LauncherIcon,
+      Experimental -> true
     }
 
-  private suspend fun MutableList<SettingsSearchResult>.addEntry(
+  private suspend fun MutableList<IndexedResult>.addEntry(
     page: SettingsPage,
     entry: SettingsIndexEntry,
     path: List<String>,
     isPage: Boolean,
+    flag: FeatureFlag?,
   ) {
     if (entry.needsLocation && !locationProvider.isSupported) return
+    val entryFlag = entry.flag ?: flag
     val title = strings[entry.title]
     val kind: SettingsSearchKind =
       when {
@@ -105,14 +111,17 @@ internal constructor(
         entry.children.isNotEmpty() -> Group
         else -> Preference
       }
-    add(SettingsSearchResult(title, kind, page, path.toImmutableList()))
-    entry.children.forEach { child -> addEntry(page, child, path + title, isPage = false) }
+    add(IndexedResult(SettingsSearchResult(title, kind, page, path.toImmutableList()), entryFlag))
+    entry.children.forEach { child ->
+      addEntry(page, child, path + title, isPage = false, flag = entryFlag)
+    }
   }
 
   private fun search(
     query: String,
-    settings: List<SettingsSearchResult>,
+    settings: List<IndexedResult>,
     budgetName: String?,
+    flags: Set<FeatureFlag>,
   ): SearchSettingsState {
     val trimmed = query.trim()
     if (trimmed.isEmpty()) return NoQuery
@@ -121,6 +130,8 @@ internal constructor(
     val matching =
       settings
         .asSequence()
+        .filter { it.flag == null || it.flag in flags }
+        .map { it.result }
         .filter { it.title.contains(trimmed, ignoreCase = true) }
         .map { result -> result.inBudget(budgetName) }
         .sortedBy { it.kind }
@@ -135,6 +146,8 @@ internal constructor(
 
   private fun SettingsSearchResult.inBudget(budgetName: String?): SettingsSearchResult =
     if (page in BudgetSettingsPages) copy(budgetName = budgetName) else this
+
+  private data class IndexedResult(val result: SettingsSearchResult, val flag: FeatureFlag?)
 
   private companion object {
     const val KEY_QUERY = "query"

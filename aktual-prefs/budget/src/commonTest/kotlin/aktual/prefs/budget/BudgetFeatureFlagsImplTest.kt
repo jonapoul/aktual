@@ -12,20 +12,21 @@ import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactly
-import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import kotlin.test.Test
 import kotlinx.coroutines.test.StandardTestDispatcher
 
 class BudgetFeatureFlagsImplTest {
   @Test
   fun `Unset flags are off`() = runFlagsTest { flags, _, _ ->
-    FeatureFlag.entries.forEach { flag -> assertThat(flags[flag].get()).isEqualTo(false) }
+    FeatureFlag.entries.forEach { flag -> assertThat(flag in flags).isFalse() }
   }
 
   @Test
   fun `Reads upstream's stored values`() = runFlagsTest { flags, dao, _ ->
     dao[SankeyReport] = "true"
-    assertThat(flags[SankeyReport].get()).isEqualTo(true)
+    assertThat(SankeyReport in flags).isTrue()
   }
 
   @Test
