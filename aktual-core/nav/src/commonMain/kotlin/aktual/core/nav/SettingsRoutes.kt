@@ -11,8 +11,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class ThemeSettingsNavRoute(val highlight: SettingsHighlight? = null) : NavKey
 
-@Serializable data object CustomThemeSettingsNavRoute : NavKey
-
 @Serializable data class InspectThemeNavRoute(val id: ThemeId) : NavKey
 
 @Serializable data class SearchThemeNavRoute(val id: ThemeId) : NavKey

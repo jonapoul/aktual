@@ -23,7 +23,6 @@ flowchart TD
   advancedSettings["Advanced Settings"]
   experimentalSettings["Experimental Settings"]
   themeSettings["Theme Settings"]
-  customThemes["Custom Themes"]
   inspectTheme["Inspect Theme"]
   searchTheme["Search Theme"]
   url["Server URL"]
@@ -105,9 +104,7 @@ flowchart TD
   searchSettings --tap result--> updateSettings
   settings --tap advanced, budget open--> advancedSettings
   settings --tap experimental, budget open--> experimentalSettings
-  themeSettings --tap custom themes--> customThemes
   themeSettings --tap inspect--> inspectTheme
-  customThemes --tap inspect--> inspectTheme
   inspectTheme --tap search--> searchTheme
 
   budgetSync --budget synced--> budgetNavRail

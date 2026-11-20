@@ -2,6 +2,8 @@ package aktual.prefs.components
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
+import aktual.core.icons.Tuning
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -115,9 +117,9 @@ fun BasicPreferenceItem(
     }
 
     Column(modifier = Modifier.weight(1f)) {
-      Box(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+      Row(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
         Column(
-          modifier = Modifier.wrapContentHeight(),
+          modifier = Modifier.wrapContentHeight().weight(1f),
           verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
           Text(
@@ -140,7 +142,7 @@ fun BasicPreferenceItem(
         }
 
         if (topRightContent != null) {
-          Box(modifier = Modifier.align(TopEnd), content = topRightContent)
+          Box(content = topRightContent)
         }
       }
 
@@ -191,6 +193,18 @@ private fun PreviewBasicPreferenceItem(
       icon = icon,
       onClick = {},
       enabled = enabled,
+      topRightContent =
+        if (withAction) {
+          {
+            AktualIconButton(
+              imageVector = AktualIcons.Tuning,
+              contentDescription = null,
+              onClick = {},
+            )
+          }
+        } else {
+          null
+        },
     )
   }
 
@@ -199,6 +213,7 @@ private data class BasicPreferenceItemParams(
   val subtitle: String?,
   val icon: ImageVector?,
   val enabled: Boolean = true,
+  val withAction: Boolean = false,
 )
 
 private class BasicPreferenceItemProvider :
@@ -208,6 +223,7 @@ private class BasicPreferenceItemProvider :
       subtitle =
         "When you change this setting, the doodad will update. This might also affect the thingybob.",
       icon = AktualIcons.InformationOutline,
+      withAction = true,
     ),
     BasicPreferenceItemParams(
       title = "This one has no subtitle and no icon",

@@ -2483,7 +2483,7 @@
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Match system</string>
-  <string name="settings_theme_use_system_desc">Follow your device\'s light or dark mode. Catalog themes show up here once downloaded</string>
+  <string name="settings_theme_use_system_desc">Follow your device\'s light or dark mode</string>
   <string name="settings_theme_system_group">System theme</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
@@ -2493,10 +2493,10 @@
   <string name="settings_theme_list_desc">Used when Match system is off</string>
   <string name="settings_theme_local_badge">Local</string>
   <string name="settings_theme_catalog">Theme catalog</string>
+  <string name="settings_theme_catalog_subtitle">Community-created themes, hosted on GitHub at actualbudget/actual. Themes will be downloaded and cached locally when you tap on each one.</string>
   <string name="settings_theme_preview">Preview %1$s theme</string>
-  <string name="settings_theme_custom_title">Custom Themes</string>
+  <string name="settings_theme_refresh">Refresh catalog</string>
   <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
-  <string name="settings_theme_refresh_prefix">Error</string>
   <string name="settings_theme_refresh_failure">Failed fetching catalog</string>
   <string name="settings_theme_refresh_retry">Retry</string>
   <string name="settings_theme_sort_filter">Sort and filter themes</string>
@@ -2504,9 +2504,12 @@
   <string name="settings_theme_filter_all">All</string>
   <string name="settings_theme_filter_light">Light only</string>
   <string name="settings_theme_filter_dark">Dark only</string>
+  <string name="settings_theme_filter_downloaded">Downloaded</string>
+  <string name="settings_theme_filter_not_downloaded">Not downloaded</string>
   <string name="settings_theme_sort">Sort</string>
   <string name="settings_theme_sort_by_repo">By repository</string>
   <string name="settings_theme_sort_by_name">By name</string>
+  <string name="settings_theme_sort_downloaded">Downloaded first</string>
 
   <string name="settings_theme_downloaded">Downloaded %1$s</string>
   <string name="settings_theme_download_failed_title">Failed downloading %1$s</string>

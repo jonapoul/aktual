@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.update
 
 class FakeCustomThemeCache : CustomThemeCache {
   val themes = MutableStateFlow(emptyMap<CustomThemeRepo, CustomColors>())
+  var summaries = emptyList<CustomThemeSummary>()
 
   override suspend fun repos(): List<CustomThemeRepo> = themes.value.keys.toList()
 
-  override suspend fun summaries(): List<CustomThemeSummary> = emptyList()
+  override suspend fun summaries(): List<CustomThemeSummary> = summaries
 
   override suspend fun theme(repo: CustomThemeRepo): CustomColors? = themes.value[repo]
 
@@ -26,7 +27,9 @@ class FakeCustomThemeCache : CustomThemeCache {
     map.values.filterNot { it.repo.isLocal }
   }
 
-  override suspend fun save(summaries: List<CustomThemeSummary>) = Unit
+  override suspend fun save(summaries: List<CustomThemeSummary>) {
+    this.summaries = summaries
+  }
 
   override suspend fun save(theme: CustomColors) {
     themes.update { it + (theme.repo to theme) }
@@ -37,6 +40,7 @@ class FakeCustomThemeCache : CustomThemeCache {
   }
 
   override suspend fun clear() {
+    summaries = emptyList()
     themes.update { map -> map.filterKeys { it.isLocal } }
   }
 }

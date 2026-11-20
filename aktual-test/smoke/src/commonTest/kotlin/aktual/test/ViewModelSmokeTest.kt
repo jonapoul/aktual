@@ -60,7 +60,6 @@ import aktual.prefs.vm.search.SearchSettingsViewModel
 import aktual.prefs.vm.security.SecuritySettingsViewModel
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
-import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import aktual.prefs.vm.transactions.TransactionSettingsViewModel
 import aktual.prefs.vm.updates.UpdateSettingsViewModel
 import aktual.updates.vm.NightlyUpdateViewModel
@@ -164,8 +163,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun budgetList() = testVm<ListBudgetsViewModel>()
 
   @Test fun createAccount() = testVm<CreateAccountViewModel>()
-
-  @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
 
   @Test fun formatSettings() = testVm<FormatSettingsViewModel>()
 

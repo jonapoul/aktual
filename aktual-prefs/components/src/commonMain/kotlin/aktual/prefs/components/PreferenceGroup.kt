@@ -6,6 +6,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,6 +32,7 @@ fun PreferenceGroup(
   modifier: Modifier = Modifier,
   subtitle: String? = null,
   enabled: Boolean = true,
+  actions: (@Composable BoxScope.() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BasicPreferenceItem(
@@ -41,7 +43,7 @@ fun PreferenceGroup(
     modifier = modifier,
     enabled = enabled,
     includeBackground = true,
-    rightContent = null,
+    topRightContent = actions,
     headerStyle = typography.titleMedium,
     bottomContent = {
       CompositionLocalProvider(LocalPreferenceGroupTitle provides title) { content() }
