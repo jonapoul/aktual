@@ -6,6 +6,8 @@ kotlin {
     api(project(":aktual-core:theme"))
     api(project(":aktual-prefs"))
     api(project(":aktual-updates:domain"))
+    implementation(project(":aktual-budget:transactions"))
+    implementation(project(":aktual-budget:utils"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-di:runlevel"))
   }

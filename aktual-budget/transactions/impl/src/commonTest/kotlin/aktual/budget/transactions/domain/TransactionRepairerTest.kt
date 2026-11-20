@@ -14,7 +14,6 @@ import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
@@ -27,7 +26,7 @@ internal class TransactionRepairerTest {
 
     val result = repairer().repair()
 
-    assertThat(result.isEmpty).isTrue()
+    assertThat(result).isEqualTo(RepairResult(0, 0, 0, 0, 0, 0, mismatchedSplits = emptyList()))
   }
 
   @Test
@@ -64,6 +63,30 @@ internal class TransactionRepairerTest {
     parts.forEach { part ->
       assertThat(transactionDao.row(part)).isNotNull().prop(Transactions::tombstone).isEqualTo(true)
     }
+  }
+
+  @Test
+  fun `A deleted parent's transfer part keeps its other side`() = runWriterTest {
+    insertAccount(ACCOUNT)
+    insertAccount(OTHER)
+    val (parent, parts) = insertSplit(amount = -100, parts = listOf(-100))
+    val other = writer.write {
+      insert(NewTransaction(OTHER, DATE, Amount(100), transferId = parts[0]))
+    }
+    invoke(
+      listOf(
+        localChange(TRANSACTIONS, parts[0].value, "transferred_id", other.value),
+        localChange(TRANSACTIONS, parent.value, "tombstone", 1L),
+      ),
+    )
+
+    repairer().repair()
+
+    assertThat(transactionDao.row(parts[0]))
+      .isNotNull()
+      .prop(Transactions::tombstone)
+      .isEqualTo(true)
+    assertThat(transactionDao.row(other)).isNotNull().prop(Transactions::tombstone).isEqualTo(false)
   }
 
   @Test
@@ -127,10 +150,9 @@ internal class TransactionRepairerTest {
     parts: List<Long>,
   ): Pair<TransactionId, List<TransactionId>> = writer.write {
     val parent = insert(NewTransaction(ACCOUNT, DATE, Amount(amount), isParent = true))
-    val children =
-      parts.map { part ->
-        insert(NewTransaction(ACCOUNT, DATE, Amount(part), parentId = parent))
-      }
+    val children = parts.map { part ->
+      insert(NewTransaction(ACCOUNT, DATE, Amount(part), parentId = parent))
+    }
     parent to children
   }
 

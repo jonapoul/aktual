@@ -246,4 +246,33 @@
     <item quantity="one">%1$d new commit</item>
     <item quantity="other">%1$d new commits</item>
   </plurals>
+  <!-- settings -->
+  <plurals name="settings_advanced_repair_blank_payees">
+    <item quantity="one">Fixed %1$d split with a blank payee.</item>
+    <item quantity="other">Fixed %1$d splits with a blank payee.</item>
+  </plurals>
+  <plurals name="settings_advanced_repair_cleared">
+    <item quantity="one">Fixed %1$d split with the wrong cleared flag.</item>
+    <item quantity="other">Fixed %1$d splits with the wrong cleared flag.</item>
+  </plurals>
+  <plurals name="settings_advanced_repair_deleted">
+    <item quantity="one">Fixed %1$d split that wasn't properly deleted.</item>
+    <item quantity="other">Fixed %1$d splits that weren't properly deleted.</item>
+  </plurals>
+  <plurals name="settings_advanced_repair_errors">
+    <item quantity="one">Fixed %1$d non-split transaction with split errors.</item>
+    <item quantity="other">Fixed %1$d non-split transactions with split errors.</item>
+  </plurals>
+  <plurals name="settings_advanced_repair_transfers">
+    <item quantity="one">Fixed %1$d transfer.</item>
+    <item quantity="other">Fixed %1$d transfers.</item>
+  </plurals>
+  <plurals name="settings_advanced_repair_parent_categories">
+    <item quantity="one">Fixed %1$d split transaction with non-null category.</item>
+    <item quantity="other">Fixed %1$d split transactions with non-null category.</item>
+  </plurals>
+  <plurals name="settings_advanced_repair_mismatched">
+    <item quantity="one">Found %1$d split transaction with mismatched amounts on the below date. Please review it manually:</item>
+    <item quantity="other">Found %1$d split transactions with mismatched amounts on the below dates. Please review them manually:</item>
+  </plurals>
 </resources>

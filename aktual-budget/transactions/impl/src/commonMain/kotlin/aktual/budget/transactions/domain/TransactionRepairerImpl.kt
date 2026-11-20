@@ -24,10 +24,13 @@ internal constructor(
     }
 
     val cleared = dao.mismatchedCleared()
-    write { cleared.forEach { row -> update(TransactionUpdate(row.id, cleared = row.cleared == true)) } }
+    write {
+      cleared.forEach { row -> update(TransactionUpdate(row.id, cleared = row.cleared == true)) }
+    }
 
     val deleted = dao.orphanedChildren()
-    write { deleted.forEach { id -> delete(id) } }
+    // Upstream marks them deleted as an update, which leaves the other side of a transfer alone
+    writer.write { delete(deleted) }
 
     val mismatchedSplits = dao.mismatchedSplits()
 
@@ -59,5 +62,7 @@ internal constructor(
     writer.write(runTransfers = true, block = block)
 
   private suspend fun TransactionBatch.clearCategories(ids: List<TransactionId>) =
-    ids.forEach { id -> update(TransactionUpdate(id, category = Patch.To(null))) }
+    ids.forEach { id ->
+      update(TransactionUpdate(id, category = Patch.To(null)))
+    }
 }
