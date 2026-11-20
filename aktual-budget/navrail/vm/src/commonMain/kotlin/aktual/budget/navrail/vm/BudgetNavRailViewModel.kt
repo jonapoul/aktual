@@ -23,7 +23,6 @@ import aktual.di.newScope
 import aktual.log
 import aktual.prefs.BudgetFormatPreferences
 import aktual.prefs.SystemUiPreferences
-import aktual.prefs.asStateFlow
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -83,7 +82,9 @@ internal constructor(
       )
     }
 
-  val startTab: StateFlow<BudgetTab> = systemUiPreferences.startTab.asStateFlow(viewModelScope)
+  // Null until the stored value loads
+  val startTab: StateFlow<BudgetTab?> =
+    systemUiPreferences.startTab.asFlow().stateIn(viewModelScope, Eagerly, initialValue = null)
 
   private val search = MutableStateFlow<String?>(null)
 

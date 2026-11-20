@@ -143,7 +143,8 @@ internal fun BudgetNavRail(
   val accounts by viewModel.accounts.collectAsState()
   val hasUnpostedSchedules by viewModel.hasUnpostedSchedules.collectAsState()
   val nightlyUpdate by nightlyViewModel.state.collectAsState()
-  val startTab by viewModel.startTab.collectAsState()
+  // Wait for the stored start tab, so the rail doesn't open on the default first
+  val startTab = viewModel.startTab.collectAsState().value ?: return
 
   val tabStacks = rememberTabStacks()
   val transactionsStack = tabStacks.getValue(Transactions)

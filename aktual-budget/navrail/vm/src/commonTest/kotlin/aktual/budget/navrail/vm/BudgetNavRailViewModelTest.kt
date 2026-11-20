@@ -44,6 +44,7 @@ import assertk.assertions.prop
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.datetime.LocalDate
@@ -362,7 +363,7 @@ class BudgetNavRailViewModelTest {
     systemUiPreferences.startTab.set(Schedules)
     val viewModel = viewModel(None, scope, systemUiPreferences)
 
-    viewModel.startTab.test {
+    viewModel.startTab.filterNotNull().test {
       assertThatNextEmissionIsEqualTo(Schedules)
 
       systemUiPreferences.startTab.set(Budget)
