@@ -98,7 +98,7 @@ internal fun BudgetCategoryScreen(
   BudgetCategoryScaffold(
     modifier = modifier,
     state = state,
-    onBack = { back() },
+    onBack = back::invoke,
     onSelect = viewModel::select,
     onViewTransactions = { selected -> transactions(category, selected) },
     onHide = viewModel::setHidden,
