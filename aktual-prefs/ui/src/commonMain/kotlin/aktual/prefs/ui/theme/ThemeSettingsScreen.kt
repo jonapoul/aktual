@@ -30,6 +30,7 @@ import aktual.prefs.ui.ProvidePreferenceHighlight
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.theme.LocalTheme
+import aktual.prefs.vm.theme.ThemePreview
 import aktual.prefs.vm.theme.ThemeSettingsState
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.swatch
@@ -130,6 +131,14 @@ private fun ThemeSettingsContent(
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     item {
+      ThemePreviews(
+        modifier = Modifier.padding(vertical = 8.dp),
+        previews = state.previews,
+        customThemeNames = state.customThemeNames,
+      )
+    }
+
+    item {
       PreferenceGroup(title = Strings.settingsThemeSystemGroup) {
         UseSystemDefaultPreference(preference = state.useSystemDefault, onAction = onAction)
         LightThemePreference(
@@ -186,6 +195,17 @@ private fun PreviewColorsSettings(
               LocalTheme(PreviewLocalA, "Light (copy)", LightColors.swatch()),
               LocalTheme(PreviewLocalB, "Midnight with stripes", MidnightColors.swatch()),
             ),
+          previews =
+            if (this) {
+              persistentListOf(
+                ThemePreview(LightColors.id, Day, LightColors.swatch()),
+                ThemePreview(MidnightColors.id, Night, MidnightColors.swatch()),
+              )
+            } else {
+              persistentListOf(
+                ThemePreview(LightColors.id, Always, LightColors.swatch()),
+              )
+            },
           customThemeNames =
             persistentMapOf(
               PreviewLocalA to "Light (copy)",

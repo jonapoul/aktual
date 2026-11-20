@@ -1,6 +1,7 @@
 package aktual.prefs.vm.theme
 
 import aktual.core.model.ThemeId
+import aktual.core.theme.Colors
 import aktual.core.theme.CustomColors
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.DarkColors
@@ -71,6 +72,7 @@ internal constructor(
           systemTheme(nightTheme, DarkThemes, customThemes, isLight = false, useSystemDefault),
         constantTheme = constantTheme,
         localThemes = localThemes(customThemes),
+        previews = previews(useSystemDefault, dayTheme, nightTheme, constantTheme, customThemes),
         customThemeNames = customThemeNames(customThemes),
       )
     }
@@ -126,6 +128,32 @@ internal constructor(
       customThemes
         .filter { it.repo.isLocal }
         .map { LocalTheme(it.id, it.name, it.swatch()) }
+        .toImmutableList()
+    }
+
+  // A catalog theme that isn't downloaded yet has no colours to show, so it's left out
+  @Composable
+  private fun previews(
+    useSystemDefault: Boolean,
+    dayTheme: ThemeId,
+    nightTheme: ThemeId,
+    constantTheme: ThemeId?,
+    customThemes: ImmutableList<CustomColors>,
+  ): ImmutableList<ThemePreview> =
+    remember(useSystemDefault, dayTheme, nightTheme, constantTheme, customThemes) {
+      fun preview(id: ThemeId, mode: ThemePreviewMode): ThemePreview? {
+        val colors: Colors =
+          Colors.Defaults.firstOrNull { it.id == id }
+            ?: customThemes.firstOrNull { it.id == id }
+            ?: return null
+        return ThemePreview(id, mode, colors.swatch())
+      }
+
+      if (useSystemDefault) {
+          listOfNotNull(preview(dayTheme, Day), preview(nightTheme, Night))
+        } else {
+          listOfNotNull(preview(constantTheme ?: DarkColors.id, Always))
+        }
         .toImmutableList()
     }
 
