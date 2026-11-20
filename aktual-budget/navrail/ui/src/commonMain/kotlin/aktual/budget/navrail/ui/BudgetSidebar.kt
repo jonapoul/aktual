@@ -482,7 +482,7 @@ private fun AccountGroupBucket(
         .clip(SelectedShape)
         .clickable(onClickLabel = toggleDescription, onClick = { onToggle(section) })
         .padding(start = GroupHeaderIndent, end = 24.dp),
-    horizontalArrangement = spacedBy(6.dp),
+    horizontalArrangement = spacedBy(HeaderGap),
     verticalAlignment = CenterVertically,
   ) {
     Icon(
@@ -573,8 +573,8 @@ private fun AccountSectionHeader(
         .fillMaxWidth()
         .height(DrawerItemHeight)
         .sidebarRow(colors, selected, onClick)
-        .padding(start = 4.dp, end = 24.dp),
-    horizontalArrangement = spacedBy(6.dp),
+        .padding(start = SectionHeaderStart, end = 24.dp),
+    horizontalArrangement = spacedBy(HeaderGap),
     verticalAlignment = CenterVertically,
   ) {
     val toggleDescription =
@@ -584,6 +584,7 @@ private fun AccountSectionHeader(
         Strings.budgetNavAccountsExpand(title)
       }
     BasicIconButton(
+      modifier = Modifier.size(SectionChevronSize),
       imageVector = AktualIcons.CheveronDown,
       contentDescription = toggleDescription,
       colors =
@@ -777,12 +778,16 @@ private const val COLLAPSED_ROTATION = -90f
 
 private val AccountItemHeight = 30.dp
 
-// Lines account names up roughly under the section's title
-private val AccountNameIndent = 52.dp
+private val SectionHeaderStart = 4.dp
+private val SectionChevronSize = 40.dp
+private val HeaderGap = 6.dp
 
-private val GroupHeaderIndent = 24.dp
+// Section titles, account names and group titles share one left edge, with chevrons and sync dots
+// hanging to its left. Grouped accounts sit one chevron further in
+private val AccountNameIndent = SectionHeaderStart + SectionChevronSize + HeaderGap
 private val GroupChevronSize = 16.dp
-private val GroupedAccountNameIndent = 48.dp
+private val GroupHeaderIndent = AccountNameIndent - HeaderGap - GroupChevronSize
+private val GroupedAccountNameIndent = AccountNameIndent + GroupChevronSize
 
 @Immutable
 private data class DrawerAction(
