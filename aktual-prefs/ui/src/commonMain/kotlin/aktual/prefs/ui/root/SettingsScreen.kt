@@ -3,10 +3,10 @@ package aktual.prefs.ui.root
 import aktual.budget.model.Amount
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudDownload
+import aktual.core.icons.ColorPalette
 import aktual.core.icons.Pylon
 import aktual.core.icons.SearchAlternate
 import aktual.core.icons.SettingsSliderAlternate
-import aktual.core.icons.System
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.CalendarViewWeek
@@ -118,7 +118,7 @@ private fun SettingsScaffold(
       ) {
         SubSettingsItem(
           title = Strings.settingsTheme,
-          icon = AktualIcons.System,
+          icon = AktualIcons.ColorPalette,
           onClick = { onAction(NavToThemeSettings) },
         )
         SubSettingsItem(

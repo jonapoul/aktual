@@ -44,6 +44,7 @@ private val aktualIcons =
       CloudUnknown,
       CloudWarning,
       Code,
+      ColorPalette,
       Cog,
       Copy,
       Delete,
