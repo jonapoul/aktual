@@ -91,6 +91,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -114,6 +115,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -480,7 +482,7 @@ private fun AccountGroupBucket(
         .clip(SelectedShape)
         .clickable(onClickLabel = toggleDescription, onClick = { onToggle(section) })
         .padding(start = GroupHeaderIndent, end = 24.dp),
-    horizontalArrangement = spacedBy(6.dp),
+    horizontalArrangement = spacedBy(HeaderGap),
     verticalAlignment = CenterVertically,
   ) {
     Icon(
@@ -571,8 +573,8 @@ private fun AccountSectionHeader(
         .fillMaxWidth()
         .height(DrawerItemHeight)
         .sidebarRow(colors, selected, onClick)
-        .padding(start = 4.dp, end = 24.dp),
-    horizontalArrangement = spacedBy(6.dp),
+        .padding(start = SectionHeaderStart, end = 24.dp),
+    horizontalArrangement = spacedBy(HeaderGap),
     verticalAlignment = CenterVertically,
   ) {
     val toggleDescription =
@@ -582,6 +584,7 @@ private fun AccountSectionHeader(
         Strings.budgetNavAccountsExpand(title)
       }
     BasicIconButton(
+      modifier = Modifier.size(SectionChevronSize),
       imageVector = AktualIcons.CheveronDown,
       contentDescription = toggleDescription,
       colors =
@@ -710,10 +713,13 @@ private fun AccountItem(
         .fillMaxWidth()
         .height(AccountItemHeight)
         .sidebarRow(colors, selected, onClick)
-        .padding(start = indent, end = 24.dp),
-    horizontalArrangement = spacedBy(12.dp),
+        .padding(end = 24.dp),
     verticalAlignment = CenterVertically,
   ) {
+    Box(modifier = Modifier.width(indent), contentAlignment = CenterEnd) {
+      AccountSyncDot(account.syncState, modifier = Modifier.padding(end = 12.dp))
+    }
+
     Row(
       modifier = Modifier.weight(1f),
       horizontalArrangement = spacedBy(8.dp),
@@ -731,9 +737,12 @@ private fun AccountItem(
       NewTransactionsBadge(account.newTransactions)
     }
 
-    AccountSyncDot(account.syncState)
-
-    BalanceText(amount = account.balance, style = typography.bodyMedium, color = color)
+    BalanceText(
+      amount = account.balance,
+      style = typography.bodyMedium,
+      color = color,
+      modifier = Modifier.padding(start = 12.dp),
+    )
   }
 }
 
@@ -767,15 +776,19 @@ private fun AccountGroup.label(): String =
 
 private const val COLLAPSED_ROTATION = -90f
 
-private val AccountItemHeight = 36.dp
+private val AccountItemHeight = 30.dp
 
-// Lines account names up with the labels of the items above, past their icons
-private val AccountNameIndent = 52.dp
+private val SectionHeaderStart = 8.dp
+// Fits inside DrawerItemHeight so the button stays square
+private val SectionChevronSize = 32.dp
+private val HeaderGap = 6.dp
 
-// Lines a group's chevron up under the section's title
-private val GroupHeaderIndent = 32.dp
+// Section titles, account names and group titles share one left edge, with chevrons and sync dots
+// hanging to its left. Grouped accounts sit one chevron further in
+private val AccountNameIndent = SectionHeaderStart + SectionChevronSize + HeaderGap
 private val GroupChevronSize = 16.dp
-private val GroupedAccountNameIndent = 64.dp
+private val GroupHeaderIndent = AccountNameIndent - HeaderGap - GroupChevronSize
+private val GroupedAccountNameIndent = AccountNameIndent + GroupChevronSize
 
 @Immutable
 private data class DrawerAction(
@@ -978,7 +991,7 @@ private fun SyncStatusLine(status: SidebarSyncStatus, modifier: Modifier = Modif
 }
 
 // Material's default is 56dp
-private val DrawerItemHeight = 44.dp
+private val DrawerItemHeight = 36.dp
 
 // Aktual icons are 20dp and Material ones 24dp, so pad them to the same width to line up labels
 private val DrawerIconSize = 24.dp
