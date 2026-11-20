@@ -14,7 +14,6 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.utils.BudgetSync
-import aktual.core.utils.UuidGenerator
 import aktual.test.inMemoryDriverFactory
 import alakazam.test.TestCoroutineContexts
 import app.cash.sqldelight.db.SqlDriver
@@ -234,7 +233,7 @@ internal class CategoryWriterTest {
         budgetDao = budgetDao,
         preferencesDao = preferencesDao,
         budgetSync = this,
-        uuidGenerator = UuidGenerator { "id-${nextId++}" },
+        uuidGenerator = { "id-${nextId++}" },
       )
 
     override suspend fun invoke(changes: List<LocalChange>) {
