@@ -49,14 +49,15 @@ class StuckHeaders(
   }
 }
 
-// A sticky header that sticks below the top bar. The content gets the modifier that shifts it
+// A sticky header that sticks below the top bar. The content gets the modifier that shifts and
+// animates it
 fun LazyListScope.stuckHeader(
   key: Any,
   stuck: StuckHeaders,
   content: @Composable LazyItemScope.(Modifier) -> Unit,
 ) =
   stickyHeader(key = key, contentType = StuckHeaders.StickyHeader) {
-    content(Modifier.stuckOffset(stuck, key))
+    content(Modifier.animateItem().stuckOffset(stuck, key))
   }
 
 private fun Modifier.stuckOffset(stuck: StuckHeaders, key: Any): Modifier =
