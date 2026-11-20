@@ -27,6 +27,7 @@ import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.IconButtonColorProvider
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
@@ -56,7 +57,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -158,11 +158,7 @@ private fun ManageStorageContent(
   Box(modifier = modifier.fillMaxSize(), contentAlignment = TopCenter) {
     when (state) {
       Loading -> {
-        Box(
-          modifier = Modifier.fillMaxSize(),
-          contentAlignment = Center,
-          content = { CircularProgressIndicator() },
-        )
+        LoadingScreen()
       }
 
       is Loaded -> {

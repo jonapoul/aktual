@@ -12,6 +12,7 @@ import aktual.budget.reports.vm.montecarlo.RunPercentile
 import aktual.core.l10n.Strings
 import aktual.core.model.percent
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -25,7 +26,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,7 +53,7 @@ internal fun MonteCarloResults(
           verticalAlignment = CenterVertically,
           horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-          CircularProgressIndicator(color = colors.pageText)
+          AktualProgressIndicator()
           BodyText(Strings.monteCarloSimulating)
         }
       }

@@ -45,6 +45,10 @@ In `AktualAlertDialog` button slots (and `AktualDatePickerDialog` confirm/dismis
 
 Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`: `DiscardChangesButton` in place of the back button once there are changes, `DiscardChangesDialog` (pass the screen's own strings) when it or `BackHandler` fires, and `SaveFab` bottom-end above the snackbar host, passing `isExpanded = scrollState.isScrollingUp()` so it collapses like `AktualFab` while scrolling down. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FAB. `EditRuleScreen` is the reference.
 
+## Progress indicators
+
+Use `AktualProgressIndicator` (`AktualProgressIndicator.kt`), not Material's `CircularProgressIndicator`. Pass `size` rather than `Modifier.size`, so the stroke scales with it. Defaults to `colors.pageText`. For a whole loading screen, use `LoadingScreen(modifier)`, which fills the space and centres the indicator.
+
 ## Tooltips
 
 Use `AktualTooltip` (`AktualTooltip.kt`) for an icon button that shows text when tapped, not Material's `TooltipBox`, whose popup lets taps outside it through on desktop. For a "?" beside a label explaining it, use `AktualHelpTooltip(text)`, which takes no more room than its 16dp icon.

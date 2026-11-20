@@ -17,6 +17,7 @@ import aktual.core.icons.Split
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
@@ -56,7 +57,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -417,11 +417,7 @@ private fun LocationButton(
 ) =
   Box(modifier = Modifier.size(LocationButtonSize), contentAlignment = Center) {
     if (isLocating) {
-      CircularProgressIndicator(
-        modifier = Modifier.size(LocationProgressSize),
-        color = colors.pageTextSubdued,
-        strokeWidth = 2.dp,
-      )
+      AktualProgressIndicator(size = LocationProgressSize, color = colors.pageTextSubdued)
     } else {
       AktualIconButton(
         imageVector = AktualIcons.Location,

@@ -13,6 +13,7 @@ import aktual.core.model.Password
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
@@ -39,7 +40,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -235,13 +235,12 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
     when (state) {
       is NotStarted -> TintedDot(size = 6.dp, color = colors.reportsNumberNeutral)
 
-      is IndefiniteProgress ->
-        CircularProgressIndicator(modifier = Modifier.size(ITEM_SIZE), color = colors.reportsBlue)
+      is IndefiniteProgress -> AktualProgressIndicator(size = ITEM_SIZE, color = colors.reportsBlue)
 
       is DefiniteProgress -> {
-        CircularProgressIndicator(
+        AktualProgressIndicator(
           progress = { state.progress.floatValue / 100f },
-          modifier = Modifier.size(ITEM_SIZE),
+          size = ITEM_SIZE,
           color = colors.reportsBlue,
         )
       }

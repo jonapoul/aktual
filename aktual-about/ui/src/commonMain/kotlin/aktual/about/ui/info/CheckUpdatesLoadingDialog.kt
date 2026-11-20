@@ -4,8 +4,8 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
@@ -49,7 +49,7 @@ internal fun CheckUpdatesLoadingDialogContent(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = CenterVertically,
       ) {
-        AnimatedLoading()
+        AktualProgressIndicator()
 
         HorizontalSpacer(15.dp)
 

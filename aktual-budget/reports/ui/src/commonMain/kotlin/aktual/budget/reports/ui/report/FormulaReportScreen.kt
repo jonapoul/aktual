@@ -29,6 +29,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
@@ -38,6 +39,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.HazedTopBarState
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -78,7 +80,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -94,7 +95,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -324,9 +324,7 @@ internal fun FormulaReportScaffold(
       val contentModifier = Modifier.hazedTopBarContent(hazeState, innerPadding).fillMaxSize()
       when (state) {
         Loading -> {
-          Box(modifier = contentModifier, contentAlignment = Center) {
-            CircularProgressIndicator(color = colors.pageText)
-          }
+          LoadingScreen(contentModifier)
         }
         NotFound -> {
           Box(modifier = contentModifier, contentAlignment = Center) {
@@ -335,7 +333,7 @@ internal fun FormulaReportScaffold(
         }
         FeatureDisabled -> {
           Box(modifier = contentModifier, contentAlignment = Center) {
-            Text(text = Strings.reportsUnsupportedFeatureDisabled, textAlign = TextAlign.Center)
+            Text(text = Strings.reportsUnsupportedFeatureDisabled, textAlign = Center)
           }
         }
         is Loaded -> {
@@ -456,7 +454,7 @@ private fun ResultCard(preview: FormulaData?, isEditing: Boolean) {
         .padding(8.dp),
   ) {
     if (preview == null) {
-      CircularProgressIndicator(modifier = Modifier.align(Center), color = colors.pageText)
+      AktualProgressIndicator(Modifier.align(Center))
     } else {
       FormulaChart(modifier = Modifier.fillMaxSize(), data = preview)
     }

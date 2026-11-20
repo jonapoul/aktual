@@ -23,6 +23,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalNavDrawerOpener
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
@@ -51,7 +52,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -64,7 +64,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
@@ -163,10 +162,7 @@ private fun ManageAccountsScaffold(
       Box(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
         val padding = hazedTopBarContentPadding(hazeState, innerPadding)
         when (state) {
-          Loading ->
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Center) {
-              CircularProgressIndicator(color = colors.pageTextSubdued)
-            }
+          Loading -> LoadingScreen(Modifier.padding(padding), colors.pageTextSubdued)
 
           is Failure ->
             FailureScreen(

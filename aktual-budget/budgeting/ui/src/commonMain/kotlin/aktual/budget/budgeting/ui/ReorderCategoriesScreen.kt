@@ -29,6 +29,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -63,7 +64,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -199,10 +199,7 @@ internal fun ReorderCategoriesScaffold(
     },
   ) { innerPadding ->
     when (state) {
-      Loading ->
-        Box(modifier = Modifier.fillMaxSize().padding(innerPadding), contentAlignment = Center) {
-          CircularProgressIndicator(color = colors.pageTextSubdued)
-        }
+      Loading -> LoadingScreen(Modifier.padding(innerPadding), colors.pageTextSubdued)
 
       Failed ->
         FailureScreen(
