@@ -48,14 +48,14 @@ internal constructor(
     val row = id.value
     val changes = buildList {
       for ((category, order) in orders) {
-        if (category != id) add(localChange(CATEGORIES, category.value, "sort_order", order))
+        if (category != id) add(localChange(CATEGORIES, category.value, SORT_ORDER, order))
       }
       add(localChange(CATEGORIES, row, "name", trimmed))
       add(localChange(CATEGORIES, row, "cat_group", group.value))
       add(localChange(CATEGORIES, row, "is_income", groupRow.is_income == true))
-      add(localChange(CATEGORIES, row, "hidden", false))
-      add(localChange(CATEGORIES, row, "sort_order", orders.getValue(id)))
-      add(localChange(CATEGORY_MAPPING, row, "transferId", row))
+      add(localChange(CATEGORIES, row, HIDDEN, false))
+      add(localChange(CATEGORIES, row, SORT_ORDER, orders.getValue(id)))
+      add(localChange(CATEGORY_MAPPING, row, TRANSFER_ID, row))
     }
     budgetSync(changes)
     return Saved(id)
@@ -74,8 +74,8 @@ internal constructor(
     budgetSync(
       localChange(CATEGORY_GROUPS, row, "name", trimmed),
       localChange(CATEGORY_GROUPS, row, "is_income", false),
-      localChange(CATEGORY_GROUPS, row, "hidden", false),
-      localChange(CATEGORY_GROUPS, row, "sort_order", last + SORT_INCREMENT),
+      localChange(CATEGORY_GROUPS, row, HIDDEN, false),
+      localChange(CATEGORY_GROUPS, row, SORT_ORDER, last + SORT_INCREMENT),
     )
     return Saved(id)
   }
@@ -105,8 +105,8 @@ internal constructor(
   }
 
   override suspend fun setGroupHidden(id: CategoryGroupId, hidden: Boolean): UndoToken {
-    budgetSync(localChange(CATEGORY_GROUPS, id.value, "hidden", hidden))
-    return UndoToken(listOf(localChange(CATEGORY_GROUPS, id.value, "hidden", !hidden)))
+    budgetSync(localChange(CATEGORY_GROUPS, id.value, HIDDEN, hidden))
+    return UndoToken(listOf(localChange(CATEGORY_GROUPS, id.value, HIDDEN, !hidden)))
   }
 
   override suspend fun isTransferRequired(categories: Collection<CategoryId>): Boolean {
@@ -143,8 +143,8 @@ internal constructor(
       for (id in ids) {
         for (mapped in budgetDao.mappedTo(id)) {
           batch.change(
-            localChange(CATEGORY_MAPPING, mapped.value, "transferId", transferTo.value),
-            previous = localChange(CATEGORY_MAPPING, mapped.value, "transferId", id.value),
+            localChange(CATEGORY_MAPPING, mapped.value, TRANSFER_ID, transferTo.value),
+            previous = localChange(CATEGORY_MAPPING, mapped.value, TRANSFER_ID, id.value),
           )
         }
       }
@@ -182,8 +182,8 @@ internal constructor(
       if (existing != null) {
         val amount = existing.amount + Amount(total)
         change(
-          localChange(table, existing.id, "amount", amount.toLong()),
-          previous = localChange(table, existing.id, "amount", existing.amount.toLong()),
+          localChange(table, existing.id, AMOUNT, amount.toLong()),
+          previous = localChange(table, existing.id, AMOUNT, existing.amount.toLong()),
         )
       } else {
         // A new row can't be deleted, so undoing resets it to the zero it reads as
@@ -191,8 +191,8 @@ internal constructor(
         changes += localChange(table, id, "month", month.dbMonth)
         changes += localChange(table, id, "category", transferTo.value)
         change(
-          localChange(table, id, "amount", total),
-          previous = localChange(table, id, "amount", 0L),
+          localChange(table, id, AMOUNT, total),
+          previous = localChange(table, id, AMOUNT, 0L),
         )
       }
     }
@@ -210,5 +210,12 @@ internal constructor(
       changes += change
       undo += previous
     }
+  }
+
+  private companion object {
+    const val SORT_ORDER = "sort_order"
+    const val HIDDEN = "hidden"
+    const val TRANSFER_ID = "transferId"
+    const val AMOUNT = "amount"
   }
 }

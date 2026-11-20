@@ -35,18 +35,18 @@ sealed interface CategoryDialog {
 
   data class Add(
     val groups: ImmutableList<GroupChoice>,
-    override val status: DialogStatus = DialogStatus.Editing,
+    override val status: DialogStatus = Editing,
   ) : CategoryDialog
 
   data class Rename(
     val target: CategoryTarget,
-    override val status: DialogStatus = DialogStatus.Editing,
+    override val status: DialogStatus = Editing,
   ) : CategoryDialog
 
   data class Delete(
     val target: CategoryTarget,
     val transfer: Transfer,
-    override val status: DialogStatus = DialogStatus.Editing,
+    override val status: DialogStatus = Editing,
   ) : CategoryDialog
 }
 
@@ -69,8 +69,10 @@ data class TransferGroup(val name: String, val categories: ImmutableList<Transfe
 @Immutable data class TransferCategory(val id: CategoryId, val name: String)
 
 sealed interface CategoryEditEvent {
-  // A change the token undoes
-  @JvmInline value class Updated(val token: UndoToken) : CategoryEditEvent
+  // Undoes the change
+  val token: UndoToken
 
-  @JvmInline value class Deleted(val token: UndoToken) : CategoryEditEvent
+  @JvmInline value class Updated(override val token: UndoToken) : CategoryEditEvent
+
+  @JvmInline value class Deleted(override val token: UndoToken) : CategoryEditEvent
 }

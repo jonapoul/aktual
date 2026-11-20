@@ -89,27 +89,27 @@ internal constructor(
   // Clears a duplicate or failure once the input changes
   fun edited() = mutableDialog.update { dialog ->
     when (dialog) {
-      is CategoryDialog.Add -> dialog.copy(status = dialog.status.edited())
-      is CategoryDialog.Rename -> dialog.copy(status = dialog.status.edited())
-      is CategoryDialog.Delete -> dialog.copy(status = dialog.status.edited())
+      is Add -> dialog.copy(status = dialog.status.edited())
+      is Rename -> dialog.copy(status = dialog.status.edited())
+      is Delete -> dialog.copy(status = dialog.status.edited())
       null -> null
     }
   }
 
-  // A null group is only valid for a new group
-  fun create(kind: AddKind, group: CategoryGroupId?, name: String) =
+  fun createCategory(group: CategoryGroupId, name: String) =
     saveName<CategoryDialog.Add>(
       update = { dialog, status -> dialog.copy(status = status) },
-      action = {
-        when (kind) {
-          NewCategory -> categoryWriter.createCategory(requireNotNull(group), name)
-          NewGroup -> categoryWriter.createGroup(name)
-        }
-      },
+      action = { categoryWriter.createCategory(group, name) },
+    )
+
+  fun createGroup(name: String) =
+    saveName<CategoryDialog.Add>(
+      update = { dialog, status -> dialog.copy(status = status) },
+      action = { categoryWriter.createGroup(name) },
     )
 
   fun rename(name: String) {
-    val target = (mutableDialog.value as? CategoryDialog.Rename)?.target ?: return
+    val target = (mutableDialog.value as? Rename)?.target ?: return
     saveName<CategoryDialog.Rename>(
       update = { dialog, status -> dialog.copy(status = status) },
       action = {
@@ -123,7 +123,7 @@ internal constructor(
 
   // [transferTo] is needed when the dialog asks for one
   fun delete(transferTo: CategoryId?) {
-    val dialog = mutableDialog.value as? CategoryDialog.Delete ?: return
+    val dialog = mutableDialog.value as? Delete ?: return
     if (dialog.status == Saving) return
     if (dialog.transfer is Needed && transferTo == null) return
     if (dialog.transfer == Checking) return
@@ -222,21 +222,20 @@ internal constructor(
   }
 
   private fun List<OrderedGroup>.transferGroups(deleted: Set<CategoryId>, isIncome: Boolean) =
-    filter {
-      it.isIncome == isIncome
-    }
-    .map { group ->
-      TransferGroup(
-        name = group.name,
-        categories =
-          group.categories
-            .filter { it.id !in deleted }
-            .map { TransferCategory(it.id, it.name) }
-            .toImmutableList(),
-      )
-    }
-    .filter { it.categories.isNotEmpty() }
-    .toImmutableList()
+    asSequence()
+      .filter { it.isIncome == isIncome }
+      .map { group ->
+        TransferGroup(
+          name = group.name,
+          categories =
+            group.categories
+              .filter { it.id !in deleted }
+              .map { TransferCategory(it.id, it.name) }
+              .toImmutableList(),
+        )
+      }
+      .filter { it.categories.isNotEmpty() }
+      .toImmutableList()
 
   private fun DialogStatus.edited(): DialogStatus = if (this == Saving) this else Editing
 }

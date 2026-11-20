@@ -45,33 +45,33 @@ class CategoryEditViewModelTest {
   @Test
   fun `Creating a category closes the dialog`() = runEditTest { viewModel ->
     viewModel.startAdd()
-    viewModel.create(AddKind.NewCategory, USUAL, "Rent")
+    viewModel.createCategory(USUAL, "Rent")
 
     assertThat(writer.calls).containsExactly(listOf("createCategory", USUAL, "Rent"))
     assertThat(viewModel.dialog.value).isNull()
   }
 
   @Test
-  fun `Creating a group ignores the picked group`() = runEditTest { viewModel ->
+  fun `Creating a group`() = runEditTest { viewModel ->
     viewModel.startAdd()
-    viewModel.create(AddKind.NewGroup, USUAL, "Bills")
+    viewModel.createGroup("Bills")
 
     assertThat(writer.calls).containsExactly(listOf("createGroup", "Bills"))
   }
 
   @Test
   fun `A duplicate name keeps the dialog open until the name changes`() = runEditTest { viewModel ->
-    writer.nameResult = NameResult.Duplicate
+    writer.nameResult = Duplicate
     viewModel.startRename(CategoryTarget.Category(FOOD, "Food"))
     viewModel.rename("Fun")
 
     assertThat(viewModel.dialog.value)
       .isEqualTo(
-        CategoryDialog.Rename(CategoryTarget.Category(FOOD, "Food"), DialogStatus.Duplicate),
+        CategoryDialog.Rename(CategoryTarget.Category(FOOD, "Food"), Duplicate),
       )
 
     viewModel.edited()
-    assertThat(viewModel.dialog.value?.status).isEqualTo(DialogStatus.Editing)
+    assertThat(viewModel.dialog.value?.status).isEqualTo(Editing)
   }
 
   @Test
@@ -89,7 +89,7 @@ class CategoryEditViewModelTest {
     viewModel.startRename(CategoryTarget.Group(USUAL, "Usual"))
     viewModel.rename("Everyday")
 
-    assertThat(viewModel.dialog.value?.status).isEqualTo(DialogStatus.Failed)
+    assertThat(viewModel.dialog.value?.status).isEqualTo(Failed)
   }
 
   @Test
@@ -100,7 +100,7 @@ class CategoryEditViewModelTest {
       .isNotNull()
       .isInstanceOf<CategoryDialog.Delete>()
       .prop(CategoryDialog.Delete::transfer)
-      .isEqualTo(Transfer.NotNeeded)
+      .isEqualTo(NotNeeded)
   }
 
   @Test
@@ -154,7 +154,7 @@ class CategoryEditViewModelTest {
       assertThat(writer.calls.last()).isEqualTo(listOf("deleteCategory", FOOD, FUN))
       assertThat(viewModel.dialog.value).isNull()
 
-      val token = (event as CategoryEditEvent.Deleted).token
+      val token = event.token
       viewModel.undo(token)
       viewModel.undo(token)
       assertThat(budgetWriter.calls).containsExactly(listOf("undo", token))
@@ -209,10 +209,10 @@ class CategoryEditViewModelTest {
     private fun <T> named(vararg call: Any?, value: () -> T): NameResult<T> {
       check(!fail) { "Write failed" }
       calls += call.toList()
-      return when (val result = nameResult) {
-        is NameResult.Saved -> NameResult.Saved(value())
-        NameResult.Blank -> NameResult.Blank
-        NameResult.Duplicate -> NameResult.Duplicate
+      return when (nameResult) {
+        is Saved -> NameResult.Saved(value())
+        Blank -> Blank
+        Duplicate -> Duplicate
       }
     }
 
