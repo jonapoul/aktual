@@ -207,17 +207,22 @@ private fun ThemeItem(
 private fun SwatchDots(swatch: ThemeSwatch, enabled: Boolean) {
   val dots = remember(swatch) { listOf(swatch.background, swatch.surface, swatch.accent) }
   val ring = colors.settingsCardBackground
-  Row(horizontalArrangement = Arrangement.spacedBy((-6).dp)) {
+  Row(horizontalArrangement = Arrangement.spacedBy(-DotOverlap)) {
     dots.fastForEach { color ->
       Box(
         modifier =
-          Modifier.size(18.dp)
+          Modifier.size(DotSize)
             .background(color.disabledIf(!enabled), CircleShape)
             .border(2.dp, ring, CircleShape),
       )
     }
   }
 }
+
+private val DotSize = 18.dp
+
+// Each dot tucks under the one before it
+private val DotOverlap = 6.dp
 
 @Preview
 @Composable
