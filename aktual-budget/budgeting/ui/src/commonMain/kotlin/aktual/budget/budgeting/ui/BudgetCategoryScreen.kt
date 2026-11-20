@@ -56,6 +56,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -278,8 +279,10 @@ private fun CategoryMenu(
         )
       }
       AktualDropdownMenuItem(
-        text = Strings.budgetingCategoryDelete,
-        leadingIcon = AktualIcons.Trash,
+        text = { Text(text = Strings.budgetingCategoryDelete, color = colors.errorText) },
+        leadingIcon = {
+          Icon(imageVector = AktualIcons.Trash, contentDescription = null, tint = colors.errorText)
+        },
         onClick = {
           expanded = false
           onDelete()
