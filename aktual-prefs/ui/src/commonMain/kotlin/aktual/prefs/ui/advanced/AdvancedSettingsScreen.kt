@@ -22,6 +22,10 @@ import aktual.prefs.vm.advanced.AdvancedSettingsState
 import aktual.prefs.vm.advanced.AdvancedSettingsViewModel
 import aktual.prefs.vm.advanced.RepairState
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalClipboard
@@ -151,6 +156,8 @@ private fun ResetSyncItem() {
       ) {
         AktualButton(
           text = Strings.settingsAdvancedResetSyncButton,
+          kind = Destructive,
+          variant = Secondary,
           onClick = {},
           isEnabled = false,
         )
@@ -179,6 +186,8 @@ private fun RepairItem(state: RepairState, onRepair: () -> Unit) {
         RepairDetails()
         AktualButton(
           text = Strings.settingsAdvancedRepairButton,
+          kind = Destructive,
+          variant = Secondary,
           onClick = onRepair,
           isLoading = state == Running,
         )
@@ -210,7 +219,11 @@ private fun RepairDetails() {
       )
     }
 
-    AnimatedVisibility(visible = isExpanded) {
+    AnimatedVisibility(
+      visible = isExpanded,
+      enter = fadeIn() + expandVertically(expandFrom = Top),
+      exit = fadeOut() + shrinkVertically(shrinkTowards = Top),
+    ) {
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Bullet(Strings.settingsAdvancedRepairDetailDeleted)
         Bullet(Strings.settingsAdvancedRepairDetailParent)
