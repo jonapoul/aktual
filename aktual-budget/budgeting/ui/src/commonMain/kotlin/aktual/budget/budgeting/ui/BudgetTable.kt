@@ -134,7 +134,9 @@ internal fun LazyListScope.budgetTable(
   val income = budget.income ?: return
   val isTracking = type == Tracking
 
-  item(key = "income-header") { IncomeColumnHeader(isTracking = isTracking) }
+  item(key = "income-header") {
+    IncomeColumnHeader(isTracking = isTracking, modifier = Modifier.animateItem())
+  }
 
   stuckHeader(key = "group-${income.id.value}", stuck = stuck) { modifier ->
     IncomeGroupHeader(

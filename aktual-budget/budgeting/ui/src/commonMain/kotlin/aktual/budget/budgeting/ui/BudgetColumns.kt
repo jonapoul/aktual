@@ -183,6 +183,7 @@ private fun LazyListScope.budgetColumns(
     if (!group.isCollapsed) {
       items(group.categories, key = { categoryKey(it.id) }) { category ->
         CategoryRowLayout(
+          modifier = Modifier.animateItem(),
           category = category,
           nameWidth = ColumnsDS.categoryWidth,
           onOpen = { onAction(OpenCategory(state.openMonth, category.id)) },
@@ -252,6 +253,7 @@ private fun LazyListScope.incomeColumns(
   if (!income.isCollapsed) {
     items(income.categories, key = { categoryKey(it.id) }) { category ->
       CategoryRowLayout(
+        modifier = Modifier.animateItem(),
         category = category,
         nameWidth = ColumnsDS.categoryWidth,
         onOpen = { onAction(OpenCategory(state.openMonth, category.id)) },

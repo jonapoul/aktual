@@ -45,7 +45,7 @@ internal fun LazyListScope.ruleSections(
     }
 
     stuckHeader(key = "stage-${stage.name}", stuck = stuck) { modifier ->
-      RuleStageHeader(stage = stage, count = stageRules.size, modifier = modifier.animateItem())
+      RuleStageHeader(stage = stage, count = stageRules.size, modifier = modifier)
     }
 
     items(stageRules, key = { it.id.value }, contentType = { "rule" }, itemContent = itemContent)
