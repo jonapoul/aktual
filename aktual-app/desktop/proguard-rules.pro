@@ -89,3 +89,7 @@
 -keep class org.slf4j.** { *; }
 -keep class org.slf4j.impl.** { *; }
 -keep class ch.qos.logback.** { *; }
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
