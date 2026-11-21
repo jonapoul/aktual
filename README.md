@@ -47,7 +47,7 @@ Obtainium then checks for new nightlies in the background and lets you know when
 # License
 
 ```
-Copyright 2024 Jon Poulton
+Copyright 2024-2026 Jon Poulton
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
