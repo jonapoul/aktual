@@ -69,3 +69,21 @@
 -assumevalues class aktual.app.desktop.DesktopBuildConfigContainer {
     boolean isRelease() return true;
 }
+
+# Moved from common-rules.pro, since R8 gets these from library consumer rules or doesn't need them
+-keepnames class * implements java.io.Serializable
+-keep class io.ktor.client.engine.** { *; }
+-keep class io.ktor.client.plugins.** { *; }
+-keep class io.ktor.serialization.** { *; }
+-keep class kotlinx.serialization.descriptors.** { *; }
+-keep class kotlinx.serialization.internal.*Serializer { *; }
+-keep class kotlinx.serialization.internal.PluginGeneratedSerialDescriptor { *; }
+-keep class org.slf4j.** { *; }
+-keep class org.slf4j.impl.** { *; }
+-keep class ch.qos.logback.** { *; }
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+-keep class * implements kotlinx.coroutines.internal.MainDispatcherFactory
+-keep class * implements kotlinx.coroutines.CoroutineExceptionHandler

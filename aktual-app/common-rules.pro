@@ -2,39 +2,19 @@
 
 # Preserve ServiceLoader metadata for runtime service discovery
 -keepclassmembers class * { *** MODULE$; }
--keepnames class * implements java.io.Serializable
 -keep class * implements java.sql.Driver { *; }
 
 # Logging
--keep class org.slf4j.** { *; }
--keep class org.slf4j.impl.** { *; }
--keep class ch.qos.logback.** { *; }
+-keep class * implements org.slf4j.spi.SLF4JServiceProvider
 -dontwarn org.slf4j.**
 
 # kotlinx.serialization
 -dontwarn kotlinx.serialization.KSerializer
 -dontwarn kotlinx.serialization.Serializable
--if @kotlinx.serialization.Serializable class ** { public static ** INSTANCE; }
--keepclassmembers class <1> {
-    public static <1> INSTANCE;
-    kotlinx.serialization.KSerializer serializer(...);
-}
--keep class kotlinx.serialization.descriptors.** { *; }
--keep class kotlinx.serialization.internal.*Serializer { *; }
--keep class kotlinx.serialization.internal.PluginGeneratedSerialDescriptor { *; }
--keep class **$$serializer { *; }
--keepclassmembers class **$$serializer { *; }
--keepclassmembers @kotlinx.serialization.Serializable class ** { *** Companion; }
-
-# Enums, see http://proguard.sourceforge.net/manual/examples.html#enumerations
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
 
 # The nav grid layout is persisted by BudgetTab.name, so the constant names must not be
 # obfuscated, otherwise a stored order can no longer be matched back to its entries
--keepclassmembers enum aktual.core.nav.BudgetTab {
+-keepclassmembers enum aktual.budget.model.BudgetTab {
     <fields>;
 }
 
@@ -48,16 +28,6 @@
 -keepattributes Annotation
 -keepattributes *Annotation*
 
-# Keeping the implementations of exception handlers and Main dispatchers
--keep class * implements kotlinx.coroutines.internal.MainDispatcherFactory
--keep class * implements kotlinx.coroutines.CoroutineExceptionHandler
-
-# Most of volatile fields are updated with AFU and should not be mangled
--keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
-
-# Same story for the standard library's SafeContinuation that also uses AtomicReferenceFieldUpdater
--keepclassmembers class kotlin.coroutines.SafeContinuation { volatile <fields>; }
-
 # Additional dontwarn rules for common issues (handled at runtime)
 -dontwarn java.awt.**
 -dontwarn javax.annotation.**
@@ -65,9 +35,6 @@
 -dontwarn kotlin.jvm.internal.**
 
 # Ktor - Keep only what's needed for runtime
--keep class io.ktor.client.engine.** { *; }
--keep class io.ktor.client.plugins.** { *; }
--keep class io.ktor.serialization.** { *; }
 -keep,allowobfuscation class io.ktor.client.HttpClient
 -keep,allowobfuscation class io.ktor.client.HttpClientConfig
 -dontwarn io.ktor.**
