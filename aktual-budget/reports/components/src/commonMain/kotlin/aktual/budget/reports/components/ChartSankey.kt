@@ -44,7 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -128,8 +128,12 @@ private fun Chart(data: SankeyData, modifier: Modifier = Modifier) =
     val compact = LocalCompactChart.current
     val textMeasurer = rememberTextMeasurer()
     val theme = colors
-    val nameStyle = TextStyle(color = theme.pageText, fontSize = textSizes.small, fontWeight = Bold)
-    val valueStyle = TextStyle(color = theme.pageText, fontSize = textSizes.extraSmall)
+    val nameStyle =
+      remember(theme) {
+        TextStyle(color = theme.pageText, fontSize = textSizes.small, fontWeight = Bold)
+      }
+    val valueStyle =
+      remember(theme) { TextStyle(color = theme.pageText, fontSize = textSizes.extraSmall) }
     val labels = data.nodes.map { it.label.string() }
     val values =
       data.nodes.map { node ->
@@ -165,6 +169,8 @@ private fun Chart(data: SankeyData, modifier: Modifier = Modifier) =
           }
         }
       }
+    // Kept out of the draw modifier, so selecting doesn't rebuild every link
+    val paths = remember(layout) { layout.links.map { band -> band.path() } }
     var selection by remember(data) { mutableStateOf<Selection?>(null) }
     val haptics = LocalHapticFeedback.current
 
@@ -180,27 +186,23 @@ private fun Chart(data: SankeyData, modifier: Modifier = Modifier) =
 
     Box(
       modifier =
-        Modifier.fillMaxSize().then(tapModifier).drawWithCache {
-          val paths = layout.links.map { band -> band.path() }
+        Modifier.fillMaxSize().then(tapModifier).drawBehind {
+          val hit = selection?.hit
+          data.links.forEachIndexed { i, link ->
+            val alpha =
+              when {
+                hit == null -> LINK_ALPHA
+                hit.highlights(i, link) -> 1f
+                else -> DIMMED_LINK_ALPHA
+              }
+            drawPath(paths[i], color = link.color.resolve(theme), alpha = alpha)
+          }
 
-          onDrawBehind {
-            val hit = selection?.hit
-            data.links.forEachIndexed { i, link ->
-              val alpha =
-                when {
-                  hit == null -> LINK_ALPHA
-                  hit.highlights(i, link) -> 1f
-                  else -> DIMMED_LINK_ALPHA
-                }
-              drawPath(paths[i], color = link.color.resolve(theme), alpha = alpha)
-            }
+          data.nodes.forEachIndexed { i, node ->
+            val rect = layout.nodes.getOrNull(i) ?: return@forEachIndexed
+            drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
 
-            data.nodes.forEachIndexed { i, node ->
-              val rect = layout.nodes.getOrNull(i) ?: return@forEachIndexed
-              drawRect(color = node.color.resolve(theme), topLeft = rect.topLeft, size = rect.size)
-
-              visibleLabels.getOrNull(i)?.let { label -> drawNodeLabel(label) }
-            }
+            visibleLabels.getOrNull(i)?.let { label -> drawNodeLabel(label) }
           }
         },
     )
