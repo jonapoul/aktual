@@ -67,8 +67,8 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
@@ -515,7 +515,7 @@ internal fun GroupHeaderRow(
       Strings.budgetingGroupCollapse(group.name)
     }
 
-  val rotation by animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
+  val rotation = animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
 
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider()
@@ -523,7 +523,7 @@ internal fun GroupHeaderRow(
       GroupHeaderContent(
         group = group,
         label = label,
-        rotation = rotation,
+        rotation = { rotation.value },
         nameWidth = nameWidth,
         onAction = onAction,
         onOpenMenu = openMenu,
@@ -553,7 +553,7 @@ internal fun GroupHeaderRow(
 private fun GroupHeaderContent(
   group: GroupRow,
   label: String,
-  rotation: Float,
+  rotation: () -> Float,
   nameWidth: Dp?,
   onAction: OnAction<BudgetAction>,
   onOpenMenu: () -> Unit,
@@ -579,7 +579,7 @@ private fun GroupHeaderContent(
       verticalAlignment = CenterVertically,
     ) {
       Icon(
-        modifier = Modifier.size(16.dp).rotate(rotation),
+        modifier = Modifier.size(16.dp).graphicsLayer { rotationZ = rotation() },
         imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
         tint = colors.tableRowHeaderText,
