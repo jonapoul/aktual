@@ -1,4 +1,4 @@
-package aktual.about.data
+package aktual.about.model
 
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
@@ -36,3 +36,9 @@ val Apache2 =
 @Immutable @Serializable data class UnknownLicense(val name: String?, val url: String?)
 
 @Immutable @Serializable data class ArtifactScm(val url: String)
+
+sealed interface LicensesLoadState {
+  data class Success(val libraries: List<ArtifactDetail>) : LicensesLoadState
+
+  data class Failure(val cause: String) : LicensesLoadState
+}

@@ -1,7 +1,7 @@
 package aktual.about.vm
 
-import aktual.about.data.ArtifactDetail
 import aktual.about.data.LicensesRepository
+import aktual.about.model.ArtifactDetail
 import aktual.about.vm.SearchLicensesState.Results
 import aktual.di.AppScope
 import aktual.di.ViewModelContext

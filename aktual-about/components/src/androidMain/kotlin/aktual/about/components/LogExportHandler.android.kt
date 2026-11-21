@@ -1,6 +1,6 @@
 package aktual.about.components
 
-import aktual.about.data.LogExport
+import aktual.about.model.LogExport
 import aktual.log
 import android.content.Context
 import android.content.Intent

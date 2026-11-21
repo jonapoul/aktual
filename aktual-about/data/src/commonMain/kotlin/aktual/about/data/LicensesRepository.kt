@@ -1,5 +1,7 @@
 package aktual.about.data
 
+import aktual.about.model.ArtifactDetail
+import aktual.about.model.LicensesLoadState
 import aktual.core.utils.Assets
 import aktual.core.utils.runCatchingCancellable
 import alakazam.kotlin.CoroutineContexts

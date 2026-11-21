@@ -1,5 +1,10 @@
 package aktual.about.data
 
+import aktual.about.model.Apache2
+import aktual.about.model.ArtifactDetail
+import aktual.about.model.ArtifactScm
+import aktual.about.model.SpdxLicense
+
 private val Mit =
   SpdxLicense(identifier = "MIT", name = "MIT License", url = "https://opensource.org/license/mit")
 

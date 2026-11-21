@@ -1,6 +1,6 @@
 package aktual.about.ui.licenses
 
-import aktual.about.data.ArtifactDetail
+import aktual.about.model.ArtifactDetail
 import aktual.about.vm.LicenseSorting
 import aktual.about.vm.LicensesState
 import aktual.about.vm.LicensesViewModel

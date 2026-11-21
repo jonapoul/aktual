@@ -1,6 +1,6 @@
 package aktual.about.ui.licenses
 
-import aktual.about.data.ArtifactDetail
+import aktual.about.model.ArtifactDetail
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings

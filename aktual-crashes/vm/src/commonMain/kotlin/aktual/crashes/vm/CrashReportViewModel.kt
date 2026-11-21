@@ -1,8 +1,8 @@
 package aktual.crashes.vm
 
-import aktual.about.data.LogExport
-import aktual.about.data.LogExportTarget
 import aktual.about.data.LogsRepository
+import aktual.about.model.LogExport
+import aktual.about.model.LogExportTarget
 import aktual.core.model.CrashFile
 import aktual.crashes.data.CrashIssueUrlBuilder
 import aktual.crashes.data.CrashesRepository

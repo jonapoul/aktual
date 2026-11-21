@@ -1,7 +1,7 @@
 package aktual.crashes.ui
 
 import aktual.about.components.ExportTargetRow
-import aktual.about.data.LogExportTarget
+import aktual.about.model.LogExportTarget
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Copy
 import aktual.core.icons.material.MaterialIcons

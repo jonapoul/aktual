@@ -1,6 +1,6 @@
 package aktual.about.vm
 
-import aktual.about.data.ArtifactDetail
+import aktual.about.model.ArtifactDetail
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 

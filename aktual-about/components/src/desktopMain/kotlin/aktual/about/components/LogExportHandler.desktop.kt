@@ -1,6 +1,6 @@
 package aktual.about.components
 
-import aktual.about.data.LogExport
+import aktual.about.model.LogExport
 import aktual.core.l10n.Strings
 import aktual.log
 import androidx.compose.runtime.Composable

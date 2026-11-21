@@ -1,7 +1,7 @@
 package aktual.about.ui.logs
 
 import aktual.about.components.ExportTargetRow
-import aktual.about.data.LogExportTarget
+import aktual.about.model.LogExportTarget
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.core.icons.AktualIcons

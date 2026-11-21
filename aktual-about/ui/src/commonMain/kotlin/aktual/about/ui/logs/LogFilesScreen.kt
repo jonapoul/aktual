@@ -1,6 +1,6 @@
 package aktual.about.ui.logs
 
-import aktual.about.data.LogFile
+import aktual.about.model.LogFile
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
 import aktual.about.vm.logs.LogFilesState

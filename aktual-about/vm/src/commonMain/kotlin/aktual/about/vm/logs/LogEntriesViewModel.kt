@@ -1,8 +1,8 @@
 package aktual.about.vm.logs
 
-import aktual.about.data.LogExport
-import aktual.about.data.LogExportTarget
 import aktual.about.data.LogsRepository
+import aktual.about.model.LogExport
+import aktual.about.model.LogExportTarget
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

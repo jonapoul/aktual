@@ -1,5 +1,6 @@
 package aktual.about.data
 
+import aktual.about.model.LogFile
 import aktual.core.model.bytes
 import aktual.logging.LogFileFormat
 import aktual.logging.LogLine

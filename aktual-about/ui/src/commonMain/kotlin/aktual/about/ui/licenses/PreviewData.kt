@@ -1,9 +1,9 @@
 package aktual.about.ui.licenses
 
-import aktual.about.data.Apache2
-import aktual.about.data.ArtifactDetail
-import aktual.about.data.ArtifactScm
-import aktual.about.data.UnknownLicense
+import aktual.about.model.Apache2
+import aktual.about.model.ArtifactDetail
+import aktual.about.model.ArtifactScm
+import aktual.about.model.UnknownLicense
 
 internal val AlakazamAndroidCore =
   ArtifactDetail(

@@ -161,6 +161,7 @@ atlas {
 include(
   ":aktual-about:components",
   ":aktual-about:data",
+  ":aktual-about:model",
   ":aktual-about:ui",
   ":aktual-about:vm",
   ":aktual-account:ui",
