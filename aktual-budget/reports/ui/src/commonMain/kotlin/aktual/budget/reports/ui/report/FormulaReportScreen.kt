@@ -90,7 +90,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -442,14 +442,12 @@ private fun ResultCard(preview: FormulaData?, isEditing: Boolean) {
       Modifier.fillMaxWidth()
         .height(RESULT_HEIGHT)
         .background(colors.tableBackground, CardShape)
-        .drawBehind {
+        .drawWithCache {
           val outline = CardShape.createOutline(size, layoutDirection, this)
-          drawOutline(
-            outline = outline,
-            color = border,
-            alpha = outlineAlpha,
-            style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(DASHES)),
-          )
+          val stroke = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(DASHES))
+          onDrawBehind {
+            drawOutline(outline = outline, color = border, alpha = outlineAlpha, style = stroke)
+          }
         }
         .padding(8.dp),
   ) {
