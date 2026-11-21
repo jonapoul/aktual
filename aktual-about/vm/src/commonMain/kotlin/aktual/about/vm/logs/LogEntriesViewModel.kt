@@ -3,10 +3,10 @@ package aktual.about.vm.logs
 import aktual.about.data.LogExport
 import aktual.about.data.LogExportTarget
 import aktual.about.data.LogsRepository
-import aktual.core.logging.LogLine
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.logging.LogLine
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel

@@ -19,7 +19,7 @@ kotlin {
     implementation(libs.androidx.sqliteBundled)
     implementation(libs.sqldelight.driver.androidx)
     implementation(libs.sqldelight.runtime)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

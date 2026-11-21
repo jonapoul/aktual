@@ -3,7 +3,7 @@ package aktual.about.ui.logs
 import aktual.about.vm.logs.LiveState.Following
 import aktual.about.vm.logs.LiveState.None
 import aktual.about.vm.logs.LogEntriesState
-import aktual.core.logging.LogLine
+import aktual.logging.LogLine
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState

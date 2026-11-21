@@ -7,7 +7,7 @@ kotlin {
     api(project(":aktual-budget:payees"))
     api(project(":aktual-budget:utils"))
     compileOnly(libs.androidx.compose.annotation)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
     implementation(project(":aktual-prefs"))
   }
 

@@ -37,7 +37,7 @@ kotlin {
     api(project(":aktual-updates:impl"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okio)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

@@ -12,7 +12,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Share
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.logging.LogFileFormat
 import aktual.core.model.bytes
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
@@ -45,6 +44,7 @@ import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.tabular
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.logging.LogFileFormat
 import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

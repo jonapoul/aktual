@@ -1,11 +1,11 @@
 package aktual.crashes.vm
 
-import aktual.core.logging.CrashReport
 import aktual.crashes.data.CrashesRepository
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
+import aktual.logging.CrashReport
 import aktual.prefs.AppPreferences
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel

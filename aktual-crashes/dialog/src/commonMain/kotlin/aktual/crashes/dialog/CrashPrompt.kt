@@ -3,7 +3,6 @@ package aktual.crashes.dialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.AlertTriangle
 import aktual.core.l10n.Strings
-import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
 import aktual.core.nav.CrashReportNavigator
 import aktual.core.nav.NavStack
@@ -13,6 +12,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.crashes.vm.CrashPromptViewModel
+import aktual.logging.CrashReport
 import aktual.theme.Colors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

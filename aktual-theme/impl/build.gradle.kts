@@ -14,8 +14,8 @@ kotlin {
     api(project(":aktual-theme"))
     compileOnly(libs.compose.runtime)
     implementation(libs.kotlinx.serialization.json)
-    implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-di:core"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

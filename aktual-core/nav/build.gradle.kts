@@ -9,6 +9,6 @@ kotlin {
     api(libs.compose.runtime)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:utils"))
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 }

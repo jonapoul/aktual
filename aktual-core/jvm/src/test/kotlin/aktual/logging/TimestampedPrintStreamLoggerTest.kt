@@ -1,0 +1,50 @@
+package aktual.logging
+
+import aktual.log
+import alakazam.test.TestClock
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.time.Instant
+import logcat.LogcatLogger
+
+class TimestampedPrintStreamLoggerTest {
+  @BeforeTest
+  fun before() {
+    LogcatLogger.install()
+  }
+
+  @AfterTest
+  fun after() {
+    LogcatLogger.uninstall()
+  }
+
+  @Test
+  fun `Log to print stream`() {
+    // given
+    val timeMs = 1_748_073_213_000 // Sat May 24 2025 07:53:33 GMT+0000
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    val stream = PrintStream(byteArrayOutputStream)
+    val clock = TestClock { Instant.fromEpochMilliseconds(timeMs) }
+    LogcatLogger.loggers += TimestampedPrintStreamLogger(stream, clock, minPriority = DEBUG)
+
+    // when
+    log.i { "Hello world" }
+    log.d("TAGGED") { "This one has a tag" }
+
+    // then
+    val contents = byteArrayOutputStream.toString().trim().lines()
+    byteArrayOutputStream.flush()
+    assertThat(contents)
+      .isEqualTo(
+        listOf(
+          "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
+          "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
+        ),
+      )
+  }
+}

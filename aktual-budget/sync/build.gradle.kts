@@ -6,7 +6,7 @@ kotlin {
     api(project(":aktual-budget:utils"))
     implementation(project(":aktual-budget:data:db"))
     implementation(project(":aktual-budget:data:proto"))
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
     implementation(project(":aktual-prefs"))
   }
 }

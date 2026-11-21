@@ -1,6 +1,6 @@
 package aktual.crashes.vm
 
-import aktual.core.logging.CrashReport
+import aktual.logging.CrashReport
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 

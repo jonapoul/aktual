@@ -7,7 +7,7 @@ kotlin {
     api(project(":aktual-budget:utils"))
     api(project(":aktual-core:utils"))
     implementation(libs.kotlinx.serialization.json)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

@@ -169,7 +169,7 @@ dependencies {
   implementation(project(":aktual-app:ui-app"))
   implementation(project(":aktual-app:ui-budget"))
   implementation(project(":aktual-core:jvm"))
-  implementation(project(":aktual-core:logging"))
+  implementation(project(":aktual-logging"))
   implementation(project(":aktual-prefs:components"))
   implementation(compose.desktop.currentOs)
   implementation(libs.androidx.lifecycle.viewmodel)

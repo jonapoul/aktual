@@ -8,7 +8,7 @@ kotlin {
     api(project(":aktual-core:utils"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(libs.kotlinx.serialization.json)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

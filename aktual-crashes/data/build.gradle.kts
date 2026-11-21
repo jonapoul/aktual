@@ -4,7 +4,7 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
     api(libs.okio)
-    api(project(":aktual-core:logging:format"))
+    api(project(":aktual-logging:format"))
     implementation(libs.ktor.core)
   }
 

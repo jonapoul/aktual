@@ -3,8 +3,8 @@ package aktual.about.vm.logs
 import aktual.about.data.LogExport
 import aktual.about.data.LogExportTarget
 import aktual.about.data.LogsRepository
-import aktual.core.logging.LogFileFormat
-import aktual.core.logging.LogLine
+import aktual.logging.LogFileFormat
+import aktual.logging.LogLine
 import dev.zacsweers.metro.Inject
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate

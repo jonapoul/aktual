@@ -7,7 +7,6 @@ import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CrashReportNavigator
@@ -40,6 +39,7 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.crashes.vm.CrashReportsState
 import aktual.crashes.vm.CrashReportsViewModel
+import aktual.logging.CrashReport
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy

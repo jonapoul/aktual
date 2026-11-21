@@ -7,8 +7,8 @@ kotlin {
     api(project(":aktual-updates"))
     implementation(libs.ktor.core)
     implementation(project(":aktual-api"))
-    implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-di:core"))
+    implementation(project(":aktual-logging"))
     implementation(project(":aktual-prefs"))
   }
 

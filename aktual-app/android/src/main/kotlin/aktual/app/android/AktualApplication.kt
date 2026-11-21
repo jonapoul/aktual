@@ -1,9 +1,9 @@
 package aktual.app.android
 
-import aktual.core.logging.AktualAndroidLogcatLogger
-import aktual.core.logging.CrashReporter
-import aktual.core.logging.KermitFileLogger
 import aktual.log
+import aktual.logging.AktualAndroidLogcatLogger
+import aktual.logging.CrashReporter
+import aktual.logging.KermitFileLogger
 import android.app.Application
 import android.os.Build.MANUFACTURER
 import android.os.Build.MODEL
