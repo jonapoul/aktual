@@ -11,7 +11,9 @@
 
 # About
 
-Aktual is a native Android and desktop client for [Actual Budget](https://github.com/actualbudget/actual), written in Kotlin Multiplatform. It syncs with your existing Actual server, so you can use it alongside the web app on the same budget.
+[Actual Budget](https://github.com/actualbudget/actual) is a free, open-source personal finance app built around envelope budgeting: you give every dollar a job, and move money between categories as plans change. It's local-first, meaning each device keeps its own copy of your budget and works without a connection. You run (or rent) an Actual server, which syncs changes between your devices and can also handle bank sync and end-to-end encryption. Actual's official apps are a web app and an Electron desktop app.
+
+Aktual is a separate, unofficial app for Android and desktop that works with the same server and the same budgets. It's written from scratch in Kotlin Multiplatform with a native UI, rather than wrapping Actual's web app. It downloads your budget from your Actual server, works on it locally and syncs changes back, so you can switch between Aktual and Actual's own apps on the same budget.
 
 > [!CAUTION]
 > Aktual is an unofficial pet project. It isn't affiliated with or supported by the Actual team, so please don't report Aktual bugs upstream.
@@ -19,131 +21,19 @@ Aktual is a native Android and desktop client for [Actual Budget](https://github
 | Platform | Status |
 |---|---|
 | [Android](aktual-app/android) | Covers most of Actual's features |
-| [Desktop](aktual-app/desktop) | 🚧 Under construction 🚧 |
+| [Desktop](aktual-app/desktop) | Mostly works, but a little janky |
 | iOS | 🚧 TBC? 🚧 |
-
-<!-- TODO screenshots: a row of phone shots (budget, transactions, report, accounts, settings) and one desktop shot, in docs/img/screenshots/ -->
-
-# Features
-
-### Getting started
-- Connect to your Actual server with a password or OpenID
-- Open, download and sync budgets from your server
-- End-to-end encrypted budgets
-- Try the demo budget without a server
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-### Budgeting
-- Envelope and tracking budgets
-- Set, copy and transfer budget amounts, and hold money for next month
-- Create, rename and delete categories and category groups
-- Notes on categories and months
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-### Accounts and transactions
-- On-budget, off-budget and closed accounts
-- Add, edit and delete transactions, including splits and transfers
-- Search, filter and save filters
-- Reconcile accounts
-- Undo deletes and edits
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-### Schedules, rules, payees and tags
-- Create and edit schedules, and post upcoming ones early
-- Create and edit rules, with date and amount range conditions
-- Manage and merge payees
-- Manage tags
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-### Bank sync
-- SimpleFIN
-- GoCardless
-- Pluggy.ai
-- Enable Banking (experimental)
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-### Reports
-- Dashboard with custom widgets
-- Net worth, cash flow, spending, age of money, summary, calendar and custom reports
-- Crossover report
-- Formula reports (experimental)
-- Sankey, balance forecast, budget analysis and Monte Carlo reports (experimental)
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-### Settings and more
-- Light and dark themes, plus a catalog of community themes
-- Choose the start page for each budget
-- Number, date and currency formats
-- Advanced and experimental settings, matching Actual's
-- API keys
-- Crash reports you can view and share
-- Checks for new nightly builds
-
-<table>
-  <tr>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-    <td width="33%"><!-- screenshot --></td>
-  </tr>
-</table>
-
-# Not yet supported
-
-- Creating a new budget (this opens Actual in your browser for now)
-- Importing from files (CSV, OFX, QIF) or other apps (YNAB, nYNAB)
-- Exporting a budget
-- Goal templates
-- Rule action templating
-- Server user management
-- Stable releases. Only nightly builds are available
+| Other platforms | 🚧 TBC? 🚧 |
 
 # Install
 
 All builds come from the latest commit on `main`. There are no stable releases yet. Android needs Android 9 or newer.
 
 ## Android
+
+### F-Droid
+
+🚧 TBC 🚧
 
 ### Obtainium
 
@@ -169,9 +59,131 @@ Desktop builds are still rough around the edges.
 - [macOS (.dmg)](https://nightly.link/jonapoul/aktual/workflows/nightly/main/desktop-macOS.zip)
 - [Windows (.msi/.exe)](https://nightly.link/jonapoul/aktual/workflows/nightly/main/desktop-Windows.zip)
 
+# Features
+
+### Getting started
+- Connect to your Actual server with a password or OpenID
+- Open, download and sync budgets from your server
+- End-to-end encrypted budgets
+- Try the demo budget without a server
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_server_url.png" alt="Server URL screen"></td>
+    <td width="33%"><img src="docs/img/feature_login.png" alt="Login screen, showing the password and OpenID options"></td>
+    <td width="33%"><img src="docs/img/feature_budget_list.png" alt="Budget list, with a synced budget and an encrypted one"></td>
+  </tr>
+</table>
+
+### Budgeting
+- Envelope and tracking budgets
+- Set, copy and transfer budget amounts, and hold money for next month
+- Create, rename and delete categories and category groups
+- Notes on categories and months
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_budget.png" alt="Monthly budget table with category groups expanded"></td>
+    <td width="33%"><img src="docs/img/feature_budget_sheet.png" alt="Category budget sheet: set, copy or transfer an amount"></td>
+    <td width="33%"><img src="docs/img/feature_budget_create.png" alt="Creating a category"></td>
+  </tr>
+</table>
+
+### Accounts and transactions
+- On-budget, off-budget and closed accounts
+- Add, edit and delete transactions, including splits and transfers
+- Search, filter and save filters
+- Reconcile accounts
+- Undo deletes and edits
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_transactions.png" alt="Transaction list with filter chips applied"></td>
+    <td width="33%"><img src="docs/img/feature_edit_transaction.png" alt="Editing a split transaction"></td>
+    <td width="33%"><img src="docs/img/feature_accounts.png" alt="Account list with on-budget, off-budget and closed accounts"></td>
+  </tr>
+</table>
+
+### Schedules, rules, payees and tags
+- Create and edit schedules, and post upcoming ones early
+- Create and edit rules, with date and amount range conditions
+- Manage and merge payees
+- Manage tags
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_schedules.png" alt="Schedule list screen"></td>
+    <td width="33%"><img src="docs/img/feature_rules.png" alt="Rule list screen with a few conditions and actions"></td>
+    <td width="33%"><img src="docs/img/feature_payees.png" alt="Payee list"></td>
+  </tr>
+</table>
+
+### Bank sync
+
+> [!WARNING]
+> GoCardless is the only provider I've been able to test. The others should work, but are untested.
+
+- GoCardless
+- SimpleFIN
+- Pluggy.ai
+- Enable Banking
+- Akahu
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_banksync_providers.png" alt="Bank sync provider list (SimpleFIN, GoCardless, etc.)"></td>
+    <td width="33%"><img src="docs/img/feature_banksync_link.png" alt="Linking a bank account to an Actual account"></td>
+    <td width="33%"><img src="docs/img/feature_banksync_settings.png" alt="Per-account bank sync settings or field mappings"></td>
+  </tr>
+</table>
+
+### Reports
+- Dashboard with custom widgets
+- Net worth, cash flow, spending, age of money, summary, calendar and custom reports
+- Crossover report
+- Formula reports (experimental)
+- Sankey, balance forecast, budget analysis and Monte Carlo reports (experimental)
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_reports_dashboard.png" alt="Reports dashboard with several widgets"></td>
+    <td width="33%"><img src="docs/img/feature_reports_custom.png" alt="A custom report, showing a bar chart by payee"></td>
+    <td width="33%"><img src="docs/img/feature_reports_sankey.png" alt="Sankey report"></td>
+  </tr>
+</table>
+
+### Settings and more
+- Light and dark themes, plus a [catalog of community themes](https://github.com/actualbudget/actual/blob/master/packages/desktop-client/src/data/customThemeCatalog.json)
+- Choose the start page for each budget
+- Number, date and currency formats
+- Advanced and experimental settings, matching Actual's
+- API keys
+- Crash reports and logs which you can view/export
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/feature_settings.png" alt="Main settings screen"></td>
+    <td width="33%"><img src="docs/img/feature_settings_theme.png" alt="Theme settings, with the light and dark pickers"></td>
+    <td width="33%"><img src="docs/img/feature_settings_amounts.png" alt="Currency/number formatting settings"></td>
+  </tr>
+</table>
+
+# Not yet supported
+
+- Creating a new budget (this opens Actual in your browser for now)
+- Importing from files (CSV, OFX, QIF) or other apps (YNAB, nYNAB)
+- Exporting a budget
+- Switching a budget between envelope and tracking
+- Goal templates
+- Rule action templating
+- Server user management
+- Stable releases. Only nightly builds are available
+
 # Compatibility
 
 Aktual is tested against the latest Actual server release. Its local database follows Actual's migrations, and a daily check opens a PR when upstream adds a new one, so budgets stay readable by both apps.
+
+I do make efforts to stay compatible mostly with the latest state of Actual's main branch, so it's possible that you might see features in-app (if you use nightly builds) which aren't supported by your server yet.
 
 # Building from source
 
