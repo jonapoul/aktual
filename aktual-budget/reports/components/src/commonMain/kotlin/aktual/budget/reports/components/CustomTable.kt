@@ -115,7 +115,7 @@ internal fun CustomTable(
         state = listState,
         userScrollEnabled = !compact,
       ) {
-        items(rows) { row ->
+        items(rows, contentType = { it::class }) { row ->
           when (row) {
             is Amounts -> AmountsRow(row, widths, rowHeight, textStyle, scroll, onDrilldown)
             Gap -> Spacer(modifier = Modifier.height(GAP_HEIGHT))
