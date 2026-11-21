@@ -35,6 +35,8 @@ kotlin {
     api(project(":aktual-prefs:impl"))
     api(project(":aktual-theme:impl"))
     api(project(":aktual-updates:impl"))
+    api(project(":github-api:impl"))
+    api(project(":openstreetmap-api:impl"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okio)
     implementation(project(":aktual-logging"))

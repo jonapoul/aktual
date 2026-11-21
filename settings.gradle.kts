@@ -270,4 +270,8 @@ include(
   ":aktual-updates:impl",
   ":aktual-updates:vm",
   ":detekt-rules",
+  ":github-api",
+  ":github-api:impl",
+  ":openstreetmap-api",
+  ":openstreetmap-api:impl",
 )
