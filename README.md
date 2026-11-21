@@ -69,6 +69,11 @@ Desktop builds are still rough around the edges.
 
 <table>
   <tr>
+    <th width="33%">Server URL</th>
+    <th width="33%">Login</th>
+    <th width="33%">Budget list</th>
+  </tr>
+  <tr>
     <td width="33%"><img src="docs/img/feature_server_url.png" alt="Server URL screen"></td>
     <td width="33%"><img src="docs/img/feature_login.png" alt="Login screen, showing the password and OpenID options"></td>
     <td width="33%"><img src="docs/img/feature_budget_list.png" alt="Budget list, with a synced budget and an encrypted one"></td>
@@ -82,6 +87,11 @@ Desktop builds are still rough around the edges.
 - Notes on categories and months
 
 <table>
+  <tr>
+    <th width="33%">Budget</th>
+    <th width="33%">Budget actions</th>
+    <th width="33%">New category</th>
+  </tr>
   <tr>
     <td width="33%"><img src="docs/img/feature_budget.png" alt="Monthly budget table with category groups expanded"></td>
     <td width="33%"><img src="docs/img/feature_budget_sheet.png" alt="Category budget sheet: set, copy or transfer an amount"></td>
@@ -98,6 +108,11 @@ Desktop builds are still rough around the edges.
 
 <table>
   <tr>
+    <th width="33%">Transactions</th>
+    <th width="33%">Edit transaction</th>
+    <th width="33%">Accounts</th>
+  </tr>
+  <tr>
     <td width="33%"><img src="docs/img/feature_transactions.png" alt="Transaction list with filter chips applied"></td>
     <td width="33%"><img src="docs/img/feature_edit_transaction.png" alt="Editing a split transaction"></td>
     <td width="33%"><img src="docs/img/feature_accounts.png" alt="Account list with on-budget, off-budget and closed accounts"></td>
@@ -111,6 +126,11 @@ Desktop builds are still rough around the edges.
 - Manage tags
 
 <table>
+  <tr>
+    <th width="33%">Schedules</th>
+    <th width="33%">Rules</th>
+    <th width="33%">Payees</th>
+  </tr>
   <tr>
     <td width="33%"><img src="docs/img/feature_schedules.png" alt="Schedule list screen"></td>
     <td width="33%"><img src="docs/img/feature_rules.png" alt="Rule list screen with a few conditions and actions"></td>
@@ -131,6 +151,11 @@ Desktop builds are still rough around the edges.
 
 <table>
   <tr>
+    <th width="33%">Providers</th>
+    <th width="33%">Link an account</th>
+    <th width="33%">Sync settings</th>
+  </tr>
+  <tr>
     <td width="33%"><img src="docs/img/feature_banksync_providers.png" alt="Bank sync provider list (SimpleFIN, GoCardless, etc.)"></td>
     <td width="33%"><img src="docs/img/feature_banksync_link.png" alt="Linking a bank account to an Actual account"></td>
     <td width="33%"><img src="docs/img/feature_banksync_settings.png" alt="Per-account bank sync settings or field mappings"></td>
@@ -145,6 +170,11 @@ Desktop builds are still rough around the edges.
 - Sankey, balance forecast, budget analysis and Monte Carlo reports (experimental)
 
 <table>
+  <tr>
+    <th width="33%">Dashboard</th>
+    <th width="33%">Custom report</th>
+    <th width="33%">Sankey</th>
+  </tr>
   <tr>
     <td width="33%"><img src="docs/img/feature_reports_dashboard.png" alt="Reports dashboard with several widgets"></td>
     <td width="33%"><img src="docs/img/feature_reports_custom.png" alt="A custom report, showing a bar chart by payee"></td>
@@ -161,6 +191,11 @@ Desktop builds are still rough around the edges.
 - Crash reports and logs which you can view/export
 
 <table>
+  <tr>
+    <th width="33%">Settings</th>
+    <th width="33%">Themes</th>
+    <th width="33%">Number formats</th>
+  </tr>
   <tr>
     <td width="33%"><img src="docs/img/feature_settings.png" alt="Main settings screen"></td>
     <td width="33%"><img src="docs/img/feature_settings_theme.png" alt="Theme settings, with the light and dark pickers"></td>
