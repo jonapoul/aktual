@@ -6,7 +6,6 @@ import aktual.theme.Colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,7 +69,6 @@ fun <T> AktualExposedDropDownMenu(
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   textStyle: TextStyle = LocalTextStyle.current,
-  contentPadding: PaddingValues = TEXT_FIELD_CONTENT_PADDING,
 ) {
   var isExpanded by remember { mutableStateOf(false) }
   var selectedOption by remember(value) { mutableStateOf(value) }
@@ -87,14 +85,13 @@ fun <T> AktualExposedDropDownMenu(
       textStyle,
       density,
       trailingIconSize,
-      contentPadding,
       layoutDirection,
     ) {
       with(density) {
         val textWidth = textMeasurer.measure(selectedString, textStyle).size.width.toDp()
         val hPadding =
-          contentPadding.calculateStartPadding(layoutDirection) +
-            contentPadding.calculateEndPadding(layoutDirection)
+          TEXT_FIELD_CONTENT_PADDING.calculateStartPadding(layoutDirection) +
+            TEXT_FIELD_CONTENT_PADDING.calculateEndPadding(layoutDirection)
         textWidth + trailingIconSize + hPadding
       }
     }
@@ -142,7 +139,7 @@ fun <T> AktualExposedDropDownMenu(
             interactionSource = interactionSource,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
             colors = colors.exposedDropDownMenu(),
-            contentPadding = contentPadding,
+            contentPadding = TEXT_FIELD_CONTENT_PADDING,
           )
         },
       )

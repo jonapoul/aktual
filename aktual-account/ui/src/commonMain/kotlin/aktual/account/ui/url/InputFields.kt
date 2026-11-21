@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -39,7 +38,6 @@ internal fun InputFields(
       value = protocol.toString(),
       options = PROTOCOLS,
       string = { it },
-      contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(),
       onValueChange = { onAction(SelectProtocol(Protocol::class.parse(it))) },
     )
 
