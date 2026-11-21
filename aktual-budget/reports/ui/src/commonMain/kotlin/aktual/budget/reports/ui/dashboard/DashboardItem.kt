@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.model.CustomReportId
 import aktual.budget.reports.components.ChartHeight
 import aktual.budget.reports.components.ChartPadding
 import aktual.budget.reports.components.PER_TRANSACTION_DATA
@@ -54,6 +55,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -66,6 +68,8 @@ internal fun DashboardItem(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   isEditing: Boolean = false,
+  canPin: Boolean = LocalCanPinReports.current,
+  customReportNames: ImmutableMap<CustomReportId, String> = LocalCustomReportNames.current,
 ) {
   val flow = remember(item) { observer(item) }
   val chartData by flow.collectAsStateWithLifecycle(initialValue = null)
@@ -79,6 +83,8 @@ internal fun DashboardItem(
     onAction = onAction,
     modifier = modifier,
     isEditing = isEditing,
+    canPin = canPin,
+    customReportNames = customReportNames,
   )
 }
 
@@ -92,8 +98,9 @@ private fun DashboardItem(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   isEditing: Boolean = false,
+  canPin: Boolean = LocalCanPinReports.current,
+  customReportNames: ImmutableMap<CustomReportId, String> = LocalCustomReportNames.current,
 ) {
-  val customReportNames = LocalCustomReportNames.current
   var showRenameDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -112,6 +119,7 @@ private fun DashboardItem(
         onAction = onAction,
         onRename = { showRenameDialog = true },
         onDelete = { showDeleteDialog = true },
+        canPin = canPin,
       )
     }
   }
@@ -171,9 +179,9 @@ private fun SwipeableReportCard(
   onAction: OnAction<Action>,
   onRename: () -> Unit,
   onDelete: () -> Unit,
+  canPin: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val canPin = LocalCanPinReports.current
   val colors = colors
   val renameText = Strings.reportsDashboardRename
   val deleteText = Strings.reportsDashboardDelete
@@ -188,41 +196,41 @@ private fun SwipeableReportCard(
   val actions =
     remember(item.id, item.isRenamable, isPinned, canPin, colors, renameText, deleteText, pinText) {
       buildList {
-          if (isPinned || canPin) {
-            add(
-              SwipeAction(
-                text = pinText,
-                icon = AktualIcons.Pin,
-                background = lerp(colors.tableBackground, Black, fraction = 0.2f),
-                foreground = colors.tableText,
-                onClick = {
-                  currentOnOpenChange(false)
-                  currentOnAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
-                },
-              ),
-            )
-          }
-          if (item.isRenamable) {
-            add(
-              SwipeAction(
-                text = renameText,
-                icon = AktualIcons.Pencil1,
-                background = lerp(colors.tableBackground, Black, fraction = 0.1f),
-                foreground = colors.tableText,
-                onClick = { currentOnRename() },
-              ),
-            )
-          }
+        if (isPinned || canPin) {
           add(
             SwipeAction(
-              text = deleteText,
-              icon = AktualIcons.Trash,
-              background = colors.errorText,
-              foreground = colors.errorText.contrastingTextColor(),
-              onClick = { currentOnDelete() },
+              text = pinText,
+              icon = AktualIcons.Pin,
+              background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+              foreground = colors.tableText,
+              onClick = {
+                currentOnOpenChange(false)
+                currentOnAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
+              },
             ),
           )
         }
+        if (item.isRenamable) {
+          add(
+            SwipeAction(
+              text = renameText,
+              icon = AktualIcons.Pencil1,
+              background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+              foreground = colors.tableText,
+              onClick = { currentOnRename() },
+            ),
+          )
+        }
+        add(
+          SwipeAction(
+            text = deleteText,
+            icon = AktualIcons.Trash,
+            background = colors.errorText,
+            foreground = colors.errorText.contrastingTextColor(),
+            onClick = { currentOnDelete() },
+          ),
+        )
+      }
         .toImmutableList()
     }
 

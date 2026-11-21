@@ -393,8 +393,13 @@ private fun ContentList(
   val haptics = LocalHapticFeedback.current
   val density = LocalDensity.current
   val isEditing = reorder.isEditing
-  val byId = remember(items) { items.associateBy { it.id } }
-  val ordered = reorder.order.mapNotNull(byId::get).ifEmpty { items }
+  val canPin = LocalCanPinReports.current
+  val customReportNames = LocalCustomReportNames.current
+  val ordered =
+    remember(items, reorder.order) {
+      val byId = items.associateBy { it.id }
+      reorder.order.mapNotNull(byId::get).ifEmpty { items }
+    }
 
   SideEffect(isEditing) { openItemId = null }
 
@@ -409,7 +414,11 @@ private fun ContentList(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
-    itemsIndexed(ordered, key = { _, item -> item.id.value }) { index, item ->
+    itemsIndexed(
+      items = ordered,
+      key = { _, item -> item.id.value },
+      contentType = { _, item -> item.meta::class },
+    ) { index, item ->
       // Derived per card, so only the cards that change recompose
       val isDragged by remember(item.id) { derivedStateOf { reorder.dragged == item.id } }
       val isOpen by remember(item.id) { derivedStateOf { openItemId == item.id } }
@@ -442,6 +451,8 @@ private fun ContentList(
         },
         onAction = onAction,
         isEditing = isEditing,
+        canPin = canPin,
+        customReportNames = customReportNames,
       )
     }
 
