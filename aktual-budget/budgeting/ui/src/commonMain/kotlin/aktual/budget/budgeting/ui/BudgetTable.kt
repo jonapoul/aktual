@@ -280,7 +280,7 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
         Text(
           text = amount.formattedText(),
           fontSize = textSizes.smallPlus,
-          style = TextStyle.Default.tabularFigures(),
+          style = TabularFigures,
           maxLines = 1,
         )
       }
@@ -739,7 +739,7 @@ internal fun AmountText(
     text = amount.formattedText(includeSign = includeSign),
     fontSize = textSizes.medium,
     fontWeight = if (bold) SemiBold else Normal,
-    style = TextStyle.Default.tabularFigures(),
+    style = TabularFigures,
     color = color,
     textAlign = End,
     maxLines = 1,
@@ -755,7 +755,7 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
     colors = pill,
     size = Small,
     textStyle =
-      TextStyle.Default.tabularFigures().copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
+      TabularFigures.copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
     spacing = 2.dp,
   ) {
     Text(text = balance.formattedText(includeSign = true), maxLines = 1)
@@ -784,7 +784,7 @@ internal fun ShimmerBudgetTable(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
   val header = TextStyle(fontSize = textSizes.smallPlus)
   val row = TextStyle(fontSize = textSizes.medium)
-  val pill = TextStyle.Default.tabularFigures().copy(fontSize = textSizes.smallPlus)
+  val pill = TabularFigures.copy(fontSize = textSizes.smallPlus)
 
   Column(modifier = modifier.fillMaxWidth()) {
     ShimmerSummaryCard(shimmer, modifier = Modifier.padding(bottom = 8.dp))
@@ -906,6 +906,8 @@ private val ShimmerGroupWidths =
 private val ShimmerIncomeWidths = persistentListOf(48.dp, 72.dp)
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
+
+internal val TabularFigures = TextStyle(fontFeatureSettings = "tnum")
 
 internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding

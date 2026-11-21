@@ -57,7 +57,6 @@ import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -599,7 +598,7 @@ private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
       text = amount.formattedText(includeSign = true),
       fontSize = textSizes.medium,
       fontWeight = if (bold) SemiBold else Normal,
-      style = TextStyle.Default.tabularFigures(),
+      style = TabularFigures,
     )
   }
 }
@@ -609,7 +608,7 @@ private fun AmountLabel(text: String) =
   Text(
     text = text.redacted(),
     fontSize = textSizes.smallPlus,
-    style = TextStyle.Default.tabularFigures(),
+    style = TabularFigures,
     color = colors.pageTextSubdued,
   )
 

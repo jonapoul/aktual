@@ -71,7 +71,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -475,7 +474,7 @@ private fun SummaryAmount(
     text = amount.formattedText(includeSign = includeSign),
     fontSize = fontSize,
     fontWeight = if (includeSign) SemiBold else Normal,
-    style = TextStyle.Default.tabularFigures(),
+    style = TabularFigures,
     color = color,
     maxLines = 1,
   )
