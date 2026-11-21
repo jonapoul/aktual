@@ -268,17 +268,21 @@ private fun SwipeToDelete(
   content: @Composable () -> Unit,
 ) {
   val deleteBackground = colors.errorText
-  SwipeToReveal(
-    actions =
+  val text = Strings.transactionDelete
+  val actions =
+    remember(text, deleteBackground, onDelete) {
       persistentListOf(
         SwipeAction(
-          text = Strings.transactionDelete,
+          text = text,
           icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = onDelete,
         ),
-      ),
+      )
+    }
+  SwipeToReveal(
+    actions = actions,
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     shape = RectangleShape,

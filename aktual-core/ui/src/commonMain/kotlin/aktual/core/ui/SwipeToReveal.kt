@@ -52,6 +52,8 @@ import androidx.compose.ui.util.fastForEachIndexed
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 /**
  * Lets [content] be swiped left to reveal [actions] behind it. Only one item in a list should be
@@ -80,24 +82,30 @@ fun SwipeToReveal(
       }
     }
 
-  // Tell the parent when this item settles, so it can keep only one item open
   val currentOnOpenChange by rememberUpdatedState(onOpenChange)
-  LaunchedEffect(swipeState) {
-    snapshotFlow { swipeState.settledValue }
-      .collect { settled -> currentOnOpenChange(settled == Open) }
-  }
-
-  // Claim the open slot as soon as a drag starts, so any other open item closes straight away
+  val currentIsOpen by rememberUpdatedState(isOpen)
   val interactionSource = remember { MutableInteractionSource() }
-  LaunchedEffect(interactionSource) {
-    interactionSource.interactions.collect { interaction ->
-      if (interaction is DragInteraction.Start) currentOnOpenChange(true)
-    }
-  }
 
-  LaunchedEffect(isOpen) {
-    if (!isOpen && swipeState.currentValue != Closed) {
-      swipeState.animateTo(Closed)
+  // One effect, as lists compose and dispose many of these while scrolling
+  LaunchedEffect(swipeState, interactionSource) {
+    // Tell the parent when this item settles, so it can keep only one item open
+    launch {
+      snapshotFlow { swipeState.settledValue }
+        .collect { settled -> currentOnOpenChange(settled == Open) }
+    }
+
+    // Claim the open slot as soon as a drag starts, so any other open item closes straight away
+    launch {
+      interactionSource.interactions.collect { interaction ->
+        if (interaction is DragInteraction.Start) currentOnOpenChange(true)
+      }
+    }
+
+    launch {
+      snapshotFlow { currentIsOpen }
+        .collectLatest { open ->
+          if (!open && swipeState.currentValue != Closed) swipeState.animateTo(Closed)
+        }
     }
   }
 
