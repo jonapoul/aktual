@@ -103,7 +103,11 @@ internal fun LazyListScope.budgetTable(
     )
   }
 
-  items(budget.banners, key = { it::class.simpleName.orEmpty() }) { banner ->
+  items(
+    items = budget.banners,
+    key = { it::class.simpleName.orEmpty() },
+    contentType = { "banner" },
+  ) { banner ->
     BannerRow(
       banner = banner,
       month = budget.month,
@@ -127,7 +131,11 @@ internal fun LazyListScope.budgetTable(
     }
 
     if (!group.isCollapsed) {
-      items(group.categories, key = { "category-${it.id.value}" }) { category ->
+      items(
+        items = group.categories,
+        key = { "category-${it.id.value}" },
+        contentType = { "category" },
+      ) { category ->
         CategoryItem(
           modifier = Modifier.animateItem(),
           category = category,
@@ -158,7 +166,11 @@ internal fun LazyListScope.budgetTable(
   }
 
   if (!income.isCollapsed) {
-    items(income.categories, key = { "category-${it.id.value}" }) { category ->
+    items(
+      items = income.categories,
+      key = { "category-${it.id.value}" },
+      contentType = { "income-category" },
+    ) { category ->
       IncomeItem(
         modifier = Modifier.animateItem(),
         category = category,
@@ -754,8 +766,7 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
     modifier = modifier.semantics { if (carryover) stateDescription = rollsOver },
     colors = pill,
     size = Small,
-    textStyle =
-      TabularFigures.copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
+    textStyle = TabularFigures.copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
     spacing = 2.dp,
   ) {
     Text(text = balance.formattedText(includeSign = true), maxLines = 1)

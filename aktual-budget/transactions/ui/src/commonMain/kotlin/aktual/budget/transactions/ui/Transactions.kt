@@ -50,6 +50,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -175,7 +176,11 @@ private fun TransactionsFilled(
   ) {
     item { VerticalSpacer(innerPadding.calculateTopPadding()) }
 
-    items(count = pagingItems.itemCount, key = pagingItems.itemKey { it.id.toString() }) { index ->
+    items(
+      count = pagingItems.itemCount,
+      key = pagingItems.itemKey { it.id.toString() },
+      contentType = pagingItems.itemContentType { if (it.children.isEmpty()) "row" else "split" },
+    ) { index ->
       val transaction = pagingItems[index]
       if (transaction != null) {
         val previous = if (index > 0) pagingItems.peek(index - 1) else null

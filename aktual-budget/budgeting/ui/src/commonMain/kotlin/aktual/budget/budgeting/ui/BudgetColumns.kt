@@ -203,7 +203,11 @@ private fun LazyListScope.budgetColumns(
     }
 
     if (!group.isCollapsed) {
-      items(group.categories, key = { categoryKey(it.id) }) { category ->
+      items(
+        items = group.categories,
+        key = { categoryKey(it.id) },
+        contentType = { "category" },
+      ) { category ->
         CategoryRowLayout(
           modifier = Modifier.animateItem(),
           category = category,
@@ -274,7 +278,11 @@ private fun LazyListScope.incomeColumns(
   }
 
   if (!income.isCollapsed) {
-    items(income.categories, key = { categoryKey(it.id) }) { category ->
+    items(
+      items = income.categories,
+      key = { categoryKey(it.id) },
+      contentType = { "income-category" },
+    ) { category ->
       CategoryRowLayout(
         modifier = Modifier.animateItem(),
         category = category,
