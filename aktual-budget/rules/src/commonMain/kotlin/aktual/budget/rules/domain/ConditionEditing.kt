@@ -89,6 +89,17 @@ private val COMPARE_OPERATORS =
     LessThanOrEquals,
   )
 
+private val DATE_OPERATORS =
+  persistentListOf<Operator>(
+    Is,
+    IsApprox,
+    IsBetween,
+    GreaterThan,
+    GreaterThanOrEquals,
+    LessThan,
+    LessThanOrEquals,
+  )
+
 private val FLAG_OPERATORS = persistentListOf<Operator>(Is)
 
 private val RECUR_OPERATORS = setOf<Operator>(Is, IsApprox)
@@ -101,7 +112,7 @@ fun filterOperators(field: Field): ImmutableList<Operator> =
     Payee -> ID_OPERATORS
     Notes,
     ImportedPayee -> TEXT_OPERATORS
-    Date,
+    Date -> DATE_OPERATORS
     Amount -> COMPARE_OPERATORS
     Cleared,
     Reconciled,
@@ -169,7 +180,7 @@ fun conditionValueKind(field: Field, op: Operator): ConditionValueKind =
     Payee,
     Acct,
     Description -> idValueKind(op)
-    Date -> Day
+    Date -> if (op == IsBetween) DayRange else Day
     Amount -> Money
     Cleared,
     Reconciled,
@@ -227,7 +238,11 @@ fun Condition.operators(schema: ConditionSchema = FilterConditions): ImmutableLi
 }
 
 private fun Condition.valueKind(op: Operator = operator): ConditionValueKind =
-  if (field == Date && value is JsonObject) Recurrence else conditionValueKind(field, op)
+  if (field == Date && op != IsBetween && value is JsonObject) {
+    Recurrence
+  } else {
+    conditionValueKind(field, op)
+  }
 
 private fun JsonElement.fits(kind: ConditionValueKind): Boolean =
   when (kind) {
@@ -236,7 +251,8 @@ private fun JsonElement.fits(kind: ConditionValueKind): Boolean =
     TextList -> this is JsonArray && all { it.isString() }
     Text -> isString()
     Money -> this is JsonPrimitive && !isString && longOrNull != null
-    Day -> isString() && (content().isEmpty() || content().toDayOrNull() != null)
+    Day -> isDayOrEmpty()
+    DayRange -> this is JsonObject && DAY_RANGE_KEYS.all { get(it)?.isDayOrEmpty() == true }
     Recurrence -> toRecurConfigOrNull() != null
     Flag -> this is JsonPrimitive && !isString && booleanOrNull != null
     NoValue -> true
@@ -271,6 +287,7 @@ private fun JsonElement.convert(
   names: Map<String, String>,
 ): JsonElement? {
   if (from == to) return this
+  if (from == Day && to == DayRange) return dayRange(this, this)
   if (from !in STRING_KINDS || to !in STRING_KINDS) return null
   // Text can't become an id without picking one
   if (from !in ID_KINDS && to in ID_KINDS) return null
@@ -291,6 +308,7 @@ private fun JsonElement.convert(
     Text -> JsonPrimitive(strings.firstOrNull().orEmpty())
     Money,
     Day,
+    DayRange,
     Recurrence,
     Flag,
     NoValue -> null
@@ -310,6 +328,7 @@ private fun defaultValue(kind: ConditionValueKind): JsonElement =
     Text,
     Day,
     Recurrence -> JsonPrimitive("")
+    DayRange -> dayRange(JsonPrimitive(""), JsonPrimitive(""))
     Money -> JsonPrimitive(0)
     Flag -> JsonPrimitive(true)
   }
@@ -323,10 +342,22 @@ private fun Field.conditionType(): ConditionType =
     TextList -> ConditionType.String
     Money -> ConditionType.Number
     Day,
+    DayRange,
     Recurrence -> Date
     Flag -> ConditionType.Boolean
   }
 
 private fun JsonElement.isString(): Boolean = this is JsonPrimitive && isString
+
+private fun JsonElement.isDayOrEmpty(): Boolean =
+  isString() && (content().isEmpty() || content().toDayOrNull() != null)
+
+// The value of a date isbetween condition, as upstream stores it
+fun dayRange(start: JsonElement, end: JsonElement): JsonObject =
+  JsonObject(mapOf(DAY_RANGE_START to start, DAY_RANGE_END to end))
+
+const val DAY_RANGE_START = "num1"
+const val DAY_RANGE_END = "num2"
+private val DAY_RANGE_KEYS = listOf(DAY_RANGE_START, DAY_RANGE_END)
 
 private fun JsonElement.content(): String = (this as JsonPrimitive).content

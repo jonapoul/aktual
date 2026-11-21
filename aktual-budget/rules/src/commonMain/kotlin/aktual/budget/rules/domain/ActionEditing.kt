@@ -94,6 +94,7 @@ private fun JsonPrimitive?.fits(kind: ConditionValueKind): Boolean =
     NoValue -> true
     EntityList,
     TextList,
+    DayRange,
     Recurrence -> false
   }
 
@@ -150,6 +151,7 @@ private fun defaultActionValue(kind: ConditionValueKind): JsonPrimitive? =
     Entity,
     EntityList,
     TextList,
+    DayRange,
     Recurrence,
     NoValue -> null
     Text,

@@ -6,7 +6,9 @@ import kotlin.contracts.contract
 
 // TYPE_INFO in packages/loot-core/src/shared/rules.ts
 internal enum class FieldType(val ops: Set<Operator>) {
-  Date(setOf(Is, IsApprox, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals)),
+  Date(
+    setOf(Is, IsApprox, IsBetween, GreaterThan, GreaterThanOrEquals, LessThan, LessThanOrEquals),
+  ),
   Id(setOf(Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, OnBudget, OffBudget)),
   Saved(emptySet()),
   String(setOf(Is, Contains, Matches, OneOf, IsNot, DoesNotContain, NotOneOf, HasTags, HasAnyTag)),

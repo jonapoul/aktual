@@ -141,6 +141,16 @@ class TransactionFilterTest {
   }
 
   @Test
+  fun `Dates between two days include both ends`() {
+    val filter =
+      filter(cond(Date, IsBetween, mapOf("num1" to "2020-08-10", "num2" to "2020-08-05")))
+    assertThat(filter.matches(row(date = "2020-08-04"))).isFalse()
+    assertThat(filter.matches(row(date = "2020-08-05"))).isTrue()
+    assertThat(filter.matches(row(date = "2020-08-10"))).isTrue()
+    assertThat(filter.matches(row(date = "2020-08-11"))).isFalse()
+  }
+
+  @Test
   fun `Invalid regex matches nothing`() {
     assertThat(filter(cond(Notes, Matches, "(")).matches(row(notes = "("))).isFalse()
   }
@@ -164,6 +174,19 @@ class TransactionFilterTest {
           accounts = setOf("b"),
           categories = setOf("food"),
         ),
+      )
+  }
+
+  @Test
+  fun `Bounds narrow by a date range`() {
+    val filter =
+      filter(
+        cond(Date, IsBetween, mapOf("num1" to "2020-03-01", "num2" to "2020-01-01")),
+        cond(Date, LessThan, "2020-02-01"),
+      )
+    assertThat(filter.bounds)
+      .isEqualTo(
+        FilterBounds(from = LocalDate.parse("2020-01-01"), to = LocalDate.parse("2020-02-01")),
       )
   }
 

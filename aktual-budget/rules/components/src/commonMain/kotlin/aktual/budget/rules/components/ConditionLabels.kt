@@ -5,6 +5,8 @@ import aktual.budget.model.Condition
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
 import aktual.budget.rules.domain.ConditionSchema
+import aktual.budget.rules.domain.DAY_RANGE_END
+import aktual.budget.rules.domain.DAY_RANGE_START
 import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.toRecurConfigOrNull
 import aktual.budget.schedules.components.description
@@ -16,6 +18,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
@@ -77,6 +80,13 @@ fun Condition.valueLabel(
     TextList -> (value as JsonArray).joinToString { it.jsonPrimitive.content }
     Text,
     Day -> value.jsonPrimitive.content
+    DayRange ->
+      value.jsonObject.let { range ->
+        Strings.reportsFormulaQueryDayRange(
+          range[DAY_RANGE_START]?.jsonPrimitive?.content.orEmpty(),
+          range[DAY_RANGE_END]?.jsonPrimitive?.content.orEmpty(),
+        )
+      }
     Recurrence -> value.toRecurConfigOrNull()?.description(LocalDateFormatter.current)
     Money -> Amount(value.jsonPrimitive.long).formattedString()
     Flag ->
