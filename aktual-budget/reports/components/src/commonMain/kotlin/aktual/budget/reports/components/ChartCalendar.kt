@@ -25,11 +25,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -267,7 +267,6 @@ internal fun CalendarSummary(
     }
   }
 
-@Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun DayButton(
   day: CalendarDay,
@@ -275,16 +274,17 @@ internal fun DayButton(
   onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val compact = LocalCompactChart.current
-  if (!day.isValid) return
+  // Padding days still take up a cell, keeping the other days in their weekday column
+  if (!day.isValid) {
+    Spacer(modifier)
+    return
+  }
 
-  BoxWithConstraints(
+  val compact = LocalCompactChart.current
+  Box(
     modifier =
       modifier
-        .background(
-          color = if (!day.isValid) Transparent else colors.calendarCellBackground,
-          shape = CardShape,
-        )
+        .background(color = colors.calendarCellBackground, shape = CardShape)
         // Compact charts sit in report cards, which handle clicks themselves. A disabled clickable
         // would still consume the tap, so leave it off entirely
         .then(
@@ -391,22 +391,23 @@ internal fun CalendarMonth(
 
     VerticalSpacer(5.dp)
 
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth().weight(1f)) {
-      val weeks = remember(month) { month.toWeeks() }
-      val itemHeight = maxHeight / weeks.size - TABLE_SPACING
-      val itemWidth = maxWidth / DAYS_PER_WEEK - TABLE_SPACING
-
-      Column(verticalArrangement = Arrangement.spacedBy(TABLE_SPACING)) {
-        weeks.fastForEach { week ->
-          Row(horizontalArrangement = Arrangement.spacedBy(TABLE_SPACING)) {
-            week.fastForEach { day ->
-              DayButton(
-                modifier = Modifier.size(width = itemWidth, height = itemHeight),
-                day = day,
-                month = month,
-                onClick = onClickDay,
-              )
-            }
+    val weeks = remember(month) { month.toWeeks() }
+    Column(
+      modifier = Modifier.fillMaxWidth().weight(1f),
+      verticalArrangement = Arrangement.spacedBy(TABLE_SPACING),
+    ) {
+      weeks.fastForEach { week ->
+        Row(
+          modifier = Modifier.fillMaxWidth().weight(1f),
+          horizontalArrangement = Arrangement.spacedBy(TABLE_SPACING),
+        ) {
+          week.fastForEach { day ->
+            DayButton(
+              modifier = Modifier.weight(1f).fillMaxHeight(),
+              day = day,
+              month = month,
+              onClick = onClickDay,
+            )
           }
         }
       }
@@ -425,6 +426,8 @@ private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
     }
   }
   if (currentWeek.isNotEmpty()) {
+    // Pads a short last week, so its days keep the same width as the rest
+    while (currentWeek.size < DAYS_PER_WEEK) currentWeek.add(PaddingDay)
     weeks.add(currentWeek.toImmutableList())
   }
   return weeks.toImmutableList()
@@ -434,6 +437,7 @@ private fun weekdays(first: DayOfWeek): List<DayOfWeek> =
   List(DAYS_PER_WEEK) { DayOfWeek.entries[(first.ordinal + it) % DAYS_PER_WEEK] }
 
 private const val DAYS_PER_WEEK = 7
+private val PaddingDay = CalendarDay(day = 0, income = Zero, expenses = Zero)
 private val TABLE_SPACING = 2.dp
 
 @Preview
