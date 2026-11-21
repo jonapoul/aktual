@@ -108,23 +108,26 @@ private class FilterCondition(private val condition: CompiledCondition) {
         else -> null
       }?.toSet()
     val day = ((value as? DateMatch)?.value as? Day)?.date
+    val range = value as? DateRange
     return when {
       field == Account && ids != null -> bounds.copy(accounts = bounds.accounts.narrowTo(ids))
       field == Category && ids != null -> bounds.copy(categories = bounds.categories.narrowTo(ids))
       field == Payee && ids != null -> bounds.copy(payees = bounds.payees.narrowTo(ids))
-      field == Date && day != null -> bounds.narrowDates(day)
+      field == Date && day != null ->
+        bounds.narrowDates(
+          from = day.takeIf { op in AFTER },
+          to = day.takeIf { op in BEFORE },
+        )
+      field == Date && range != null -> bounds.narrowDates(from = range.start, to = range.end)
       else -> bounds
     }
   }
 
-  private fun FilterBounds.narrowDates(day: LocalDate): FilterBounds {
-    val from = if (op in AFTER) day else null
-    val to = if (op in BEFORE) day else null
-    return copy(
+  private fun FilterBounds.narrowDates(from: LocalDate?, to: LocalDate?): FilterBounds =
+    copy(
       from = listOfNotNull(this.from, from).maxOrNull(),
       to = listOfNotNull(this.to, to).minOrNull(),
     )
-  }
 
   private fun Set<String>?.narrowTo(ids: Set<String>): Set<String> = this?.intersect(ids) ?: ids
 
@@ -275,13 +278,23 @@ private class FilterCondition(private val condition: CompiledCondition) {
     }
   }
 
+  // Unlike the other operators, a range keeps a zero amount in both directions, as eval does
+  private fun matchesRange(amount: Double, range: ConditionValue.Between): Boolean {
+    val options = condition.options
+    val fieldValue =
+      when {
+        options?.outflow == true -> if (amount <= 0) -amount else return false
+        options?.inflow == true -> if (amount >= 0) amount else return false
+        else -> amount
+      }
+    return op == IsBetween &&
+      fieldValue in minOf(range.num1, range.num2)..maxOf(range.num1, range.num2)
+  }
+
   // Inflow and outflow only match money going that way, with outflows compared as positive
   private fun matchesAmount(amount: Double): Boolean {
     val value = value
-    if (value is Between) {
-      return op == IsBetween &&
-        amount in minOf(value.num1, value.num2)..maxOf(value.num1, value.num2)
-    }
+    if (value is Between) return matchesRange(amount, value)
 
     val number = (value as ConditionValue.Number).value
     val options = condition.options
@@ -319,28 +332,30 @@ private class FilterCondition(private val condition: CompiledCondition) {
 
   @Suppress("CyclomaticComplexMethod")
   private fun matchesDate(date: LocalDate): Boolean {
-    val value = (value as DateMatch).value
+    val value = value
+    if (value is DateRange) return op == IsBetween && date in value.start..value.end
+    val match = (value as DateMatch).value
     return when (op) {
       Is ->
-        when (value) {
-          is Day -> date == value.date
-          is Month -> date.yearMonth == value.month
-          is Year -> date.year == value.year
+        when (match) {
+          is Day -> date == match.date
+          is Month -> date.yearMonth == match.month
+          is Year -> date.year == match.year
           is Recur -> date in recurDates
         }
 
       IsApprox ->
-        when (value) {
-          is Day -> date in value.date.minus(APPROX_DAYS)..value.date.plus(APPROX_DAYS)
+        when (match) {
+          is Day -> date in match.date.minus(APPROX_DAYS)..match.date.plus(APPROX_DAYS)
           is Recur -> recurDates.any { date in it.minus(APPROX_DAYS)..it.plus(APPROX_DAYS) }
           is Month,
           is Year -> false
         }
 
-      GreaterThan -> compareDate(date, value)?.let { it > 0 } == true
-      GreaterThanOrEquals -> compareDate(date, value)?.let { it >= 0 } == true
-      LessThan -> compareDate(date, value)?.let { it < 0 } == true
-      LessThanOrEquals -> compareDate(date, value)?.let { it <= 0 } == true
+      GreaterThan -> compareDate(date, match)?.let { it > 0 } == true
+      GreaterThanOrEquals -> compareDate(date, match)?.let { it >= 0 } == true
+      LessThan -> compareDate(date, match)?.let { it < 0 } == true
+      LessThanOrEquals -> compareDate(date, match)?.let { it <= 0 } == true
 
       Contains,
       DoesNotContain,

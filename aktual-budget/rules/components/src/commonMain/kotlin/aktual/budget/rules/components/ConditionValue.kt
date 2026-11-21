@@ -5,6 +5,9 @@ import aktual.budget.model.evaluateAmountInput
 import aktual.budget.model.toSignedInputText
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionValueKind
+import aktual.budget.rules.domain.DAY_RANGE_END
+import aktual.budget.rules.domain.DAY_RANGE_START
+import aktual.budget.rules.domain.dayRange
 import aktual.budget.rules.domain.toDayOrNull
 import aktual.budget.rules.domain.toJsonElement
 import aktual.budget.rules.domain.toRecurConfigOrNull
@@ -51,6 +54,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
@@ -102,16 +106,25 @@ fun ConditionValue(
       )
     }
 
-    Day ->
-      CommitTextField(
+    Day -> DayField(value = value, onChange = onChange, modifier = modifier)
+
+    DayRange -> {
+      val range = value.jsonObject
+      fun bound(key: String) = range[key] ?: JsonPrimitive("")
+      Column(
         modifier = modifier.fillMaxWidth(),
-        text = value.jsonPrimitive.content,
-        placeholder = Strings.reportsFormulaQueryDate,
-        onCommit = { text ->
-          val day = text.trim()
-          if (day.isEmpty() || day.toDayOrNull() != null) onChange(JsonPrimitive(day))
-        },
-      )
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        DayField(
+          value = bound(DAY_RANGE_START),
+          onChange = { onChange(dayRange(it, bound(DAY_RANGE_END))) },
+        )
+        DayField(
+          value = bound(DAY_RANGE_END),
+          onChange = { onChange(dayRange(bound(DAY_RANGE_START), it)) },
+        )
+      }
+    }
 
     Recurrence ->
       value.toRecurConfigOrNull()?.let { config ->
@@ -136,6 +149,22 @@ fun ConditionValue(
     NoValue -> Unit
   }
 }
+
+@Composable
+private fun DayField(
+  value: JsonElement,
+  onChange: (JsonElement) -> Unit,
+  modifier: Modifier = Modifier,
+) =
+  CommitTextField(
+    modifier = modifier.fillMaxWidth(),
+    text = value.jsonPrimitive.content,
+    placeholder = Strings.reportsFormulaQueryDate,
+    onCommit = { text ->
+      val day = text.trim()
+      if (day.isEmpty() || day.toDayOrNull() != null) onChange(JsonPrimitive(day))
+    },
+  )
 
 @Composable
 private fun CurrencySymbol(string: String, modifier: Modifier = Modifier) {

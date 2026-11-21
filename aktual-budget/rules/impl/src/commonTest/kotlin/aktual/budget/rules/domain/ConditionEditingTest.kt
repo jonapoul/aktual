@@ -33,6 +33,26 @@ class ConditionEditingTest {
     assertThat(conditionValueKind(ImportedPayee, OneOf)).isEqualTo(TextList)
     assertThat(conditionValueKind(PayeeName, NotOneOf)).isEqualTo(TextList)
     assertThat(conditionValueKind(Date, LessThan)).isEqualTo(Day)
+    assertThat(conditionValueKind(Date, IsBetween)).isEqualTo(DayRange)
+  }
+
+  @Test
+  fun `Date ranges are editable`() {
+    val range = dayRange(JsonPrimitive("2020-01-01"), JsonPrimitive("2020-01-31"))
+    assertThat(Condition(Date, IsBetween, range).editableKind()).isEqualTo(DayRange)
+    assertThat(Condition(Date, IsBetween, range).editableKind(RuleConditions)).isEqualTo(DayRange)
+
+    val month = dayRange(JsonPrimitive("2020-01"), JsonPrimitive("2020-03"))
+    assertThat(Condition(Date, IsBetween, month).editableKind()).isNull()
+    assertThat(Condition(Date, IsBetween, JsonPrimitive("2020-01-01")).editableKind()).isNull()
+  }
+
+  @Test
+  fun `Changing a day to a range uses it for both ends`() {
+    val day = JsonPrimitive("2020-01-01")
+    assertThat(Condition(Date, Is, day).withOperator(IsBetween).value).isEqualTo(dayRange(day, day))
+    assertThat(Condition(Date, Is, JsonPrimitive("")).withOperator(IsBetween).value)
+      .isEqualTo(dayRange(JsonPrimitive(""), JsonPrimitive("")))
   }
 
   @Test

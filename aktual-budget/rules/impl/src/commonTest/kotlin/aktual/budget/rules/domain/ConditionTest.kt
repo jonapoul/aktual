@@ -185,6 +185,55 @@ class ConditionTest {
   }
 
   @Test
+  fun `Date validates isbetween value`() {
+    compile(cond(Date, IsBetween, range("2020-01-01", "2020-01-31")))
+
+    listOf(
+        "2020-01-01",
+        mapOf("num1" to "2020-01-01"),
+        range("2020-01-01", "hello"),
+        mapOf("num1" to 1, "num2" to 2),
+        range("2020-14-01", "2020-01-31"),
+        // Only exact dates make sense as bounds
+        range("2020-01", "2020-03"),
+        range("2020", "2021"),
+        range("2020-01-01", "2020-03"),
+      )
+      .forEach { value ->
+        assertFailure { compile(cond(Date, IsBetween, value)) }
+          .messageContains("Invalid between date value for")
+      }
+
+    // The pair shape is rejected by the other operators
+    assertFailure { compile(cond(Date, Is, range("2020-01-01", "2020-01-31"))) }
+      .messageContains("Invalid date format")
+  }
+
+  @Test
+  fun `Date conditions work with isbetween`() {
+    var c = cond(Date, IsBetween, range("2020-08-05", "2020-08-10"))
+    assertThat(c.eval(tx(date = "2020-08-04"))).isFalse()
+    // Both bounds are inclusive
+    assertThat(c.eval(tx(date = "2020-08-05"))).isTrue()
+    assertThat(c.eval(tx(date = "2020-08-07"))).isTrue()
+    assertThat(c.eval(tx(date = "2020-08-10"))).isTrue()
+    assertThat(c.eval(tx(date = "2020-08-11"))).isFalse()
+
+    // The bounds may be given in either order
+    c = cond(Date, IsBetween, range("2020-08-10", "2020-08-05"))
+    assertThat(c.eval(tx(date = "2020-08-07"))).isTrue()
+    assertThat(c.eval(tx(date = "2020-08-11"))).isFalse()
+
+    // Ranges spanning a year boundary
+    c = cond(Date, IsBetween, range("2019-12-28", "2020-01-03"))
+    assertThat(c.eval(tx(date = "2019-12-31"))).isTrue()
+    assertThat(c.eval(tx(date = "2020-01-01"))).isTrue()
+    assertThat(c.eval(tx(date = "2020-01-04"))).isFalse()
+  }
+
+  private fun range(start: String, end: String) = mapOf("num1" to start, "num2" to end)
+
+  @Test
   fun `Id works with all operators`() {
     var c = cond(Payee, Is, "foo")
     assertThat(c.eval(tx(payee = "foo"))).isTrue()
@@ -282,7 +331,7 @@ class ConditionTest {
       .messageContains("Invalid condition operator")
     assertFailure { compile(cond(Payee, OnBudget, null)) }
       .messageContains("Invalid condition operator")
-    assertFailure { compile(cond(Date, IsBetween, mapOf("num1" to 1, "num2" to 2))) }
+    assertFailure { compile(cond(Cleared, IsBetween, mapOf("num1" to 1, "num2" to 2))) }
       .messageContains("Invalid condition operator")
     assertFailure { compile(cond(Unknown, Is, "foo")) }.messageContains("Invalid condition field")
   }

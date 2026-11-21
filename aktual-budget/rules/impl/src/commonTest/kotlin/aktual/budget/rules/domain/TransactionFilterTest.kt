@@ -124,6 +124,32 @@ class TransactionFilterTest {
   }
 
   @Test
+  fun `Amount ranges respect inflow and outflow`() {
+    val range = mapOf("num1" to 1000, "num2" to 2000)
+    val outflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(outflow = true)))
+    assertThat(outflow.matches(row(amount = -1500))).isTrue()
+    assertThat(outflow.matches(row(amount = 1500))).isFalse()
+    assertThat(outflow.matches(row(amount = -2500))).isFalse()
+
+    val inflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(inflow = true)))
+    assertThat(inflow.matches(row(amount = 1500))).isTrue()
+    assertThat(inflow.matches(row(amount = -1500))).isFalse()
+
+    val either = filter(cond(Field.Amount, IsBetween, range))
+    assertThat(either.matches(row(amount = 1500))).isTrue()
+    assertThat(either.matches(row(amount = -1500))).isFalse()
+  }
+
+  @Test
+  fun `Amount ranges from zero keep zero amounts in both directions`() {
+    val range = mapOf("num1" to 0, "num2" to 100)
+    val outflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(outflow = true)))
+    val inflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(inflow = true)))
+    assertThat(outflow.matches(row(amount = 0))).isTrue()
+    assertThat(inflow.matches(row(amount = 0))).isTrue()
+  }
+
+  @Test
   fun `Tags match whole tags only`() {
     val filter = filter(cond(Notes, HasTags, "#food"))
     assertThat(filter.matches(row(notes = "lunch #food"))).isTrue()
@@ -138,6 +164,16 @@ class TransactionFilterTest {
     assertThat(filter(cond(Date, GreaterThan, "2020-08-09")).matches(row)).isTrue()
     assertThat(filter(cond(Date, LessThanOrEquals, "2020-08-09")).matches(row)).isFalse()
     assertThat(filter(cond(Date, Is, "2020-08")).matches(row)).isTrue()
+  }
+
+  @Test
+  fun `Dates between two days include both ends`() {
+    val filter =
+      filter(cond(Date, IsBetween, mapOf("num1" to "2020-08-10", "num2" to "2020-08-05")))
+    assertThat(filter.matches(row(date = "2020-08-04"))).isFalse()
+    assertThat(filter.matches(row(date = "2020-08-05"))).isTrue()
+    assertThat(filter.matches(row(date = "2020-08-10"))).isTrue()
+    assertThat(filter.matches(row(date = "2020-08-11"))).isFalse()
   }
 
   @Test
@@ -164,6 +200,19 @@ class TransactionFilterTest {
           accounts = setOf("b"),
           categories = setOf("food"),
         ),
+      )
+  }
+
+  @Test
+  fun `Bounds narrow by a date range`() {
+    val filter =
+      filter(
+        cond(Date, IsBetween, mapOf("num1" to "2020-03-01", "num2" to "2020-01-01")),
+        cond(Date, LessThan, "2020-02-01"),
+      )
+    assertThat(filter.bounds)
+      .isEqualTo(
+        FilterBounds(from = LocalDate.parse("2020-01-01"), to = LocalDate.parse("2020-02-01")),
       )
   }
 

@@ -201,28 +201,30 @@ private constructor(
   }
 
   private fun evalDate(date: LocalDate): Boolean {
-    val value = (value as DateMatch).value
+    val value = value
+    if (value is DateRange) return op == IsBetween && date in value.start..value.end
+    val match = (value as DateMatch).value
     return when (op) {
       Is ->
-        when (value) {
-          is Day -> date == value.date
-          is Month -> date.yearMonth == value.month
-          is Year -> date.year == value.year
-          is Recur -> value.config.occursOn(date)
+        when (match) {
+          is Day -> date == match.date
+          is Month -> date.yearMonth == match.month
+          is Year -> date.year == match.year
+          is Recur -> match.config.occursOn(date)
         }
 
       IsApprox ->
-        when (value) {
-          is Day -> date in value.date.minus(APPROX_DAYS)..value.date.plus(APPROX_DAYS)
-          is Recur -> value.config.occursBetween(date.minus(APPROX_DAYS), date.plus(APPROX_DAYS))
+        when (match) {
+          is Day -> date in match.date.minus(APPROX_DAYS)..match.date.plus(APPROX_DAYS)
+          is Recur -> match.config.occursBetween(date.minus(APPROX_DAYS), date.plus(APPROX_DAYS))
           is Month,
           is Year -> false
         }
 
-      GreaterThan -> date > (value as Day).date
-      GreaterThanOrEquals -> date >= (value as Day).date
-      LessThan -> date < (value as Day).date
-      LessThanOrEquals -> date <= (value as Day).date
+      GreaterThan -> date > (match as Day).date
+      GreaterThanOrEquals -> date >= (match as Day).date
+      LessThan -> date < (match as Day).date
+      LessThanOrEquals -> date <= (match as Day).date
 
       Contains,
       DoesNotContain,
@@ -278,6 +280,13 @@ private constructor(
     }
 
     private fun parseDate(op: Operator, raw: JsonElement, field: RuleField): ConditionValue {
+      // A range only takes exact dates, not months, years or recurring dates
+      if (op == IsBetween) {
+        val range = (raw as? JsonObject)?.let(::parseDateRange)
+        ruleAssert(range != null) { "Invalid between date value for \"$op\" (field: $field)" }
+        return range
+      }
+
       val parsed =
         when {
           raw.isJsString() -> parseDateString((raw as JsonPrimitive).content)
@@ -385,6 +394,16 @@ private constructor(
       return ConditionValue.Between(num1, num2)
     }
 
+    // parseBetweenDate in packages/loot-core/src/server/rules/rule-utils.ts, with the bounds sorted
+    private fun parseDateRange(raw: JsonObject): ConditionValue.DateRange? {
+      val dates =
+        listOf(raw["num1"], raw["num2"]).map { bound ->
+          val text = (bound?.takeIf { it.isJsString() } as? JsonPrimitive)?.content
+          (text?.let(::parseDateString) as? Day)?.date ?: return null
+        }
+      return ConditionValue.DateRange(dates.min(), dates.max())
+    }
+
     private fun parseBoolean(raw: JsonElement, field: RuleField): ConditionValue {
       val flag = (raw as? JsonPrimitive)?.takeIf { !it.isString }?.booleanOrNull
       ruleAssert(flag != null) { "Value must be a boolean: $raw (field: $field)" }
@@ -438,6 +457,9 @@ internal sealed interface ConditionValue {
   data class Flag(val value: Boolean) : ConditionValue
 
   data class DateMatch(val value: DateValue) : ConditionValue
+
+  // Inclusive at both ends, with start never after end
+  data class DateRange(val start: LocalDate, val end: LocalDate) : ConditionValue
 }
 
 internal sealed interface DateValue {

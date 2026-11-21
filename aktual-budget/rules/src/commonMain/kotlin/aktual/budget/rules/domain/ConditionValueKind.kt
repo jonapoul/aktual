@@ -8,6 +8,7 @@ enum class ConditionValueKind {
   TextList,
   Money,
   Day,
+  DayRange,
   Recurrence,
   Flag,
   NoValue,
