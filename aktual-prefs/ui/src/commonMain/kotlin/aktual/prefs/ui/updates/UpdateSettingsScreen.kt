@@ -17,14 +17,9 @@ import aktual.prefs.vm.updates.UpdateSettingsState
 import aktual.prefs.vm.updates.UpdateSettingsViewModel
 import aktual.theme.Colors
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -71,19 +66,17 @@ private fun UpdateSettingsScaffold(
     }
 
     item {
-      Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        NoticeBanner(text = Strings.settingsUpdatesObtainium, onClick = onOpenObtainium)
-
-        Image(
-          modifier = Modifier.height(60.dp).clickable(onClick = onOpenObtainium),
-          painter = Drawables.obtainiumBadge,
-          contentDescription = Strings.settingsUpdatesObtainiumBadge,
-        )
-      }
+      NoticeBanner(
+        text = Strings.settingsUpdatesObtainium,
+        onClick = onOpenObtainium,
+        extra = {
+          Image(
+            modifier = Modifier.height(48.dp),
+            painter = Drawables.obtainiumBadge,
+            contentDescription = Strings.settingsUpdatesObtainiumBadge,
+          )
+        },
+      )
     }
   }
 }

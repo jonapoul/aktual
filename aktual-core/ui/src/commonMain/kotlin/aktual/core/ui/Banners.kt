@@ -35,6 +35,7 @@ fun NoticeBanner(
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.InformationOutline,
   onClick: (() -> Unit)? = null,
+  extra: (@Composable () -> Unit)? = null,
 ) =
   Banner(
     text = text,
@@ -43,6 +44,7 @@ fun NoticeBanner(
     content = colors.noticeText,
     modifier = modifier,
     onClick = onClick,
+    extra = extra,
   )
 
 @Composable
@@ -81,6 +83,7 @@ private fun Banner(
   content: Color,
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
+  extra: (@Composable () -> Unit)? = null,
 ) {
   Row(
     modifier =
@@ -102,12 +105,13 @@ private fun Banner(
         tint = content,
       )
     }
-    Text(
+    Column(
       modifier = Modifier.weight(1f),
-      text = text,
-      style = typography.bodySmall,
-      color = content,
-    )
+      verticalArrangement = Arrangement.spacedBy(Dimens.Large),
+    ) {
+      Text(text = text, style = typography.bodySmall, color = content)
+      extra?.invoke()
+    }
     if (onClick != null) {
       Icon(
         modifier = Modifier.size(BannerIconSize),
@@ -131,5 +135,6 @@ private fun PreviewBanners(@PreviewParameter(ColorParameters::class) colors: Col
       ErrorBanner(text = "Server error 404: Resource not found")
       NoticeBanner(text = "No icon on this one", icon = null)
       NoticeBanner(text = "Tap me to learn more", onClick = {})
+      NoticeBanner(text = "With extra content", extra = { Text("Extra") })
     }
   }
