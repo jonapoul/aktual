@@ -17,7 +17,6 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
-import aktual.core.ui.isInPreview
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +55,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.DECEMBER
 import kotlinx.datetime.Month.JANUARY
@@ -163,11 +160,7 @@ private fun Chart(
   val compact = LocalCompactChart.current
   val modelProducer = remember { CartesianChartModelProducer() }
 
-  if (isInPreview()) {
-    runBlocking { modelProducer.populate(data, zoom.range) }
-  } else {
-    LaunchedEffect(data, zoom.range) { modelProducer.populate(data, zoom.range) }
-  }
+  PopulateEffect(zoom, data) { range -> modelProducer.populate(data, range) }
 
   val label = axisLabelComponent()
   val tick = axisTickComponent()

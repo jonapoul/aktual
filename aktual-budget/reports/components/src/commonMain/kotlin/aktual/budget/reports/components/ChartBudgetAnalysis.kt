@@ -13,7 +13,6 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
-import aktual.core.ui.isInPreview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -58,7 +56,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.YearMonth
 
 @Composable
@@ -206,11 +203,7 @@ private fun Chart(
   val compact = LocalCompactChart.current
   val layers = remember(data) { layers(data) }
   val modelProducer = remember { CartesianChartModelProducer() }
-  if (isInPreview()) {
-    runBlocking { modelProducer.populate(data, layers, zoom.range) }
-  } else {
-    LaunchedEffect(data, layers, zoom.range) { modelProducer.populate(data, layers, zoom.range) }
-  }
+  PopulateEffect(zoom, data, layers) { range -> modelProducer.populate(data, layers, range) }
 
   val chart = rememberChart(layers, zoom)
 

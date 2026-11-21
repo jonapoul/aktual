@@ -323,7 +323,7 @@ private fun ReportTopBar(
           onClick = onSave,
         )
       }
-      if (zoom.range != null) {
+      if (zoom.isZoomed) {
         AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ResetZoom),
           imageVector = MaterialIcons.ZoomOut,
