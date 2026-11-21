@@ -28,16 +28,6 @@
 -keepattributes Annotation
 -keepattributes *Annotation*
 
-# Keeping the implementations of exception handlers and Main dispatchers
--keep class * implements kotlinx.coroutines.internal.MainDispatcherFactory
--keep class * implements kotlinx.coroutines.CoroutineExceptionHandler
-
-# Most of volatile fields are updated with AFU and should not be mangled
--keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
-
-# Same story for the standard library's SafeContinuation that also uses AtomicReferenceFieldUpdater
--keepclassmembers class kotlin.coroutines.SafeContinuation { volatile <fields>; }
-
 # Additional dontwarn rules for common issues (handled at runtime)
 -dontwarn java.awt.**
 -dontwarn javax.annotation.**

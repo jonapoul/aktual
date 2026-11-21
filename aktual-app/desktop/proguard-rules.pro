@@ -93,3 +93,7 @@
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+-keep class * implements kotlinx.coroutines.internal.MainDispatcherFactory
+-keep class * implements kotlinx.coroutines.CoroutineExceptionHandler
+-keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
+-keepclassmembers class kotlin.coroutines.SafeContinuation { volatile <fields>; }
