@@ -161,7 +161,9 @@ private fun TransactionsFilled(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
+  // Read once here rather than in every row
   val dimens = LocalLedgerDimens.current
+  val tags = LocalTagLabels.current
   val density = dimens.density
   // Only one row's delete action shows at a time
   var openId by remember { mutableStateOf<TransactionId?>(null) }
@@ -230,6 +232,8 @@ private fun TransactionsFilled(
                 LedgerRow(
                   transaction = transaction,
                   showDate = showDate,
+                  dimens = dimens,
+                  tags = tags,
                   parts = parts,
                   onToggleSplit = onToggleSplit,
                   onOpen = onOpen,
@@ -239,6 +243,7 @@ private fun TransactionsFilled(
               Dense ->
                 LedgerTableRow(
                   transaction = transaction,
+                  dimens = dimens,
                   parts = parts,
                   onToggleSplit = onToggleSplit,
                   onOpen = onOpen,
@@ -251,6 +256,7 @@ private fun TransactionsFilled(
             AnimatedVisibility(visible = parts != Collapsed) {
               SplitChildren(
                 parent = transaction,
+                dimens = dimens,
                 onOpen = { id -> onAction(Action.OpenTransaction(id)) },
               )
             }
