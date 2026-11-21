@@ -31,7 +31,7 @@ data object LightColors : DefaultColors {
   override val tableText = pageText
   override val tableTextItemAdded = tableText
   override val tableTextLight = ColorPalette.navy400
-  override val tableTextSubdued = ColorPalette.navy100
+  override val tableTextSubdued = ColorPalette.navy500
   override val tableTextSelected = ColorPalette.navy700
   override val tableTextInactive = ColorPalette.navy500
   override val tableHeaderText = ColorPalette.navy600
@@ -47,7 +47,7 @@ data object LightColors : DefaultColors {
 
   override val numberPositive = ColorPalette.green700
   override val numberNegative = ColorPalette.red500
-  override val numberNeutral = ColorPalette.navy100
+  override val numberNeutral = ColorPalette.navy500
   override val budgetNumberNegative = numberNegative
   override val budgetNumberZero = tableTextSubdued
   override val budgetNumberNeutral = tableText

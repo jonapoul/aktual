@@ -33,7 +33,7 @@ data object DarkColors : DefaultColors {
   override val tableText = ColorPalette.navy150
   override val tableTextItemAdded = tableText
   override val tableTextLight = tableText
-  override val tableTextSubdued = ColorPalette.navy500
+  override val tableTextSubdued = ColorPalette.navy300
   override val tableTextSelected = ColorPalette.navy150
   override val tableTextInactive = ColorPalette.navy500
   override val tableHeaderText = ColorPalette.navy300
@@ -49,7 +49,7 @@ data object DarkColors : DefaultColors {
 
   override val numberPositive = ColorPalette.green300
   override val numberNegative = ColorPalette.red200
-  override val numberNeutral = ColorPalette.navy500
+  override val numberNeutral = ColorPalette.navy300
   override val budgetNumberNegative = numberNegative
   override val budgetNumberZero = tableTextSubdued
   override val budgetNumberNeutral = tableText
