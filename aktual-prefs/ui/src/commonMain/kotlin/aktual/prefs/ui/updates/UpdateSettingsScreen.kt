@@ -2,10 +2,12 @@ package aktual.prefs.ui.updates
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudDownload
+import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BooleanPreferenceItem
@@ -14,9 +16,19 @@ import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.updates.UpdateSettingsState
 import aktual.prefs.vm.updates.UpdateSettingsViewModel
 import aktual.theme.Colors
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -27,13 +39,20 @@ fun UpdateSettingsScreen(
   viewModel: UpdateSettingsViewModel = metroViewModel<UpdateSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  UpdateSettingsScaffold(state = state, highlight = highlight, onBack = back::invoke)
+  val uriHandler = LocalUriHandler.current
+  UpdateSettingsScaffold(
+    state = state,
+    highlight = highlight,
+    onBack = back::invoke,
+    onOpenObtainium = { uriHandler.openUri(OBTAINIUM_URL) },
+  )
 }
 
 @Composable
 private fun UpdateSettingsScaffold(
   state: UpdateSettingsState,
   onBack: () -> Unit,
+  onOpenObtainium: () -> Unit,
   highlight: SettingsHighlight? = null,
 ) {
   SettingsListScaffold(
@@ -50,6 +69,22 @@ private fun UpdateSettingsScaffold(
         icon = AktualIcons.CloudDownload,
       )
     }
+
+    item {
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        NoticeBanner(text = Strings.settingsUpdatesObtainium, onClick = onOpenObtainium)
+
+        Image(
+          modifier = Modifier.height(60.dp).clickable(onClick = onOpenObtainium),
+          painter = Drawables.obtainiumBadge,
+          contentDescription = Strings.settingsUpdatesObtainiumBadge,
+        )
+      }
+    }
   }
 }
 
@@ -62,5 +97,8 @@ private fun PreviewUpdateSettingsScaffold(
     UpdateSettingsScaffold(
       state = UpdateSettingsState(checkNightlies = BooleanPreference(false)),
       onBack = {},
+      onOpenObtainium = {},
     )
   }
+
+private const val OBTAINIUM_URL = "https://github.com/jonapoul/aktual#obtainium"

@@ -8,6 +8,13 @@ import aktual.about.model.SpdxLicense
 private val Mit =
   SpdxLicense(identifier = "MIT", name = "MIT License", url = "https://opensource.org/license/mit")
 
+private val Gpl3 =
+  SpdxLicense(
+    identifier = "GPL-3.0-only",
+    name = "GNU General Public License v3.0 only",
+    url = "https://www.gnu.org/licenses/gpl-3.0.html",
+  )
+
 private val OpenFont =
   SpdxLicense(
     identifier = "OFL-1.1",
@@ -55,6 +62,16 @@ internal val MaterialDesignIcons =
     scm = ArtifactScm(url = "https://github.com/google/material-design-icons"),
   )
 
+internal val ObtainiumBadge =
+  ArtifactDetail(
+    groupId = "imranr98",
+    artifactId = "obtainium",
+    version = "",
+    name = "Obtainium badge",
+    spdxLicenses = setOf(Gpl3),
+    scm = ArtifactScm(url = "https://github.com/ImranR98/Obtainium"),
+  )
+
 internal val RedactedScriptFont =
   ArtifactDetail(
     groupId = "christiannaths",
@@ -67,4 +84,11 @@ internal val RedactedScriptFont =
 
 // Copied or ported into the app rather than pulled in as dependencies, so licensee can't see them
 internal val NonLibraryArtifacts =
-  listOf(ActualBudget, Flagpack, InterFont, MaterialDesignIcons, RedactedScriptFont)
+  listOf(
+    ActualBudget,
+    Flagpack,
+    InterFont,
+    MaterialDesignIcons,
+    ObtainiumBadge,
+    RedactedScriptFont,
+  )
