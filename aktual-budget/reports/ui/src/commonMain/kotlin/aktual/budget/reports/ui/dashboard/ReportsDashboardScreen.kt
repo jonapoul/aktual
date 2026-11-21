@@ -61,6 +61,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -409,7 +410,9 @@ private fun ContentList(
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
     itemsIndexed(ordered, key = { _, item -> item.id.value }) { index, item ->
-      val isDragged = reorder.dragged == item.id
+      // Derived per card, so only the cards that change recompose
+      val isDragged by remember(item.id) { derivedStateOf { reorder.dragged == item.id } }
+      val isOpen by remember(item.id) { derivedStateOf { openItemId == item.id } }
       DashboardItem(
         // The handle comes first, so its gesture survives the rest of the chain changing
         modifier =
@@ -428,7 +431,7 @@ private fun ContentList(
         item = item,
         isPinned = item.id in pinnedIds,
         observer = observer,
-        isOpen = openItemId == item.id,
+        isOpen = isOpen,
         onOpenChange = { open ->
           openItemId =
             when {
