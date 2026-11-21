@@ -8,6 +8,7 @@ kotlin {
     api(project(":aktual-budget:accounts"))
     implementation(libs.metrox.viewmodel)
     implementation(project(":aktual-budget:banksync"))
+    implementation(project(":aktual-budget:transactions"))
     implementation(project(":aktual-core:utils"))
   }
 

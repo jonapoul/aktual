@@ -230,6 +230,7 @@ include(
   ":aktual-budget:tags:vm",
   ":aktual-budget:transactions",
   ":aktual-budget:transactions:impl",
+  ":aktual-budget:transactions:model",
   ":aktual-budget:transactions:ui",
   ":aktual-budget:transactions:vm",
   ":aktual-budget:utils",
