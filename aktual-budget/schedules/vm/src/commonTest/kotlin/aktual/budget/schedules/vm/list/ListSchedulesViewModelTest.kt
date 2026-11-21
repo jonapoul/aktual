@@ -21,6 +21,7 @@ import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
+import aktual.budget.schedules.domain.PostedSchedule
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.ScheduleTransactionPosterImpl
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
@@ -46,9 +47,11 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.extracting
 import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import kotlin.time.Instant
@@ -245,7 +248,7 @@ class ListSchedulesViewModelTest {
       val event = awaitItem()
       assertThat(event).isInstanceOf<ListSchedulesEvent.Posted>().all {
         prop(ListSchedulesEvent.Posted::schedule).isEqualTo(rent)
-        prop(ListSchedulesEvent.Posted::transactions).hasSize(1)
+        prop(ListSchedulesEvent.Posted::posted).prop(PostedSchedule::transactions).hasSize(1)
       }
       assertThat(sync.posted("acct")).containsExactly(MessageValue.String("a-account"))
       assertThat(sync.posted("date")).containsExactly(MessageValue.Number(20260401))
@@ -273,7 +276,81 @@ class ListSchedulesViewModelTest {
       scope.advanceUntilIdle()
 
       assertThat(sync.changes)
-        .containsExactly(tombstone(TRANSACTIONS, posted.transactions.single().value))
+        .containsExactly(
+          tombstone(TRANSACTIONS, posted.posted.transactions.single().value),
+          localChange(SCHEDULES, "a", "completed", false),
+        )
+    }
+  }
+
+  @Test
+  fun `Posting a one-off schedule before it's due completes it`() = runDatabaseTest { scope ->
+    insertSchedule(id = "a", name = "Rent", payee = "Landlord", account = "Checking")
+    val sync = TestBudgetSync()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.events.test {
+      viewModel.post(viewModel.state.awaitSchedules().single(), TODAY.today())
+      scope.advanceUntilIdle()
+
+      assertThat((awaitItem() as Posted).posted.completed).isTrue()
+      assertThat(sync.changes.filter { it.dataset != TRANSACTIONS })
+        .containsExactly(localChange(SCHEDULES, "a", "completed", true))
+    }
+  }
+
+  @Test
+  fun `Posting a recurring schedule before it's due moves it on`() = runDatabaseTest { scope ->
+    insertSchedule(
+      id = "a",
+      name = "Rent",
+      payee = "Landlord",
+      account = "Checking",
+      date = MONTHLY_FROM_MAY,
+    )
+    val sync = TestBudgetSync()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.events.test {
+      val rent = viewModel.state.awaitSchedules().single()
+      viewModel.post(rent, rent.nextDate)
+      scope.advanceUntilIdle()
+      val posted = awaitItem() as Posted
+
+      assertThat(posted.posted.movedFrom).isEqualTo(LocalDate(2026, 5, 1))
+      assertThat(sync.changes.filter { it.dataset != TRANSACTIONS })
+        .containsExactly(*nextDateChanges(LocalDate(2026, 6, 1)))
+      sync.changes.clear()
+
+      viewModel.undoPost(posted)
+      scope.advanceUntilIdle()
+
+      assertThat(sync.changes.filter { it.dataset != TRANSACTIONS })
+        .containsExactly(*nextDateChanges(LocalDate(2026, 5, 1)))
+    }
+  }
+
+  @Test
+  fun `Posting a schedule that's due leaves it be`() = runDatabaseTest { scope ->
+    insertSchedule(
+      id = "a",
+      name = "Rent",
+      payee = "Landlord",
+      account = "Checking",
+      nextDate = LocalDate(2026, 4, 1),
+    )
+    val sync = TestBudgetSync()
+    val viewModel = createViewModel(scope, sync)
+
+    viewModel.events.test {
+      viewModel.post(viewModel.state.awaitSchedules().single(), TODAY.today())
+      scope.advanceUntilIdle()
+
+      assertThat((awaitItem() as Posted).posted).all {
+        prop(PostedSchedule::movedFrom).isNull()
+        prop(PostedSchedule::completed).isFalse()
+      }
+      assertThat(sync.changes.filter { it.dataset != TRANSACTIONS }).isEmpty()
     }
   }
 
@@ -466,6 +543,7 @@ class ListSchedulesViewModelTest {
             contextDao = RuleContextDao(this),
             uuidGenerator = uuidGenerator,
           ),
+        calendar = TODAY,
         uuidGenerator = uuidGenerator,
       )
     return ListSchedulesViewModel(
@@ -482,7 +560,15 @@ class ListSchedulesViewModelTest {
   private fun TestBudgetSync.posted(column: String): List<MessageValue> =
     changes.filter { it.dataset == TRANSACTIONS && it.column == column }.map { it.value }
 
+  private fun nextDateChanges(date: LocalDate) =
+    arrayOf(
+      LocalChange(SCHEDULES_NEXT_DATE, "a-next", "local_next_date", date.messageValue()),
+      localChange(SCHEDULES_NEXT_DATE, "a-next", "local_next_date_ts", 0L),
+    )
+
   private companion object {
+    const val MONTHLY_FROM_MAY =
+      """{"start": "2026-05-01", "frequency": "monthly", "interval": 1, "endMode": "never"}"""
     val TODAY = Calendar { LocalDate(2026, 4, 1) }
     val NOW = Instant.parse("2026-04-01T12:00:00Z")
   }

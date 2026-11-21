@@ -1,9 +1,8 @@
 package aktual.budget.schedules.vm.list
 
-import aktual.budget.model.TransactionId
+import aktual.budget.schedules.domain.PostedSchedule
 import aktual.budget.schedules.domain.Schedule
 import androidx.compose.runtime.Immutable
-import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 sealed interface ListSchedulesEvent {
@@ -19,8 +18,7 @@ sealed interface ListSchedulesEvent {
 
   @JvmInline value class RestartFailed(val schedule: Schedule) : ListSchedulesEvent
 
-  data class Posted(val schedule: Schedule, val transactions: ImmutableList<TransactionId>) :
-    ListSchedulesEvent
+  data class Posted(val schedule: Schedule, val posted: PostedSchedule) : ListSchedulesEvent
 
   @JvmInline value class PostFailed(val schedule: Schedule) : ListSchedulesEvent
 

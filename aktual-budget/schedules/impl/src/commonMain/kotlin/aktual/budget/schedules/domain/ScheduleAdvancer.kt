@@ -1,21 +1,16 @@
 package aktual.budget.schedules.domain
 
 import aktual.budget.db.dao.AccountDao
-import aktual.budget.db.dao.DatabaseTables.SCHEDULES
-import aktual.budget.db.dao.DatabaseTables.SCHEDULES_NEXT_DATE
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.ScheduleDao
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.DbMetadataKey.Companion.LastScheduleRun
 import aktual.budget.model.LocalChange
-import aktual.budget.model.MessageValue
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.SyncedPrefKey.Global.UpcomingScheduledTransactionLength
 import aktual.budget.model.UpcomingLength
-import aktual.budget.model.localChange
-import aktual.budget.model.messageValue
 import aktual.budget.model.nextDate
 import aktual.budget.model.nextDateAfter
 import aktual.budget.utils.BudgetLocalPreferences
@@ -43,11 +38,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Moves schedules along after a budget sync, at most once a day: posts the transactions of due and
@@ -207,39 +197,11 @@ internal constructor(
     newNextDate: LocalDate?,
   ): List<LocalChange> {
     if (newNextDate == null || newNextDate == nextDate) return emptyList()
-    val existing = scheduleDao.baseNextDate(row.id) ?: return emptyList()
-    val id = existing.id.toString()
-    val timestamp = existing.base_next_date_ts?.toEpochMilliseconds()
-    return listOf(
-      LocalChange(SCHEDULES_NEXT_DATE, id, "local_next_date", newNextDate.messageValue()),
-      LocalChange(
-        SCHEDULES_NEXT_DATE,
-        id,
-        "local_next_date_ts",
-        timestamp?.let(MessageValue::Number) ?: MessageValue.Null,
-      ),
-    )
+    return scheduleDao.localNextDateChanges(row.id, newNextDate)
   }
 
   private fun complete(row: GetAllActive): List<LocalChange> =
-    listOf(localChange(SCHEDULES, row.id.toString(), "completed", true))
-
-  // _date is either a plain "YYYY-MM-DD" or a RecurConfig JSON object. A corrupted one is skipped,
-  // as upstream does when it can't find the rule
-  private fun GetAllActive.parseDate(): ScheduleDate? {
-    val raw = _date ?: return null
-    return runCatching {
-      when (val element = Json.parseToJsonElement(raw)) {
-        is JsonObject ->
-          ScheduleDate.Recurring(Json.decodeFromJsonElement(RecurConfig.serializer(), element))
-        is JsonNull,
-        is JsonArray -> null
-        is JsonPrimitive -> ScheduleDate.Once(LocalDate.parse(element.content))
-      }
-    }
-      .onFailure { log.w(it) { "Couldn't parse date of schedule $id: $raw" } }
-      .getOrNull()
-  }
+    listOf(completedChange(row.id, completed = true))
 
   // State of one run. Posted transactions only go out at the end, so the transaction dates are
   // kept up to date here as each one is posted
@@ -254,12 +216,6 @@ internal constructor(
 
     fun status(row: GetAllActive, nextDate: LocalDate): ScheduleStatus =
       row.status(nextDate, today, latestTxDates, globalLength)
-  }
-
-  private sealed interface ScheduleDate {
-    data class Once(val date: LocalDate) : ScheduleDate
-
-    data class Recurring(val config: RecurConfig) : ScheduleDate
   }
 
   private companion object {

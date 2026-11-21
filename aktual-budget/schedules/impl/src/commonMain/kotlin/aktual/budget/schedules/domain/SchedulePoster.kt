@@ -3,6 +3,7 @@ package aktual.budget.schedules.domain
 import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
+import aktual.budget.model.LocalChange
 import aktual.budget.model.TransactionId
 import aktual.budget.model.parseScheduleAmount
 import aktual.budget.rules.domain.LoadedRules
@@ -38,9 +39,9 @@ internal class SchedulePoster(
       return result
     }
 
-    // Gives the IDs of the posted transactions, without split children
-    suspend fun post(): List<TransactionId> {
-      if (transactions.isEmpty()) return emptyList()
+    // Gives the IDs of the posted transactions, without split children. [changes] go out with them
+    suspend fun post(changes: List<LocalChange> = emptyList()): List<TransactionId> {
+      if (transactions.isEmpty() && changes.isEmpty()) return emptyList()
       val rows = transactions.flatMap {
         it.toNewTransactions(newId = { uuidGenerator(::TransactionId) })
       }
@@ -50,6 +51,7 @@ internal class SchedulePoster(
           if (id in usedPayees) insertPayee(name, id = id)
         }
         rows.forEach { insert(it) }
+        add(changes)
       }
       log.i { "Posted schedules: ${transactions.mapNotNull { it.schedule }.distinct()}" }
       return rows.filter { it.parentId == null }.mapNotNull { it.id }
