@@ -29,6 +29,7 @@ import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -51,7 +52,6 @@ import aktual.prefs.vm.theme.properties
 import aktual.theme.DarkColors
 import aktual.theme.LightColors
 import aktual.theme.MidnightColors
-import aktual.theme.isLight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -81,7 +81,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -388,7 +387,7 @@ internal fun ThemePropertyRow(
     horizontalArrangement = SpaceBetween,
     verticalAlignment = CenterVertically,
   ) {
-    val textColor = remember(property.color) { if (property.color.isLight()) Black else White }
+    val textColor = remember(property.color) { property.color.contrastingTextColor() }
     Text(
       modifier = Modifier.weight(1f),
       text = rememberHighlighted(property.name, query),
