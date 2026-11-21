@@ -20,7 +20,7 @@ Create `<module>/src/desktopTest/kotlin/<package>/ScreenshotTest.kt` in the modu
 ```kotlin
 package aktual.about.ui.info
 
-import aktual.core.theme.LightColors
+import aktual.theme.LightColors
 import aktual.test.screenshot
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick

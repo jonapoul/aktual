@@ -10,8 +10,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
-import aktual.core.theme.CustomThemeRepo
-import aktual.core.theme.CustomThemeSummary
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualProgressIndicator
@@ -34,6 +32,8 @@ import aktual.prefs.vm.theme.CatalogItem
 import aktual.prefs.vm.theme.CatalogState
 import aktual.prefs.vm.theme.CatalogStatus
 import aktual.prefs.vm.theme.DownloadState
+import aktual.theme.CustomThemeRepo
+import aktual.theme.CustomThemeSummary
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

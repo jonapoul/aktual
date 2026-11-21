@@ -1,10 +1,10 @@
 package aktual.about.ui.storage
 
 import aktual.core.model.Percent
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable

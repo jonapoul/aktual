@@ -5,9 +5,9 @@ import aktual.core.icons.AlertTriangle
 import aktual.core.icons.CheveronRight
 import aktual.core.icons.ExclamationOutline
 import aktual.core.icons.InformationOutline
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

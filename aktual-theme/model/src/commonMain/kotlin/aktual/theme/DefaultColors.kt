@@ -1,0 +1,5 @@
+package aktual.theme
+
+import androidx.compose.runtime.Immutable
+
+@Immutable sealed interface DefaultColors : Colors

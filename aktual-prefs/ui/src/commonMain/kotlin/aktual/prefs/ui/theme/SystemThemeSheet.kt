@@ -2,9 +2,6 @@ package aktual.prefs.ui.theme
 
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -19,6 +16,9 @@ import aktual.prefs.vm.theme.DownloadState
 import aktual.prefs.vm.theme.SystemThemePicker
 import aktual.prefs.vm.theme.ThemeOption
 import aktual.prefs.vm.theme.palette
+import aktual.theme.Colors
+import aktual.theme.DarkColors
+import aktual.theme.MidnightColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

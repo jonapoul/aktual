@@ -2,8 +2,8 @@ package aktual.core.ui
 
 import aktual.budget.model.BarEffect
 import aktual.budget.model.BarGlassStyle
-import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.ui.AktualTheme.colors
+import aktual.theme.BottomBarThemeAttrs
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState

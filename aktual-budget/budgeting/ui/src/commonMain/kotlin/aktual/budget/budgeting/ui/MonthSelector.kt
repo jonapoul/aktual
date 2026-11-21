@@ -4,7 +4,6 @@ import aktual.budget.budgeting.vm.BudgetState
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
@@ -20,6 +19,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.stringShort
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

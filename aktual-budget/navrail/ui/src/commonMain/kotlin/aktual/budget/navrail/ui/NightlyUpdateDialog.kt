@@ -2,7 +2,6 @@ package aktual.budget.navrail.ui
 
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
@@ -10,6 +9,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import aktual.updates.vm.NightlyUpdateState
 import aktual.updates.vm.Version
 import androidx.compose.foundation.layout.Arrangement.spacedBy

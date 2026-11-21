@@ -1,8 +1,8 @@
 package aktual.prefs.ui.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.CustomThemeSummary
 import aktual.prefs.vm.theme.CatalogOptions
+import aktual.theme.CustomThemeSummary
 
 internal sealed interface ThemeSettingsAction
 

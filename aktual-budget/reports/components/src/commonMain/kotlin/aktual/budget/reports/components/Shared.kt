@@ -7,7 +7,6 @@ import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
@@ -17,6 +16,7 @@ import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.redacted
 import aktual.core.ui.redactedFontFamily
 import aktual.core.ui.stringShort
+import aktual.theme.Colors
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.shape.CornerSize

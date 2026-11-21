@@ -2,9 +2,9 @@ package aktual.core.ui
 
 import aktual.budget.model.SortDirection
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.theme.Colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background

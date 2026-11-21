@@ -12,8 +12,6 @@ import aktual.budget.reports.vm.FORMULA_THEME_PREFIX
 import aktual.budget.reports.vm.FormulaData
 import aktual.budget.reports.vm.FormulaOutput
 import aktual.core.l10n.Strings
-import aktual.core.theme.attributes
-import aktual.core.theme.parseColor
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -23,6 +21,8 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
+import aktual.theme.attributes
+import aktual.theme.parseColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

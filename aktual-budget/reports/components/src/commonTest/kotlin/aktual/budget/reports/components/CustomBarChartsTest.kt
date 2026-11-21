@@ -2,7 +2,7 @@ package aktual.budget.reports.components
 
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.CustomData
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import androidx.compose.ui.text.AnnotatedString
 import assertk.all
 import assertk.assertThat

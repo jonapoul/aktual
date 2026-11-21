@@ -3,7 +3,6 @@ package aktual.prefs.ui.appicon
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
@@ -17,6 +16,7 @@ import aktual.prefs.ui.PreviewOptionGroup
 import aktual.prefs.ui.PreviewSettingsScaffold
 import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.vm.appicon.AppIconSettingsViewModel
+import aktual.theme.Colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -9,7 +9,6 @@ import aktual.core.icons.Location
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.model.Coordinates
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
@@ -24,6 +23,7 @@ import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.rememberHighlighted
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

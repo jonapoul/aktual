@@ -29,7 +29,6 @@ import aktual.core.icons.Filter
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Pencil1
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
@@ -49,6 +48,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.theme.Colors
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

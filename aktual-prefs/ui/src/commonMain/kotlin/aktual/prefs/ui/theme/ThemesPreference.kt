@@ -4,10 +4,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -23,6 +19,10 @@ import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.vm.theme.LocalTheme
 import aktual.prefs.vm.theme.ThemeSwatch
 import aktual.prefs.vm.theme.swatch
+import aktual.theme.Colors
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.MidnightColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -20,7 +20,6 @@ import aktual.budget.rules.vm.label as resourceLabel
 import aktual.budget.schedules.components.SchedulePicker
 import aktual.budget.schedules.domain.Schedule
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
@@ -32,6 +31,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SectionLabel
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope

@@ -7,7 +7,6 @@ import aktual.core.icons.material.Opacity
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.LocalHazeConfig
 import aktual.core.ui.PortraitPreview
@@ -21,6 +20,7 @@ import aktual.prefs.vm.BlurRadiusPreference
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.dialogs.DialogSettingsState
 import aktual.prefs.vm.dialogs.DialogSettingsViewModel
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter

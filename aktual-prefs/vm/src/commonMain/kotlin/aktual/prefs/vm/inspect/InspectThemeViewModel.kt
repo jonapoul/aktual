@@ -1,12 +1,6 @@
 package aktual.prefs.vm.inspect
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeCache
-import aktual.core.theme.CustomThemeRepo
-import aktual.core.theme.ThemeResolver
-import aktual.core.theme.toCustomColors
 import aktual.core.utils.UuidGenerator
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
@@ -16,6 +10,12 @@ import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.inspect.InspectThemeEvent.Deleted
 import aktual.prefs.vm.inspect.InspectThemeEvent.Duplicated
 import aktual.prefs.vm.theme.properties
+import aktual.theme.Colors
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeCache
+import aktual.theme.CustomThemeRepo
+import aktual.theme.ThemeResolver
+import aktual.theme.toCustomColors
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance

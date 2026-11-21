@@ -27,7 +27,6 @@ import aktual.core.l10n.Strings
 import aktual.core.l10n.edit_schedule_saved
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.TransactionsNavigator
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -77,6 +76,7 @@ import aktual.core.ui.switch
 import aktual.core.ui.tabular
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
+import aktual.theme.Colors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

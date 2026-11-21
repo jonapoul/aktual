@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.core.model.immutableList
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

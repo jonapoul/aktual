@@ -4,13 +4,13 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Library
 import aktual.core.icons.Wallet
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

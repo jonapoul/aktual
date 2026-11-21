@@ -13,7 +13,6 @@ import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualDropdownMenu
@@ -27,6 +26,7 @@ import aktual.core.ui.DialogTextButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

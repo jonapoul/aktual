@@ -1,13 +1,13 @@
 package aktual.budget.home.ui
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

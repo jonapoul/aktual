@@ -7,7 +7,6 @@ import aktual.budget.rules.domain.isEditableSplitAmount
 import aktual.budget.rules.domain.splitIndex
 import aktual.budget.rules.domain.withSplitMethod
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
@@ -19,6 +18,7 @@ import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SectionLabel
 import aktual.core.ui.slider
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope

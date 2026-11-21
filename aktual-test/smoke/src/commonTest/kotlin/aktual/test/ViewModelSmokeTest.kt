@@ -40,7 +40,6 @@ import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
 import aktual.core.model.CrashFile
-import aktual.core.theme.DarkColors
 import aktual.crashes.vm.CrashPromptViewModel
 import aktual.crashes.vm.CrashReportViewModel
 import aktual.crashes.vm.CrashReportsViewModel
@@ -62,6 +61,7 @@ import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.transactions.TransactionSettingsViewModel
 import aktual.prefs.vm.updates.UpdateSettingsViewModel
+import aktual.theme.DarkColors
 import aktual.updates.vm.NightlyUpdateViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry

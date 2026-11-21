@@ -2,11 +2,11 @@
 
 package aktual.core.ui
 
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.DefaultColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.MidnightColors
+import aktual.theme.Colors
+import aktual.theme.DarkColors
+import aktual.theme.DefaultColors
+import aktual.theme.LightColors
+import aktual.theme.MidnightColors
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable

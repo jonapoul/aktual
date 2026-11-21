@@ -1,7 +1,6 @@
 package aktual.prefs.ui
 
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
@@ -16,6 +15,7 @@ import aktual.core.ui.isCompactWidth
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.ListPreference
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

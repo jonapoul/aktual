@@ -3,12 +3,12 @@ package aktual.budget.transactions.ui
 import aktual.budget.db.dao.ClearedBalances
 import aktual.budget.model.Amount
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formattedText
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -3,7 +3,6 @@ package aktual.prefs.ui.inspect
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
@@ -15,6 +14,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.inspect.parseHexColorOrNull
 import aktual.prefs.vm.inspect.toHexString
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

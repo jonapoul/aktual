@@ -1,11 +1,11 @@
 package aktual.prefs.ui.transactions
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.SampleTransactionList
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

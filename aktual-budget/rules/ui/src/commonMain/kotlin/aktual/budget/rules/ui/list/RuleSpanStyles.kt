@@ -1,7 +1,7 @@
 package aktual.budget.rules.ui.list
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme
+import aktual.theme.Colors
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

@@ -1,9 +1,9 @@
 package aktual.prefs.vm.inspect
 
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeCache
-import aktual.core.theme.CustomThemeRepo
-import aktual.core.theme.CustomThemeSummary
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeCache
+import aktual.theme.CustomThemeRepo
+import aktual.theme.CustomThemeSummary
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

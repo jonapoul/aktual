@@ -6,7 +6,7 @@ Shared Compose components and theming.
 
 `AktualTheme` is the single entry point for UI tokens. Read tokens from it rather than hardcoding values:
 
-- `AktualTheme.colors` - theme colors (`Colors` from `aktual-core:theme`). Composable, since it depends on the active theme.
+- `AktualTheme.colors` - theme colors (`Colors` from `aktual-theme`). Composable, since it depends on the active theme.
 - `AktualTheme.typography` - Material `Typography` built in `AktualTypography.kt` with the Inter font. Composable.
 - `AktualTheme.textSizes`, `lineHeights`, `letterSpacings` - `sp` scales in `TextSizes.kt`, `LineHeights.kt` and `LetterSpacings.kt`. Not composable, so they work in top-level vals and default params.
 

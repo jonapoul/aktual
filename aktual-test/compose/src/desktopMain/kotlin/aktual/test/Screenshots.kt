@@ -1,10 +1,10 @@
 package aktual.test
 
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
 import aktual.core.ui.MY_PHONE_HEIGHT_DP
 import aktual.core.ui.MY_PHONE_WIDTH_DP
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
+import aktual.theme.DarkColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size

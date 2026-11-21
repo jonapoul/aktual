@@ -1,13 +1,13 @@
 package aktual.core.ui
 
 import aktual.core.l10n.Drawables
-import aktual.core.theme.Colors
-import aktual.core.theme.CustomColors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.LightSidebarColors
-import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
+import aktual.theme.Colors
+import aktual.theme.CustomColors
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.LightSidebarColors
+import aktual.theme.MidnightColors
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.DateRangeType
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.theme.Colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState

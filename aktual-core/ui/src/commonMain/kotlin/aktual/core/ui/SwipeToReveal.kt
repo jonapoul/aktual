@@ -3,7 +3,7 @@ package aktual.core.ui
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Pencil1
 import aktual.core.icons.Trash
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import androidx.compose.animation.core.EaseOutBack
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

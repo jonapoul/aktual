@@ -4,7 +4,6 @@ import aktual.about.data.ArtifactDetail
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
@@ -19,6 +18,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.card
 import aktual.core.ui.padding
 import aktual.core.ui.rememberHighlighted
+import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

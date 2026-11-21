@@ -13,8 +13,8 @@ kotlin {
     api(project(":aktual-budget:utils"))
     implementation(project(":aktual-budget:budgeting"))
     implementation(project(":aktual-core:l10n"))
-    implementation(project(":aktual-core:theme"))
     implementation(project(":aktual-prefs"))
+    implementation(project(":aktual-theme"))
   }
 
   commonTestDependencies {

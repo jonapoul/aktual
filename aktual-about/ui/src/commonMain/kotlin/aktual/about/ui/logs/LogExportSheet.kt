@@ -10,7 +10,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
 import aktual.core.icons.material.Share
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -20,6 +19,7 @@ import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

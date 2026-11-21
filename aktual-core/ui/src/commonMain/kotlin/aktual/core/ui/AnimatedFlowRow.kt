@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import androidx.compose.animation.animateBounds
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable

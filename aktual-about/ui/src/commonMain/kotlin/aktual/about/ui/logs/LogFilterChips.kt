@@ -5,7 +5,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.CardColumn
 import aktual.core.ui.Chip
@@ -14,6 +13,7 @@ import aktual.core.ui.ColorParameters
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.Rectangle
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable

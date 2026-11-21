@@ -1,7 +1,7 @@
 package aktual.api.client
 
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeSummary
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeSummary
 
 interface ThemeApi {
   suspend fun fetchCatalog(): List<CustomThemeSummary>

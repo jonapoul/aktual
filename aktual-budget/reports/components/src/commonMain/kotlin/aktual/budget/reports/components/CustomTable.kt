@@ -10,12 +10,12 @@ import aktual.budget.reports.vm.CustomGroupTotals
 import aktual.budget.reports.vm.CustomTotals
 import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.formattedText
 import aktual.core.ui.horizontalScrollWithBar
 import aktual.core.ui.scrollbar
+import aktual.theme.Colors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

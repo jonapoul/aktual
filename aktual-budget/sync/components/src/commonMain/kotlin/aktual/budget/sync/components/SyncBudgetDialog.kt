@@ -10,7 +10,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.ExclamationOutline
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualProgressIndicator
@@ -25,6 +24,7 @@ import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.keyboardFocusRequester
+import aktual.theme.Colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

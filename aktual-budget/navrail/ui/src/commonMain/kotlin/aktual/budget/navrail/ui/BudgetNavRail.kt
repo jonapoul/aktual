@@ -39,8 +39,6 @@ import aktual.core.nav.NavStackImpl
 import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.budgetTabOf
-import aktual.core.theme.Colors
-import aktual.core.theme.LightColors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
@@ -62,6 +60,8 @@ import aktual.core.ui.isExpandedWidth
 import aktual.core.ui.isMobileLandscape
 import aktual.core.ui.rememberSnackbars
 import aktual.core.ui.verticalScrollWithBar
+import aktual.theme.Colors
+import aktual.theme.LightColors
 import aktual.updates.vm.NightlyUpdateState
 import aktual.updates.vm.NightlyUpdateViewModel
 import androidx.compose.animation.ContentTransform

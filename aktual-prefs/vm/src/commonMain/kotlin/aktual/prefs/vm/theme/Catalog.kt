@@ -1,8 +1,8 @@
 package aktual.prefs.vm.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.CustomThemeSummary
+import aktual.theme.Colors
+import aktual.theme.CustomThemeSummary
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import kotlinx.collections.immutable.ImmutableList

@@ -9,9 +9,6 @@ import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BooleanColorParameters
@@ -48,6 +45,9 @@ import aktual.prefs.vm.theme.ThemeSettingsState
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.palette
 import aktual.prefs.vm.theme.swatch
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.MidnightColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues

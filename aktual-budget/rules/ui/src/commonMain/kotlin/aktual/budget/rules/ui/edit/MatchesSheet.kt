@@ -9,7 +9,6 @@ import aktual.budget.rules.vm.edit.MatchRow
 import aktual.budget.rules.vm.edit.RuleMatchesState
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -24,6 +23,7 @@ import aktual.core.ui.checkbox
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.scrollbar
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

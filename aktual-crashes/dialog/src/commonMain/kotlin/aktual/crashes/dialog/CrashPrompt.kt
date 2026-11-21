@@ -7,13 +7,13 @@ import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
 import aktual.core.nav.CrashReportNavigator
 import aktual.core.nav.NavStack
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.PreviewWithColors
 import aktual.crashes.vm.CrashPromptViewModel
+import aktual.theme.Colors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

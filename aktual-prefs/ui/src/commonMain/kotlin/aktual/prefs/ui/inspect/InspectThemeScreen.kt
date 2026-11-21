@@ -14,10 +14,6 @@ import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.nav.SearchThemeNavigator
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.MidnightColors
-import aktual.core.theme.isLight
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
@@ -52,6 +48,10 @@ import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.inspect.ThemeSource
 import aktual.prefs.vm.inspect.toHexString
 import aktual.prefs.vm.theme.properties
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.MidnightColors
+import aktual.theme.isLight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

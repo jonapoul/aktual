@@ -2,11 +2,11 @@ package aktual.prefs.vm.theme
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeCache
-import aktual.core.theme.CustomThemeSummary
 import aktual.core.utils.runCatchingCancellable
 import aktual.log
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeCache
+import aktual.theme.CustomThemeSummary
 import alakazam.kotlin.requireMessage
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList

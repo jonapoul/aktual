@@ -3,13 +3,13 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
-import aktual.core.theme.Colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.scrollbar
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

@@ -6,7 +6,7 @@ import aktual.budget.model.GroupBy
 import aktual.budget.reports.vm.CustomMetric
 import aktual.budget.reports.vm.CustomTotals
 import aktual.budget.reports.vm.CustomTrend
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import androidx.compose.ui.text.AnnotatedString
 import assertk.assertThat
 import assertk.assertions.containsExactly

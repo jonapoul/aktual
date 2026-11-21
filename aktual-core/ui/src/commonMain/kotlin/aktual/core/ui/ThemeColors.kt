@@ -2,7 +2,7 @@
 
 package aktual.core.ui
 
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CheckboxColors

@@ -4,12 +4,12 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.reports.vm.ChartDateConfig
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement

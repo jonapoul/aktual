@@ -1,14 +1,14 @@
 package aktual.app.nav
 
 import aktual.core.nav.NavEntryContributor
-import aktual.core.theme.Colors
-import aktual.core.theme.ThemeResolver
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.HazeConfig
 import aktual.di.BudgetGraph
 import aktual.di.RunLevelState
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.theme.Colors
+import aktual.theme.ThemeResolver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList

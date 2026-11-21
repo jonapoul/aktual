@@ -3,7 +3,6 @@
 package aktual.budget.reports.components
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualExposedDropDownMenu
@@ -15,6 +14,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.exposedDropDownMenu
 import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
+import aktual.theme.Colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

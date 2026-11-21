@@ -1,13 +1,13 @@
 package aktual.budget.list.ui
 
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.card
+import aktual.theme.Colors
+import aktual.theme.DarkColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
