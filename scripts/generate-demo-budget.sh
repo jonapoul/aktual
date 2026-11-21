@@ -9,7 +9,7 @@ cd "$SCRIPT_DIR/.." || exit
 ROOT="$(pwd)"
 
 API_VERSION="${1:-latest}"
-DB_FILE="$ROOT/aktual-budget/demo/src/commonMain/composeResources/files/demo-budget.sqlite"
+DB_FILE="$ROOT/aktual-budget/demo/impl/src/commonMain/composeResources/files/demo-budget.sqlite"
 
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT

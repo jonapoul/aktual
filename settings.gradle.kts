@@ -195,6 +195,7 @@ include(
   ":aktual-budget:data:impl",
   ":aktual-budget:data:proto",
   ":aktual-budget:demo",
+  ":aktual-budget:demo:impl",
   ":aktual-budget:formula",
   ":aktual-budget:home:ui",
   ":aktual-budget:home:vm",

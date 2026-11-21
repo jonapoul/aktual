@@ -24,6 +24,7 @@ kotlin {
     api(project(":aktual-budget:banksync:impl"))
     api(project(":aktual-budget:budgeting:impl"))
     api(project(":aktual-budget:data:impl"))
+    api(project(":aktual-budget:demo:impl"))
     api(project(":aktual-budget:payees:impl"))
     api(project(":aktual-budget:schedules:impl"))
     api(project(":aktual-budget:sync"))
