@@ -20,6 +20,7 @@ kotlin {
     api(libs.sqldelight.runtime)
     api(project(":aktual-about:data"))
     api(project(":aktual-api:impl"))
+    api(project(":aktual-budget:accounts:impl"))
     api(project(":aktual-budget:banksync:impl"))
     api(project(":aktual-budget:budgeting:impl"))
     api(project(":aktual-budget:data:impl"))

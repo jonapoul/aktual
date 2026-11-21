@@ -13,28 +13,25 @@ import aktual.budget.model.Amount.Companion.Zero
 import aktual.budget.model.CategoryId
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SORT_INCREMENT
-import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.shoveSortOrders
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.budget.transactions.domain.NewTransaction
 import aktual.budget.transactions.domain.Patch
-import aktual.budget.transactions.domain.Patch.Keep
 import aktual.budget.transactions.domain.Patch.To
 import aktual.budget.transactions.domain.TransactionWriter
 import aktual.budget.utils.BudgetSync
 import aktual.core.utils.Calendar
 import aktual.core.utils.UuidGenerator
+import aktual.di.BudgetScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.first
 
-/**
- * Account and account group edits, as the handlers in packages/loot-core/src/server/accounts/app.ts
- * and account-groups/app.ts. Bank sync unlinking is left to the caller, see AccountDeleter.
- */
 @Inject
-class AccountWriter(
+@ContributesBinding(BudgetScope::class)
+class AccountWriterImpl(
   private val writer: TransactionWriter,
   private val budgetSync: BudgetSync,
   private val accountDao: AccountDao,
@@ -43,23 +40,22 @@ class AccountWriter(
   private val notesDao: NotesDao,
   private val uuidGenerator: UuidGenerator,
   private val calendar: Calendar,
-) {
-  suspend fun rename(id: AccountId, name: String) = writer.write { renameAccount(id, name) }
+) : AccountWriter {
+  override suspend fun rename(id: AccountId, name: String) {
+    writer.write { renameAccount(id, name) }
+  }
 
-  // Account notes live in the notes table under "account-<id>"
-  suspend fun setNotes(id: AccountId, notes: String) = sync(notesChange(id, notes))
+  override suspend fun setNotes(id: AccountId, notes: String) {
+    sync(notesChange(id, notes))
+  }
 
-  suspend fun notes(id: AccountId): String = notesDao.getNote(notesId(id)).orEmpty()
+  override suspend fun notes(id: AccountId): String = notesDao.getNote(notesId(id)).orEmpty()
 
-  /**
-   * The edit sheet's save: updateAccount() with a new name, plus its notes and group, in one batch.
-   * Returns what puts them back.
-   */
-  suspend fun edit(
+  override suspend fun edit(
     id: AccountId,
-    name: Patch<String> = Keep,
-    notes: Patch<String> = Keep,
-    group: Patch<AccountGroupId?> = Keep,
+    name: Patch<String>,
+    notes: Patch<String>,
+    group: Patch<AccountGroupId?>,
   ): AccountUndo {
     val account = checkNotNull(accountDao[id]) { "Account $id not found" }
     val oldNotes = if (notes is To) notes(id) else null
@@ -81,25 +77,19 @@ class AccountWriter(
     return AccountUndo(undo)
   }
 
-  suspend fun setGroup(id: AccountId, group: AccountGroupId?) =
+  override suspend fun setGroup(id: AccountId, group: AccountGroupId?) {
     sync(localChange(ACCOUNTS, id.value, GROUP_ID, group?.value))
+  }
 
-  // Returns what closes it again
-  suspend fun reopen(id: AccountId): AccountUndo {
+  override suspend fun reopen(id: AccountId): AccountUndo {
     sync(localChange(ACCOUNTS, id.value, CLOSED, false))
     return AccountUndo(listOf(localChange(ACCOUNTS, id.value, CLOSED, true)))
   }
 
-  /**
-   * closeAccount() without forcing it. An account with no transactions is deleted instead. Any
-   * balance goes to [transferTo] in a closing transfer dated today, categorised as [category] when
-   * that's needed. Does nothing to an account that's missing, deleted or already closed. Returns
-   * what puts it back, the closing transfer removed.
-   */
-  suspend fun close(
+  override suspend fun close(
     id: AccountId,
-    transferTo: AccountId? = null,
-    category: CategoryId? = null,
+    transferTo: AccountId?,
+    category: CategoryId?,
   ): CloseOutcome {
     val account = accountDao[id]
     if (account == null || account.tombstone == true || account.closed == true) {
@@ -141,15 +131,10 @@ class AccountWriter(
     return CloseOutcome(Closed, undo)
   }
 
-  /**
-   * moveAccount(): puts [id] just before [target], or at the end without one, among the open
-   * accounts on the same side of the budget, or among closed accounts if it's closed. [group] moves
-   * it into another group too, null being ungrouped. Returns what puts it back.
-   */
-  suspend fun move(
+  override suspend fun move(
     id: AccountId,
     target: AccountId?,
-    group: Patch<AccountGroupId?> = Keep,
+    group: Patch<AccountGroupId?>,
   ): AccountUndo {
     val rows = accountDao.observeManageList().first()
     val account = checkNotNull(rows.firstOrNull { it.id == id }) { "Account $id not found" }
@@ -181,8 +166,7 @@ class AccountWriter(
     return AccountUndo(undo)
   }
 
-  /** insertAccountGroup(): a group after the last one. Names are unique, ignoring case. */
-  suspend fun createGroup(name: String): AccountGroupId {
+  override suspend fun createGroup(name: String): AccountGroupId {
     checkGroupName(name, except = null)
     val id = uuidGenerator(::AccountGroupId)
     val sortOrder = (groupDao.maxSortOrder() ?: 0.0) + SORT_INCREMENT
@@ -195,8 +179,7 @@ class AccountWriter(
     return id
   }
 
-  // Returns what puts the old name back
-  suspend fun renameGroup(id: AccountGroupId, name: String): AccountUndo {
+  override suspend fun renameGroup(id: AccountGroupId, name: String): AccountUndo {
     val group = groupDao.getAllActive().firstOrNull { it.id == id }
     checkNotNull(group) { "Account group $id not found" }
     checkGroupName(name, except = id)
@@ -204,11 +187,7 @@ class AccountWriter(
     return AccountUndo(listOf(localChange(ACCOUNT_GROUPS, id.value, "name", group.name)))
   }
 
-  /**
-   * deleteAccountGroup(): its accounts become ungrouped. Returns what restores the group with its
-   * accounts back in it.
-   */
-  suspend fun deleteGroup(id: AccountGroupId): AccountUndo {
+  override suspend fun deleteGroup(id: AccountGroupId): AccountUndo {
     val accounts = accountDao.idsInGroup(id)
     val changes = buildList {
       val nullValue: String? = null
@@ -223,11 +202,7 @@ class AccountWriter(
     return AccountUndo(undo)
   }
 
-  /**
-   * moveAccountGroup(): puts [id] just before [target], or at the end without one. Returns what
-   * puts it back.
-   */
-  suspend fun moveGroup(id: AccountGroupId, target: AccountGroupId?): AccountUndo {
+  override suspend fun moveGroup(id: AccountGroupId, target: AccountGroupId?): AccountUndo {
     val groups = groupDao.getAllActive().map { it.id to (it.sort_order ?: 0.0) }
     val previous = groups.toMap()
     checkNotNull(previous[id]) { "Account group $id not found" }
@@ -246,8 +221,7 @@ class AccountWriter(
     return AccountUndo(undo)
   }
 
-  // Writes back the values the undone change replaced, in one batch, and deletes what it added
-  suspend fun undo(undo: AccountUndo) {
+  override suspend fun undo(undo: AccountUndo) {
     if (undo.deleteTransactions.isEmpty()) {
       if (undo.changes.isNotEmpty()) sync(undo.changes)
       return
@@ -284,20 +258,3 @@ class AccountWriter(
     const val CLOSING_NOTE = "Closing account"
   }
 }
-
-// The values a change replaced and the transactions it added, for [AccountWriter.undo]
-data class AccountUndo(
-  val changes: List<LocalChange>,
-  val deleteTransactions: Set<TransactionId> = emptySet(),
-)
-
-data class CloseOutcome(val result: CloseResult, val undo: AccountUndo)
-
-enum class CloseResult {
-  Closed,
-  Deleted,
-  Unchanged,
-}
-
-class GroupNameTakenException(val existing: String) :
-  IllegalArgumentException("An '$existing' account group already exists")

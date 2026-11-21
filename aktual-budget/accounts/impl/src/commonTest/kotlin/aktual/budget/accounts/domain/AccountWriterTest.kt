@@ -385,7 +385,7 @@ internal class AccountWriterTest {
       )
 
     val writer =
-      AccountWriter(
+      AccountWriterImpl(
         writer = transactions,
         budgetSync = this,
         accountDao = accountDao,

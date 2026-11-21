@@ -2,7 +2,7 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:transactions"))
+    api(project(":aktual-budget:accounts"))
     api(project(":aktual-budget:utils"))
     api(project(":aktual-core:utils"))
   }
