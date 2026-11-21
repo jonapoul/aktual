@@ -1,24 +1,7 @@
-plugins { id("aktual.module.compose") }
-
-compose.resources {
-  generateResClass = always
-  packageOfResClass = "aktual.budget.demo"
-}
+plugins { id("aktual.module.kotlin") }
 
 kotlin {
-  android { androidResources.enable = true }
-
   commonMainDependencies {
     api(project(":aktual-di:runlevel"))
-    implementation(libs.compose.resources)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.sqldelight.runtime)
-    implementation(project(":aktual-budget:data:db"))
-    implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-core:utils"))
-  }
-
-  desktopTestDependencies {
-    implementation(project(":aktual-budget:data:impl"))
   }
 }

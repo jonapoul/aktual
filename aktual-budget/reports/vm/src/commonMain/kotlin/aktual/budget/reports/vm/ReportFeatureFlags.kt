@@ -31,6 +31,6 @@ internal fun BudgetFeatureFlags.enabledTypes(): Flow<List<WidgetType>> {
   val gated = WidgetType.known.mapNotNull { it.featureFlag }.distinct()
   return combine(gated.map { this[it].asFlow() }) { values ->
     val enabled = gated.filterIndexed { i, _ -> values[i] }.toSet()
-    WidgetType.known.filter { type -> type.featureFlag?.let { it in enabled } ?: true }
+    WidgetType.known.filter { type -> type.featureFlag?.let { it in enabled } != false }
   }
 }

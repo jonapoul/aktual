@@ -105,7 +105,7 @@ catalog_affected_modules() {
   fi
 
   local files
-  files=$(git grep -lF -f <(printf '%s\n' "$terms") -- 'aktual-*/*.gradle.kts' || true)
+  files=$(git grep -lF -f <(printf '%s\n' "$terms") -- '*/*.gradle.kts' || true)
   changed_gradle_modules "$files"
 }
 

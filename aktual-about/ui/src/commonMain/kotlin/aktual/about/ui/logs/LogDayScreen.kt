@@ -17,7 +17,6 @@ import aktual.core.icons.material.PlayArrow
 import aktual.core.icons.material.Share
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.logging.LogLine
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -44,6 +43,7 @@ import aktual.core.ui.hazedTopBarContentPadding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.logging.LogLine
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

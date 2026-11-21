@@ -22,8 +22,8 @@ kotlin {
     implementation(libs.logcat)
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
-    implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-crashes:dialog"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

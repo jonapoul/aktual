@@ -5,14 +5,14 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
 import aktual.core.icons.Split
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
-import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
+import aktual.theme.Colors
+import aktual.theme.hasAlternateRowColour
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background

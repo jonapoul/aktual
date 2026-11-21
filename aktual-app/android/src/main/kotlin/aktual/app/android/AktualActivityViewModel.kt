@@ -7,7 +7,6 @@ import aktual.app.nav.HazeConfigUseCase
 import aktual.app.nav.InitialRouteUseCase
 import aktual.app.nav.RootViewModel
 import aktual.core.nav.NavEntryContributor
-import aktual.core.theme.ThemeResolver
 import aktual.core.utils.LocalNetworkPermission
 import aktual.core.utils.LocalNetworkPrompt
 import aktual.di.AppScope
@@ -15,6 +14,7 @@ import aktual.di.RunLevelState
 import aktual.di.ViewModelContext
 import aktual.prefs.AppPreferences
 import aktual.prefs.SecurityPreferences
+import aktual.theme.ThemeResolver
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -2,14 +2,14 @@ package aktual.prefs.vm.theme
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeRepo
-import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.toCustomColors
 import aktual.prefs.vm.inspect.FakeCustomThemeCache
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeRepo
+import aktual.theme.CustomThemeSummary
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.toCustomColors
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo

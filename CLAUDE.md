@@ -75,7 +75,7 @@ Run `./scripts/detekt.sh` before opening a PR and fix what it reports. `lint.sh`
 
 ## Architecture
 
-Feature-based modular layout. Module list: `settings.gradle.kts`. Each top-level `aktual-*` directory is a module group. Features split into `domain` / `vm` / `ui` modules. Shared infra lives under `aktual-{core,api,di,prefs,test}`, and everything inside an open budget under `aktual-budget` (see [aktual-budget](aktual-budget/CLAUDE.md)).
+Feature-based modular layout. Module list: `settings.gradle.kts`. Each top-level `aktual-*` directory is a module group. Features split into `domain` / `vm` / `ui` modules. Shared infra lives under `aktual-{core,api,di,logging,prefs,test,theme}`, third-party API clients under `github-api` and `openstreetmap-api`, and everything inside an open budget under `aktual-budget` (see [aktual-budget](aktual-budget/CLAUDE.md)).
 
 ### Layers
 - **Domain** - pure Kotlin, no UI. Depends on core models, API clients, prefs.

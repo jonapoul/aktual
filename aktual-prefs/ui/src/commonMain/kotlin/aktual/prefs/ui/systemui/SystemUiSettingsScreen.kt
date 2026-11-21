@@ -13,7 +13,6 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.BarSettingsNavigator
 import aktual.core.nav.DialogSettingsNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.LocalHazeConfig
 import aktual.core.ui.PortraitPreview
@@ -27,6 +26,7 @@ import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.systemui.SystemUiSettingsState
 import aktual.prefs.vm.systemui.SystemUiSettingsViewModel
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter

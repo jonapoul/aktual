@@ -10,7 +10,6 @@ import aktual.budget.reports.vm.SankeyNode
 import aktual.budget.reports.vm.limitTo
 import aktual.core.l10n.Strings
 import aktual.core.model.Percent
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
@@ -20,6 +19,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.stringShort
+import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background

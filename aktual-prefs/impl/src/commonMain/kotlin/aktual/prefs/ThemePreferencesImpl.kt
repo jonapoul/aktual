@@ -1,9 +1,9 @@
 package aktual.prefs
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
 import aktual.di.AppScope
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey

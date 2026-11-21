@@ -1,6 +1,6 @@
 package aktual.about.vm.logs
 
-import aktual.about.data.LogFile
+import aktual.about.model.LogFile
 import aktual.core.model.Bytes
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList

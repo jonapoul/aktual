@@ -1,9 +1,9 @@
 package aktual.test
 
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LocalColors
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
+import aktual.theme.DarkColors
+import aktual.theme.LocalColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest

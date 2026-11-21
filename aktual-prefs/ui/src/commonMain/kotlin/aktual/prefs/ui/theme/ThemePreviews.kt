@@ -4,10 +4,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.MoonStars
 import aktual.core.icons.Sun
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
@@ -16,6 +12,10 @@ import aktual.prefs.vm.theme.ThemePreview
 import aktual.prefs.vm.theme.ThemePreviewMode
 import aktual.prefs.vm.theme.ThemeSwatch
 import aktual.prefs.vm.theme.swatch
+import aktual.theme.Colors
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.MidnightColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.expandHorizontally

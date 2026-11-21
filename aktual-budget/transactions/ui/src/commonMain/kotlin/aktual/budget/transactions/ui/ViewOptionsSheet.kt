@@ -4,7 +4,6 @@ import aktual.budget.model.TransactionsDensity
 import aktual.budget.transactions.vm.AccountOption
 import aktual.budget.transactions.vm.AccountViewOptions
 import aktual.core.l10n.Strings
-import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
@@ -19,6 +18,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.disabledIf
 import aktual.core.ui.padding
 import aktual.core.ui.switch
+import aktual.theme.hasAlternateRowColour
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

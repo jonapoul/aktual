@@ -1,10 +1,10 @@
 package aktual.about.ui.logs
 
-import aktual.core.logging.LogLine
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.tabular
+import aktual.logging.LogLine
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

@@ -21,7 +21,6 @@ import aktual.core.icons.Pencil1
 import aktual.core.icons.Pin
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
@@ -35,6 +34,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SwipeAction
 import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
+import aktual.theme.Colors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth

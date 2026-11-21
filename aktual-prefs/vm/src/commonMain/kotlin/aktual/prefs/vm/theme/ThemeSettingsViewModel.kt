@@ -2,14 +2,6 @@ package aktual.prefs.vm.theme
 
 import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeCache
-import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
-import aktual.core.theme.MidnightColors
-import aktual.core.theme.ThemeMode
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -17,6 +9,14 @@ import aktual.prefs.Preference
 import aktual.prefs.ThemePreferences
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.asLoadedStateFlow
+import aktual.theme.Colors
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeCache
+import aktual.theme.CustomThemeSummary
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
+import aktual.theme.MidnightColors
+import aktual.theme.ThemeMode
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState

@@ -3,11 +3,11 @@ package aktual.app.desktop
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
 import aktual.core.l10n.Strings
-import aktual.core.logging.CrashReporter
-import aktual.core.logging.KermitFileLogger
-import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.LoadingScreenIfNull
 import aktual.log
+import aktual.logging.CrashReporter
+import aktual.logging.KermitFileLogger
+import aktual.logging.TimestampedPrintStreamLogger
 import aktual.prefs.components.rememberAppIconPainter
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect

@@ -21,10 +21,10 @@ import aktual.budget.reports.vm.montecarlo.MonteCarloDepletion
 import aktual.budget.reports.vm.montecarlo.MonteCarloFanBand
 import aktual.budget.reports.vm.montecarlo.MonteCarloGraphView
 import aktual.budget.reports.vm.montecarlo.PotBalancesChart
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.claimHorizontalDrags
 import aktual.core.ui.isInPreview
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue

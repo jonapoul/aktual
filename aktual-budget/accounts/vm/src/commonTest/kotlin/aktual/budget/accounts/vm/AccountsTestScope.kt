@@ -3,7 +3,7 @@ package aktual.budget.accounts.vm
 import aktual.api.client.BankSyncApi
 import aktual.api.model.banksync.BankSyncTransactionsRequest
 import aktual.api.model.banksync.SimpleFinBatchRequest
-import aktual.budget.accounts.domain.AccountWriter
+import aktual.budget.accounts.domain.AccountWriterImpl
 import aktual.budget.banksync.domain.AccountDeleterImpl
 import aktual.budget.banksync.domain.BankAccountLinkerImpl
 import aktual.budget.banksync.domain.BankSyncController
@@ -70,7 +70,7 @@ internal class AccountsTestScope(
     )
 
   val writer =
-    AccountWriter(
+    AccountWriterImpl(
       writer = transactions,
       budgetSync = this,
       accountDao = accountDao,

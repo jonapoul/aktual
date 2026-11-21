@@ -2,10 +2,10 @@ package aktual.prefs.components
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.InformationOutline
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PreviewWithColors
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable

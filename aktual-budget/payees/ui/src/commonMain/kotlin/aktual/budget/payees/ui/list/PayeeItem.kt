@@ -7,7 +7,6 @@ import aktual.core.icons.CheveronRight
 import aktual.core.icons.LightBulb
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.Chip
@@ -21,6 +20,7 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerChip
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.rememberHighlighted
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

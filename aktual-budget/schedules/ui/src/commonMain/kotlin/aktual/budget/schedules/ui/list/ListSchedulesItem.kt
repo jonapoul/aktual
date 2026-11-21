@@ -4,7 +4,6 @@ import aktual.budget.schedules.components.ScheduleStatusBadge
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.amountPrefix
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
@@ -20,6 +19,7 @@ import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import aktual.core.ui.rememberHighlighted
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

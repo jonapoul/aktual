@@ -1,10 +1,10 @@
 package aktual.api.client
 
-import aktual.core.theme.CustomColors
-import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.ThemeJson
-import aktual.core.theme.parseColors
 import aktual.di.AppScope
+import aktual.theme.CustomColors
+import aktual.theme.CustomThemeSummary
+import aktual.theme.ThemeJson
+import aktual.theme.parseColors
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get

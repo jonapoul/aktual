@@ -1,6 +1,6 @@
 package aktual.about.ui.logs
 
-import aktual.about.data.LogExportTarget
+import aktual.about.model.LogExportTarget
 import aktual.about.vm.logs.LogExportScope
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate

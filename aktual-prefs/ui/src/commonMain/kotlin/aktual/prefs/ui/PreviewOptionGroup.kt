@@ -1,6 +1,5 @@
 package aktual.prefs.ui
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -9,6 +8,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.radioButton
 import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.vm.ListPreference
+import aktual.theme.Colors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

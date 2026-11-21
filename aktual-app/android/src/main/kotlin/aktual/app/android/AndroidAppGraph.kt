@@ -1,10 +1,10 @@
 package aktual.app.android
 
-import aktual.core.logging.LogStorage
 import aktual.core.model.BuildConfig
 import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelInitialiser
+import aktual.logging.LogStorage
 import android.content.Context
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides

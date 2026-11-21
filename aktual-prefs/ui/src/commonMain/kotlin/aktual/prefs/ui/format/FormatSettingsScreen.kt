@@ -6,7 +6,6 @@ import aktual.core.l10n.Strings
 import aktual.core.model.DistanceUnit
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -16,6 +15,7 @@ import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.vm.ListPreference
 import aktual.prefs.vm.format.FormatSettingsState
 import aktual.prefs.vm.format.FormatSettingsViewModel
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter

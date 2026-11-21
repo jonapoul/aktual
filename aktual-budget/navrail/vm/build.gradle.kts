@@ -11,7 +11,7 @@ kotlin {
     api(project(":aktual-prefs"))
     implementation(project(":aktual-budget:data:db"))
     implementation(project(":aktual-budget:utils"))
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

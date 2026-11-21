@@ -3,7 +3,6 @@ package aktual.budget.schedules.ui.list
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualModalBottomSheet
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -11,6 +10,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formatted
+import aktual.theme.Colors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.theme.Colors
-import aktual.core.theme.LocalColors
+import aktual.theme.Colors
+import aktual.theme.LocalColors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication

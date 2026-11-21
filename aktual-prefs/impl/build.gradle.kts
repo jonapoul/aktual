@@ -8,8 +8,8 @@ kotlin {
     api(libs.androidx.datastore.prefsCore)
     api(libs.kotlinx.coroutines.core)
     api(libs.okio)
-    api(project(":aktual-core:theme:model"))
     api(project(":aktual-prefs"))
+    api(project(":aktual-theme:model"))
     implementation(libs.androidx.datastore.prefs)
     implementation(project(":aktual-di:core"))
   }

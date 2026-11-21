@@ -7,8 +7,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
-import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.PortraitPreview
@@ -18,6 +16,8 @@ import aktual.prefs.ui.PreviewSettingsScaffold
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.transactions.TransactionSettingsState
 import aktual.prefs.vm.transactions.TransactionSettingsViewModel
+import aktual.theme.Colors
+import aktual.theme.hasAlternateRowColour
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter

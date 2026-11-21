@@ -1,6 +1,6 @@
 package aktual.budget.payees.domain
 
-import nominatim.api.model.Place
+import openstreetmap.api.model.Place
 
 internal fun Place.toAddress(): Address? {
   if (error != null) return null

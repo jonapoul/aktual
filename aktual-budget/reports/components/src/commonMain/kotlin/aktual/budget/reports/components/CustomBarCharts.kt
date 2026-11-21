@@ -11,7 +11,6 @@ import aktual.budget.reports.vm.CustomInterval
 import aktual.budget.reports.vm.CustomMetric
 import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
@@ -22,6 +21,7 @@ import aktual.core.ui.isInPreview
 import aktual.core.ui.redacted
 import aktual.core.ui.redactedFontFamily
 import aktual.core.ui.stringShort
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember

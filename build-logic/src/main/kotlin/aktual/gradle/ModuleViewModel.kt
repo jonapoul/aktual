@@ -26,7 +26,7 @@ class ModuleViewModel : ProjectPlugin {
         implementation(libs["androidx.savedstate"])
         implementation(libs["compose.runtime"])
         implementation(libs["molecule"])
-        implementation(project(":aktual-core:logging"))
+        implementation(project(":aktual-logging"))
       }
 
       commonTestDependencies {

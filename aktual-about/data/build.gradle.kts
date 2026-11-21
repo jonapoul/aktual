@@ -1,25 +1,23 @@
 plugins {
   id("aktual.module.kotlin")
-  alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
-    api(libs.kotlinx.serialization.core)
-    api(libs.ktor.core)
-    api(project(":aktual-api"))
-    api(project(":aktual-core:logging:format"))
+    api(project(":aktual-about:model"))
     api(project(":aktual-core:utils"))
-    compileOnly(libs.androidx.compose.annotation)
+    api(project(":aktual-logging:format"))
+    api(project(":github-api"))
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.core)
     implementation(libs.ktor.serialization.json)
   }
 
   commonTestDependencies {
     implementation(libs.ktor.test)
-    implementation(project(":aktual-api:impl"))
     implementation(project(":aktual-test"))
     implementation(project(":aktual-test:api"))
+    implementation(project(":github-api:impl"))
   }
 }

@@ -5,7 +5,6 @@ import aktual.core.icons.LockClosed
 import aktual.core.icons.material.Fingerprint
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualButton
@@ -18,6 +17,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithCompositionLocals
+import aktual.theme.Colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

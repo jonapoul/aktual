@@ -1,7 +1,6 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParameters
@@ -9,6 +8,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.padding
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row

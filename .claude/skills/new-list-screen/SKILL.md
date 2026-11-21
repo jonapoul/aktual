@@ -210,8 +210,8 @@ Skeleton item + shimmer - replace the body of `List{Name}Item` with real content
 package {pkg}.ui.list
 
 import {pkg}.vm.{Name}
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.theme.LocalTheme
+import aktual.theme.Theme
 import aktual.core.ui.OnAction
 import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerLine
@@ -301,8 +301,8 @@ import {pkg}.vm.list.Success
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.theme.LocalTheme
+import aktual.theme.Theme
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen

@@ -1,11 +1,11 @@
 package aktual.app.desktop
 
-import aktual.core.logging.LogStorage
 import aktual.core.model.BuildConfig
 import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelInitialiser
 import aktual.di.RunLevelState
+import aktual.logging.LogStorage
 import aktual.prefs.AppIconController
 import aktual.prefs.WindowStatePreferences
 import dev.zacsweers.metro.DependencyGraph

@@ -3,7 +3,6 @@ package aktual.budget.transactions.ui.edit
 import aktual.budget.model.TagId
 import aktual.budget.model.tagRangesInNotes
 import aktual.budget.tags.domain.TagLabel
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParameters
@@ -12,6 +11,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.contrastingTextColor
+import aktual.theme.Colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown

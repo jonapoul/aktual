@@ -1,11 +1,11 @@
 package aktual.about.vm
 
-import aktual.about.data.Apache2
-import aktual.about.data.ArtifactDetail
-import aktual.about.data.ArtifactScm
-import aktual.about.data.LicensesLoadState.Failure
-import aktual.about.data.LicensesLoadState.Success
 import aktual.about.data.LicensesRepository
+import aktual.about.model.Apache2
+import aktual.about.model.ArtifactDetail
+import aktual.about.model.ArtifactScm
+import aktual.about.model.LicensesLoadState.Failure
+import aktual.about.model.LicensesLoadState.Success
 import aktual.about.vm.LicensesState.Error
 import aktual.about.vm.LicensesState.Loaded
 import aktual.test.assertThatNextEmissionIsEqualTo

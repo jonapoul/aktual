@@ -1,6 +1,5 @@
 package aktual.budget.reports.components
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
@@ -8,6 +7,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.tableRow
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

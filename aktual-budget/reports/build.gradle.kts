@@ -10,6 +10,6 @@ kotlin {
     api(project(":aktual-budget:formula"))
     api(project(":aktual-budget:model"))
     compileOnly(libs.androidx.compose.annotation)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 }

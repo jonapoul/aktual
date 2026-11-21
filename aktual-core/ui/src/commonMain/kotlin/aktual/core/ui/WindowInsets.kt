@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.WindowInsets

@@ -115,7 +115,7 @@ dependencyAnalysis {
           libs.molecule,
         )
         exclude(
-          ":aktual-core:logging",
+          ":aktual-logging",
           ":aktual-test",
           ":aktual-test:compose",
         )

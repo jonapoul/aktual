@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.Interval
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.theme.Colors
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background

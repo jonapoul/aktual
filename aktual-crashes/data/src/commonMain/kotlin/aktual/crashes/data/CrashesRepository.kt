@@ -1,10 +1,10 @@
 package aktual.crashes.data
 
-import aktual.core.logging.CrashReport
-import aktual.core.logging.CrashReportFormat
-import aktual.core.logging.LogStorage
-import aktual.core.logging.crashDirectory
 import aktual.core.model.CrashFile
+import aktual.logging.CrashReport
+import aktual.logging.CrashReportFormat
+import aktual.logging.LogStorage
+import aktual.logging.crashDirectory
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext

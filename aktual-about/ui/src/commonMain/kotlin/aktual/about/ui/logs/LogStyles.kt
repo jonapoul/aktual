@@ -1,8 +1,8 @@
 package aktual.about.ui.logs
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.stringShort
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.DatePeriod

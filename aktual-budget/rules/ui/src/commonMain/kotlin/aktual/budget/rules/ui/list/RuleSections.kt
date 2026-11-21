@@ -4,7 +4,6 @@ import aktual.budget.model.RuleStage
 import aktual.budget.rules.domain.Rule
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParameters
@@ -12,6 +11,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.StuckHeaders
 import aktual.core.ui.stuckHeader
+import aktual.theme.Colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

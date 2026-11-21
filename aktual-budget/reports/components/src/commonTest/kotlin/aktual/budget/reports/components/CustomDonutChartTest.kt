@@ -1,7 +1,7 @@
 package aktual.budget.reports.components
 
 import aktual.budget.model.Amount
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo

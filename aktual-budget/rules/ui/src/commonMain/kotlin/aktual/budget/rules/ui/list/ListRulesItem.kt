@@ -14,7 +14,6 @@ import aktual.core.icons.Trash
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SubdirectoryArrowRight
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParameters
@@ -30,6 +29,7 @@ import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.tableRow
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

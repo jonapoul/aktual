@@ -17,7 +17,6 @@ import aktual.core.nav.CrashReportsNavigator
 import aktual.core.nav.LicensesNavigator
 import aktual.core.nav.LogsNavigator
 import aktual.core.nav.ManageStorageNavigator
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
@@ -43,6 +42,7 @@ import aktual.core.ui.padding
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
+import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import alakazam.kotlin.noOp
 import androidx.compose.foundation.Image

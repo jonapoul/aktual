@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.theme.Colors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

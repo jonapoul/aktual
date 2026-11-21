@@ -1,8 +1,8 @@
 package aktual.crashes.vm
 
-import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
 import aktual.crashes.data.CrashesRepository
+import aktual.logging.CrashReport
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
 import aktual.test.assertThatNextEmissionIsEqualTo

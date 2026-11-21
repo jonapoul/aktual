@@ -1,7 +1,7 @@
 package aktual.crashes.data
 
-import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
+import aktual.logging.CrashReport
 import aktual.test.TestBuildConfig
 import assertk.assertThat
 import assertk.assertions.isEqualTo

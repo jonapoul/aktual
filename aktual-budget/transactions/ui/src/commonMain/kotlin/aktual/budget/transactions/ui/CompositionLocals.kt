@@ -2,9 +2,9 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.TransactionsDensity
 import aktual.budget.tags.domain.TagLabel
-import aktual.core.theme.hasAlternateRowColour
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.theme.hasAlternateRowColour
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable

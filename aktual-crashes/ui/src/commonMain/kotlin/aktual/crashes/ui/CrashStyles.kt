@@ -1,7 +1,7 @@
 package aktual.crashes.ui
 
-import aktual.core.logging.CrashReport
 import aktual.core.model.CrashFile
+import aktual.logging.CrashReport
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime

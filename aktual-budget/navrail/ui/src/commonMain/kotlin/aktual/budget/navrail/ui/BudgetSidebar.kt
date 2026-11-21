@@ -50,9 +50,6 @@ import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.ManageAccountsNavRoute
 import aktual.core.nav.TransactionsNavRoute
-import aktual.core.theme.Colors
-import aktual.core.theme.LocalColors
-import aktual.core.theme.sidebarColors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTextField
@@ -74,6 +71,9 @@ import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.textField
 import aktual.core.ui.verticalScrollWithBar
+import aktual.theme.Colors
+import aktual.theme.LocalColors
+import aktual.theme.sidebarColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically

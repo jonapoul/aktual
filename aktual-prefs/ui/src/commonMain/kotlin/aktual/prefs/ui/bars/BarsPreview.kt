@@ -4,7 +4,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
 import aktual.core.icons.CloudCheck
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
@@ -15,6 +14,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.hazedBottomBar
 import aktual.core.ui.hazedTopBar
 import aktual.prefs.ui.SampleTransactionList
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues

@@ -2,7 +2,6 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.reports.vm.FORMULA_THEME_PREFIX
 import aktual.core.l10n.Strings
-import aktual.core.theme.attributes
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
@@ -10,6 +9,7 @@ import aktual.core.ui.AnimatedFlowRowScope
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.disambiguated
+import aktual.theme.attributes
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height

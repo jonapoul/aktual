@@ -2,7 +2,6 @@ package aktual.prefs.ui.dates
 
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
@@ -11,6 +10,7 @@ import aktual.core.ui.formatter
 import aktual.core.ui.stringInitial
 import aktual.core.ui.stringLong
 import aktual.core.ui.tabular
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

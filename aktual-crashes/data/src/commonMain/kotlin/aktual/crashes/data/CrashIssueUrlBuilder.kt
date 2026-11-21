@@ -1,7 +1,7 @@
 package aktual.crashes.data
 
-import aktual.core.logging.CrashReport
 import aktual.core.model.BuildConfig
+import aktual.logging.CrashReport
 import dev.zacsweers.metro.Inject
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments

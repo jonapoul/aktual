@@ -6,8 +6,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentMapOf
-import nominatim.api.model.Address as PlaceAddress
-import nominatim.api.model.Place
+import openstreetmap.api.model.Address as PlaceAddress
+import openstreetmap.api.model.Place
 
 class AddressTest {
   @Test

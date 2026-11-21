@@ -9,7 +9,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.ArrowsSynchronize
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -23,6 +22,7 @@ import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.ShimmerChip
 import aktual.core.ui.ShimmerLine
+import aktual.theme.Colors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable

@@ -29,7 +29,6 @@ import aktual.core.nav.SystemUiSettingsNavigator
 import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.nav.TransactionSettingsNavigator
 import aktual.core.nav.UpdateSettingsNavigator
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.OnAction
@@ -41,6 +40,7 @@ import aktual.prefs.components.PreferenceGroup
 import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.security.ShouldShowSecuritySettings
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.PreviewParameter

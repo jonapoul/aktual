@@ -1,6 +1,5 @@
 package aktual.budget.reports.vm
 
-import aktual.budget.model.WidgetType
 import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestCoroutineContexts
@@ -18,7 +17,7 @@ class ReportFeatureFlagsTest {
     runLoaderTest(flags) { loader ->
       loader.load(SankeyReportMeta(name = "Flow")).test {
         assertThatNextEmissionIsEqualTo(
-          UnsupportedData(FeatureDisabled, WidgetType.Sankey, name = "Flow"),
+          UnsupportedData(FeatureDisabled, Sankey, name = "Flow"),
         )
 
         flags[SankeyReport].set(true)

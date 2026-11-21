@@ -65,8 +65,8 @@ class MonteCarloViewModelTest {
     runMonteCarloTest(flags = FakeBudgetFeatureFlags()) { viewModel, _, _ ->
       viewModel.state.test {
         var state = awaitItem()
-        while (state == MonteCarloState.Loading) state = awaitItem()
-        assertThat(state).isEqualTo(MonteCarloState.FeatureDisabled)
+        while (state == Loading) state = awaitItem()
+        assertThat(state).isEqualTo(FeatureDisabled)
         cancelAndIgnoreRemainingEvents()
       }
     }

@@ -1,15 +1,15 @@
 package aktual.prefs.vm.inspect.search
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.LightColors
-import aktual.core.theme.ThemeResolver
 import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.inspect.search.SearchThemeState.Results
 import aktual.prefs.vm.inspect.toHexString
 import aktual.prefs.vm.theme.properties
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.viewModelContext
+import aktual.theme.Colors
+import aktual.theme.LightColors
+import aktual.theme.ThemeResolver
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo

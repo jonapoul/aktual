@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-  api(project(":aktual-core:logging:impl"))
+  api(project(":aktual-logging:impl"))
   api(project(":aktual-prefs"))
   api(libs.compose.ui)
   api(libs.compose.uiUnit)
@@ -17,6 +17,6 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.logcat)
-  testImplementation(project(":aktual-core:logging"))
+  testImplementation(project(":aktual-logging"))
   testImplementation(kotlin("test"))
 }

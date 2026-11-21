@@ -10,9 +10,9 @@ import aktual.core.l10n.inter_medium
 import aktual.core.l10n.inter_regular
 import aktual.core.l10n.inter_semibold
 import aktual.core.l10n.inter_thin
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Min

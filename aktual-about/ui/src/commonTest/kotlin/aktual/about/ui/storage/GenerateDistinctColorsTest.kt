@@ -1,8 +1,8 @@
 package aktual.about.ui.storage
 
-import aktual.core.theme.Colors
-import aktual.core.theme.DarkColors
-import aktual.core.theme.LightColors
+import aktual.theme.Colors
+import aktual.theme.DarkColors
+import aktual.theme.LightColors
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import assertk.assertThat

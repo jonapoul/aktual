@@ -1,5 +1,10 @@
 package aktual.about.data
 
+import aktual.about.model.Apache2
+import aktual.about.model.ArtifactDetail
+import aktual.about.model.ArtifactScm
+import aktual.about.model.LicensesLoadState
+import aktual.about.model.UnknownLicense
 import aktual.core.utils.Assets
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.getResourceAsStream

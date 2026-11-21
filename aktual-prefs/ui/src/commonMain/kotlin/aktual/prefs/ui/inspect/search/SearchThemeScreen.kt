@@ -5,7 +5,6 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.LightColors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -22,6 +21,7 @@ import aktual.prefs.vm.inspect.search.SearchThemeState
 import aktual.prefs.vm.inspect.search.SearchThemeState.Results
 import aktual.prefs.vm.inspect.search.SearchThemeViewModel
 import aktual.prefs.vm.theme.properties
+import aktual.theme.LightColors
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut

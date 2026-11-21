@@ -1,7 +1,6 @@
 package aktual.prefs.ui.dialogs
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
@@ -12,6 +11,7 @@ import aktual.core.ui.HazeConfig
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.dialogBlur
 import aktual.prefs.ui.SampleTransactionList
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth

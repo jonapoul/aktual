@@ -7,6 +7,6 @@ kotlin {
     api(project(":aktual-budget:utils"))
     api(project(":aktual-core:utils"))
     implementation(libs.ktor.engineDefaults)
-    implementation(project(":aktual-core:logging"))
+    implementation(project(":aktual-logging"))
   }
 }

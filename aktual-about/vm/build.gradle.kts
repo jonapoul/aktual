@@ -10,8 +10,8 @@ kotlin {
     api(libs.androidx.datastore.prefsCore)
     api(libs.kotlinx.serialization.core)
     api(project(":aktual-about:data"))
-    api(project(":aktual-core:theme"))
     api(project(":aktual-di:runlevel"))
+    api(project(":aktual-theme"))
     implementation(libs.okio)
   }
 }

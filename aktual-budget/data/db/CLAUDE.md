@@ -1,6 +1,6 @@
 # aktual-budget:data:db
 
-SQLDelight database module. Owns the schema, adapters and DAOs. The migration runner (`MigrateDatabase.kt`) and `AndroidxSqlDriverFactory` live in `aktual-budget:data:impl`, so `data:db` doesn't depend on `budget:utils` or `core:logging`. Keep it that way: domain modules depend on `data:db` through `api`.
+SQLDelight database module. Owns the schema, adapters and DAOs. The migration runner (`MigrateDatabase.kt`) and `AndroidxSqlDriverFactory` live in `aktual-budget:data:impl`, so `data:db` doesn't depend on `budget:utils` or `aktual-logging`. Keep it that way: domain modules depend on `data:db` through `api`.
 
 ## Adding a new upstream migration
 

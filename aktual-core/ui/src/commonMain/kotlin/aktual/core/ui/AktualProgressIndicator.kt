@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
+import aktual.theme.Colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

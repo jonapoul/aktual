@@ -1,11 +1,11 @@
 package aktual.about.ui.storage
 
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.PreviewWithColorParams
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

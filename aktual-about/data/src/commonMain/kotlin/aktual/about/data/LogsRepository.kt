@@ -1,9 +1,10 @@
 package aktual.about.data
 
-import aktual.core.logging.LogFileFormat
-import aktual.core.logging.LogLine
-import aktual.core.logging.LogStorage
+import aktual.about.model.LogFile
 import aktual.core.model.bytes
+import aktual.logging.LogFileFormat
+import aktual.logging.LogLine
+import aktual.logging.LogStorage
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.TimeZoneProvider
 import dev.zacsweers.metro.Inject

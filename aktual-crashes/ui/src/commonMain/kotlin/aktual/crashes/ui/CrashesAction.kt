@@ -1,6 +1,6 @@
 package aktual.crashes.ui
 
-import aktual.about.data.LogExportTarget
+import aktual.about.model.LogExportTarget
 import aktual.core.model.CrashFile
 import androidx.compose.runtime.Immutable
 

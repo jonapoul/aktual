@@ -1,12 +1,6 @@
 package aktual.prefs.vm.inspect
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.Colors
-import aktual.core.theme.CustomThemeRepo
-import aktual.core.theme.LightColors
-import aktual.core.theme.ThemeResolver
-import aktual.core.theme.attributes
-import aktual.core.theme.toCustomColors
 import aktual.prefs.ThemePreferences
 import aktual.prefs.ThemePreferencesImpl
 import aktual.prefs.vm.inspect.InspectThemeEvent.Deleted
@@ -16,6 +10,12 @@ import aktual.prefs.vm.theme.properties
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.viewModelContext
+import aktual.theme.Colors
+import aktual.theme.CustomThemeRepo
+import aktual.theme.LightColors
+import aktual.theme.ThemeResolver
+import aktual.theme.attributes
+import aktual.theme.toCustomColors
 import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
 import app.cash.turbine.test

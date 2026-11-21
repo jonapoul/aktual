@@ -1,7 +1,7 @@
 package aktual.about.vm
 
-import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
+import aktual.about.model.LicensesLoadState
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope

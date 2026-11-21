@@ -1,10 +1,10 @@
 package aktual.app.android
 
-import aktual.core.theme.Colors
-import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
+import aktual.theme.Colors
+import aktual.theme.ThemeResolver
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap

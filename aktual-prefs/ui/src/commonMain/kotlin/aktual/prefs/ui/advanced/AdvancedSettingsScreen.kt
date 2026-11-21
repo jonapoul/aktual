@@ -6,7 +6,6 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -21,6 +20,7 @@ import aktual.prefs.ui.SettingsListScaffold
 import aktual.prefs.vm.advanced.AdvancedSettingsState
 import aktual.prefs.vm.advanced.AdvancedSettingsViewModel
 import aktual.prefs.vm.advanced.RepairState
+import aktual.theme.Colors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn

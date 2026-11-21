@@ -12,7 +12,7 @@ import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Res
 import aktual.core.l10n.redacted_script
 import aktual.core.model.DistanceUnit
-import aktual.core.theme.BottomBarThemeAttrs
+import aktual.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect

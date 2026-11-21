@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.isLight
+import aktual.theme.isLight
 import android.app.Activity
 import android.os.Build
 import androidx.compose.runtime.Composable

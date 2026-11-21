@@ -7,9 +7,9 @@ import aktual.core.icons.CheveronLeft
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Menu
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
+import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState

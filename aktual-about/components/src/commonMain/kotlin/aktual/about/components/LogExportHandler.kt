@@ -1,6 +1,6 @@
 package aktual.about.components
 
-import aktual.about.data.LogExport
+import aktual.about.model.LogExport
 import aktual.core.ui.plainTextClipEntry
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

@@ -10,13 +10,13 @@ kotlin {
     api(project(":aktual-api"))
     api(project(":aktual-budget:data:proto"))
     api(project(":aktual-budget:utils"))
-    api(project(":aktual-core:theme"))
+    api(project(":aktual-theme"))
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.ktor.contentNegotiation)
     implementation(libs.ktor.logging)
     implementation(libs.ktor.serialization.json)
-    implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:utils"))
+    implementation(project(":aktual-logging"))
   }
 
   commonTestDependencies {

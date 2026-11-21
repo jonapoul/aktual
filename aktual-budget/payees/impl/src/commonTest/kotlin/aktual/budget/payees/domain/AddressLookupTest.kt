@@ -23,15 +23,15 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import nominatim.api.NominatimApi
-import nominatim.api.model.Place
+import openstreetmap.api.OpenStreetMapApi
+import openstreetmap.api.model.Place
 
 class AddressLookupTest {
   private val preferences = FakeSecurityPreferences()
 
   @Test
   fun `Nothing looked up while turned off`() = runTest {
-    val api = FakeNominatimApi()
+    val api = FakeOpenStreetMapApi()
     val lookup = lookup(api)
 
     lookup.request(London)
@@ -44,7 +44,7 @@ class AddressLookupTest {
   @Test
   fun `Repeated requests are looked up once`() = runTest {
     preferences.lookUpPayeeAddresses.set(true)
-    val api = FakeNominatimApi()
+    val api = FakeOpenStreetMapApi()
     val lookup = lookup(api)
 
     lookup.request(London)
@@ -62,7 +62,7 @@ class AddressLookupTest {
   fun `Lookups are at least a second apart`() = runTest {
     preferences.lookUpPayeeAddresses.set(true)
     val times = mutableListOf<Long>()
-    val api = FakeNominatimApi(onCall = { times += testScheduler.currentTime })
+    val api = FakeOpenStreetMapApi(onCall = { times += testScheduler.currentTime })
     val lookup = lookup(api)
 
     lookup.request(London)
@@ -76,7 +76,7 @@ class AddressLookupTest {
   fun `Failed lookup is retried on the next request`() = runTest {
     preferences.lookUpPayeeAddresses.set(true)
     var fail = true
-    val api = FakeNominatimApi(onCall = { if (fail) error("Offline") })
+    val api = FakeOpenStreetMapApi(onCall = { if (fail) error("Offline") })
     val lookup = lookup(api)
 
     lookup.request(London)
@@ -95,7 +95,7 @@ class AddressLookupTest {
   @Test
   fun `Turning off forgets addresses`() = runTest {
     preferences.lookUpPayeeAddresses.set(true)
-    val api = FakeNominatimApi()
+    val api = FakeOpenStreetMapApi()
     val lookup = lookup(api)
 
     lookup.request(London)
@@ -115,10 +115,10 @@ class AddressLookupTest {
     runCurrent()
   }
 
-  private fun TestScope.lookup(api: NominatimApi) =
-    NominatimAddressLookup(api, preferences, BudgetCoroutineScope(backgroundScope))
+  private fun TestScope.lookup(api: OpenStreetMapApi) =
+    OpenStreetMapAddressLookup(api, preferences, BudgetCoroutineScope(backgroundScope))
 
-  private class FakeNominatimApi(private val onCall: () -> Unit = {}) : NominatimApi {
+  private class FakeOpenStreetMapApi(private val onCall: () -> Unit = {}) : OpenStreetMapApi {
     val calls = mutableListOf<Coordinates>()
 
     override suspend fun reverse(coordinates: Coordinates, language: String): Place {

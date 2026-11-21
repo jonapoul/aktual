@@ -7,7 +7,6 @@ import aktual.core.icons.material.RoundedCorner
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.LocalHazeConfig
 import aktual.core.ui.PortraitPreview
@@ -23,6 +22,7 @@ import aktual.prefs.vm.SliderPreference
 import aktual.prefs.vm.bars.BarSettingsState
 import aktual.prefs.vm.bars.BarSettingsViewModel
 import aktual.prefs.vm.bars.GlassCornerRadiusPreference
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue

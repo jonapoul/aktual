@@ -4,7 +4,6 @@ import aktual.budget.model.SyncedPrefKey.FeatureFlag
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.SettingsHighlight
-import aktual.core.theme.Colors
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.PortraitPreview
@@ -17,6 +16,7 @@ import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.experimental.ExperimentalFeature
 import aktual.prefs.vm.experimental.ExperimentalSettingsState
 import aktual.prefs.vm.experimental.ExperimentalSettingsViewModel
+import aktual.theme.Colors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalUriHandler

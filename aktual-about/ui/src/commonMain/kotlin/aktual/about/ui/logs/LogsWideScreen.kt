@@ -1,6 +1,6 @@
 package aktual.about.ui.logs
 
-import aktual.about.data.LogFile
+import aktual.about.model.LogFile
 import aktual.about.vm.logs.LiveState
 import aktual.about.vm.logs.LogEntriesState
 import aktual.about.vm.logs.LogExportScope
@@ -12,10 +12,7 @@ import aktual.core.icons.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Share
 import aktual.core.l10n.Strings
-import aktual.core.logging.LogFileFormat
-import aktual.core.logging.LogLine
 import aktual.core.model.bytes
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.lineHeights
@@ -34,6 +31,9 @@ import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.scrollbar
 import aktual.core.ui.tabular
 import aktual.core.ui.verticalScrollWithBar
+import aktual.logging.LogFileFormat
+import aktual.logging.LogLine
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -2,8 +2,8 @@ package aktual.budget.reports.vm
 
 import aktual.budget.formula.FormulaValue
 import aktual.budget.formula.TextValue
-import aktual.core.theme.LightColors
-import aktual.core.theme.attributes
+import aktual.theme.LightColors
+import aktual.theme.attributes
 
 // The colour formula's theme_* variables. The VM doesn't know the current theme, so each one is its
 // own name, which the UI swaps for the theme's colour

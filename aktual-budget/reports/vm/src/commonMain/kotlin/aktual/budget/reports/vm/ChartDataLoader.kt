@@ -75,7 +75,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 
 @Inject
-@Suppress("LargeClass")
+@Suppress("LargeClass", "LongParameterList")
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ChartDataLoader(
   private val dao: ReportsDao,

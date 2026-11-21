@@ -1,7 +1,8 @@
 package aktual.about.data
 
-import aktual.core.logging.LogLine
+import aktual.about.model.LogFile
 import aktual.core.model.bytes
+import aktual.logging.LogLine
 import aktual.test.CoTemporaryFolder
 import aktual.test.isEqualToList
 import alakazam.test.TestClock

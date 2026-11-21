@@ -1,7 +1,6 @@
 package aktual.prefs.vm.inspect.search
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -9,6 +8,7 @@ import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.inspect.search.SearchThemeState.Results
 import aktual.prefs.vm.inspect.toHexString
 import aktual.prefs.vm.theme.properties
+import aktual.theme.ThemeResolver
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.Colors
+import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.ui.Modifier
