@@ -1,7 +1,7 @@
 package aktual.prefs.vm
 
-import aktual.updates.domain.NightlyBuild
-import aktual.updates.domain.NightlyUpdates
+import aktual.updates.NightlyBuild
+import aktual.updates.NightlyUpdates
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

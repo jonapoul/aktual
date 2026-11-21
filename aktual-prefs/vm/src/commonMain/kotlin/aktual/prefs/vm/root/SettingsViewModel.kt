@@ -4,7 +4,7 @@ import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.prefs.vm.OpenBudgetName
-import aktual.updates.domain.NightlyUpdates
+import aktual.updates.NightlyUpdates
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

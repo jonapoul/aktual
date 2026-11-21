@@ -34,6 +34,7 @@ kotlin {
     api(project(":aktual-di:runlevel:impl"))
     api(project(":aktual-prefs:budget"))
     api(project(":aktual-prefs:impl"))
+    api(project(":aktual-updates:impl"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okio)
     implementation(project(":aktual-core:logging"))

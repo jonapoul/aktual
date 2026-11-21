@@ -266,7 +266,8 @@ include(
   ":aktual-test:api",
   ":aktual-test:compose",
   ":aktual-test:smoke",
-  ":aktual-updates:domain",
+  ":aktual-updates",
+  ":aktual-updates:impl",
   ":aktual-updates:vm",
   ":detekt-rules",
 )

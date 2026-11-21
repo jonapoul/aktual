@@ -4,8 +4,8 @@ import aktual.core.model.BuildConfig
 import aktual.di.AppScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
-import aktual.updates.domain.NightlyBuild
-import aktual.updates.domain.NightlyUpdates
+import aktual.updates.NightlyBuild
+import aktual.updates.NightlyUpdates
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
