@@ -115,7 +115,7 @@ private fun Banner(
     ) {
       Text(text = text, style = typography.bodySmall, color = content)
 
-      extra?.let {
+      if (extra != null) {
         CompositionLocalProvider(LocalContentColor provides content) {
           Box(modifier = Modifier.fillMaxWidth(), content = extra)
         }
