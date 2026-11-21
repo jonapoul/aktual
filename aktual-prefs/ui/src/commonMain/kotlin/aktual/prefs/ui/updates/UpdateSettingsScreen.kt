@@ -71,7 +71,7 @@ private fun UpdateSettingsScaffold(
         onClick = onOpenObtainium,
         extra = {
           Image(
-            modifier = Modifier.height(48.dp),
+            modifier = Modifier.align(Center).height(64.dp),
             painter = Drawables.obtainiumBadge,
             contentDescription = Strings.settingsUpdatesObtainiumBadge,
           )

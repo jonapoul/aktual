@@ -11,14 +11,18 @@ import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,7 +39,7 @@ fun NoticeBanner(
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.InformationOutline,
   onClick: (() -> Unit)? = null,
-  extra: (@Composable () -> Unit)? = null,
+  extra: (@Composable BoxScope.() -> Unit)? = null,
 ) =
   Banner(
     text = text,
@@ -83,7 +87,7 @@ private fun Banner(
   content: Color,
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
-  extra: (@Composable () -> Unit)? = null,
+  extra: (@Composable BoxScope.() -> Unit)? = null,
 ) {
   Row(
     modifier =
@@ -110,7 +114,12 @@ private fun Banner(
       verticalArrangement = Arrangement.spacedBy(Dimens.Large),
     ) {
       Text(text = text, style = typography.bodySmall, color = content)
-      extra?.invoke()
+
+      extra?.let {
+        CompositionLocalProvider(LocalContentColor provides content) {
+          Box(modifier = Modifier.fillMaxWidth(), content = extra)
+        }
+      }
     }
     if (onClick != null) {
       Icon(
