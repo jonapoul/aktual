@@ -75,17 +75,9 @@
 -keep class io.ktor.client.engine.** { *; }
 -keep class io.ktor.client.plugins.** { *; }
 -keep class io.ktor.serialization.** { *; }
--if @kotlinx.serialization.Serializable class ** { public static ** INSTANCE; }
--keepclassmembers class <1> {
-    public static <1> INSTANCE;
-    kotlinx.serialization.KSerializer serializer(...);
-}
 -keep class kotlinx.serialization.descriptors.** { *; }
 -keep class kotlinx.serialization.internal.*Serializer { *; }
 -keep class kotlinx.serialization.internal.PluginGeneratedSerialDescriptor { *; }
--keep class **$$serializer { *; }
--keepclassmembers class **$$serializer { *; }
--keepclassmembers @kotlinx.serialization.Serializable class ** { *** Companion; }
 -keep class org.slf4j.** { *; }
 -keep class org.slf4j.impl.** { *; }
 -keep class ch.qos.logback.** { *; }
@@ -95,5 +87,3 @@
 }
 -keep class * implements kotlinx.coroutines.internal.MainDispatcherFactory
 -keep class * implements kotlinx.coroutines.CoroutineExceptionHandler
--keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
--keepclassmembers class kotlin.coroutines.SafeContinuation { volatile <fields>; }
