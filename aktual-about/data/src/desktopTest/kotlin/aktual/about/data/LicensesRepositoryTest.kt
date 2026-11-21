@@ -80,6 +80,7 @@ class LicensesRepositoryTest {
               RedactedScriptFont,
               alakazamAndroidCore,
               MaterialDesignIcons,
+              ObtainiumBadge,
               slf4jApi,
               InterFont,
               Flagpack,

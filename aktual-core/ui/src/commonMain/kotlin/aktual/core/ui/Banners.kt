@@ -11,14 +11,18 @@ import aktual.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +39,7 @@ fun NoticeBanner(
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.InformationOutline,
   onClick: (() -> Unit)? = null,
+  extra: (@Composable BoxScope.() -> Unit)? = null,
 ) =
   Banner(
     text = text,
@@ -43,6 +48,7 @@ fun NoticeBanner(
     content = colors.noticeText,
     modifier = modifier,
     onClick = onClick,
+    extra = extra,
   )
 
 @Composable
@@ -81,6 +87,7 @@ private fun Banner(
   content: Color,
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
+  extra: (@Composable BoxScope.() -> Unit)? = null,
 ) {
   Row(
     modifier =
@@ -102,12 +109,18 @@ private fun Banner(
         tint = content,
       )
     }
-    Text(
+    Column(
       modifier = Modifier.weight(1f),
-      text = text,
-      style = typography.bodySmall,
-      color = content,
-    )
+      verticalArrangement = Arrangement.spacedBy(Dimens.Large),
+    ) {
+      Text(text = text, style = typography.bodySmall, color = content)
+
+      if (extra != null) {
+        CompositionLocalProvider(LocalContentColor provides content) {
+          Box(modifier = Modifier.fillMaxWidth(), content = extra)
+        }
+      }
+    }
     if (onClick != null) {
       Icon(
         modifier = Modifier.size(BannerIconSize),
@@ -131,5 +144,6 @@ private fun PreviewBanners(@PreviewParameter(ColorParameters::class) colors: Col
       ErrorBanner(text = "Server error 404: Resource not found")
       NoticeBanner(text = "No icon on this one", icon = null)
       NoticeBanner(text = "Tap me to learn more", onClick = {})
+      NoticeBanner(text = "With extra content", extra = { Text("Extra") })
     }
   }

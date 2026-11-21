@@ -2664,6 +2664,8 @@
   <string name="settings_updates_desc">Nightly builds are made from the latest code every day. They get new features first, but may have more bugs.</string>
   <string name="settings_updates_nightly">Check for nightly builds</string>
   <string name="settings_updates_nightly_desc">On launch, ask GitHub whether there is a newer nightly build and show it in the side menu.</string>
+  <string name="settings_updates_obtainium">Instead of the check above, you can use Obtainium to install nightly builds and keep them up to date. Tap here to see how to set it up.</string>
+  <string name="settings_updates_obtainium_badge">Get it on Obtainium</string>
   <string name="settings_transactions">Transactions</string>
   <string name="settings_transactions_desc">Choose how transaction lists look. These also show in the view options on the transactions screen.</string>
   <string name="settings_dialogs_desc">Choose whether the screen behind a dialog is blurred, and by how much.</string>
