@@ -125,14 +125,22 @@ You need the JDK version in [`.java-version`](.java-version).
 git clone https://github.com/jonapoul/aktual.git
 cd aktual
 
-# Desktop
-./gradlew :aktual-app:desktop:run
+# Android debug APK, written to aktual-app/android/build/outputs/apk/debug/
+./gradlew :aktual-app:android:assembleDebug
 
-# Android, installs on all connected devices
-./scripts/run-android.sh
+# Desktop installer for your OS, written to aktual-app/desktop/build/compose/binaries/main/
+./gradlew :aktual-app:desktop:packageDistributionForCurrentOS
 ```
 
 To test against a local server, [`actual-server/docker-compose.yml`](actual-server/docker-compose.yml) runs one on port 5006.
+
+# Contributing
+
+- **Bugs**: open an issue with steps to reproduce and your Android version or desktop OS. If the app crashed, attach the crash report from the in-app crash screen.
+- **Feature requests**: check [Not yet supported](#not-yet-supported) first, since those gaps are already known.
+- **Pull requests**: open an issue first for anything bigger than a small fix. Before opening a PR, run `./scripts/ktfmt.sh`, `./scripts/detekt.sh` and `./scripts/test.sh`.
+- **Translations**: welcome! Strings live in [`aktual-core/l10n`](aktual-core/l10n/src/commonMain/composeResources). Add a `values-<language>/` folder with copies of `values/strings.xml` and `values/plurals.xml`, and translate what you can.
+- **Architecture**: each module's README has its dependency chart, and [`CLAUDE.md`](CLAUDE.md) describes the project's conventions.
 
 # License
 
