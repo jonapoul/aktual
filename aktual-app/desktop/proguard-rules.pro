@@ -72,3 +72,6 @@
 
 # Moved from common-rules.pro, since R8 gets these from library consumer rules or doesn't need them
 -keepnames class * implements java.io.Serializable
+-keep class io.ktor.client.engine.** { *; }
+-keep class io.ktor.client.plugins.** { *; }
+-keep class io.ktor.serialization.** { *; }

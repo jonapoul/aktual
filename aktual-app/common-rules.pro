@@ -64,9 +64,6 @@
 -dontwarn kotlin.jvm.internal.**
 
 # Ktor - Keep only what's needed for runtime
--keep class io.ktor.client.engine.** { *; }
--keep class io.ktor.client.plugins.** { *; }
--keep class io.ktor.serialization.** { *; }
 -keep,allowobfuscation class io.ktor.client.HttpClient
 -keep,allowobfuscation class io.ktor.client.HttpClientConfig
 -dontwarn io.ktor.**
