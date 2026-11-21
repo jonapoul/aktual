@@ -10,7 +10,7 @@ import aktual.prefs.vm.OpenBudgetFlags
 import aktual.prefs.vm.OpenBudgetName
 import aktual.prefs.vm.search.SearchSettingsState.Results
 import aktual.prefs.vm.security.ShouldShowSecuritySettings
-import aktual.updates.domain.NightlyUpdates
+import aktual.updates.NightlyUpdates
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

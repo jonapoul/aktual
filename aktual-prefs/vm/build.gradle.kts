@@ -5,10 +5,10 @@ kotlin {
     api(project(":aktual-api"))
     api(project(":aktual-core:theme"))
     api(project(":aktual-prefs"))
-    api(project(":aktual-updates:domain"))
     implementation(project(":aktual-budget:transactions"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-di:runlevel"))
+    implementation(project(":aktual-updates"))
   }
 
   commonTestDependencies {

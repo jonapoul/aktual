@@ -3,8 +3,8 @@ package aktual.updates.vm
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.viewModelContext
-import aktual.updates.domain.NightlyBuild
-import aktual.updates.domain.NightlyUpdates
+import aktual.updates.NightlyBuild
+import aktual.updates.NightlyUpdates
 import app.cash.turbine.test
 import kotlin.test.Test
 import kotlin.time.Instant
