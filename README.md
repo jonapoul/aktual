@@ -32,11 +32,27 @@ Aktual is a native Android and desktop client for [Actual Budget](https://github
 - End-to-end encrypted budgets
 - Try the demo budget without a server
 
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
+
 ### Budgeting
 - Envelope and tracking budgets
 - Set, copy and transfer budget amounts, and hold money for next month
 - Create, rename and delete categories and category groups
 - Notes on categories and months
+
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
 
 ### Accounts and transactions
 - On-budget, off-budget and closed accounts
@@ -45,11 +61,27 @@ Aktual is a native Android and desktop client for [Actual Budget](https://github
 - Reconcile accounts
 - Undo deletes and edits
 
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
+
 ### Schedules, rules, payees and tags
 - Create and edit schedules, and post upcoming ones early
 - Create and edit rules, with date and amount range conditions
 - Manage and merge payees
 - Manage tags
+
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
 
 ### Bank sync
 - SimpleFIN
@@ -57,12 +89,28 @@ Aktual is a native Android and desktop client for [Actual Budget](https://github
 - Pluggy.ai
 - Enable Banking (experimental)
 
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
+
 ### Reports
 - Dashboard with custom widgets
 - Net worth, cash flow, spending, age of money, summary, calendar and custom reports
 - Crossover report
 - Formula reports (experimental)
 - Sankey, balance forecast, budget analysis and Monte Carlo reports (experimental)
+
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
 
 ### Settings and more
 - Light and dark themes, plus a catalog of community themes
@@ -72,6 +120,14 @@ Aktual is a native Android and desktop client for [Actual Budget](https://github
 - API keys
 - Crash reports you can view and share
 - Checks for new nightly builds
+
+<table>
+  <tr>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+    <td width="33%"><!-- screenshot --></td>
+  </tr>
+</table>
 
 # Not yet supported
 
@@ -138,7 +194,7 @@ To test against a local server, [`actual-server/docker-compose.yml`](actual-serv
 
 - **Bugs**: open an issue with steps to reproduce and your Android version or desktop OS. If the app crashed, attach the crash report from the in-app crash screen.
 - **Feature requests**: check [Not yet supported](#not-yet-supported) first, since those gaps are already known.
-- **Pull requests**: open an issue first for anything bigger than a small fix. Before opening a PR, run `./scripts/ktfmt.sh`, `./scripts/detekt.sh` and `./scripts/test.sh`.
+- **Pull requests**: Before opening, run `./scripts/ktfmt.sh`, `./scripts/detekt.sh` and `./scripts/test.sh`.
 - **Translations**: welcome! Strings live in [`aktual-core/l10n`](aktual-core/l10n/src/commonMain/composeResources). Add a `values-<language>/` folder with copies of `values/strings.xml` and `values/plurals.xml`, and translate what you can.
 - **Architecture**: each module's README has its dependency chart, and [`CLAUDE.md`](CLAUDE.md) describes the project's conventions.
 
