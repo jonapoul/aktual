@@ -2,7 +2,6 @@
 
 # Preserve ServiceLoader metadata for runtime service discovery
 -keepclassmembers class * { *** MODULE$; }
--keepnames class * implements java.io.Serializable
 -keep class * implements java.sql.Driver { *; }
 
 # Logging

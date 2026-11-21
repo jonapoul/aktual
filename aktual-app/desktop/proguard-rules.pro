@@ -69,3 +69,6 @@
 -assumevalues class aktual.app.desktop.DesktopBuildConfigContainer {
     boolean isRelease() return true;
 }
+
+# Moved from common-rules.pro, since R8 gets these from library consumer rules or doesn't need them
+-keepnames class * implements java.io.Serializable
