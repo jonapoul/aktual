@@ -89,7 +89,7 @@ Desktop builds are still rough around the edges.
 <table>
   <tr>
     <th width="33%">Budget</th>
-    <th width="33%">Budget actions</th>
+    <th width="33%">Budget sheet</th>
     <th width="33%">New category</th>
   </tr>
   <tr>
@@ -110,7 +110,7 @@ Desktop builds are still rough around the edges.
   <tr>
     <th width="33%">Transactions</th>
     <th width="33%">Edit transaction</th>
-    <th width="33%">Accounts</th>
+    <th width="33%">Account list</th>
   </tr>
   <tr>
     <td width="33%"><img src="docs/img/feature_transactions.png" alt="Transaction list with filter chips applied"></td>
@@ -194,7 +194,7 @@ Desktop builds are still rough around the edges.
   <tr>
     <th width="33%">Settings</th>
     <th width="33%">Themes</th>
-    <th width="33%">Number formats</th>
+    <th width="33%">Format settings</th>
   </tr>
   <tr>
     <td width="33%"><img src="docs/img/feature_settings.png" alt="Main settings screen"></td>
