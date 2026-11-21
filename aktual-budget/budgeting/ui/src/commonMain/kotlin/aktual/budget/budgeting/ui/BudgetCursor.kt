@@ -246,15 +246,17 @@ internal fun RowScope.BudgetedCell(
       )
     }
 
-    AktualDropdownMenu(expanded = isMenuOpen, onDismissRequest = cursor::closeMenu) {
-      for (action in QuickAction.available(type)) {
-        AktualDropdownMenuItem(
-          text = action.string(),
-          onClick = {
-            cursor.closeMenu()
-            onAction(ApplyQuickAction(cell.month, cell.category, action))
-          },
-        )
+    if (isMenuOpen) {
+      AktualDropdownMenu(expanded = true, onDismissRequest = cursor::closeMenu) {
+        for (action in QuickAction.available(type)) {
+          AktualDropdownMenuItem(
+            text = action.string(),
+            onClick = {
+              cursor.closeMenu()
+              onAction(ApplyQuickAction(cell.month, cell.category, action))
+            },
+          )
+        }
       }
     }
   }

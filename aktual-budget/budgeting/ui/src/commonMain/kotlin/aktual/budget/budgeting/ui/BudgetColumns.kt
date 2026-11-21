@@ -550,7 +550,6 @@ private fun RowScope.BalanceCell(
   onAction: OnAction<BudgetAction>,
 ) {
   var expanded by remember { mutableStateOf(false) }
-  val actions = balanceActions(month, category, type, onAction)
   Box(
     modifier =
       Modifier.weight(1f)
@@ -562,15 +561,18 @@ private fun RowScope.BalanceCell(
     contentAlignment = CenterEnd,
   ) {
     BalancePill(balance = category.balance, carryover = category.carryover)
-    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-      actions.fastForEach { action ->
-        AktualDropdownMenuItem(
-          text = action.label,
-          onClick = {
-            expanded = false
-            action.onClick()
-          },
-        )
+    // Only composed while open, as every cell has one
+    if (expanded) {
+      AktualDropdownMenu(expanded = true, onDismissRequest = { expanded = false }) {
+        balanceActions(month, category, type, onAction).fastForEach { action ->
+          AktualDropdownMenuItem(
+            text = action.label,
+            onClick = {
+              expanded = false
+              action.onClick()
+            },
+          )
+        }
       }
     }
   }
