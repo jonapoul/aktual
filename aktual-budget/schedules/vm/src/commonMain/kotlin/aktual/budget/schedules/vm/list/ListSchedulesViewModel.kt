@@ -179,8 +179,8 @@ internal constructor(
     viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
-          val transactions = poster.post(schedule.id, date)
-          mutableEvents.tryEmit(ListSchedulesEvent.Posted(schedule, transactions.toImmutableList()))
+          val posted = poster.post(schedule.id, date)
+          mutableEvents.tryEmit(ListSchedulesEvent.Posted(schedule, posted))
         },
         onFailure = { e ->
           log.e(e) { "Failed posting schedule ${schedule.id}" }
@@ -193,7 +193,7 @@ internal constructor(
   fun undoPost(event: ListSchedulesEvent.Posted) {
     viewModelScope.launch {
       runCatchingCancellable(
-        attempt = { poster.unpost(event.transactions) },
+        attempt = { poster.unpost(event.posted) },
         onFailure = { e ->
           log.e(e) { "Failed undoing post of schedule ${event.schedule.id}" }
           mutableEvents.tryEmit(ListSchedulesEvent.UnpostFailed(event.schedule))

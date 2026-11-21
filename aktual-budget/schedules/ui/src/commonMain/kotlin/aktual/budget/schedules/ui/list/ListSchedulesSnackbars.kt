@@ -75,9 +75,7 @@ internal suspend fun SnackbarHostState.showPosted(
     showSnackbar(
       message = getString(Res.string.list_schedules_posted, event.schedule.label()),
       actionLabel =
-        getString(Res.string.list_schedules_deleted_undo).takeIf {
-          event.transactions.isNotEmpty()
-        },
+        getString(Res.string.list_schedules_deleted_undo).takeIf { event.posted.canUndo },
       duration = SnackbarDuration.Long,
     )
   if (result == ActionPerformed) {
