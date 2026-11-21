@@ -12,7 +12,6 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.SectionLabel
 import aktual.core.ui.radioButton
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -70,7 +70,7 @@ private fun ModeRow(mode: TimeFrameMode, isSelected: Boolean, onSelect: () -> Un
       Modifier.fillMaxWidth()
         .heightIn(min = 48.dp)
         .clip(CardShape)
-        .background(background)
+        .drawBehind { drawRect(background) }
         .selectable(selected = isSelected, role = Role.RadioButton, onClick = onSelect),
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
