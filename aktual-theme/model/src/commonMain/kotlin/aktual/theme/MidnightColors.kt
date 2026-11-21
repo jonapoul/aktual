@@ -31,7 +31,7 @@ data object MidnightColors : DefaultColors {
   override val tableText = ColorPalette.gray150
   override val tableTextItemAdded = tableText
   override val tableTextLight = tableText
-  override val tableTextSubdued = ColorPalette.gray500
+  override val tableTextSubdued = ColorPalette.gray300
   override val tableTextSelected = ColorPalette.gray800
   override val tableTextInactive = ColorPalette.gray400
   override val tableHeaderText = ColorPalette.gray200
@@ -47,7 +47,7 @@ data object MidnightColors : DefaultColors {
 
   override val numberPositive = ColorPalette.green300
   override val numberNegative = ColorPalette.red200
-  override val numberNeutral = ColorPalette.gray500
+  override val numberNeutral = ColorPalette.gray300
   override val budgetNumberNegative = numberNegative
   override val budgetNumberZero = tableTextSubdued
   override val budgetNumberNeutral = tableText
