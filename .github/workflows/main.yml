@@ -85,11 +85,6 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -108,11 +103,24 @@ jobs:
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: ${{ runner.temp }}/site
+
+  # Separate job so the uploaded artifact is visible to deploy-pages
+  deploy-charts:
+    needs: charts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
         id: deploy
 
   flag-failure:
-    needs: [ main, charts ]
+    needs: [ main, charts, deploy-charts ]
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     permissions:
