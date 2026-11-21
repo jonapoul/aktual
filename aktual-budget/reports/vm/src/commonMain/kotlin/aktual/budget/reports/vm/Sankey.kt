@@ -201,33 +201,75 @@ private fun sankeyGraph(
   return toSankeyGraph(sorted, grouped)
 }
 
-// Merges each pair of transfer transactions into one net flow between two accounts
+// Merges transfers into net flows between accounts. Money going round a loop of accounts (A to B
+// to C to A) cancels out, so the accounts never feed into each other
 internal fun aggregateTransferPairs(transfers: List<SankeyTransfer>): List<SankeyTransferPair> {
   val byId = transfers.associateBy { it.id }
   val names = transfers.associate { it.accountId to it.accountName }
-  val pairs = LinkedHashMap<Pair<String, String>, Long>()
+  val graph = TransferGraph()
 
   for (from in transfers) {
     val to = byId[from.transferId]
-    if (to == null || from.accountId > to.accountId) continue
-    val key = from.accountId to to.accountId
-    val source = if (from.amount < 0) from.accountId else to.accountId
-    val sign = if (source == key.first) 1 else -1
-    pairs[key] = (pairs[key] ?: 0L) + sign * abs(from.amount)
+    if (to == null || from.accountId >= to.accountId || from.amount == 0L) continue
+    val (source, target) =
+      if (from.amount < 0) from.accountId to to.accountId else to.accountId to from.accountId
+    val children = graph.getOrPut(source, ::LinkedHashMap)
+    children[target] = (children[target] ?: 0L) + abs(from.amount)
   }
 
-  return pairs
-    .filterValues { it != 0L }
-    .map { (key, value) ->
-      val (fromId, toId) = if (value > 0) key else key.second to key.first
-      SankeyTransferPair(
-        fromAccountId = fromId,
-        fromAccountName = names[fromId].orEmpty(),
-        toAccountId = toId,
-        toAccountName = names[toId].orEmpty(),
-        amount = abs(value),
-      )
+  graph.cancelCycles()
+
+  return graph
+    .flatMap { (fromId, children) ->
+      children.map { (toId, amount) ->
+        SankeyTransferPair(
+          fromAccountId = fromId,
+          fromAccountName = names[fromId].orEmpty(),
+          toAccountId = toId,
+          toAccountName = names[toId].orEmpty(),
+          amount = amount,
+        )
+      }
     }
+    .sortedWith(compareBy({ it.fromAccountId }, { it.toAccountId }))
+}
+
+// Amount sent from each account to each other one
+private typealias TransferGraph = LinkedHashMap<String, LinkedHashMap<String, Long>>
+
+private fun TransferGraph.cancelCycles() {
+  while (true) {
+    val cycle = findCycle() ?: return
+    val amount = cycle.minOf { (from, to) -> getValue(from).getValue(to) }
+    for ((from, to) in cycle) {
+      val children = getValue(from)
+      val remaining = children.getValue(to) - amount
+      if (remaining > 0) children[to] = remaining else children.remove(to)
+      if (children.isEmpty()) remove(from)
+    }
+  }
+}
+
+// Searches depth-first in key order, so the same transfers always cancel the same way
+private fun TransferGraph.findCycle(): List<Pair<String, String>>? {
+  val visited = HashSet<String>()
+  val path = mutableListOf<String>()
+
+  fun visit(key: String): List<Pair<String, String>>? {
+    val index = path.indexOf(key)
+    if (index >= 0) return (path.subList(index, path.size) + key).zipWithNext()
+    if (!visited.add(key)) return null
+    path += key
+    for (child in get(key)?.keys.orEmpty().sorted()) {
+      visit(child)?.let {
+        return it
+      }
+    }
+    path.removeAt(path.lastIndex)
+    return null
+  }
+
+  return keys.sorted().firstNotNullOfOrNull(::visit)
 }
 
 private fun transactionsGraph(

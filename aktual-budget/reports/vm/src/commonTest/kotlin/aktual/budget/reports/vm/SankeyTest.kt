@@ -377,9 +377,62 @@ class SankeyTest {
   }
 
   @Test
+  fun `Equal transfers round three accounts cancel out`() {
+    val pairs =
+      aggregateTransferPairs(
+        transfers("a" to "b" to 100, "b" to "c" to 100, "c" to "a" to 100),
+      )
+
+    assertThat(pairs).isEmpty()
+    assertThat(calculate(transfers = pairs).nodes).isEmpty()
+  }
+
+  @Test
+  fun `Unequal transfers round three accounts cancel the smallest`() {
+    val pairs =
+      aggregateTransferPairs(transfers("a" to "b" to 100, "b" to "c" to 100, "c" to "a" to 40))
+
+    assertThat(pairs)
+      .containsExactly(
+        SankeyTransferPair("a", "A", "b", "B", 60),
+        SankeyTransferPair("b", "B", "c", "C", 60),
+      )
+  }
+
+  @Test
+  fun `Overlapping transfer cycles cancel in account order`() {
+    val pairs =
+      aggregateTransferPairs(
+        transfers(
+          "a" to "b" to 100,
+          "b" to "c" to 100,
+          "c" to "a" to 100,
+          "b" to "d" to 50,
+          "d" to "a" to 50,
+        ),
+      )
+
+    assertThat(pairs)
+      .containsExactly(
+        SankeyTransferPair("b", "B", "d", "D", 50),
+        SankeyTransferPair("d", "D", "a", "A", 50),
+      )
+  }
+
+  @Test
   fun `No transactions gives no nodes`() {
     assertThat(calculate().nodes).isEmpty()
   }
+
+  // Each flow becomes a transfer out of one account and the matching one into the other
+  private fun transfers(vararg flows: Pair<Pair<String, String>, Long>) =
+    flows.flatMap { (accounts, amount) ->
+      val (from, to) = accounts
+      listOf(
+        SankeyTransfer("$from-$to", "$to-$from", -amount, from, from.uppercase()),
+        SankeyTransfer("$to-$from", "$from-$to", amount, to, to.uppercase()),
+      )
+    }
 
   private data class Flow(val from: String, val to: String, val value: Long)
 
