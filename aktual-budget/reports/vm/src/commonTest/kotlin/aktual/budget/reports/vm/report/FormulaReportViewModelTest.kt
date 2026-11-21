@@ -48,8 +48,8 @@ class FormulaReportViewModelTest {
     runFormulaTest(flags = FakeBudgetFeatureFlags()) {
       viewModel.state.test {
         var state = awaitItem()
-        while (state == FormulaReportState.Loading) state = awaitItem()
-        assertThat(state).isEqualTo(FormulaReportState.FeatureDisabled)
+        while (state == Loading) state = awaitItem()
+        assertThat(state).isEqualTo(FeatureDisabled)
       }
     }
 

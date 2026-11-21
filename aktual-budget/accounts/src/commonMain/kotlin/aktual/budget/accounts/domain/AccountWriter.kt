@@ -12,6 +12,7 @@ import aktual.budget.transactions.domain.Patch.Keep
  * Account and account group edits, as the handlers in packages/loot-core/src/server/accounts/app.ts
  * and account-groups/app.ts. Bank sync unlinking is left to the caller, see AccountDeleter.
  */
+@Suppress("ComplexInterface")
 interface AccountWriter {
   suspend fun rename(id: AccountId, name: String)
 

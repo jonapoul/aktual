@@ -84,6 +84,20 @@ internal constructor(
     combine(saved, draft, preview, isEditing, flags[FormulaMode].asFlow(), ::state)
       .stateIn(viewModelScope, Eagerly, Loading)
 
+  // Null until loaded, and only loaded while something shows query conditions
+  val queryEditorData: StateFlow<QueryEditorData?> =
+    queryEditorDataLoader
+      .load()
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
+
+  init {
+    viewModelScope.launch {
+      saved.collect { saved ->
+        if (saved is Found && !isEditing.value) draft.update { saved.meta.toEdits() }
+      }
+    }
+  }
+
   private fun state(
     saved: SavedMeta,
     draft: FormulaEdits?,
@@ -100,11 +114,11 @@ internal constructor(
     isEditing: Boolean,
   ): FormulaReportState =
     when (saved) {
-      Loading -> FormulaReportState.Loading
-      NotFound -> FormulaReportState.NotFound
+      Loading -> Loading
+      NotFound -> NotFound
       is Found ->
         if (draft == null) {
-          FormulaReportState.Loading
+          Loading
         } else {
           FormulaReportState.Loaded(
             draft = draft,
@@ -114,20 +128,6 @@ internal constructor(
           )
         }
     }
-
-  // Null until loaded, and only loaded while something shows query conditions
-  val queryEditorData: StateFlow<QueryEditorData?> =
-    queryEditorDataLoader
-      .load()
-      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MS), null)
-
-  init {
-    viewModelScope.launch {
-      saved.collect { saved ->
-        if (saved is Found && !isEditing.value) draft.update { saved.meta.toEdits() }
-      }
-    }
-  }
 
   fun startEditing() = isEditing.update { true }
 
