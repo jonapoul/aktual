@@ -79,7 +79,6 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -333,7 +332,7 @@ private fun Figure(label: String, amount: Amount, modifier: Modifier = Modifier)
       text = amount.formattedText(),
       fontSize = textSizes.large,
       fontWeight = Medium,
-      style = TextStyle.Default.tabularFigures(),
+      style = TabularFigures,
     )
   }
 }

@@ -2,6 +2,7 @@ package aktual.budget.reports.components
 
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.claimHorizontalDrags
+import aktual.core.ui.isInPreview
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -11,11 +12,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -39,6 +44,8 @@ import com.patrykandpatrick.vico.compose.common.data.ExtraStore
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.runBlocking
 
 internal typealias XRange = ClosedFloatingPointRange<Double>
 
@@ -51,6 +58,9 @@ class ChartZoomState {
   /** The zoomed x range, or null when showing everything. */
   var range by mutableStateOf<XRange?>(null)
     private set
+
+  // Only changes when zooming in or resetting, not on every pinch move like range
+  val isZoomed by derivedStateOf { range != null }
 
   // Pointer x positions of an in-progress selection
   private var selection by mutableStateOf<Pair<Float, Float>?>(null)
@@ -257,6 +267,26 @@ internal class ZoomGeometry(
 
 @Composable
 fun rememberChartZoomState(data: Any?): ChartZoomState = remember(data) { ChartZoomState() }
+
+/**
+ * Runs [populate] whenever [keys] or the zoom range change. The range is collected rather than read
+ * in composition, so pinching doesn't recompose the chart on every pointer event
+ */
+@Composable
+internal fun PopulateEffect(
+  zoom: ChartZoomState,
+  vararg keys: Any?,
+  populate: suspend (XRange?) -> Unit,
+) {
+  if (isInPreview()) {
+    runBlocking { populate(zoom.range) }
+  } else {
+    val currentPopulate by rememberUpdatedState(populate)
+    LaunchedEffect(zoom, *keys) {
+      snapshotFlow { zoom.range }.collectLatest { range -> currentPopulate(range) }
+    }
+  }
+}
 
 @Composable
 internal fun rememberChartZoomDecoration(

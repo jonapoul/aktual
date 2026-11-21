@@ -9,12 +9,12 @@ import aktual.core.icons.ArrowThickDown
 import aktual.core.icons.ArrowThickUp
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.formattedText
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +47,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -55,11 +57,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
+import kotlin.math.min
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -267,24 +277,25 @@ internal fun CalendarSummary(
     }
   }
 
-@Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
   onClick: (LocalDate) -> Unit,
+  textStyle: TextStyle,
   modifier: Modifier = Modifier,
 ) {
-  val compact = LocalCompactChart.current
-  if (!day.isValid) return
+  // Padding days still take up a cell, keeping the other days in their weekday column
+  if (!day.isValid) {
+    Spacer(modifier)
+    return
+  }
 
-  BoxWithConstraints(
+  val compact = LocalCompactChart.current
+  Box(
     modifier =
       modifier
-        .background(
-          color = if (!day.isValid) Transparent else colors.calendarCellBackground,
-          shape = CardShape,
-        )
+        .background(color = colors.calendarCellBackground, shape = CardShape)
         // Compact charts sit in report cards, which handle clicks themselves. A disabled clickable
         // would still consume the tap, so leave it off entirely
         .then(
@@ -308,10 +319,13 @@ internal fun DayButton(
       )
     }
 
-    ScaleToFitText(
-      modifier = Modifier.padding(2.dp),
+    Text(
+      modifier = Modifier.padding(DAY_TEXT_PADDING),
       text = day.day.toString(),
+      style = textStyle,
       color = colors.tableText,
+      maxLines = 1,
+      softWrap = false,
     )
   }
 }
@@ -391,20 +405,32 @@ internal fun CalendarMonth(
 
     VerticalSpacer(5.dp)
 
+    val weeks = remember(month) { month.toWeeks() }
+    val textMeasurer = rememberTextMeasurer()
+    val baseStyle = LocalTextStyle.current
+    // Sizes the day numbers once for the whole month, so they all show at the same size
     BoxWithConstraints(modifier = Modifier.fillMaxWidth().weight(1f)) {
-      val weeks = remember(month) { month.toWeeks() }
-      val itemHeight = maxHeight / weeks.size - TABLE_SPACING
-      val itemWidth = maxWidth / DAYS_PER_WEEK - TABLE_SPACING
-
-      Column(verticalArrangement = Arrangement.spacedBy(TABLE_SPACING)) {
+      val density = LocalDensity.current
+      val textStyle =
+        remember(month, weeks.size, constraints, baseStyle, textMeasurer, density) {
+          density.dayTextStyle(month, weeks.size, constraints, baseStyle, textMeasurer)
+        }
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(TABLE_SPACING),
+      ) {
         weeks.fastForEach { week ->
-          Row(horizontalArrangement = Arrangement.spacedBy(TABLE_SPACING)) {
+          Row(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(TABLE_SPACING),
+          ) {
             week.fastForEach { day ->
               DayButton(
-                modifier = Modifier.size(width = itemWidth, height = itemHeight),
+                modifier = Modifier.weight(1f).fillMaxHeight(),
                 day = day,
                 month = month,
                 onClick = onClickDay,
+                textStyle = textStyle,
               )
             }
           }
@@ -412,6 +438,34 @@ internal fun CalendarMonth(
       }
     }
   }
+}
+
+// The largest size the widest day number fits its cell at
+private fun Density.dayTextStyle(
+  month: CalendarMonth,
+  weekCount: Int,
+  constraints: Constraints,
+  base: TextStyle,
+  textMeasurer: TextMeasurer,
+): TextStyle {
+  // Without a line height the text is as tall as its font, so the height check holds at any size
+  val style = base.copy(fontSize = MAX_DAY_TEXT_SIZE, lineHeight = Unspecified)
+  val labels = month.days.filter { it.isValid }.map { it.day.toString() }
+  if (labels.isEmpty() || !constraints.hasBoundedWidth) return style
+
+  val gap = TABLE_SPACING.toPx()
+  val inset = DAY_TEXT_PADDING.toPx() * 2
+  val cellWidth = (constraints.maxWidth - gap * (DAYS_PER_WEEK - 1)) / DAYS_PER_WEEK - inset
+  val cellHeight =
+    if (constraints.hasBoundedHeight) {
+      (constraints.maxHeight - gap * (weekCount - 1)) / weekCount - inset
+    } else {
+      Float.POSITIVE_INFINITY
+    }
+  val sizes = labels.map { textMeasurer.measure(it, style, maxLines = 1).size }
+  val scale = min(cellWidth / sizes.maxOf { it.width }, cellHeight / sizes.maxOf { it.height })
+  // Text doesn't scale exactly with font size and cells round to whole pixels, so leave some slack
+  return style.copy(fontSize = MAX_DAY_TEXT_SIZE * (scale * FIT_SLACK).coerceIn(0f, 1f))
 }
 
 private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
@@ -425,6 +479,8 @@ private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
     }
   }
   if (currentWeek.isNotEmpty()) {
+    // Pads a short last week, so its days keep the same width as the rest
+    while (currentWeek.size < DAYS_PER_WEEK) currentWeek.add(PaddingDay)
     weeks.add(currentWeek.toImmutableList())
   }
   return weeks.toImmutableList()
@@ -434,7 +490,13 @@ private fun weekdays(first: DayOfWeek): List<DayOfWeek> =
   List(DAYS_PER_WEEK) { DayOfWeek.entries[(first.ordinal + it) % DAYS_PER_WEEK] }
 
 private const val DAYS_PER_WEEK = 7
+private val PaddingDay = CalendarDay(day = 0, income = Zero, expenses = Zero)
 private val TABLE_SPACING = 2.dp
+private val DAY_TEXT_PADDING = 2.dp
+private const val FIT_SLACK = 0.95f
+
+// Matches ScaleToFitText's cap, which the day numbers used to size themselves with
+private val MAX_DAY_TEXT_SIZE = 100.sp
 
 @Preview
 @Composable
@@ -516,6 +578,7 @@ private fun PreviewDayButton(
         day = day,
         month = month,
         onClick = {},
+        textStyle = TextStyle(fontSize = textSizes.heading),
       )
     }
   }

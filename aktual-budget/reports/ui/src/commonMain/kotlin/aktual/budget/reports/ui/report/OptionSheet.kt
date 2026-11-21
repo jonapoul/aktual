@@ -7,7 +7,6 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.radioButton
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -53,7 +53,7 @@ internal fun <T> OptionSheet(
             Modifier.fillMaxWidth()
               .heightIn(min = 48.dp)
               .clip(CardShape)
-              .background(background)
+              .drawBehind { drawRect(background) }
               .testTag(Tags.CustomOption)
               .selectable(
                 selected = option == selected,

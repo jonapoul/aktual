@@ -67,8 +67,8 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
@@ -103,7 +103,11 @@ internal fun LazyListScope.budgetTable(
     )
   }
 
-  items(budget.banners, key = { it::class.simpleName.orEmpty() }) { banner ->
+  items(
+    items = budget.banners,
+    key = { it::class.simpleName.orEmpty() },
+    contentType = { "banner" },
+  ) { banner ->
     BannerRow(
       banner = banner,
       month = budget.month,
@@ -127,7 +131,11 @@ internal fun LazyListScope.budgetTable(
     }
 
     if (!group.isCollapsed) {
-      items(group.categories, key = { "category-${it.id.value}" }) { category ->
+      items(
+        items = group.categories,
+        key = { "category-${it.id.value}" },
+        contentType = { "category" },
+      ) { category ->
         CategoryItem(
           modifier = Modifier.animateItem(),
           category = category,
@@ -158,7 +166,11 @@ internal fun LazyListScope.budgetTable(
   }
 
   if (!income.isCollapsed) {
-    items(income.categories, key = { "category-${it.id.value}" }) { category ->
+    items(
+      items = income.categories,
+      key = { "category-${it.id.value}" },
+      contentType = { "income-category" },
+    ) { category ->
       IncomeItem(
         modifier = Modifier.animateItem(),
         category = category,
@@ -280,7 +292,7 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
         Text(
           text = amount.formattedText(),
           fontSize = textSizes.smallPlus,
-          style = TextStyle.Default.tabularFigures(),
+          style = TabularFigures,
           maxLines = 1,
         )
       }
@@ -515,7 +527,7 @@ internal fun GroupHeaderRow(
       Strings.budgetingGroupCollapse(group.name)
     }
 
-  val rotation by animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
+  val rotation = animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
 
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider()
@@ -523,7 +535,7 @@ internal fun GroupHeaderRow(
       GroupHeaderContent(
         group = group,
         label = label,
-        rotation = rotation,
+        rotation = { rotation.value },
         nameWidth = nameWidth,
         onAction = onAction,
         onOpenMenu = openMenu,
@@ -553,7 +565,7 @@ internal fun GroupHeaderRow(
 private fun GroupHeaderContent(
   group: GroupRow,
   label: String,
-  rotation: Float,
+  rotation: () -> Float,
   nameWidth: Dp?,
   onAction: OnAction<BudgetAction>,
   onOpenMenu: () -> Unit,
@@ -579,7 +591,7 @@ private fun GroupHeaderContent(
       verticalAlignment = CenterVertically,
     ) {
       Icon(
-        modifier = Modifier.size(16.dp).rotate(rotation),
+        modifier = Modifier.size(16.dp).graphicsLayer { rotationZ = rotation() },
         imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
         tint = colors.tableRowHeaderText,
@@ -739,7 +751,7 @@ internal fun AmountText(
     text = amount.formattedText(includeSign = includeSign),
     fontSize = textSizes.medium,
     fontWeight = if (bold) SemiBold else Normal,
-    style = TextStyle.Default.tabularFigures(),
+    style = TabularFigures,
     color = color,
     textAlign = End,
     maxLines = 1,
@@ -754,8 +766,7 @@ internal fun BalancePill(balance: Amount, carryover: Boolean, modifier: Modifier
     modifier = modifier.semantics { if (carryover) stateDescription = rollsOver },
     colors = pill,
     size = Small,
-    textStyle =
-      TextStyle.Default.tabularFigures().copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
+    textStyle = TabularFigures.copy(fontSize = textSizes.smallPlus, fontWeight = Medium),
     spacing = 2.dp,
   ) {
     Text(text = balance.formattedText(includeSign = true), maxLines = 1)
@@ -784,7 +795,7 @@ internal fun ShimmerBudgetTable(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
   val header = TextStyle(fontSize = textSizes.smallPlus)
   val row = TextStyle(fontSize = textSizes.medium)
-  val pill = TextStyle.Default.tabularFigures().copy(fontSize = textSizes.smallPlus)
+  val pill = TabularFigures.copy(fontSize = textSizes.smallPlus)
 
   Column(modifier = modifier.fillMaxWidth()) {
     ShimmerSummaryCard(shimmer, modifier = Modifier.padding(bottom = 8.dp))
@@ -906,6 +917,8 @@ private val ShimmerGroupWidths =
 private val ShimmerIncomeWidths = persistentListOf(48.dp, 72.dp)
 
 internal fun TextStyle.tabularFigures() = copy(fontFeatureSettings = "tnum")
+
+internal val TabularFigures = TextStyle(fontFeatureSettings = "tnum")
 
 internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding

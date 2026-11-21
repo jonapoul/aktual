@@ -58,7 +58,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment.Companion.Bottom
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -69,13 +71,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.plus
 
@@ -100,20 +103,32 @@ internal fun BudgetColumns(
   val grid = remember(columns, state.type) { columns.grid(isTracking = state.type == Tracking) }
   val tableFocus = remember { FocusRequester() }
 
-  // Back to the table once an edit ends, so the arrow keys keep working
-  LaunchedEffect(cursor.isEditing, cursor.selected) {
-    if (!cursor.isEditing && cursor.selected != null) tableFocus.requestFocus()
-  }
-
   // The column header and a group header stick below the top bar
   val density = LocalDensity.current
   val stuck = remember(listState, topPadding) { StuckHeaders(listState, topPadding) }
-  val stickyHeight = with(density) { (BudgetDS.headerHeight * 2).roundToPx() }
-  val topBarHeight = with(density) { topPadding.roundToPx() }
-  LaunchedEffect(cursor.selected?.category, columns) {
-    val category = cursor.selected?.category ?: return@LaunchedEffect
-    val index = columns.itemKeys().indexOf(categoryKey(category))
-    if (index >= 0) listState.reveal(index, stickyHeight, topBarHeight)
+  val stickyHeight by
+    rememberUpdatedState(with(density) { (BudgetDS.headerHeight * 2).roundToPx() })
+  val topBarHeight by rememberUpdatedState(with(density) { topPadding.roundToPx() })
+  val currentColumns by rememberUpdatedState(columns)
+
+  // Watches the cursor in snapshotFlows, so moving it doesn't recompose the table
+  LaunchedEffect(cursor, listState) {
+    // Back to the table once an edit ends, so the arrow keys keep working
+    launch {
+      snapshotFlow { cursor.isEditing to cursor.selected }
+        .collect { (isEditing, selected) ->
+          if (!isEditing && selected != null) tableFocus.requestFocus()
+        }
+    }
+
+    launch {
+      snapshotFlow { cursor.selected?.category to currentColumns }
+        .collectLatest { (category, columns) ->
+          if (category == null) return@collectLatest
+          val index = columns.itemKeys().indexOf(categoryKey(category))
+          if (index >= 0) listState.reveal(index, stickyHeight, topBarHeight)
+        }
+    }
   }
 
   BoxWithConstraints(
@@ -188,7 +203,11 @@ private fun LazyListScope.budgetColumns(
     }
 
     if (!group.isCollapsed) {
-      items(group.categories, key = { categoryKey(it.id) }) { category ->
+      items(
+        items = group.categories,
+        key = { categoryKey(it.id) },
+        contentType = { "category" },
+      ) { category ->
         CategoryRowLayout(
           modifier = Modifier.animateItem(),
           category = category,
@@ -259,7 +278,11 @@ private fun LazyListScope.incomeColumns(
   }
 
   if (!income.isCollapsed) {
-    items(income.categories, key = { categoryKey(it.id) }) { category ->
+    items(
+      items = income.categories,
+      key = { categoryKey(it.id) },
+      contentType = { "income-category" },
+    ) { category ->
       CategoryRowLayout(
         modifier = Modifier.animateItem(),
         category = category,
@@ -459,7 +482,7 @@ private fun SummaryAmount(
     text = amount.formattedText(includeSign = includeSign),
     fontSize = fontSize,
     fontWeight = if (includeSign) SemiBold else Normal,
-    style = TextStyle.Default.tabularFigures(),
+    style = TabularFigures,
     color = color,
     maxLines = 1,
   )
@@ -534,7 +557,6 @@ private fun RowScope.BalanceCell(
   onAction: OnAction<BudgetAction>,
 ) {
   var expanded by remember { mutableStateOf(false) }
-  val actions = balanceActions(month, category, type, onAction)
   Box(
     modifier =
       Modifier.weight(1f)
@@ -546,15 +568,18 @@ private fun RowScope.BalanceCell(
     contentAlignment = CenterEnd,
   ) {
     BalancePill(balance = category.balance, carryover = category.carryover)
-    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-      actions.fastForEach { action ->
-        AktualDropdownMenuItem(
-          text = action.label,
-          onClick = {
-            expanded = false
-            action.onClick()
-          },
-        )
+    // Only composed while open, as every cell has one
+    if (expanded) {
+      AktualDropdownMenu(expanded = true, onDismissRequest = { expanded = false }) {
+        balanceActions(month, category, type, onAction).fastForEach { action ->
+          AktualDropdownMenuItem(
+            text = action.label,
+            onClick = {
+              expanded = false
+              action.onClick()
+            },
+          )
+        }
       }
     }
   }

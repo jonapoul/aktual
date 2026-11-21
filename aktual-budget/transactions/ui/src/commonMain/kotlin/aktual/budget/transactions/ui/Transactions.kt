@@ -37,6 +37,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
@@ -160,7 +162,9 @@ private fun TransactionsFilled(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
+  // Read once here rather than in every row
   val dimens = LocalLedgerDimens.current
+  val tags = LocalTagLabels.current
   val density = dimens.density
   // Only one row's delete action shows at a time
   var openId by remember { mutableStateOf<TransactionId?>(null) }
@@ -172,7 +176,11 @@ private fun TransactionsFilled(
   ) {
     item { VerticalSpacer(innerPadding.calculateTopPadding()) }
 
-    items(count = pagingItems.itemCount, key = pagingItems.itemKey { it.id.toString() }) { index ->
+    items(
+      count = pagingItems.itemCount,
+      key = pagingItems.itemKey { it.id.toString() },
+      contentType = pagingItems.itemContentType { if (it.children.isEmpty()) "row" else "split" },
+    ) { index ->
       val transaction = pagingItems[index]
       if (transaction != null) {
         val previous = if (index > 0) pagingItems.peek(index - 1) else null
@@ -204,8 +212,11 @@ private fun TransactionsFilled(
             )
           }
 
+          // Derived, so opening one row doesn't recompose all the others
+          val isOpen by remember(transaction.id) { derivedStateOf { openId == transaction.id } }
+
           SwipeToDelete(
-            isOpen = openId == transaction.id,
+            isOpen = isOpen,
             onOpenChange = { open ->
               openId =
                 when {
@@ -226,6 +237,8 @@ private fun TransactionsFilled(
                 LedgerRow(
                   transaction = transaction,
                   showDate = showDate,
+                  dimens = dimens,
+                  tags = tags,
                   parts = parts,
                   onToggleSplit = onToggleSplit,
                   onOpen = onOpen,
@@ -235,6 +248,7 @@ private fun TransactionsFilled(
               Dense ->
                 LedgerTableRow(
                   transaction = transaction,
+                  dimens = dimens,
                   parts = parts,
                   onToggleSplit = onToggleSplit,
                   onOpen = onOpen,
@@ -247,6 +261,7 @@ private fun TransactionsFilled(
             AnimatedVisibility(visible = parts != Collapsed) {
               SplitChildren(
                 parent = transaction,
+                dimens = dimens,
                 onOpen = { id -> onAction(Action.OpenTransaction(id)) },
               )
             }
@@ -268,17 +283,21 @@ private fun SwipeToDelete(
   content: @Composable () -> Unit,
 ) {
   val deleteBackground = colors.errorText
-  SwipeToReveal(
-    actions =
+  val text = Strings.transactionDelete
+  val actions =
+    remember(text, deleteBackground, onDelete) {
       persistentListOf(
         SwipeAction(
-          text = Strings.transactionDelete,
+          text = text,
           icon = AktualIcons.Trash,
           background = deleteBackground,
           foreground = deleteBackground.contrastingTextColor(),
           onClick = onDelete,
         ),
-      ),
+      )
+    }
+  SwipeToReveal(
+    actions = actions,
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     shape = RectangleShape,

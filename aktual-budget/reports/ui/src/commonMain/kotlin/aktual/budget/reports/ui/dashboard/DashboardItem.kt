@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.dashboard
 
+import aktual.budget.model.CustomReportId
 import aktual.budget.reports.components.ChartHeight
 import aktual.budget.reports.components.ChartPadding
 import aktual.budget.reports.components.PER_TRANSACTION_DATA
@@ -46,6 +47,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
@@ -53,6 +55,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -65,6 +68,8 @@ internal fun DashboardItem(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   isEditing: Boolean = false,
+  canPin: Boolean = LocalCanPinReports.current,
+  customReportNames: ImmutableMap<CustomReportId, String> = LocalCustomReportNames.current,
 ) {
   val flow = remember(item) { observer(item) }
   val chartData by flow.collectAsStateWithLifecycle(initialValue = null)
@@ -78,6 +83,8 @@ internal fun DashboardItem(
     onAction = onAction,
     modifier = modifier,
     isEditing = isEditing,
+    canPin = canPin,
+    customReportNames = customReportNames,
   )
 }
 
@@ -91,8 +98,9 @@ private fun DashboardItem(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
   isEditing: Boolean = false,
+  canPin: Boolean = LocalCanPinReports.current,
+  customReportNames: ImmutableMap<CustomReportId, String> = LocalCustomReportNames.current,
 ) {
-  val customReportNames = LocalCustomReportNames.current
   var showRenameDialog by remember { mutableStateOf(false) }
   var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -111,6 +119,7 @@ private fun DashboardItem(
         onAction = onAction,
         onRename = { showRenameDialog = true },
         onDelete = { showDeleteDialog = true },
+        canPin = canPin,
       )
     }
   }
@@ -170,47 +179,63 @@ private fun SwipeableReportCard(
   onAction: OnAction<Action>,
   onRename: () -> Unit,
   onDelete: () -> Unit,
+  canPin: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val canPin = LocalCanPinReports.current
-  val renameAction =
-    SwipeAction(
-      text = Strings.reportsDashboardRename,
-      icon = AktualIcons.Pencil1,
-      background = lerp(colors.tableBackground, Black, fraction = 0.1f),
-      foreground = colors.tableText,
-      onClick = onRename,
-    )
-  val deleteAction =
-    SwipeAction(
-      text = Strings.reportsDashboardDelete,
-      icon = AktualIcons.Trash,
-      background = colors.errorText,
-      foreground = colors.errorText.contrastingTextColor(),
-      onClick = onDelete,
-    )
-
-  val pinAction =
-    SwipeAction(
-      text = if (isPinned) Strings.reportsDashboardUnpin else Strings.reportsDashboardPin,
-      icon = AktualIcons.Pin,
-      background = lerp(colors.tableBackground, Black, fraction = 0.2f),
-      foreground = colors.tableText,
-      onClick = {
-        onOpenChange(false)
-        onAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
-      },
-    )
+  val colors = colors
+  val renameText = Strings.reportsDashboardRename
+  val deleteText = Strings.reportsDashboardDelete
+  val pinText = if (isPinned) Strings.reportsDashboardUnpin else Strings.reportsDashboardPin
+  val currentOnRename by rememberUpdatedState(onRename)
+  val currentOnDelete by rememberUpdatedState(onDelete)
+  val currentOnOpenChange by rememberUpdatedState(onOpenChange)
+  val currentOnAction by rememberUpdatedState(onAction)
 
   // Swiping still works while loading, so a chart that never loads can be deleted. The home page
   // only has room for a few reports, so pinning goes once it's full
-  SwipeToReveal(
-    actions = buildList {
-        if (isPinned || canPin) add(pinAction)
-        if (item.isRenamable) add(renameAction)
-        add(deleteAction)
+  val actions =
+    remember(item.id, item.isRenamable, isPinned, canPin, colors, renameText, deleteText, pinText) {
+      buildList {
+        if (isPinned || canPin) {
+          add(
+            SwipeAction(
+              text = pinText,
+              icon = AktualIcons.Pin,
+              background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+              foreground = colors.tableText,
+              onClick = {
+                currentOnOpenChange(false)
+                currentOnAction(if (isPinned) Action.Unpin(item.id) else Action.Pin(item.id))
+              },
+            ),
+          )
+        }
+        if (item.isRenamable) {
+          add(
+            SwipeAction(
+              text = renameText,
+              icon = AktualIcons.Pencil1,
+              background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+              foreground = colors.tableText,
+              onClick = { currentOnRename() },
+            ),
+          )
+        }
+        add(
+          SwipeAction(
+            text = deleteText,
+            icon = AktualIcons.Trash,
+            background = colors.errorText,
+            foreground = colors.errorText.contrastingTextColor(),
+            onClick = { currentOnDelete() },
+          ),
+        )
       }
-        .toImmutableList(),
+        .toImmutableList()
+    }
+
+  SwipeToReveal(
+    actions = actions,
     isOpen = isOpen,
     onOpenChange = onOpenChange,
     modifier = modifier,

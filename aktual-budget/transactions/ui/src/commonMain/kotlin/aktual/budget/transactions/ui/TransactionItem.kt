@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.TagId
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsDensity
+import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.ui.edit.TaggedNotes
 import aktual.budget.transactions.vm.SpecialCategory
 import aktual.budget.transactions.vm.Transaction
@@ -69,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 
@@ -78,13 +80,14 @@ internal fun LedgerRow(
   transaction: Transaction,
   showDate: Boolean,
   modifier: Modifier = Modifier,
+  dimens: LedgerDimens = LocalLedgerDimens.current,
+  tags: ImmutableList<TagLabel> = LocalTagLabels.current,
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
   onTagClick: ((TagId) -> Unit)? = null,
   onToggleClearedState: () -> Unit = {},
 ) {
-  val dimens = LocalLedgerDimens.current
   Row(
     modifier =
       modifier
@@ -108,7 +111,7 @@ internal fun LedgerRow(
       if (dimens.showNotes && !notes.isNullOrBlank()) {
         TaggedNotes(
           notes = notes,
-          tags = LocalTagLabels.current,
+          tags = tags,
           fontSize = dimens.secondLineSize,
           color = colors.pageTextLight,
           onTagClick = onTagClick,
@@ -390,12 +393,12 @@ private fun rowClick(
 internal fun LedgerTableRow(
   transaction: Transaction,
   modifier: Modifier = Modifier,
+  dimens: LedgerDimens = LocalLedgerDimens.current,
   parts: SplitParts = Collapsed,
   onToggleSplit: () -> Unit = {},
   onOpen: () -> Unit = {},
   onToggleClearedState: () -> Unit = {},
 ) {
-  val dimens = LocalLedgerDimens.current
   Row(
     modifier =
       modifier
@@ -444,9 +447,9 @@ internal fun LedgerTableRow(
 internal fun SplitChildren(
   parent: Transaction,
   modifier: Modifier = Modifier,
+  dimens: LedgerDimens = LocalLedgerDimens.current,
   onOpen: (TransactionId) -> Unit = {},
 ) {
-  val dimens = LocalLedgerDimens.current
   when (dimens.density) {
     // The inset runs from the payee column to the screen edge, so amounts line up with the parent's
     Comfortable,

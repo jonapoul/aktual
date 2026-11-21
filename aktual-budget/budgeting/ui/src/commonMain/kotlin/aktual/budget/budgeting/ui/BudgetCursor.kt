@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -186,8 +187,10 @@ internal fun RowScope.BudgetedCell(
   grid: BudgetGrid,
   onAction: OnAction<BudgetAction>,
 ) {
-  val isSelected = cursor.selected == cell
-  val isEditing = isSelected && cursor.isEditing
+  // Derived per cell, so moving the cursor only recomposes the cells it leaves and enters
+  val isSelected by remember(cursor, cell) { derivedStateOf { cursor.selected == cell } }
+  val isEditing by remember(cursor, cell) { derivedStateOf { isSelected && cursor.isEditing } }
+  val isMenuOpen by remember(cursor, cell) { derivedStateOf { cursor.menu == cell } }
   val editLabel = Strings.budgetingEditBudget(name)
 
   Box(
@@ -243,15 +246,17 @@ internal fun RowScope.BudgetedCell(
       )
     }
 
-    AktualDropdownMenu(expanded = cursor.menu == cell, onDismissRequest = cursor::closeMenu) {
-      for (action in QuickAction.available(type)) {
-        AktualDropdownMenuItem(
-          text = action.string(),
-          onClick = {
-            cursor.closeMenu()
-            onAction(ApplyQuickAction(cell.month, cell.category, action))
-          },
-        )
+    if (isMenuOpen) {
+      AktualDropdownMenu(expanded = true, onDismissRequest = cursor::closeMenu) {
+        for (action in QuickAction.available(type)) {
+          AktualDropdownMenuItem(
+            text = action.string(),
+            onClick = {
+              cursor.closeMenu()
+              onAction(ApplyQuickAction(cell.month, cell.category, action))
+            },
+          )
+        }
       }
     }
   }

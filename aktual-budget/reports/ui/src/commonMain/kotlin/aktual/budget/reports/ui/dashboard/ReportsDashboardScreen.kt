@@ -61,6 +61,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -392,8 +393,13 @@ private fun ContentList(
   val haptics = LocalHapticFeedback.current
   val density = LocalDensity.current
   val isEditing = reorder.isEditing
-  val byId = remember(items) { items.associateBy { it.id } }
-  val ordered = reorder.order.mapNotNull(byId::get).ifEmpty { items }
+  val canPin = LocalCanPinReports.current
+  val customReportNames = LocalCustomReportNames.current
+  val ordered =
+    remember(items, reorder.order) {
+      val byId = items.associateBy { it.id }
+      reorder.order.mapNotNull(byId::get).ifEmpty { items }
+    }
 
   SideEffect(isEditing) { openItemId = null }
 
@@ -408,8 +414,14 @@ private fun ContentList(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(Dimens.ListItemSpacing),
   ) {
-    itemsIndexed(ordered, key = { _, item -> item.id.value }) { index, item ->
-      val isDragged = reorder.dragged == item.id
+    itemsIndexed(
+      items = ordered,
+      key = { _, item -> item.id.value },
+      contentType = { _, item -> item.meta::class },
+    ) { index, item ->
+      // Derived per card, so only the cards that change recompose
+      val isDragged by remember(item.id) { derivedStateOf { reorder.dragged == item.id } }
+      val isOpen by remember(item.id) { derivedStateOf { openItemId == item.id } }
       DashboardItem(
         // The handle comes first, so its gesture survives the rest of the chain changing
         modifier =
@@ -428,7 +440,7 @@ private fun ContentList(
         item = item,
         isPinned = item.id in pinnedIds,
         observer = observer,
-        isOpen = openItemId == item.id,
+        isOpen = isOpen,
         onOpenChange = { open ->
           openItemId =
             when {
@@ -439,6 +451,8 @@ private fun ContentList(
         },
         onAction = onAction,
         isEditing = isEditing,
+        canPin = canPin,
+        customReportNames = customReportNames,
       )
     }
 
