@@ -37,6 +37,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -204,8 +205,11 @@ private fun TransactionsFilled(
             )
           }
 
+          // Derived, so opening one row doesn't recompose all the others
+          val isOpen by remember(transaction.id) { derivedStateOf { openId == transaction.id } }
+
           SwipeToDelete(
-            isOpen = openId == transaction.id,
+            isOpen = isOpen,
             onOpenChange = { open ->
               openId =
                 when {
