@@ -281,13 +281,20 @@ private class FilterCondition(private val condition: CompiledCondition) {
   // Inflow and outflow only match money going that way, with outflows compared as positive
   private fun matchesAmount(amount: Double): Boolean {
     val value = value
+    val options = condition.options
+    // Unlike the other operators, a range keeps a zero amount in both directions, as eval does
     if (value is Between) {
+      val fieldValue =
+        when {
+          options?.outflow == true -> if (amount <= 0) -amount else return false
+          options?.inflow == true -> if (amount >= 0) amount else return false
+          else -> amount
+        }
       return op == IsBetween &&
-        amount in minOf(value.num1, value.num2)..maxOf(value.num1, value.num2)
+        fieldValue in minOf(value.num1, value.num2)..maxOf(value.num1, value.num2)
     }
 
     val number = (value as ConditionValue.Number).value
-    val options = condition.options
     val fieldValue =
       when {
         options?.outflow == true -> if (amount < 0) -amount else return false

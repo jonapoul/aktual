@@ -124,6 +124,32 @@ class TransactionFilterTest {
   }
 
   @Test
+  fun `Amount ranges respect inflow and outflow`() {
+    val range = mapOf("num1" to 1000, "num2" to 2000)
+    val outflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(outflow = true)))
+    assertThat(outflow.matches(row(amount = -1500))).isTrue()
+    assertThat(outflow.matches(row(amount = 1500))).isFalse()
+    assertThat(outflow.matches(row(amount = -2500))).isFalse()
+
+    val inflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(inflow = true)))
+    assertThat(inflow.matches(row(amount = 1500))).isTrue()
+    assertThat(inflow.matches(row(amount = -1500))).isFalse()
+
+    val either = filter(cond(Field.Amount, IsBetween, range))
+    assertThat(either.matches(row(amount = 1500))).isTrue()
+    assertThat(either.matches(row(amount = -1500))).isFalse()
+  }
+
+  @Test
+  fun `Amount ranges from zero keep zero amounts in both directions`() {
+    val range = mapOf("num1" to 0, "num2" to 100)
+    val outflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(outflow = true)))
+    val inflow = filter(cond(Field.Amount, IsBetween, range, ConditionOptions(inflow = true)))
+    assertThat(outflow.matches(row(amount = 0))).isTrue()
+    assertThat(inflow.matches(row(amount = 0))).isTrue()
+  }
+
+  @Test
   fun `Tags match whole tags only`() {
     val filter = filter(cond(Notes, HasTags, "#food"))
     assertThat(filter.matches(row(notes = "lunch #food"))).isTrue()
