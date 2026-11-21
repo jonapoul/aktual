@@ -86,3 +86,6 @@
 -keep class **$$serializer { *; }
 -keepclassmembers class **$$serializer { *; }
 -keepclassmembers @kotlinx.serialization.Serializable class ** { *** Companion; }
+-keep class org.slf4j.** { *; }
+-keep class org.slf4j.impl.** { *; }
+-keep class ch.qos.logback.** { *; }

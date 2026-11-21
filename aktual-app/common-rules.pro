@@ -5,9 +5,7 @@
 -keep class * implements java.sql.Driver { *; }
 
 # Logging
--keep class org.slf4j.** { *; }
--keep class org.slf4j.impl.** { *; }
--keep class ch.qos.logback.** { *; }
+-keep class * implements org.slf4j.spi.SLF4JServiceProvider
 -dontwarn org.slf4j.**
 
 # kotlinx.serialization
