@@ -8,15 +8,16 @@ import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
 import java.io.InputStream
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 actual fun rememberFilePicker(
-  mimeTypes: List<String>,
+  mimeTypes: ImmutableList<String>,
   extension: String,
   title: String,
-  onPicked: (open: () -> InputStream) -> Unit,
+  onPick: (open: () -> InputStream) -> Unit,
 ): FilePicker {
-  val currentOnPicked by rememberUpdatedState(onPicked)
+  val currentOnPick by rememberUpdatedState(onPick)
   return remember(extension, title) {
     FilePicker {
       val dialog = FileDialog(null as Frame?, title, FileDialog.LOAD)
@@ -27,7 +28,7 @@ actual fun rememberFilePicker(
 
       val name = dialog.file ?: return@FilePicker
       val file = File(dialog.directory, name)
-      currentOnPicked { file.inputStream() }
+      currentOnPick { file.inputStream() }
     }
   }
 }

@@ -9,20 +9,21 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import java.io.FileNotFoundException
 import java.io.InputStream
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 actual fun rememberFilePicker(
-  mimeTypes: List<String>,
+  mimeTypes: ImmutableList<String>,
   extension: String,
   title: String,
-  onPicked: (open: () -> InputStream) -> Unit,
+  onPick: (open: () -> InputStream) -> Unit,
 ): FilePicker {
   val resolver = LocalContext.current.contentResolver
-  val currentOnPicked by rememberUpdatedState(onPicked)
+  val currentOnPick by rememberUpdatedState(onPick)
   val launcher =
     rememberLauncherForActivityResult(OpenDocument()) { uri ->
       if (uri != null) {
-        currentOnPicked { resolver.openInputStream(uri) ?: throw FileNotFoundException("$uri") }
+        currentOnPick { resolver.openInputStream(uri) ?: throw FileNotFoundException("$uri") }
       }
     }
   return remember(launcher, mimeTypes) { FilePicker { launcher.launch(mimeTypes.toTypedArray()) } }

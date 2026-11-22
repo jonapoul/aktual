@@ -10,6 +10,10 @@ import aktual.budget.sync.components.SyncBudgetDialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
+import java.io.InputStream
+import kotlinx.collections.immutable.persistentListOf
+import aktual.budget.list.vm.ImportBudgetState
+import aktual.budget.list.vm.DeletingState
 import aktual.core.model.ServerUrl
 import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.ChangePasswordNavigator
@@ -90,26 +94,17 @@ fun ListBudgetsScreen(
   }
 
   var budgetToDelete by remember { mutableStateOf<Budget?>(null) }
-  budgetToDelete?.let { budget ->
-    val deletingState by viewModel.deletingState.collectAsStateWithLifecycle()
-
-    DeleteBudgetDialog(
-      budget = budget,
-      deletingState = deletingState,
-      onAction = { action ->
-        when (action) {
-          DeleteLocal -> viewModel.deleteLocal(budget.directoryId)
-
-          DeleteRemote -> if (budget is Cloud) viewModel.deleteRemote(budget.cloudFileId)
-
-          Dismiss -> {
-            budgetToDelete = null
-            viewModel.clearDeletingState()
-          }
-        }
-      },
-    )
-  }
+  val deletingState by viewModel.deletingState.collectAsStateWithLifecycle()
+  DeleteBudget(
+    budget = budgetToDelete,
+    deletingState = deletingState,
+    onDeleteLocal = viewModel::deleteLocal,
+    onDeleteRemote = viewModel::deleteRemote,
+    onDismiss = {
+      budgetToDelete = null
+      viewModel.clearDeletingState()
+    },
+  )
 
   LaunchedEffect(Unit) {
     viewModel.closeDialog.collect { closeDialog ->
@@ -119,24 +114,16 @@ fun ListBudgetsScreen(
     }
   }
 
-  val filePicker =
-    rememberFilePicker(
-      mimeTypes = ZIP_MIME_TYPES,
-      extension = "zip",
-      title = Strings.budgetImportPickerTitle,
-      onPicked = viewModel::importZip,
-    )
-  if (showImport) {
-    val importState by viewModel.importState.collectAsStateWithLifecycle()
-    ImportBudgetDialog(
-      state = importState,
-      onSelectFile = filePicker::pick,
-      onDismiss = {
-        showImport = false
-        viewModel.clearImportFailure()
-      },
-    )
-  }
+  val importState by viewModel.importState.collectAsStateWithLifecycle()
+  ImportBudget(
+    isOpen = showImport,
+    state = importState,
+    onImport = viewModel::importZip,
+    onDismiss = {
+      showImport = false
+      viewModel.clearImportFailure()
+    },
+  )
 
   budgetToSync?.let { id ->
     SyncBudgetDialog(
@@ -168,9 +155,50 @@ fun ListBudgetsScreen(
   )
 }
 
+@Composable
+private fun DeleteBudget(
+  budget: Budget?,
+  deletingState: DeletingState,
+  onDeleteLocal: (BudgetId) -> Unit,
+  onDeleteRemote: (BudgetId) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  if (budget == null) return
+  DeleteBudgetDialog(
+    budget = budget,
+    deletingState = deletingState,
+    onAction = { action ->
+      when (action) {
+        DeleteLocal -> onDeleteLocal(budget.directoryId)
+        DeleteRemote -> if (budget is Cloud) onDeleteRemote(budget.cloudFileId)
+        Dismiss -> onDismiss()
+      }
+    },
+  )
+}
+
+@Composable
+private fun ImportBudget(
+  isOpen: Boolean,
+  state: ImportBudgetState,
+  onImport: (open: () -> InputStream) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val filePicker =
+    rememberFilePicker(
+      mimeTypes = ZIP_MIME_TYPES,
+      extension = "zip",
+      title = Strings.budgetImportPickerTitle,
+      onPick = onImport,
+    )
+  if (isOpen) {
+    ImportBudgetDialog(state = state, onSelectFile = filePicker::pick, onDismiss = onDismiss)
+  }
+}
+
 // Some file managers label zips with the legacy or generic types
 private val ZIP_MIME_TYPES =
-  listOf("application/zip", "application/x-zip-compressed", "application/octet-stream")
+  persistentListOf("application/zip", "application/x-zip-compressed", "application/octet-stream")
 
 private fun ServerUrl.openIn(uriHandler: UriHandler) = uriHandler.openUri(toString())
 

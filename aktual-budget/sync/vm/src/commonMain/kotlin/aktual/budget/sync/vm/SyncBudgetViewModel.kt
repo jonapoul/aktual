@@ -53,6 +53,7 @@ import okio.Path
 
 @Stable
 @AssistedInject
+@Suppress("LongParameterList") // One per sync step
 class SyncBudgetViewModel
 internal constructor(
   @Assisted private val budgetId: BudgetId,

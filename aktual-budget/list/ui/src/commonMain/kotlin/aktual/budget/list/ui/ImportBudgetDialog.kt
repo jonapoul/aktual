@@ -97,5 +97,5 @@ private class ImportBudgetDialogProvider :
   ColorParamsProvider<ImportBudgetState>(
     ImportBudgetState.Idle,
     ImportBudgetState.Importing,
-    ImportBudgetState.Failed(ImportFailure.MissingFiles),
+    ImportBudgetState.Failed(MissingFiles),
   )

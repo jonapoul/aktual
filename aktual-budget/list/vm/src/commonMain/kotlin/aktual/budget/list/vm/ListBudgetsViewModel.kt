@@ -8,18 +8,11 @@ import aktual.budget.list.vm.ListBudgetsState.Loading
 import aktual.budget.list.vm.ListBudgetsState.Success
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
-import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
-import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
-import aktual.budget.model.DbMetadataKey.Companion.GroupId
-import aktual.budget.model.DbMetadataKey.Companion.Id
-import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.budget.model.directoryId
 import aktual.budget.utils.BudgetFiles
-import aktual.budget.utils.BudgetImporter
 import aktual.budget.utils.ImportResult
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
@@ -30,7 +23,6 @@ import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
-import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,7 +42,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okio.buffer
 
 @Stable
 @ViewModelKey
@@ -64,10 +55,8 @@ internal constructor(
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
   private val syncApi: SyncApi,
-  private val appPreferences: AppPreferences,
   private val runLevels: RunLevelController,
-  private val importer: BudgetImporter,
-  private val uuids: UuidGenerator,
+  private val zipImporter: ZipBudgetImporter,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
@@ -132,7 +121,7 @@ internal constructor(
   }
 
   private suspend fun navToBudget(id: BudgetId) {
-    appPreferences.lastOpenedBudgetId.set(id)
+    preferences.lastOpenedBudgetId.set(id)
     mutableEvent.emit(NavToBudget)
   }
 
@@ -201,24 +190,7 @@ internal constructor(
     if (mutableImportState.value is Importing) return
     mutableImportState.update { Importing }
     viewModelScope.launch {
-      val id = uuids { BudgetId(it) }
-      val zip = files.tmp(mkdirs = true) / "$id-import.zip"
-      val result =
-        runCatchingCancellable(
-          attempt = {
-            withContext(contexts.io) {
-              open().use { input ->
-                files.fileSystem.sink(zip).buffer().outputStream().use { input.copyTo(it) }
-              }
-            }
-            importer.import(id, zip) { meta -> meta.set(Id, id.value) - IMPORT_CLEARED_KEYS }
-          },
-          onFailure = { e ->
-            log.e(e) { "Failed reading import file" }
-            ImportResult.OtherFailure(e.requireMessage())
-          },
-          finally = { files.fileSystem.delete(zip, mustExist = false) },
-        )
+      val (id, result) = zipImporter.import(open)
       log.i { "importZip $id: $result" }
 
       when (result) {
@@ -291,10 +263,5 @@ internal constructor(
     if (preferences.lastOpenedBudgetId.get() == id) {
       preferences.lastOpenedBudgetId.delete()
     }
-  }
-
-  private companion object {
-    // An imported budget is local-only until it's uploaded
-    val IMPORT_CLEARED_KEYS = listOf(CloudFileId, GroupId, LastUploaded, EncryptKeyId)
   }
 }
