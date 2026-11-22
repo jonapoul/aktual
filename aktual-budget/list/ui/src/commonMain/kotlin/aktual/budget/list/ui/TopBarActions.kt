@@ -7,6 +7,7 @@ import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Key
 import aktual.core.icons.Reports
+import aktual.core.icons.Upload
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
@@ -51,6 +52,16 @@ internal fun MoreMenu(
     expanded = showMenu,
     onDismissRequest = onDismissRequest,
   ) {
+    val importText = Strings.listBudgetsImport
+    AktualDropdownMenuItem(
+      text = { Text(importText) },
+      onClick = {
+        onDismissRequest()
+        onAction(ImportBudget)
+      },
+      leadingIcon = { Icon(AktualIcons.Upload, contentDescription = importText) },
+    )
+
     val serverText = Strings.listBudgetsChangeServer
     AktualDropdownMenuItem(
       text = { Text(serverText) },

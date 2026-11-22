@@ -9,9 +9,17 @@ import aktual.budget.list.vm.ListBudgetsState.Success
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
+import aktual.budget.model.DbMetadataKey.Companion.GroupId
+import aktual.budget.model.DbMetadataKey.Companion.Id
+import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.budget.utils.BudgetFiles
+import aktual.budget.utils.BudgetImporter
+import aktual.budget.utils.ImportResult
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
@@ -22,7 +30,9 @@ import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
+import java.io.InputStream
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
@@ -40,6 +50,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okio.buffer
 
 @Stable
 @ViewModelKey
@@ -75,7 +86,7 @@ internal constructor(
   private val mutableCloseDialog = MutableSharedFlow<Boolean>()
   val closeDialog: SharedFlow<Boolean> = mutableCloseDialog.asSharedFlow()
 
-  private val mutableImportState = MutableStateFlow<ImportBudgetState>(ImportBudgetState.Idle)
+  private val mutableImportState = MutableStateFlow<ImportBudgetState>(Idle)
   val importState: StateFlow<ImportBudgetState> = mutableImportState.asStateFlow()
 
   private var lastUserFiles: List<UserFile>? = null
@@ -187,8 +198,8 @@ internal constructor(
 
   /** Imports a zip in Actual's export format as a new local budget, then opens it. */
   fun importZip(open: () -> InputStream) {
-    if (mutableImportState.value is ImportBudgetState.Importing) return
-    mutableImportState.update { ImportBudgetState.Importing }
+    if (mutableImportState.value is Importing) return
+    mutableImportState.update { Importing }
     viewModelScope.launch {
       val id = uuids { BudgetId(it) }
       val zip = files.tmp(mkdirs = true) / "$id-import.zip"
@@ -206,13 +217,13 @@ internal constructor(
             log.e(e) { "Failed reading import file" }
             ImportResult.OtherFailure(e.requireMessage())
           },
-          finally = { withContext(contexts.io) { files.fileSystem.delete(zip, mustExist = false) } },
+          finally = { files.fileSystem.delete(zip, mustExist = false) },
         )
       log.i { "importZip $id: $result" }
 
       when (result) {
         is ImportResult.Success -> {
-          mutableImportState.update { ImportBudgetState.Idle }
+          mutableImportState.update { Idle }
           runLevels.onBudget(id, result.meta)
           navToBudget(id)
         }
@@ -222,7 +233,7 @@ internal constructor(
     }
   }
 
-  fun clearImportState() = mutableImportState.update { ImportBudgetState.Idle }
+  fun clearImportState() = mutableImportState.update { Idle }
 
   private fun ImportResult.Failure.toImportFailure(): ImportFailure =
     when (this) {
@@ -279,5 +290,10 @@ internal constructor(
     if (preferences.lastOpenedBudgetId.get() == id) {
       preferences.lastOpenedBudgetId.delete()
     }
+  }
+
+  private companion object {
+    // An imported budget is local-only until it's uploaded
+    val IMPORT_CLEARED_KEYS = listOf(CloudFileId, GroupId, LastUploaded, EncryptKeyId)
   }
 }

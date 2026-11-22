@@ -10,6 +10,7 @@ import aktual.budget.sync.components.SyncBudgetDialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
+import aktual.core.ui.rememberFilePicker
 import aktual.core.model.ServerUrl
 import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.ChangePasswordNavigator
@@ -77,7 +78,10 @@ fun ListBudgetsScreen(
   LaunchedEffect(viewModel.event) {
     viewModel.event.collect { event ->
       when (event) {
-        NavToBudget -> toBudget()
+        NavToBudget -> {
+          showImport = false
+          toBudget()
+        }
         ListBudgetsEvent.LogOut -> logOut()
         is ShowSyncDialog -> budgetToSync = event.id
       }
@@ -114,6 +118,26 @@ fun ListBudgetsScreen(
     }
   }
 
+  var showImport by remember { mutableStateOf(false) }
+  val filePicker =
+    rememberFilePicker(
+      mimeTypes = ZIP_MIME_TYPES,
+      extension = "zip",
+      title = Strings.budgetImportPickerTitle,
+      onPicked = viewModel::importZip,
+    )
+  if (showImport) {
+    val importState by viewModel.importState.collectAsStateWithLifecycle()
+    ImportBudgetDialog(
+      state = importState,
+      onSelectFile = filePicker::pick,
+      onDismiss = {
+        showImport = false
+        viewModel.clearImportState()
+      },
+    )
+  }
+
   budgetToSync?.let { id ->
     SyncBudgetDialog(
       budgetId = id,
@@ -126,6 +150,7 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
+        ImportBudget -> showImport = true
         LogOut -> viewModel.logOut()
         ChangePassword -> toChangePassword()
         OpenAbout -> toInfo()
@@ -139,6 +164,9 @@ fun ListBudgetsScreen(
     },
   )
 }
+
+// Some file managers label zips with the legacy or generic types
+private val ZIP_MIME_TYPES = listOf("application/zip", "application/x-zip-compressed", "application/octet-stream")
 
 private fun ServerUrl.openIn(uriHandler: UriHandler) = uriHandler.openUri(toString())
 
