@@ -2,7 +2,6 @@ package aktual.budget.navrail.ui
 
 import aktual.budget.model.BudgetTab
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
-import aktual.budget.navrail.vm.ExportBudgetViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Code
@@ -60,7 +59,6 @@ import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isExpandedWidth
 import aktual.core.ui.isMobileLandscape
-import aktual.core.ui.rememberFileExportHandler
 import aktual.core.ui.rememberSnackbars
 import aktual.core.ui.verticalScrollWithBar
 import aktual.theme.Colors
@@ -140,7 +138,6 @@ internal fun BudgetNavRail(
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),
   nightlyViewModel: NightlyUpdateViewModel = metroViewModel(),
-  exportViewModel: ExportBudgetViewModel = metroViewModel(),
 ) {
   val contributors = viewModel.budgetNavEntryContributors
   val headerState by viewModel.headerState.collectAsState()
@@ -155,10 +152,6 @@ internal fun BudgetNavRail(
 
   var selectedTab by rememberSaveable(stateSaver = TabSaver) { mutableStateOf(startTab) }
   var dialog by rememberSaveable { mutableStateOf<NavRailDialog?>(null) }
-
-  val exportHandler =
-    rememberFileExportHandler(mimeType = "application/zip", saveTitle = Strings.budgetExportSave)
-  CollectBudgetExports(exportViewModel, exportHandler, onReady = { dialog = null })
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
@@ -254,8 +247,6 @@ internal fun BudgetNavRail(
     hasUnpostedSchedules = hasUnpostedSchedules,
     nightlyUpdate = nightlyUpdate,
     onRename = viewModel::rename,
-    exportViewModel = exportViewModel,
-    canShareExport = exportHandler.canShare,
     onDismiss = { dialog = null },
     onPostSchedules = viewModel::postUnpostedSchedules,
     onDismissSchedules = viewModel::dismissUnpostedSchedules,
@@ -275,8 +266,6 @@ private fun BudgetNavRailDialogs(
   hasUnpostedSchedules: Boolean,
   nightlyUpdate: NightlyUpdateState,
   onRename: (String) -> Unit,
-  exportViewModel: ExportBudgetViewModel,
-  canShareExport: Boolean,
   onDismiss: () -> Unit,
   onPostSchedules: () -> Unit,
   onDismissSchedules: () -> Unit,
@@ -292,13 +281,8 @@ private fun BudgetNavRailDialogs(
     )
   }
 
-  if (dialog == Export) {
-    ExportBudgetDialog(
-      viewModel = exportViewModel,
-      canShare = canShareExport,
-      onDismiss = onDismiss,
-    )
-  }
+  // Always composed, so the save launcher outlives the dialog
+  ExportBudget(isDialogOpen = dialog == Export, onDismiss = onDismiss)
 
   if (dialog == NightlyUpdate && nightlyUpdate is Available) {
     NightlyUpdateDialog(state = nightlyUpdate, onDismiss = onDismiss)

@@ -87,7 +87,7 @@ enum class ExportBudgetTarget {
 
 /** [write] copies the zip into a destination the platform picked. */
 @Immutable
-class ReadyBudgetExport(
+data class ReadyBudgetExport(
   val fileName: String,
   val target: ExportBudgetTarget,
   val write: (OutputStream) -> Unit,

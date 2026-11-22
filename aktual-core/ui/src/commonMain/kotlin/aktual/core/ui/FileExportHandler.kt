@@ -16,7 +16,7 @@ interface FileExportHandler {
 }
 
 /** [write] runs on an IO thread once the destination is known. */
-@Immutable class ExportFile(val fileName: String, val write: (OutputStream) -> Unit)
+@Immutable data class ExportFile(val fileName: String, val write: (OutputStream) -> Unit)
 
 @Composable
 expect fun rememberFileExportHandler(mimeType: String, saveTitle: String): FileExportHandler

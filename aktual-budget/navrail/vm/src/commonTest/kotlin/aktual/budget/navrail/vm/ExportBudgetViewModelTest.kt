@@ -31,15 +31,15 @@ class ExportBudgetViewModelTest {
 
     viewModel.exports.test {
       viewModel.state.test {
-        assertThatNextEmissionIsEqualTo(ExportBudgetState.Idle)
-        viewModel.export(ExportBudgetTarget.Share)
-        assertThatNextEmissionIsEqualTo(ExportBudgetState.Exporting)
-        assertThatNextEmissionIsEqualTo(ExportBudgetState.Idle)
+        assertThatNextEmissionIsEqualTo(Idle)
+        viewModel.export(Share)
+        assertThatNextEmissionIsEqualTo(Exporting)
+        assertThatNextEmissionIsEqualTo(Idle)
       }
 
       val ready = awaitItem()
       assertThat(ready.fileName).isEqualTo("2026-11-22-Budget.zip")
-      assertThat(ready.target).isEqualTo(ExportBudgetTarget.Share)
+      assertThat(ready.target).isEqualTo(Share)
       val output = ByteArrayOutputStream()
       ready.write(output)
       assertThat(output.toString(Charsets.UTF_8)).isEqualTo("zip contents")
@@ -51,13 +51,13 @@ class ExportBudgetViewModelTest {
     val viewModel = viewModel { throw IOException("Disk full") }
 
     viewModel.state.test {
-      assertThatNextEmissionIsEqualTo(ExportBudgetState.Idle)
-      viewModel.export(ExportBudgetTarget.Save)
-      assertThatNextEmissionIsEqualTo(ExportBudgetState.Exporting)
+      assertThatNextEmissionIsEqualTo(Idle)
+      viewModel.export(Save)
+      assertThatNextEmissionIsEqualTo(Exporting)
       assertThatNextEmissionIsEqualTo(ExportBudgetState.Failed("Disk full"))
 
       viewModel.reset()
-      assertThatNextEmissionIsEqualTo(ExportBudgetState.Idle)
+      assertThatNextEmissionIsEqualTo(Idle)
     }
   }
 

@@ -16,6 +16,7 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okio.Path
@@ -65,7 +66,7 @@ internal constructor(
       driver.execute(null, "DELETE FROM export.kvcache", 0).await()
       driver.execute(null, "DELETE FROM export.kvcache_key", 0).await()
     } finally {
-      driver.execute(null, "DETACH DATABASE export", 0).await()
+      withContext(NonCancellable) { driver.execute(null, "DETACH DATABASE export", 0).await() }
     }
   }
 

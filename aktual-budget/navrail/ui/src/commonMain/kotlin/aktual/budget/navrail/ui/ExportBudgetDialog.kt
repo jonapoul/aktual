@@ -18,8 +18,8 @@ import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.ExportFile
 import aktual.core.ui.ExportTargetRow
-import aktual.core.ui.FileExportHandler
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.rememberFileExportHandler
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,47 +34,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-internal fun ExportBudgetDialog(
-  viewModel: ExportBudgetViewModel,
-  canShare: Boolean,
+internal fun ExportBudget(
+  isDialogOpen: Boolean,
   onDismiss: () -> Unit,
+  viewModel: ExportBudgetViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsState()
-  val close = {
-    viewModel.reset()
-    onDismiss()
-  }
-  AktualAlertDialog(onDismissRequest = close) {
-    ExportBudgetDialogContent(
-      state = state,
-      isEncrypted = viewModel.isEncrypted,
-      canShare = canShare,
-      onExport = viewModel::export,
-      onDismiss = close,
-    )
-  }
-}
+  val handler =
+    rememberFileExportHandler(mimeType = "application/zip", saveTitle = Strings.budgetExportSave)
+  val currentOnDismiss by rememberUpdatedState(onDismiss)
 
-// Hands finished exports to the handler, which lives outside the dialog so Android's save
-// launcher survives the dialog closing
-@Composable
-internal fun CollectBudgetExports(
-  viewModel: ExportBudgetViewModel,
-  handler: FileExportHandler,
-  onReady: () -> Unit,
-) {
-  val currentHandler by rememberUpdatedState(handler)
-  val currentOnReady by rememberUpdatedState(onReady)
-  LaunchedEffect(viewModel) {
+  LaunchedEffect(viewModel, handler) {
     viewModel.exports.collect { export ->
-      currentOnReady()
+      currentOnDismiss()
       val file = ExportFile(export.fileName, export.write)
       when (export.target) {
-        ExportBudgetTarget.Share -> currentHandler.share(file)
-        ExportBudgetTarget.Save -> currentHandler.save(file)
+        ExportBudgetTarget.Share -> handler.share(file)
+        ExportBudgetTarget.Save -> handler.save(file)
       }
+    }
+  }
+
+  if (isDialogOpen) {
+    val close = {
+      viewModel.reset()
+      onDismiss()
+    }
+    AktualAlertDialog(onDismissRequest = close) {
+      ExportBudgetDialogContent(
+        state = state,
+        isEncrypted = viewModel.isEncrypted,
+        canShare = handler.canShare,
+        onExport = viewModel::export,
+        onDismiss = close,
+      )
     }
   }
 }
