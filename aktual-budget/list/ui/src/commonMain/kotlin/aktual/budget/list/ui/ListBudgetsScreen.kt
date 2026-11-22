@@ -133,7 +133,7 @@ fun ListBudgetsScreen(
       onSelectFile = filePicker::pick,
       onDismiss = {
         showImport = false
-        viewModel.clearImportState()
+        viewModel.clearImportFailure()
       },
     )
   }
@@ -150,7 +150,10 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        ImportBudget -> showImport = true
+        ImportBudget -> {
+          viewModel.clearImportFailure()
+          showImport = true
+        }
         LogOut -> viewModel.logOut()
         ChangePassword -> toChangePassword()
         OpenAbout -> toInfo()

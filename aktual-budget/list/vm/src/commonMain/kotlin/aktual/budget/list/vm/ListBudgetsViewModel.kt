@@ -233,7 +233,8 @@ internal constructor(
     }
   }
 
-  fun clearImportState() = mutableImportState.update { Idle }
+  // Leaves a running import alone, so reopening the dialog shows its progress
+  fun clearImportFailure() = mutableImportState.update { if (it is Failed) Idle else it }
 
   private fun ImportResult.Failure.toImportFailure(): ImportFailure =
     when (this) {
