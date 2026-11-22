@@ -1,7 +1,5 @@
 package aktual.budget.db
 
-import aktual.budget.db.BudgetExporterImpl.Companion.DB_ENTRY
-import aktual.budget.db.BudgetExporterImpl.Companion.METADATA_ENTRY
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.utils.BudgetFiles

@@ -81,9 +81,7 @@ internal constructor(
     return "${calendar.today()}-$name.zip"
   }
 
-  internal companion object {
-    const val DB_ENTRY = "db.sqlite"
-    const val METADATA_ENTRY = "metadata.json"
-    private val INVALID_FILENAME_CHARS = Regex("""[\\/:*?"<>|]""")
+  private companion object {
+    val INVALID_FILENAME_CHARS = Regex("""[\\/:*?"<>|]""")
   }
 }

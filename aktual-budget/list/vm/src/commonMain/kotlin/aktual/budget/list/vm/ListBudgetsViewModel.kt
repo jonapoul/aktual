@@ -10,6 +10,7 @@ import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.budget.utils.BudgetFiles
+import aktual.budget.utils.ImportResult
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.utils.runCatchingCancellable
@@ -27,6 +28,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import java.io.InputStream
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
@@ -53,8 +55,8 @@ internal constructor(
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
   private val syncApi: SyncApi,
-  private val appPreferences: AppPreferences,
   private val runLevels: RunLevelController,
+  private val zipImporter: ZipBudgetImporter,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
@@ -72,6 +74,9 @@ internal constructor(
 
   private val mutableCloseDialog = MutableSharedFlow<Boolean>()
   val closeDialog: SharedFlow<Boolean> = mutableCloseDialog.asSharedFlow()
+
+  private val mutableImportState = MutableStateFlow<ImportBudgetState>(Idle)
+  val importState: StateFlow<ImportBudgetState> = mutableImportState.asStateFlow()
 
   private var lastUserFiles: List<UserFile>? = null
 
@@ -116,7 +121,7 @@ internal constructor(
   }
 
   private suspend fun navToBudget(id: BudgetId) {
-    appPreferences.lastOpenedBudgetId.set(id)
+    preferences.lastOpenedBudgetId.set(id)
     mutableEvent.emit(NavToBudget)
   }
 
@@ -179,6 +184,37 @@ internal constructor(
       }
     }
   }
+
+  /** Imports a zip in Actual's export format as a new local budget, then opens it. */
+  fun importZip(open: () -> InputStream) {
+    if (mutableImportState.value is Importing) return
+    mutableImportState.update { Importing }
+    viewModelScope.launch {
+      val (id, result) = zipImporter.import(open)
+      log.i { "importZip $id: $result" }
+
+      when (result) {
+        is ImportResult.Success -> {
+          mutableImportState.update { Idle }
+          runLevels.onBudget(id, result.meta)
+          navToBudget(id)
+        }
+        is ImportResult.Failure ->
+          mutableImportState.update { ImportBudgetState.Failed(result.toImportFailure()) }
+      }
+    }
+  }
+
+  // Leaves a running import alone, so reopening the dialog shows its progress
+  fun clearImportFailure() = mutableImportState.update { if (it is Failed) Idle else it }
+
+  private fun ImportResult.Failure.toImportFailure(): ImportFailure =
+    when (this) {
+      NotZipFile -> NotZip
+      InvalidZipFile -> MissingFiles
+      InvalidMetaFile -> BadMetadata
+      is OtherFailure -> Unknown
+    }
 
   fun logOut() {
     viewModelScope.launch {
