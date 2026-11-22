@@ -8,7 +8,13 @@ import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
+import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
+import aktual.budget.model.DbMetadataKey.Companion.GroupId
+import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.budget.utils.BudgetFiles
+import aktual.budget.utils.BudgetImporter
+import aktual.core.utils.Calendar
 import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.di.LoggedInScope
@@ -53,7 +59,8 @@ internal constructor(
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
   private val decrypter: FileDecrypter,
-  private val importer: DatabaseImporter,
+  private val importer: BudgetImporter,
+  private val calendar: Calendar,
   private val files: BudgetFiles,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
@@ -281,7 +288,15 @@ internal constructor(
   }
 
   private suspend fun importDatabase(path: Path, userFile: UserFile) {
-    val result = importer(userFile, path)
+    // The stored file on the server might be out-of-date with a few keys
+    val result =
+      importer.import(userFile.fileId, path) { meta ->
+        meta
+          .set(CloudFileId, userFile.fileId)
+          .set(GroupId, userFile.groupId)
+          .set(LastUploaded, calendar.today())
+          .set(EncryptKeyId, userFile.encryptMeta?.keyId?.value)
+      }
     log.i { "importResult=$result" }
 
     when (result) {

@@ -55,6 +55,8 @@ internal constructor(
   private val syncApi: SyncApi,
   private val appPreferences: AppPreferences,
   private val runLevels: RunLevelController,
+  private val importer: BudgetImporter,
+  private val uuids: UuidGenerator,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
@@ -72,6 +74,9 @@ internal constructor(
 
   private val mutableCloseDialog = MutableSharedFlow<Boolean>()
   val closeDialog: SharedFlow<Boolean> = mutableCloseDialog.asSharedFlow()
+
+  private val mutableImportState = MutableStateFlow<ImportBudgetState>(ImportBudgetState.Idle)
+  val importState: StateFlow<ImportBudgetState> = mutableImportState.asStateFlow()
 
   private var lastUserFiles: List<UserFile>? = null
 
@@ -179,6 +184,53 @@ internal constructor(
       }
     }
   }
+
+  /** Imports a zip in Actual's export format as a new local budget, then opens it. */
+  fun importZip(open: () -> InputStream) {
+    if (mutableImportState.value is ImportBudgetState.Importing) return
+    mutableImportState.update { ImportBudgetState.Importing }
+    viewModelScope.launch {
+      val id = uuids { BudgetId(it) }
+      val zip = files.tmp(mkdirs = true) / "$id-import.zip"
+      val result =
+        runCatchingCancellable(
+          attempt = {
+            withContext(contexts.io) {
+              open().use { input ->
+                files.fileSystem.sink(zip).buffer().outputStream().use { input.copyTo(it) }
+              }
+            }
+            importer.import(id, zip) { meta -> meta.set(Id, id.value) - IMPORT_CLEARED_KEYS }
+          },
+          onFailure = { e ->
+            log.e(e) { "Failed reading import file" }
+            ImportResult.OtherFailure(e.requireMessage())
+          },
+          finally = { withContext(contexts.io) { files.fileSystem.delete(zip, mustExist = false) } },
+        )
+      log.i { "importZip $id: $result" }
+
+      when (result) {
+        is ImportResult.Success -> {
+          mutableImportState.update { ImportBudgetState.Idle }
+          runLevels.onBudget(id, result.meta)
+          navToBudget(id)
+        }
+        is ImportResult.Failure ->
+          mutableImportState.update { ImportBudgetState.Failed(result.toImportFailure()) }
+      }
+    }
+  }
+
+  fun clearImportState() = mutableImportState.update { ImportBudgetState.Idle }
+
+  private fun ImportResult.Failure.toImportFailure(): ImportFailure =
+    when (this) {
+      NotZipFile -> NotZip
+      InvalidZipFile -> MissingFiles
+      InvalidMetaFile -> BadMetadata
+      is OtherFailure -> Unknown
+    }
 
   fun logOut() {
     viewModelScope.launch {
