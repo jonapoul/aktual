@@ -20,6 +20,7 @@ kotlin {
     implementation(libs.compose.resources)
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))
+    implementation(project(":aktual-logging"))
   }
 
   androidMainDependencies {

@@ -1,7 +1,7 @@
 package aktual.about.ui.logs
 
 import aktual.about.components.CollectLogExports
-import aktual.about.components.LogExportHandler
+import aktual.core.ui.FileExportHandler
 import aktual.about.components.rememberLogExportHandler
 import aktual.about.vm.logs.LogEntriesViewModel
 import aktual.about.vm.logs.LogFilesState
@@ -82,7 +82,7 @@ fun LogsScreen(
 @Composable
 private fun LogsWideEntries(
   files: LogFilesState,
-  handler: LogExportHandler,
+  handler: FileExportHandler,
   onSelect: (LocalDate) -> Unit,
   onFiltersChange: (LogFilters) -> Unit,
   back: BackNavigator,

@@ -1,6 +1,6 @@
 package aktual.about.ui.logs
 
-import aktual.about.components.ExportTargetRow
+import aktual.core.ui.ExportTargetRow
 import aktual.about.model.LogExportTarget
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day

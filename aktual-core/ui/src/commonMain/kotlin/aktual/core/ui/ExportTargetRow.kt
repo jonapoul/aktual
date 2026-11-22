@@ -1,9 +1,7 @@
-package aktual.about.components
+package aktual.core.ui
 
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.Dimens
-import aktual.core.ui.RowShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
