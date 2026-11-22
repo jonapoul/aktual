@@ -14,10 +14,12 @@ import aktual.budget.rules.domain.toRecurConfigOrNull
 import aktual.budget.schedules.components.RecurConfigFields
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
 import aktual.core.icons.Delete
 import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualDatePickerDialog
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -25,8 +27,10 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BottomSheetListItem
 import aktual.core.ui.Chip
+import aktual.core.ui.DialogTextButton
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.LocalCurrencyConfig
+import aktual.core.ui.formatted
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,10 +42,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text as MaterialText
+import androidx.compose.material3.getSelectedDate
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -49,6 +61,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toKotlinLocalDate
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -150,21 +164,56 @@ fun ConditionValue(
   }
 }
 
+// A date picker, which also holds dates outside its default year range
 @Composable
 private fun DayField(
   value: JsonElement,
   onChange: (JsonElement) -> Unit,
   modifier: Modifier = Modifier,
-) =
-  CommitTextField(
+) {
+  val day = value.jsonPrimitive.content.toDayOrNull()
+  var showDialog by rememberSaveable { mutableStateOf(false) }
+
+  AktualButton(
     modifier = modifier.fillMaxWidth(),
-    text = value.jsonPrimitive.content,
-    placeholder = Strings.reportsFormulaQueryDate,
-    onCommit = { text ->
-      val day = text.trim()
-      if (day.isEmpty() || day.toDayOrNull() != null) onChange(JsonPrimitive(day))
-    },
+    text = day?.formatted() ?: Strings.reportsFormulaQueryDate,
+    icon = AktualIcons.Calendar3,
+    onClick = { showDialog = true },
   )
+
+  if (showDialog) {
+    val years = DatePickerDefaults.YearRange
+    val year = day?.year
+    val state =
+      rememberDatePickerState(
+        initialSelectedDate = day?.toJavaLocalDate(),
+        yearRange = if (year == null) years else minOf(years.first, year)..maxOf(years.last, year),
+      )
+    AktualDatePickerDialog(
+      onDismissRequest = { showDialog = false },
+      confirmButton = {
+        DialogTextButton(
+          kind = Primary,
+          text = Strings.reportsFormulaQueryDateOk,
+          isEnabled = state.selectedDateMillis != null,
+          onClick = {
+            state.getSelectedDate()?.let {
+              onChange(JsonPrimitive(it.toKotlinLocalDate().toString()))
+            }
+            showDialog = false
+          },
+        )
+      },
+      dismissButton = {
+        DialogTextButton(
+          text = Strings.reportsFormulaQueryDateCancel,
+          onClick = { showDialog = false },
+        )
+      },
+      content = { DatePicker(state = state) },
+    )
+  }
+}
 
 @Composable
 private fun CurrencySymbol(string: String, modifier: Modifier = Modifier) {
