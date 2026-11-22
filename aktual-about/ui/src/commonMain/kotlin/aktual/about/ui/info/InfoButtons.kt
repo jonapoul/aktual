@@ -23,6 +23,8 @@ import aktual.core.ui.padding
 import aktual.theme.Colors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,52 +42,66 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun InfoButtons(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  CardColumn(
+  Column(
     modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+  ) {
+    InfoButtonGroup {
+      InfoButtonItem(
+        modifier = Modifier.testTag(Tags.CheckUpdatesButton),
+        icon = AktualIcons.Refresh,
+        title = Strings.infoCheckUpdates,
+        onClick = { onAction(CheckUpdates) },
+      )
+
+      InfoButtonItem(
+        modifier = Modifier.testTag(Tags.ReportButton),
+        icon = AktualIcons.ExclamationOutline,
+        title = Strings.infoReportIssues,
+        trailingIcon = MaterialIcons.OpenInNew,
+        onClick = { onAction(ReportIssue) },
+      )
+    }
+
+    InfoButtonGroup {
+      InfoButtonItem(
+        icon = MaterialIcons.ReceiptLong,
+        title = Strings.infoLogs,
+        onClick = { onAction(AppLogs) },
+      )
+
+      InfoButtonItem(
+        icon = AktualIcons.AlertTriangle,
+        title = Strings.infoCrashes,
+        onClick = { onAction(ViewCrashReports) },
+      )
+
+      InfoButtonItem(
+        icon = MaterialIcons.Archive,
+        title = Strings.storageToolbar,
+        onClick = { onAction(ManageStorage) },
+      )
+    }
+
+    InfoButtonGroup {
+      InfoButtonItem(
+        modifier = Modifier.testTag(Tags.LicensesButton),
+        icon = MaterialIcons.Description,
+        title = Strings.infoLicenses,
+        onClick = { onAction(ViewLicenses) },
+      )
+    }
+  }
+
+@Composable
+private fun InfoButtonGroup(content: @Composable ColumnScope.() -> Unit) =
+  CardColumn(
+    modifier = Modifier.fillMaxWidth(),
     shape = RounderCardShape,
     contentPadding = Dimens.Large.padding,
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
-  ) {
-    InfoButtonItem(
-      modifier = Modifier.testTag(Tags.CheckUpdatesButton),
-      icon = AktualIcons.Refresh,
-      title = Strings.infoCheckUpdates,
-      onClick = { onAction(CheckUpdates) },
-    )
-
-    InfoButtonItem(
-      modifier = Modifier.testTag(Tags.ReportButton),
-      icon = AktualIcons.ExclamationOutline,
-      title = Strings.infoReportIssues,
-      trailingIcon = MaterialIcons.OpenInNew,
-      onClick = { onAction(ReportIssue) },
-    )
-
-    InfoButtonItem(
-      modifier = Modifier.testTag(Tags.LicensesButton),
-      icon = MaterialIcons.Description,
-      title = Strings.infoLicenses,
-      onClick = { onAction(ViewLicenses) },
-    )
-
-    InfoButtonItem(
-      icon = MaterialIcons.Archive,
-      title = Strings.storageToolbar,
-      onClick = { onAction(ManageStorage) },
-    )
-
-    InfoButtonItem(
-      icon = MaterialIcons.ReceiptLong,
-      title = Strings.infoLogs,
-      onClick = { onAction(AppLogs) },
-    )
-
-    InfoButtonItem(
-      icon = AktualIcons.AlertTriangle,
-      title = Strings.infoCrashes,
-      onClick = { onAction(ViewCrashReports) },
-    )
-  }
+    content = content,
+  )
 
 @Composable
 private fun InfoButtonItem(
