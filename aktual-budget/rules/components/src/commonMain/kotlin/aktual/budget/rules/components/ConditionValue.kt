@@ -1,8 +1,9 @@
 package aktual.budget.rules.components
 
 import aktual.budget.model.Amount
+import aktual.budget.model.Amount.Companion.Zero
 import aktual.budget.model.evaluateAmountInput
-import aktual.budget.model.toSignedInputText
+import aktual.budget.model.toInputText
 import aktual.budget.rules.domain.ConditionEntity
 import aktual.budget.rules.domain.ConditionValueKind
 import aktual.budget.rules.domain.DAY_RANGE_END
@@ -17,9 +18,11 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Delete
 import aktual.core.icons.SearchAlternate
+import aktual.core.icons.Subtract
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDatePickerDialog
+import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -55,6 +58,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
@@ -104,22 +108,7 @@ fun ConditionValue(
         onCommit = { text -> onChange(JsonPrimitive(text)) },
       )
 
-    // Number keyboards don't all offer a minus sign
-    Money -> {
-      val currency = LocalCurrencyConfig.current
-      val symbol: (@Composable () -> Unit)? =
-        currency.currency.symbol.takeIf { it.isNotEmpty() }?.let { { CurrencySymbol(it) } }
-      CommitTextField(
-        modifier = modifier.fillMaxWidth(),
-        text = Amount(value.jsonPrimitive.long).toSignedInputText(),
-        keyboardType = Decimal,
-        onCommit = { text ->
-          evaluateAmountInput(text)?.let { amount -> onChange(JsonPrimitive(amount.toLong())) }
-        },
-        leadingIcon = symbol.takeIf { currency.position == BeforeAmount },
-        trailingIcon = symbol.takeIf { currency.position == AfterAmount },
-      )
-    }
+    Money -> MoneyField(value = value, onChange = onChange, modifier = modifier)
 
     Day -> DayField(value = value, onChange = onChange, modifier = modifier)
 
@@ -163,6 +152,55 @@ fun ConditionValue(
 
     NoValue -> Unit
   }
+}
+
+// Shows the unsigned amount, with a sign toggle since number keyboards don't all offer a minus
+@Composable
+private fun MoneyField(
+  value: JsonElement,
+  onChange: (JsonElement) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val amount = Amount(value.jsonPrimitive.long)
+  // Zero has no sign of its own, so keep the last one picked
+  var isZeroNegative by rememberSaveable { mutableStateOf(true) }
+  val isNegative = if (amount == Zero) isZeroNegative else amount < Zero
+
+  fun commit(newAmount: Amount, negative: Boolean) {
+    if (newAmount == Zero) isZeroNegative = negative
+    onChange(JsonPrimitive(newAmount.toLong()))
+  }
+
+  val currency = LocalCurrencyConfig.current
+  val symbol = currency.currency.symbol.takeIf { it.isNotEmpty() }
+  CommitTextField(
+    modifier = modifier.fillMaxWidth(),
+    text = amount.toInputText(),
+    keyboardType = Decimal,
+    onCommit = { text ->
+      evaluateAmountInput(text)?.let { typed ->
+        val signed = if (isNegative) -typed else typed
+        commit(signed, if (signed == Zero) isNegative else signed < Zero)
+      }
+    },
+    leadingIcon = {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        AktualIconButton(
+          imageVector = if (isNegative) AktualIcons.Subtract else AktualIcons.Add,
+          contentDescription =
+            if (isNegative) {
+              Strings.reportsFormulaQueryMakePositive
+            } else {
+              Strings.reportsFormulaQueryMakeNegative
+            },
+          onClick = { commit(-amount, !isNegative) },
+        )
+        if (symbol != null && currency.position == BeforeAmount) CurrencySymbol(symbol)
+      }
+    },
+    trailingIcon =
+      symbol?.takeIf { currency.position == AfterAmount }?.let { { CurrencySymbol(it) } },
+  )
 }
 
 // A date picker, which also holds dates outside its default year range

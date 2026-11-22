@@ -1745,6 +1745,8 @@
   <string name="reports_formula_query_operator">Operator</string>
   <string name="reports_formula_query_delete_condition_confirm">Delete</string>
   <string name="reports_formula_query_remove">Remove %1$s</string>
+  <string name="reports_formula_query_make_positive">Make positive</string>
+  <string name="reports_formula_query_make_negative">Make negative</string>
   <string name="reports_formula_viewer_edit">Edit report</string>
   <string name="reports_formula_viewer_appearance">Appearance</string>
   <string name="reports_formula_viewer_color_rule">Color rule</string>
