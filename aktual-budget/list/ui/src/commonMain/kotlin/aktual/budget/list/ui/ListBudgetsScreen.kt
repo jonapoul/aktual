@@ -1,5 +1,7 @@
 package aktual.budget.list.ui
 
+import aktual.budget.list.vm.DeletingState
+import aktual.budget.list.vm.ImportBudgetState
 import aktual.budget.list.vm.ListBudgetsEvent
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
@@ -10,10 +12,6 @@ import aktual.budget.sync.components.SyncBudgetDialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
-import java.io.InputStream
-import kotlinx.collections.immutable.persistentListOf
-import aktual.budget.list.vm.ImportBudgetState
-import aktual.budget.list.vm.DeletingState
 import aktual.core.model.ServerUrl
 import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.ChangePasswordNavigator
@@ -61,6 +59,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import java.io.InputStream
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -95,16 +95,18 @@ fun ListBudgetsScreen(
 
   var budgetToDelete by remember { mutableStateOf<Budget?>(null) }
   val deletingState by viewModel.deletingState.collectAsStateWithLifecycle()
-  DeleteBudget(
-    budget = budgetToDelete,
-    deletingState = deletingState,
-    onDeleteLocal = viewModel::deleteLocal,
-    onDeleteRemote = viewModel::deleteRemote,
-    onDismiss = {
-      budgetToDelete = null
-      viewModel.clearDeletingState()
-    },
-  )
+  budgetToDelete?.let { budget ->
+    DeleteBudget(
+      budget = budget,
+      deletingState = deletingState,
+      onDeleteLocal = viewModel::deleteLocal,
+      onDeleteRemote = viewModel::deleteRemote,
+      onDismiss = {
+        budgetToDelete = null
+        viewModel.clearDeletingState()
+      },
+    )
+  }
 
   LaunchedEffect(Unit) {
     viewModel.closeDialog.collect { closeDialog ->
@@ -157,13 +159,12 @@ fun ListBudgetsScreen(
 
 @Composable
 private fun DeleteBudget(
-  budget: Budget?,
+  budget: Budget,
   deletingState: DeletingState,
   onDeleteLocal: (BudgetId) -> Unit,
   onDeleteRemote: (BudgetId) -> Unit,
   onDismiss: () -> Unit,
 ) {
-  if (budget == null) return
   DeleteBudgetDialog(
     budget = budget,
     deletingState = deletingState,
