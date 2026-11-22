@@ -6,8 +6,8 @@ import aktual.budget.navrail.vm.ExportBudgetViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Code
-import aktual.core.icons.Download
 import aktual.core.icons.Cog
+import aktual.core.icons.Download
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Library
 import aktual.core.icons.Pencil1
@@ -293,7 +293,11 @@ private fun BudgetNavRailDialogs(
   }
 
   if (dialog == Export) {
-    ExportBudgetDialog(viewModel = exportViewModel, canShare = canShareExport, onDismiss = onDismiss)
+    ExportBudgetDialog(
+      viewModel = exportViewModel,
+      canShare = canShareExport,
+      onDismiss = onDismiss,
+    )
   }
 
   if (dialog == NightlyUpdate && nightlyUpdate is Available) {

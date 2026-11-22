@@ -53,7 +53,10 @@ class BudgetExporterTest {
       assertThat(entries.keys.toList()).containsExactly(DB_ENTRY, METADATA_ENTRY)
 
       val exportedMetadata =
-        Json.decodeFromString(DbMetadata.serializer(), entries.getValue(METADATA_ENTRY).decodeToString())
+        Json.decodeFromString(
+          DbMetadata.serializer(),
+          entries.getValue(METADATA_ENTRY).decodeToString(),
+        )
       assertThat(exportedMetadata)
         .isEqualTo(DbMetadata(budgetName = "My: Budget", groupId = "group", resetClock = true))
 

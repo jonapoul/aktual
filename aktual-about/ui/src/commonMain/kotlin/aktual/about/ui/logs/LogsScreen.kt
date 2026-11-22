@@ -1,7 +1,6 @@
 package aktual.about.ui.logs
 
 import aktual.about.components.CollectLogExports
-import aktual.core.ui.FileExportHandler
 import aktual.about.components.rememberLogExportHandler
 import aktual.about.vm.logs.LogEntriesViewModel
 import aktual.about.vm.logs.LogFilesState
@@ -9,6 +8,7 @@ import aktual.about.vm.logs.LogFilesViewModel
 import aktual.about.vm.logs.LogFilters
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.LogDayNavigator
+import aktual.core.ui.FileExportHandler
 import aktual.core.ui.OnAction
 import aktual.core.ui.isCompactWidth
 import androidx.compose.runtime.Composable

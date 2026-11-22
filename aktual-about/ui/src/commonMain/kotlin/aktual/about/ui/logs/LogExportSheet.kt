@@ -1,6 +1,5 @@
 package aktual.about.ui.logs
 
-import aktual.core.ui.ExportTargetRow
 import aktual.about.model.LogExportTarget
 import aktual.about.vm.logs.LogExportScope
 import aktual.about.vm.logs.LogExportScope.Day
@@ -18,6 +17,7 @@ import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
+import aktual.core.ui.ExportTargetRow
 import aktual.core.ui.PreviewWithColors
 import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement.spacedBy
