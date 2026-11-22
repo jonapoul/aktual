@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import java.io.OutputStream
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
@@ -46,16 +47,25 @@ internal constructor(
   private val readyChannel = Channel<ReadyBudgetExport>(BUFFERED)
   val exports: Flow<ReadyBudgetExport> = readyChannel.receiveAsFlow()
 
+  private var exportJob: Job? = null
+
   fun export(target: ExportBudgetTarget) {
     if (mutableState.value is Exporting) return
     mutableState.update { Exporting }
-    viewModelScope.launch {
+    exportJob = viewModelScope.launch {
       runCatchingCancellable(
         attempt = {
           val export = exporter.export()
           val ready =
             ReadyBudgetExport(fileName = export.fileName, target = target) { output ->
-              files.fileSystem.source(export.path).buffer().inputStream().use { it.copyTo(output) }
+              // The zip is never encrypted, so don't leave it lying around
+              try {
+                files.fileSystem.source(export.path).buffer().inputStream().use {
+                  it.copyTo(output)
+                }
+              } finally {
+                files.fileSystem.delete(export.path, mustExist = false)
+              }
             }
           readyChannel.send(ready)
           mutableState.update { Idle }
@@ -68,7 +78,11 @@ internal constructor(
     }
   }
 
-  fun reset() = mutableState.update { Idle }
+  fun reset() {
+    exportJob?.cancel()
+    exportJob = null
+    mutableState.update { Idle }
+  }
 }
 
 @Immutable

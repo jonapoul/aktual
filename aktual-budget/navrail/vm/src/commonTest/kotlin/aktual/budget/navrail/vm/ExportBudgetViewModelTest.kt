@@ -16,6 +16,7 @@ import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import java.io.ByteArrayOutputStream
 import kotlin.test.Test
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.IOException
@@ -43,6 +44,26 @@ class ExportBudgetViewModelTest {
       val output = ByteArrayOutputStream()
       ready.write(output)
       assertThat(output.toString(Charsets.UTF_8)).isEqualTo("zip contents")
+      assertThat(temporaryFolder.fileSystem.exists(zip)).isFalse()
+    }
+  }
+
+  @Test
+  fun `Resetting while exporting cancels the export`() = runTest {
+    val gate = CompletableDeferred<BudgetExport>()
+    val viewModel = viewModel { gate.await() }
+
+    viewModel.exports.test {
+      viewModel.state.test {
+        assertThatNextEmissionIsEqualTo(Idle)
+        viewModel.export(Share)
+        assertThatNextEmissionIsEqualTo(Exporting)
+        viewModel.reset()
+        assertThatNextEmissionIsEqualTo(Idle)
+      }
+
+      gate.complete(BudgetExport(path = temporaryFolder.root / "export.zip", fileName = "x.zip"))
+      expectNoEvents()
     }
   }
 
