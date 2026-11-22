@@ -44,13 +44,11 @@ private class AndroidFileExportHandler(
   override fun share(file: ExportFile) {
     scope.launch {
       val uri =
-        withContext(Dispatchers.IO) {
-          // Exports can hold budgets or server details, so don't leave old ones lying around
-          val dir = File(context.cacheDir, EXPORT_DIR).apply { mkdirs() }
-          dir.listFiles()?.forEach(File::delete)
-          val target = File(dir, file.fileName)
-          target.outputStream().use(file.write)
-          FileProvider.getUriForFile(context, "${context.packageName}.exports", target)
+        try {
+          withContext(Dispatchers.IO) { writeShareFile(file) }
+        } catch (e: IOException) {
+          log.e(e) { "Failed writing ${file.fileName} to share" }
+          return@launch
         }
 
       val intent =
@@ -60,6 +58,15 @@ private class AndroidFileExportHandler(
           .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       context.startActivity(Intent.createChooser(intent, file.fileName))
     }
+  }
+
+  private fun writeShareFile(file: ExportFile): Uri {
+    // Exports can hold budgets or server details, so don't leave old ones lying around
+    val dir = File(context.cacheDir, EXPORT_DIR).apply { mkdirs() }
+    dir.listFiles()?.forEach(File::delete)
+    val target = File(dir, file.fileName)
+    target.outputStream().use(file.write)
+    return FileProvider.getUriForFile(context, "${context.packageName}.exports", target)
   }
 
   override fun save(file: ExportFile) {

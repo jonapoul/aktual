@@ -39,11 +39,9 @@ class BudgetExporterTest {
   }
 
   @Test
-  fun `Zip holds the database without its cache, and metadata asking for a new clock`() = runTest {
+  fun `Zip holds the database and metadata asking for a new clock`() = runTest {
     inMemoryDriverFactory().create(ID).use { driver ->
       driver.execute(null, "INSERT INTO tags(id, tag) VALUES ('t1', 'food')", 0)
-      driver.execute(null, "INSERT INTO kvcache(key, value) VALUES ('a', 'b')", 0)
-      driver.execute(null, "INSERT INTO kvcache_key(id, key) VALUES (1, 2.0)", 0)
       val metadata = DbMetadata(budgetName = "My: Budget", groupId = "group")
 
       val export = exporter(driver, metadata).export()
@@ -64,12 +62,7 @@ class BudgetExporterTest {
       files.fileSystem.write(dbFile) { write(entries.getValue(DB_ENTRY)) }
       fileDriverFactory(dbFile.toFile()).create(ID).use { exported ->
         assertThat(exported.count("tags")).isEqualTo(1L)
-        assertThat(exported.count("kvcache")).isEqualTo(0L)
-        assertThat(exported.count("kvcache_key")).isEqualTo(0L)
       }
-
-      // The open database keeps its cache
-      assertThat(driver.count("kvcache")).isEqualTo(1L)
     }
   }
 

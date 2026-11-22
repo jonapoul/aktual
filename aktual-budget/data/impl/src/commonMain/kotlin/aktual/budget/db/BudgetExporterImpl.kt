@@ -16,7 +16,6 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import okio.Path
@@ -56,18 +55,10 @@ internal constructor(
       BudgetExport(path = zip, fileName = fileName(metadata))
     }
 
-  // VACUUM INTO gives a consistent copy without closing the open database. The cache is never
-  // exported, so whoever opens it recomputes everything
+  // VACUUM INTO gives a consistent copy without closing the open database. Aktual never writes the
+  // kvcache tables, and Actual clears them when importing a file, so the copy isn't cleaned up
   private suspend fun snapshotDatabase(snapshot: Path) {
-    val path = snapshot.toString()
-    driver.execute(null, "VACUUM INTO ?", 1) { bindString(0, path) }.await()
-    driver.execute(null, "ATTACH DATABASE ? AS export", 1) { bindString(0, path) }.await()
-    try {
-      driver.execute(null, "DELETE FROM export.kvcache", 0).await()
-      driver.execute(null, "DELETE FROM export.kvcache_key", 0).await()
-    } finally {
-      withContext(NonCancellable) { driver.execute(null, "DETACH DATABASE export", 0).await() }
-    }
+    driver.execute(null, "VACUUM INTO ?", 1) { bindString(0, snapshot.toString()) }.await()
   }
 
   private fun writeZip(zip: Path, snapshot: Path, metadata: DbMetadata) {
