@@ -36,7 +36,9 @@ import aktual.core.ui.SwipeToReveal
 import aktual.core.ui.contrastingTextColor
 import aktual.theme.Colors
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,6 +56,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
@@ -226,7 +229,7 @@ private fun SwipeableReportCard(
             text = deleteText,
             icon = AktualIcons.Trash,
             background = colors.errorText,
-            foreground = colors.errorText.contrastingTextColor(),
+            foreground = colors.errorText.contrastingTextColor(colors.errorBackground),
             onClick = { currentOnDelete() },
           ),
         )
@@ -340,14 +343,21 @@ private fun PreviewReportDashboardItem(
 ) =
   PreviewWithColorParams(params) {
     CompositionLocalProvider(LocalCanPinReports provides true) {
-      DashboardItem(
-        item = item,
-        chartData = chartData,
-        isPinned = false,
-        isOpen = false,
-        onOpenChange = {},
-        onAction = {},
-      )
+      Column(
+        modifier = Modifier.padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        for (isOpen in listOf(false, true)) {
+          DashboardItem(
+            item = item,
+            chartData = chartData,
+            isPinned = false,
+            isOpen = isOpen,
+            onOpenChange = {},
+            onAction = {},
+          )
+        }
+      }
     }
   }
 

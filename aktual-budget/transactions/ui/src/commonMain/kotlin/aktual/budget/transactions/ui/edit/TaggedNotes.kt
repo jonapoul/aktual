@@ -176,7 +176,7 @@ private fun taggedText(
       append(CHIP_PADDING)
       withStyle(
         SpanStyle(
-          color = tagColor?.contrastingTextColor() ?: defaultText,
+          color = tagColor?.contrastingTextColor(defaultBackground) ?: defaultText,
           fontWeight = SemiBold,
         ),
       ) {

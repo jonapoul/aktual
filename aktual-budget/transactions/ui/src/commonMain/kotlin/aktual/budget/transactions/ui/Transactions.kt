@@ -284,6 +284,7 @@ private fun SwipeToDelete(
 ) {
   val deleteBackground = colors.errorText
   val text = Strings.transactionDelete
+  val fgColor = deleteBackground.contrastingTextColor()
   val actions =
     remember(text, deleteBackground, onDelete) {
       persistentListOf(
@@ -291,7 +292,7 @@ private fun SwipeToDelete(
           text = text,
           icon = AktualIcons.Trash,
           background = deleteBackground,
-          foreground = deleteBackground.contrastingTextColor(),
+          foreground = fgColor,
           onClick = onDelete,
         ),
       )
