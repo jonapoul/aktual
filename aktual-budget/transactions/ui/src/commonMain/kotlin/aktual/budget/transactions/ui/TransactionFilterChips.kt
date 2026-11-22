@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastMap
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
@@ -237,11 +238,12 @@ private fun FieldList(onSelect: (Field) -> Unit) =
       text = Strings.transactionsFilterAdd,
       style = typography.headlineSmall,
     )
-    FILTER_FIELDS.fastForEach { field ->
-      BottomSheetListItem(
-        label = field.label().replaceFirstChar { it.titlecase() },
-        onClick = { onSelect(field) },
-      )
+    val labelled = FILTER_FIELDS.fastMap { field ->
+      field to field.label().replaceFirstChar { it.titlecase() }
+    }
+    val sorted = labelled.sortedBy { (_, label) -> label.lowercase() }
+    sorted.fastForEach { (field, label) ->
+      BottomSheetListItem(label = label, onClick = { onSelect(field) })
     }
   }
 
