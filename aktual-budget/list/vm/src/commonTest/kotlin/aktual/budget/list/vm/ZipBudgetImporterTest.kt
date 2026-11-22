@@ -5,7 +5,7 @@ import aktual.budget.model.DbMetadata
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.BudgetImporter
 import aktual.budget.utils.ImportResult
-import aktual.test.TemporaryFolder
+import aktual.test.CoTemporaryFolder
 import aktual.test.testBudgetFiles
 import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
@@ -19,19 +19,20 @@ import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
 class ZipBudgetImporterTest {
-  @InterceptTest val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   @Test
   fun `Imports a copy of the file as a new local budget`() = runTest {
     val files = testBudgetFiles(temporaryFolder)
     var copied: String? = null
     var updated: DbMetadata? = null
-    val importer = importer(files) { _, zip, update ->
-      copied = files.fileSystem.read(zip) { readUtf8() }
-      val meta = update(CLOUD_METADATA)
-      updated = meta
-      ImportResult.Success(meta)
-    }
+    val importer =
+      importer(files) { _, zip, update ->
+        copied = files.fileSystem.read(zip) { readUtf8() }
+        val meta = update(CLOUD_METADATA)
+        updated = meta
+        ImportResult.Success(meta)
+      }
 
     val import = importer.import { "zip contents".byteInputStream() }
 
