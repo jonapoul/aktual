@@ -81,6 +81,7 @@ private val aktualIcons =
       Tag,
       Trash,
       Tuning,
+      Upload,
       UserGroup,
       ViewHide,
       ViewShow,
