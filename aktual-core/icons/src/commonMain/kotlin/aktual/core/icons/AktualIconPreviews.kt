@@ -48,6 +48,7 @@ private val aktualIcons =
       Copy,
       Delete,
       DotsHorizontalTriple,
+      Download,
       Equals,
       ExclamationOutline,
       FileDouble,
