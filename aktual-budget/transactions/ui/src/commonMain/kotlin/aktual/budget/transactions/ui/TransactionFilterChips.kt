@@ -241,7 +241,7 @@ private fun FieldList(onSelect: (Field) -> Unit) =
     val labelled = FILTER_FIELDS.fastMap { field ->
       field to field.label().replaceFirstChar { it.titlecase() }
     }
-    val sorted = remember(labelled) { labelled.sortedBy { (_, label) -> label.lowercase() } }
+    val sorted = labelled.sortedBy { (_, label) -> label.lowercase() }
     sorted.fastForEach { (field, label) ->
       BottomSheetListItem(label = label, onClick = { onSelect(field) })
     }
