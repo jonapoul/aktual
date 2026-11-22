@@ -106,8 +106,8 @@ enum class ExportBudgetTarget {
 }
 
 /**
- * [write] copies the zip into a destination the platform picked. [onDone] deletes it, whether or not
- * it was written.
+ * [write] copies the zip into a destination the platform picked. [onDone] deletes it, whether or
+ * not it was written.
  */
 @Immutable
 data class ReadyBudgetExport(

@@ -43,7 +43,7 @@ class ExportBudgetViewModelTest {
       assertThat(ready.target).isEqualTo(Share)
       val output = ByteArrayOutputStream()
       ready.write(output)
-      assertThat(output.toString(Charsets.UTF_8)).isEqualTo("zip contents")
+      assertThat(output.toByteArray().decodeToString()).isEqualTo("zip contents")
       assertThat(temporaryFolder.fileSystem.exists(zip)).isTrue()
 
       ready.onDone()
