@@ -1,166 +1,154 @@
 package aktual.about.ui.info
 
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.AlertTriangle
+import aktual.core.icons.CheveronRight
+import aktual.core.icons.ExclamationOutline
+import aktual.core.icons.Refresh
+import aktual.core.icons.material.Archive
+import aktual.core.icons.material.Description
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.OpenInNew
+import aktual.core.icons.material.ReceiptLong
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.padding
 import aktual.theme.Colors
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
-@Suppress("MagicNumber")
 internal fun InfoButtons(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-    val density = LocalDensity.current
+  Column(
+    modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+  ) {
+    InfoButtonGroup {
+      InfoButtonItem(
+        modifier = Modifier.testTag(Tags.CheckUpdatesButton),
+        icon = AktualIcons.Refresh,
+        title = Strings.infoCheckUpdates,
+        onClick = { onAction(CheckUpdates) },
+      )
 
-    @Suppress("RestrictedApi") val fontScale = density.fontScale
+      InfoButtonItem(
+        modifier = Modifier.testTag(Tags.ReportButton),
+        icon = AktualIcons.ExclamationOutline,
+        title = Strings.infoReportIssues,
+        trailingIcon = MaterialIcons.OpenInNew,
+        onClick = { onAction(ReportIssue) },
+      )
+    }
 
-    val narrowBreakpoint = (400 * fontScale).dp
-    val wideBreakpoint = (700 * fontScale).dp
+    InfoButtonGroup {
+      InfoButtonItem(
+        icon = MaterialIcons.ReceiptLong,
+        title = Strings.infoLogs,
+        onClick = { onAction(AppLogs) },
+      )
 
-    val availableWidth = maxWidth
-    when {
-      availableWidth < narrowBreakpoint -> InfoButtonsColumn(onAction)
-      availableWidth < wideBreakpoint -> InfoButtonsGrid(onAction)
-      else -> InfoButtonsRow(onAction)
+      InfoButtonItem(
+        icon = AktualIcons.AlertTriangle,
+        title = Strings.infoCrashes,
+        onClick = { onAction(ViewCrashReports) },
+      )
+
+      InfoButtonItem(
+        icon = MaterialIcons.Archive,
+        title = Strings.storageToolbar,
+        onClick = { onAction(ManageStorage) },
+      )
+    }
+
+    InfoButtonGroup {
+      InfoButtonItem(
+        modifier = Modifier.testTag(Tags.LicensesButton),
+        icon = MaterialIcons.Description,
+        title = Strings.infoLicenses,
+        onClick = { onAction(ViewLicenses) },
+      )
     }
   }
 
 @Composable
-private fun CheckUpdatesButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  AktualButton(
-    modifier = modifier.testTag(Tags.CheckUpdatesButton),
-    text = Strings.infoCheckUpdates,
-    onClick = { onAction(CheckUpdates) },
-  )
-
-@Composable
-private fun ReportButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  AktualButton(
-    modifier = modifier.testTag(Tags.ReportButton),
-    text = Strings.infoReportIssues,
-    onClick = { onAction(ReportIssue) },
-  )
-
-@Composable
-private fun LicensesButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  AktualButton(
-    modifier = modifier.testTag(Tags.LicensesButton),
-    text = Strings.infoLicenses,
-    onClick = { onAction(ViewLicenses) },
-  )
-
-@Composable
-private fun ManageStorageButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  AktualButton(
-    modifier = modifier,
-    text = Strings.storageToolbar,
-    onClick = { onAction(ManageStorage) },
-  )
-
-@Composable
-private fun LogsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  AktualButton(
-    modifier = modifier,
-    text = Strings.infoLogs,
-    onClick = { onAction(AppLogs) },
-  )
-
-@Composable
-private fun CrashReportsButton(onAction: OnAction<InfoAction>, modifier: Modifier = Modifier) =
-  AktualButton(
-    modifier = modifier,
-    text = Strings.infoCrashes,
-    onClick = { onAction(ViewCrashReports) },
-  )
-
-private val ButtonCardPadding = 10.dp.padding
-
-@Composable
-private fun InfoButtonsColumn(onAction: OnAction<InfoAction>) =
+private fun InfoButtonGroup(content: @Composable ColumnScope.() -> Unit) =
   CardColumn(
     modifier = Modifier.fillMaxWidth(),
     shape = RounderCardShape,
-    contentPadding = ButtonCardPadding,
-    horizontalAlignment = CenterHorizontally,
-  ) {
-    val buttonModifier = Modifier.fillMaxWidth()
-    CheckUpdatesButton(onAction, buttonModifier)
-    ReportButton(onAction, buttonModifier)
-    LicensesButton(onAction, buttonModifier)
-    ManageStorageButton(onAction, buttonModifier)
-    LogsButton(onAction, buttonModifier)
-    CrashReportsButton(onAction, buttonModifier)
-  }
+    contentPadding = Dimens.Large.padding,
+    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    content = content,
+  )
 
 @Composable
-private fun InfoButtonsGrid(onAction: OnAction<InfoAction>) =
-  CardColumn(
-    modifier = Modifier.fillMaxWidth(),
-    shape = RounderCardShape,
-    contentPadding = ButtonCardPadding,
-    horizontalAlignment = CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(0.dp),
-  ) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
-    ) {
-      CheckUpdatesButton(onAction, Modifier.weight(1f))
-      ReportButton(onAction, Modifier.weight(1f))
-    }
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
-    ) {
-      LicensesButton(onAction, Modifier.weight(1f))
-      ManageStorageButton(onAction, Modifier.weight(1f))
-    }
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
-    ) {
-      LogsButton(onAction, Modifier.weight(1f))
-      CrashReportsButton(onAction, Modifier.weight(1f))
-    }
-  }
-
-@Composable
-private fun InfoButtonsRow(onAction: OnAction<InfoAction>) =
+private fun InfoButtonItem(
+  icon: ImageVector,
+  title: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  trailingIcon: ImageVector = AktualIcons.CheveronRight,
+) {
   Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(ItemHeight)
+        .clickable(role = Button, onClick = onClick)
+        .padding(horizontal = ItemPadding),
+    verticalAlignment = CenterVertically,
   ) {
-    CheckUpdatesButton(onAction, Modifier.weight(1f))
-    ReportButton(onAction, Modifier.weight(1f))
-    LicensesButton(onAction, Modifier.weight(1f))
-    ManageStorageButton(onAction, Modifier.weight(1f))
-    LogsButton(onAction, Modifier.weight(1f))
-    CrashReportsButton(onAction, Modifier.weight(1f))
-  }
+    Icon(
+      modifier = Modifier.padding(ItemPadding),
+      imageVector = icon,
+      contentDescription = null,
+      tint = colors.pillText,
+    )
 
-private val HORIZONTAL_SPACING = 8.dp
+    Text(
+      modifier = Modifier.weight(1f).padding(ItemPadding),
+      text = title,
+      style = typography.bodyLarge,
+      color = colors.pillText,
+    )
+
+    Icon(
+      modifier = Modifier.padding(ItemPadding),
+      imageVector = trailingIcon,
+      contentDescription = null,
+      tint = colors.pillText,
+    )
+  }
+}
+
+private val ItemPadding = 8.dp
+private val ItemHeight = 50.dp
 
 @Composable
 @Preview(name = "Narrow", widthDp = 300)
-@Preview(name = "Medium", widthDp = 500)
-@Preview(name = "Medium - small font", widthDp = 500, fontScale = 0.65f)
 @Preview(name = "Wide", widthDp = 800)
-@Preview(name = "Wide - big font", widthDp = 800, fontScale = 2f)
+@Preview(name = "Big font", widthDp = 300, fontScale = 2f)
 private fun PreviewInfoButtons(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) { InfoButtons(onAction = {}) }
