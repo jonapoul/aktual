@@ -26,7 +26,7 @@ class ZipBudgetImporterTest {
     val files = testBudgetFiles(temporaryFolder)
     var copied: String? = null
     var updated: DbMetadata? = null
-    val importer = importer(files) { id, zip, update ->
+    val importer = importer(files) { _, zip, update ->
       copied = files.fileSystem.read(zip) { readUtf8() }
       val meta = update(CLOUD_METADATA)
       updated = meta
