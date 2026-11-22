@@ -17,6 +17,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BankSyncProvidersNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.LinkBankAccountNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
@@ -65,6 +66,7 @@ internal fun BankSyncScreen(
   settings: BankSyncSettingsNavigator,
   link: LinkBankAccountNavigator,
   providers: BankSyncProvidersNavigator,
+  transactions: TransactionsNavigator,
   modifier: Modifier = Modifier,
   viewModel: BankSyncViewModel = metroViewModel(),
 ) {
@@ -74,7 +76,8 @@ internal fun BankSyncScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        is Finished -> snackbars.show { showBankSyncSummary(event.summary) }
+        is Finished ->
+          snackbars.show { showBankSyncSummary(event.summary, onViewAdded = transactions::synced) }
       }
     }
   }

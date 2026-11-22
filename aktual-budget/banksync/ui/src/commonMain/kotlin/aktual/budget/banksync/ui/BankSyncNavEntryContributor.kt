@@ -15,6 +15,7 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.LinkBankAccountNavRoute
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.NavStack
+import aktual.core.nav.TransactionsNavigator
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -30,6 +31,7 @@ class BankSyncNavEntryContributor : BudgetNavEntryContributor {
         settings = BankSyncSettingsNavigator(stack),
         link = LinkBankAccountNavigator(stack),
         providers = BankSyncProvidersNavigator(stack),
+        transactions = TransactionsNavigator(stack),
       )
     }
     budgetEntry<BankSyncSettingsNavRoute> { route ->

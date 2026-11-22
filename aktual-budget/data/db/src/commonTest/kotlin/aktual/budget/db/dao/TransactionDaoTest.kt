@@ -450,6 +450,22 @@ internal class TransactionDaoTest {
     }
 
   @Test
+  fun `Sorting ids puts them in list order and drops deleted or unknown ones`() =
+    runDaoTest { transactions ->
+      // given
+      transactions.insert("t1", ON_1, CATEGORY, PAYEE, DATE)
+      transactions.insert("t2", ON_2, CATEGORY, PAYEE, LocalDate(2026, 1, 3))
+      transactions.insert("t3", ON_1, CATEGORY, PAYEE, LocalDate(2026, 1, 2))
+      insertCopy(transactions, id = "t4", copyOf = "t1") { it.copy(tombstone = true) }
+
+      // when
+      val ids = transactions.sortIds(listOf("t1", "t4", "missing", "t2", "t3").map(::TransactionId))
+
+      // then
+      assertThat(ids.map { it.toString() }).containsExactly("t2", "t3", "t1")
+    }
+
+  @Test
   fun `Notes lists include split parts with their parent and skip deleted rows`() =
     runDaoTest { transactions ->
       // given

@@ -32,6 +32,9 @@ sealed interface FilteredSpec {
   data class Conditions(override val title: String, val filter: ConditionsFilter) : FilteredSpec
 
   data class LinkedToSchedule(override val title: String, val id: ScheduleId) : FilteredSpec
+
+  // Opened from a bank sync's snackbar, to show what it added
+  data class SpecificIds(override val title: String, val ids: List<TransactionId>) : FilteredSpec
 }
 
 sealed interface AccountSpec {

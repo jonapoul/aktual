@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetFilterRows
+import aktual.budget.db.GetListOrderOfIds
 import aktual.budget.db.NotesContainingHash
 import aktual.budget.db.Transactions
 import aktual.budget.db.withResult
@@ -294,6 +295,22 @@ class TransactionDao(database: BudgetDatabase) {
 
   suspend fun getIdsBySchedule(schedule: ScheduleId): List<TransactionId> = queries.withResult {
     getIdsBySchedule(schedule).awaitAsList()
+  }
+
+  // The live ones of these, in list order, as getIdsBySchedule
+  suspend fun sortIds(ids: Collection<TransactionId>): List<TransactionId> = queries.withResult {
+    val rows =
+      ids.toSet().chunked(MAX_BIND_ARGS).flatMap { chunk ->
+        getListOrderOfIds(chunk).awaitAsList()
+      }
+    rows
+      .sortedWith(
+        compareByDescending<GetListOrderOfIds> { it.date }
+          .thenBy { it.starting_balance_flag }
+          .thenByDescending { it.sort_order }
+          .thenBy { it.id.value },
+      )
+      .map { it.id }
   }
 
   suspend fun getIdsAndNotesByCategory(

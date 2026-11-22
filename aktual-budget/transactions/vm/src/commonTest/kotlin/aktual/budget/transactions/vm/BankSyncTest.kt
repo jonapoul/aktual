@@ -114,7 +114,9 @@ internal class BankSyncTest : TransactionsViewModelTestBase() {
       bankSync.finish(other, synced)
 
       // then
-      assertThatNextEmissionIsEqualTo(BankSyncSummary.Synced("Linked", added = 1, updated = 0))
+      assertThatNextEmissionIsEqualTo(
+        BankSyncSummary.Synced("Linked", added = listOf(TransactionId("t")), updated = 0),
+      )
     }
   }
 

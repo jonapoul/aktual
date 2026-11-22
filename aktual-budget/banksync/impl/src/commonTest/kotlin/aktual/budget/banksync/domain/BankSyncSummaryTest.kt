@@ -19,17 +19,24 @@ class BankSyncSummaryTest {
   @Test
   fun `One account`() {
     assertThat(BankSyncSummary.of(listOf(synced("a", added = 2, updated = 1))))
-      .isEqualTo(Synced(name = "a", added = 2, updated = 1))
+      .isEqualTo(Synced(name = "a", added = ids("a-added-0", "a-added-1"), updated = 1))
     assertThat(BankSyncSummary.of(listOf(failed("a")))).isEqualTo(Failed(name = "a"))
   }
 
   @Test
-  fun `Several accounts total those that synced`() {
+  fun `Several accounts total those that synced and list everything they added`() {
     val results =
       listOf(synced("a", added = 2, updated = 1), failed("b"), synced("c", added = 3, updated = 0))
 
     assertThat(BankSyncSummary.of(results))
-      .isEqualTo(Several(synced = 2, failed = 1, added = 5, updated = 1))
+      .isEqualTo(
+        Several(
+          synced = 2,
+          failed = 1,
+          added = ids("a-added-0", "a-added-1", "c-added-0", "c-added-1", "c-added-2"),
+          updated = 1,
+        ),
+      )
   }
 
   private fun synced(name: String, added: Int, updated: Int) =
@@ -39,6 +46,8 @@ class BankSyncSummaryTest {
       added = List(added) { TransactionId("$name-added-$it") },
       updated = List(updated) { TransactionId("$name-updated-$it") },
     )
+
+  private fun ids(vararg ids: String) = ids.map(::TransactionId)
 
   private fun failed(name: String) =
     BankSyncResult.Failed(AccountId(name), name, BankSyncError.Internal(message = null))

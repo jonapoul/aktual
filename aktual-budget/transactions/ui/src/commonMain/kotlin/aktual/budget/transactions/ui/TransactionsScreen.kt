@@ -98,7 +98,7 @@ fun TransactionsScreen(
   back: BackNavigator,
   accountDeleted: DeletedAccountNavigator,
   openTransaction: EditTransactionNavigator,
-  openTag: TransactionsNavigator,
+  toTransactions: TransactionsNavigator,
   switchAccount: SwitchAccountNavigator,
   spec: TransactionsSpec,
   isRoot: Boolean = false,
@@ -125,7 +125,7 @@ fun TransactionsScreen(
   val savedFilters by viewModel.savedFiltersState.collectAsStateWithLifecycle()
   val snackbars = LocalSnackbars.current
 
-  BankSyncSnackbars(viewModel.bankSyncFinished, snackbars)
+  BankSyncSnackbars(viewModel.bankSyncFinished, snackbars, toTransactions)
 
   val adjustmentNotes = Strings.transactionsReconcileAdjustmentNotes
   var showLoginKept by rememberSaveable { mutableStateOf(false) }
@@ -169,7 +169,7 @@ fun TransactionsScreen(
         is SwitchAccount -> switchAccount(action.id)
         SwitchToAllAccounts -> switchAccount.all()
         is OpenTransaction -> openTransaction(action.id)
-        is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) openTag(action.id)
+        is OpenTag -> if (spec.tagSpec != TagSpec.SpecificTag(action.id)) toTransactions(action.id)
         CreateTransaction ->
           openTransaction.create(
             account = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id,
@@ -276,10 +276,14 @@ private fun TransactionsEvents(
 }
 
 @Composable
-private fun BankSyncSnackbars(finished: Flow<BankSyncSummary>, snackbars: Snackbars) {
+private fun BankSyncSnackbars(
+  finished: Flow<BankSyncSummary>,
+  snackbars: Snackbars,
+  toTransactions: TransactionsNavigator,
+) {
   LaunchedEffect(finished) {
     finished.collect { summary ->
-      snackbars.show { showBankSyncSummary(summary) }
+      snackbars.show { showBankSyncSummary(summary, onViewAdded = toTransactions::synced) }
     }
   }
 }

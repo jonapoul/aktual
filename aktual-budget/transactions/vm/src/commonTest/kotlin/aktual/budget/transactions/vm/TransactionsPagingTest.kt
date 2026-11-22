@@ -5,8 +5,10 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.Amount
+import aktual.budget.model.FilteredSpec
 import aktual.budget.model.TagId
 import aktual.budget.model.TagSpec
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.localChange
 import aktual.budget.transactions.domain.TransactionMatcherImpl
@@ -284,6 +286,37 @@ internal class TransactionsPagingTest : TransactionsViewModelTestBase() {
       .withData(transaction("a", "a", "a", "a", notes = "#food 1", date = DATE_1))
       .withPrevOffset(2)
       .withNextOffset(null)
+  }
+
+  @Test
+  fun `A bank sync's new transactions are paged in list order`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        matcher = TransactionMatcherImpl(transactions),
+        tagsDao = tags,
+        spec =
+          TransactionsSpec(
+            filtered =
+              FilteredSpec.SpecificIds("Synced", listOf(TransactionId("a"), TransactionId("d"))),
+          ),
+      )
+
+    // when
+    val page =
+      source.load(LoadParams.Refresh(key = null, loadSize = 10, placeholdersEnabled = false))
+
+    // then
+    assertThat(page).isPage().withData(DATED_D, DATED_A).withPrevOffset(null).withNextOffset(null)
   }
 
   @Test

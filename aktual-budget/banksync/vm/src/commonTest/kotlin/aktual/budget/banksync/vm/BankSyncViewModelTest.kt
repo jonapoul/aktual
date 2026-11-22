@@ -236,7 +236,7 @@ class BankSyncViewModelTest {
         controller.finish(Synced(AccountId("a"), "A", added = emptyList(), updated = emptyList()))
 
         assertThat(awaitItem())
-          .isEqualTo(Finished(BankSyncSummary.Synced("A", added = 0, updated = 0)))
+          .isEqualTo(Finished(BankSyncSummary.Synced("A", added = emptyList(), updated = 0)))
       }
 
       var state = awaitItem() as Success

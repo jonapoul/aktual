@@ -37,6 +37,7 @@ import aktual.core.nav.SearchPayeesNavRoute
 import aktual.core.nav.SearchReportsNavRoute
 import aktual.core.nav.SearchRulesNavRoute
 import aktual.core.nav.SearchTagsNavRoute
+import aktual.core.nav.SyncedTransactionsNavRoute
 import aktual.core.nav.TransactionNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsWithTagNavRoute
@@ -61,6 +62,7 @@ class BudgetNavKeyStackSaverTest {
         UncategorisedTransactionsNavRoute,
         CategoryTransactionsNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         ScheduleTransactionsNavRoute("Rent", ScheduleId("schedule")),
+        SyncedTransactionsNavRoute(listOf(TransactionId("a"), TransactionId("b"))),
         TransactionNavRoute(TransactionId("transaction")),
         CreateTransactionNavRoute(AccountId("account"), CategoryId("category")),
         CreateTransactionNavRoute(),
