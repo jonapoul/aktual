@@ -1722,7 +1722,10 @@
   <string name="reports_formula_query_unsupported_condition">This condition can't be edited in Aktual yet: %1$s</string>
   <string name="reports_formula_query_nothing">Nothing</string>
   <string name="reports_formula_query_text">Text</string>
-  <string name="reports_formula_query_date">YYYY-MM-DD</string>
+  <string name="reports_formula_query_date">Choose date</string>
+  <string name="reports_formula_query_date_ok">OK</string>
+  <string name="reports_formula_query_date_cancel">Cancel</string>
+  <string name="reports_formula_query_date_clear">Clear</string>
   <string name="reports_formula_query_day_range">%1$s and %2$s</string>
   <string name="reports_formula_query_choose">Choose</string>
   <string name="reports_formula_query_add_text">Add text</string>
