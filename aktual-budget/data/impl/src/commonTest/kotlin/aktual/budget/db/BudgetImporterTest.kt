@@ -16,6 +16,7 @@ import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.coroutines.EmptyCoroutineContext
@@ -76,6 +77,16 @@ class BudgetImporterTest {
     val result = importer.import(BUDGET_ID, zip) { it }
 
     assertThat(result).isEqualTo(ImportResult.Success(DbMetadata(budgetName = "A")))
+  }
+
+  @Test
+  fun `Ignore unknown metadata keys`() = runTest {
+    val zip = root / "extra-keys.zip"
+    writeZip(zip, DB_ENTRY to "db", METADATA_ENTRY to """{"budgetName":"A","somethingNew":1}""")
+
+    val result = importer.import(BUDGET_ID, zip) { it }
+
+    assertThat(result).isInstanceOf<ImportResult.Success>()
   }
 
   @Test

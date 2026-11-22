@@ -5,6 +5,7 @@ import aktual.budget.model.DbMetadata
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.BudgetImporter
 import aktual.budget.utils.ImportResult
+import aktual.core.model.AktualJson
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.AppScope
 import aktual.log
@@ -16,7 +17,6 @@ import java.util.zip.ZipException
 import java.util.zip.ZipFile
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 import okio.Path
 import okio.buffer
 
@@ -79,7 +79,7 @@ internal constructor(
       zip.getInputStream(zip.getEntry(dir + METADATA_ENTRY)).use { it.reader().readText() }
     val meta =
       try {
-        Json.decodeFromString(DbMetadata.serializer(), metaJson)
+        AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
       } catch (e: SerializationException) {
         log.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
         return InvalidMetaFile
