@@ -33,4 +33,4 @@ fun CollectLogExports(exports: Flow<LogExport>, handler: FileExportHandler) {
 }
 
 private fun LogExport.toFile() =
-  ExportFile(fileName) { output -> output.write(text.encodeToByteArray()) }
+  ExportFile(fileName, write = { output -> output.write(text.encodeToByteArray()) })
