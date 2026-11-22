@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okio.Path
 import okio.buffer
 
 @Stable
@@ -53,27 +54,32 @@ internal constructor(
     if (mutableState.value is Exporting) return
     mutableState.update { Exporting }
     exportJob = viewModelScope.launch {
+      // The zip is never encrypted, so delete it unless the UI takes it, and once the UI is done
+      var unclaimedZip: Path? = null
       runCatchingCancellable(
         attempt = {
           val export = exporter.export()
+          unclaimedZip = export.path
           val ready =
-            ReadyBudgetExport(fileName = export.fileName, target = target) { output ->
-              // The zip is never encrypted, so don't leave it lying around
-              try {
+            ReadyBudgetExport(
+              fileName = export.fileName,
+              target = target,
+              write = { output ->
                 files.fileSystem.source(export.path).buffer().inputStream().use {
                   it.copyTo(output)
                 }
-              } finally {
-                files.fileSystem.delete(export.path, mustExist = false)
-              }
-            }
+              },
+              onDone = { files.fileSystem.delete(export.path, mustExist = false) },
+            )
           readyChannel.send(ready)
+          unclaimedZip = null
           mutableState.update { Idle }
         },
         onFailure = { e ->
           log.e(e) { "Failed exporting budget" }
           mutableState.update { ExportBudgetState.Failed(e.requireMessage()) }
         },
+        finally = { unclaimedZip?.let { files.fileSystem.delete(it, mustExist = false) } },
       )
     }
   }
@@ -99,10 +105,14 @@ enum class ExportBudgetTarget {
   Save,
 }
 
-/** [write] copies the zip into a destination the platform picked. */
+/**
+ * [write] copies the zip into a destination the platform picked. [onDone] deletes it, whether or not
+ * it was written.
+ */
 @Immutable
 data class ReadyBudgetExport(
   val fileName: String,
   val target: ExportBudgetTarget,
   val write: (OutputStream) -> Unit,
+  val onDone: () -> Unit,
 )

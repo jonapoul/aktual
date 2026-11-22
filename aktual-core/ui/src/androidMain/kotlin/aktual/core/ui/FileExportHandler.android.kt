@@ -49,6 +49,8 @@ private class AndroidFileExportHandler(
         } catch (e: IOException) {
           log.e(e) { "Failed writing ${file.fileName} to share" }
           return@launch
+        } finally {
+          file.onDone()
         }
 
       val intent =
@@ -70,6 +72,7 @@ private class AndroidFileExportHandler(
   }
 
   override fun save(file: ExportFile) {
+    pending?.onDone()
     pending = file
     launcher?.launch(file.fileName)
   }
@@ -77,13 +80,18 @@ private class AndroidFileExportHandler(
   fun onSaveResult(uri: Uri?) {
     val file = pending ?: return
     pending = null
-    if (uri == null) return
+    if (uri == null) {
+      file.onDone()
+      return
+    }
     scope.launch(Dispatchers.IO) {
       try {
         context.contentResolver.openOutputStream(uri)?.use(file.write)
         log.i { "Saved ${file.fileName} to $uri" }
       } catch (e: IOException) {
         log.e(e) { "Failed saving ${file.fileName} to $uri" }
+      } finally {
+        file.onDone()
       }
     }
   }

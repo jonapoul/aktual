@@ -32,7 +32,11 @@ private class DesktopFileExportHandler(
     dialog.file = file.fileName
     dialog.isVisible = true
 
-    val name = dialog.file ?: return
+    val name = dialog.file
+    if (name == null) {
+      file.onDone()
+      return
+    }
     val target = File(dialog.directory, name)
     scope.launch(Dispatchers.IO) {
       try {
@@ -40,6 +44,8 @@ private class DesktopFileExportHandler(
         log.i { "Saved ${file.fileName} to $target" }
       } catch (e: IOException) {
         log.e(e) { "Failed saving ${file.fileName} to $target" }
+      } finally {
+        file.onDone()
       }
     }
   }

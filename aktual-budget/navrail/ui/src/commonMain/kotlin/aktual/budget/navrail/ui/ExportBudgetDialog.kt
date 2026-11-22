@@ -50,7 +50,7 @@ internal fun ExportBudget(
   LaunchedEffect(viewModel, handler) {
     viewModel.exports.collect { export ->
       currentOnDismiss()
-      val file = ExportFile(export.fileName, export.write)
+      val file = ExportFile(export.fileName, export.write, export.onDone)
       when (export.target) {
         ExportBudgetTarget.Share -> handler.share(file)
         ExportBudgetTarget.Save -> handler.save(file)

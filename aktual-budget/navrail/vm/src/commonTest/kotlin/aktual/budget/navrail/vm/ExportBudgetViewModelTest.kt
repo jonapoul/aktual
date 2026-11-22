@@ -25,7 +25,7 @@ class ExportBudgetViewModelTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   @Test
-  fun `Exporting hands over a file that copies the zip`() = runTest {
+  fun `Exporting hands over a file that copies the zip and deletes it when done`() = runTest {
     val zip = temporaryFolder.root / "export.zip"
     temporaryFolder.fileSystem.write(zip) { writeUtf8("zip contents") }
     val viewModel = viewModel { BudgetExport(path = zip, fileName = "2026-11-22-Budget.zip") }
@@ -44,6 +44,9 @@ class ExportBudgetViewModelTest {
       val output = ByteArrayOutputStream()
       ready.write(output)
       assertThat(output.toString(Charsets.UTF_8)).isEqualTo("zip contents")
+      assertThat(temporaryFolder.fileSystem.exists(zip)).isTrue()
+
+      ready.onDone()
       assertThat(temporaryFolder.fileSystem.exists(zip)).isFalse()
     }
   }
