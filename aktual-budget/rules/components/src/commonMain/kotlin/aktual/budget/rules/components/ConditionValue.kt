@@ -34,6 +34,7 @@ import aktual.core.ui.formatted
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -171,12 +172,14 @@ private fun DayField(
   onChange: (JsonElement) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val day = value.jsonPrimitive.content.toDayOrNull()
+  val text = value.jsonPrimitive.content
+  val day = text.toDayOrNull()
   var showDialog by rememberSaveable { mutableStateOf(false) }
 
   AktualButton(
     modifier = modifier.fillMaxWidth(),
-    text = day?.formatted() ?: Strings.reportsFormulaQueryDate,
+    // An invalid stored date shows as is, so it doesn't look unset
+    text = day?.formatted() ?: text.ifEmpty { Strings.reportsFormulaQueryDate },
     icon = AktualIcons.Calendar3,
     onClick = { showDialog = true },
   )
@@ -205,10 +208,21 @@ private fun DayField(
         )
       },
       dismissButton = {
-        DialogTextButton(
-          text = Strings.reportsFormulaQueryDateCancel,
-          onClick = { showDialog = false },
-        )
+        Row {
+          if (text.isNotEmpty()) {
+            DialogTextButton(
+              text = Strings.reportsFormulaQueryDateClear,
+              onClick = {
+                onChange(JsonPrimitive(""))
+                showDialog = false
+              },
+            )
+          }
+          DialogTextButton(
+            text = Strings.reportsFormulaQueryDateCancel,
+            onClick = { showDialog = false },
+          )
+        }
       },
       content = { DatePicker(state = state) },
     )
