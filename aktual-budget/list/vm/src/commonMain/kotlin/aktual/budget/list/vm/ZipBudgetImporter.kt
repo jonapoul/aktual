@@ -38,7 +38,7 @@ internal class ZipBudgetImporter(
               files.fileSystem.sink(zip).buffer().outputStream().use { input.copyTo(it) }
             }
           }
-          importer.import(id, zip) { meta -> meta.set(Id, id.value) - CLEARED_KEYS }
+          importer(id, zip) { meta -> meta.set(Id, id.value) - CLEARED_KEYS }
         },
         onFailure = { e ->
           log.e(e) { "Failed reading import file" }

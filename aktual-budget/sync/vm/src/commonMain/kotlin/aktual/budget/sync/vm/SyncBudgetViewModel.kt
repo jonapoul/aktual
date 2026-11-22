@@ -291,7 +291,7 @@ internal constructor(
   private suspend fun importDatabase(path: Path, userFile: UserFile) {
     // The stored file on the server might be out-of-date with a few keys
     val result =
-      importer.import(userFile.fileId, path) { meta ->
+      importer(userFile.fileId, path) { meta ->
         meta
           .set(CloudFileId, userFile.fileId)
           .set(GroupId, userFile.groupId)

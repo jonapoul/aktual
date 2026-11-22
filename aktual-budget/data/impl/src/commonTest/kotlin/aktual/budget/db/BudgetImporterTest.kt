@@ -55,7 +55,7 @@ class BudgetImporterTest {
   fun `Successfully import`() = runTest {
     val zip = resource("valid.zip")
 
-    val result = importer.import(BUDGET_ID, zip) { it.set(GroupId, "new-group") }
+    val result = importer(BUDGET_ID, zip) { it.set(GroupId, "new-group") }
 
     val expected = DB_METADATA.set(GroupId, "new-group")
     assertThat(result).isEqualTo(ImportResult.Success(expected))
@@ -74,7 +74,7 @@ class BudgetImporterTest {
     val zip = root / "nested.zip"
     writeZip(zip, "export/$DB_ENTRY" to "db", "export/$METADATA_ENTRY" to """{"budgetName":"A"}""")
 
-    val result = importer.import(BUDGET_ID, zip) { it }
+    val result = importer(BUDGET_ID, zip) { it }
 
     assertThat(result).isEqualTo(ImportResult.Success(DbMetadata(budgetName = "A")))
   }
@@ -84,7 +84,7 @@ class BudgetImporterTest {
     val zip = root / "extra-keys.zip"
     writeZip(zip, DB_ENTRY to "db", METADATA_ENTRY to """{"budgetName":"A","somethingNew":1}""")
 
-    val result = importer.import(BUDGET_ID, zip) { it }
+    val result = importer(BUDGET_ID, zip) { it }
 
     assertThat(result).isInstanceOf<ImportResult.Success>()
   }
@@ -94,7 +94,7 @@ class BudgetImporterTest {
     val zip = root / "split.zip"
     writeZip(zip, "a/$DB_ENTRY" to "db", "b/$METADATA_ENTRY" to "{}")
 
-    val result = importer.import(BUDGET_ID, zip) { it }
+    val result = importer(BUDGET_ID, zip) { it }
 
     assertThat(result).isEqualTo(InvalidZipFile)
     assertThat(budgetFiles.directory(BUDGET_ID)).doesNotExistOn(fileSystem)
@@ -105,7 +105,7 @@ class BudgetImporterTest {
     val zip = root / "bad-meta.zip"
     writeZip(zip, DB_ENTRY to "db", METADATA_ENTRY to "not json")
 
-    val result = importer.import(BUDGET_ID, zip) { it }
+    val result = importer(BUDGET_ID, zip) { it }
 
     assertThat(result).isEqualTo(InvalidMetaFile)
   }
@@ -114,7 +114,7 @@ class BudgetImporterTest {
   fun `Fail on a file that isn't a zip`() = runTest {
     val zip = resource("invalid.zip")
 
-    val result = importer.import(BUDGET_ID, zip) { it }
+    val result = importer(BUDGET_ID, zip) { it }
 
     assertThat(result).isEqualTo(NotZipFile)
     assertThat(budgetFiles.directory(BUDGET_ID)).doesNotExistOn(fileSystem)

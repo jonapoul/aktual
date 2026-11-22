@@ -7,7 +7,7 @@ import okio.Path
 /** Unpacks a zip in Actual's export format into the budget directory for [id]. */
 fun interface BudgetImporter {
   /** [updateMetadata] adjusts the zip's metadata before it's written. */
-  suspend fun import(
+  suspend operator fun invoke(
     id: BudgetId,
     zipPath: Path,
     updateMetadata: (DbMetadata) -> DbMetadata,

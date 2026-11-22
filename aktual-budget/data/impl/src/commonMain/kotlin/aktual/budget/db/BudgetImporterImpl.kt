@@ -30,7 +30,7 @@ internal constructor(
 ) : BudgetImporter {
   private val fileSystem = files.fileSystem
 
-  override suspend fun import(
+  override suspend fun invoke(
     id: BudgetId,
     zipPath: Path,
     updateMetadata: (DbMetadata) -> DbMetadata,
