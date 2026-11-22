@@ -30,6 +30,11 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
 
   fun decryptedZip(id: BudgetId, mkdirs: Boolean = false): Path = tmp(mkdirs) / "$id-decrypted.zip"
 
+  fun exportDatabase(id: BudgetId, mkdirs: Boolean = false): Path =
+    tmp(mkdirs) / "$id-export.sqlite"
+
+  fun exportZip(id: BudgetId, mkdirs: Boolean = false): Path = tmp(mkdirs) / "$id-export.zip"
+
   fun writeMetadata(id: BudgetId, metadata: DbMetadata) {
     val path = metadata(id, mkdirs = true)
     val json = Json.encodeToString(DbMetadata.serializer(), metadata)

@@ -7,6 +7,8 @@ import androidx.compose.runtime.Immutable
 
 internal data object RenameBudget : BudgetMenuAction
 
+internal data object ExportBudget : BudgetMenuAction
+
 internal data object OpenApiKeys : BudgetMenuAction
 
 internal data object OpenNightlyUpdate : BudgetMenuAction

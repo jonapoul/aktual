@@ -1,6 +1,5 @@
 package aktual.crashes.ui
 
-import aktual.about.components.ExportTargetRow
 import aktual.about.model.LogExportTarget
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Copy
@@ -16,6 +15,7 @@ import aktual.core.ui.Chip
 import aktual.core.ui.ChipDefaults
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
+import aktual.core.ui.ExportTargetRow
 import aktual.core.ui.PreviewWithColors
 import aktual.theme.Colors
 import androidx.compose.foundation.layout.Arrangement.spacedBy

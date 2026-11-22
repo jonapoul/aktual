@@ -34,6 +34,7 @@ import aktual.core.icons.Code
 import aktual.core.icons.Cog
 import aktual.core.icons.Delete
 import aktual.core.icons.DotsHorizontalTriple
+import aktual.core.icons.Download
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Pencil1
 import aktual.core.icons.SearchAlternate
@@ -928,6 +929,14 @@ private fun DrawerHeader(
           onClick = {
             showMenu = false
             onAction(RenameBudget)
+          },
+        )
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuExportBudget,
+          leadingIcon = AktualIcons.Download,
+          onClick = {
+            showMenu = false
+            onAction(ExportBudget)
           },
         )
         if (state.canManageApiKeys) {

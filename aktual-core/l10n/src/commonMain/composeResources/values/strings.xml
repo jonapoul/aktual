@@ -2469,6 +2469,7 @@
   <string name="budget_nav_menu_settings">Settings</string>
   <string name="budget_nav_menu_switch_budget">Switch budget</string>
   <string name="budget_nav_menu_rename_budget">Rename budget</string>
+  <string name="budget_nav_menu_export_budget">Export budget</string>
   <string name="budget_nav_menu_log_out">Log out</string>
   <string name="budget_nav_menu_exit_demo">Exit demo</string>
   <string name="budget_nav_menu_privacy_on">Enable privacy mode</string>
@@ -2495,6 +2496,12 @@
   <string name="budget_nav_rename_placeholder">Budget name</string>
   <string name="budget_nav_rename_confirm">Rename</string>
   <string name="budget_nav_rename_cancel">Cancel</string>
+  <string name="budget_export_description">Export your data as a zip file containing db.sqlite and metadata.json files. It can be imported into another Actual instance by closing an open file (if any), then clicking the "Import file" button, then choosing "Actual."</string>
+  <string name="budget_export_encrypted">Even though encryption is enabled, the exported zip file will not have any encryption.</string>
+  <string name="budget_export_share">Share</string>
+  <string name="budget_export_save">Save to file</string>
+  <string name="budget_export_close">Close</string>
+  <string name="budget_export_failed">Export failed: %1$s</string>
 
   <!-- settings -->
   <string name="settings_toolbar">App Settings</string>

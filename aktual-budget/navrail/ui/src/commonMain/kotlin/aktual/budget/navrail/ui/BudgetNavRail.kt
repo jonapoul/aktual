@@ -6,6 +6,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Code
 import aktual.core.icons.Cog
+import aktual.core.icons.Download
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Library
 import aktual.core.icons.Pencil1
@@ -172,6 +173,7 @@ internal fun BudgetNavRail(
   val onMenuAction: OnAction<BudgetMenuAction> = { action ->
     when (action) {
       RenameBudget -> dialog = Rename
+      ExportBudget -> dialog = Export
       OpenApiKeys -> activeStack.push(ApiKeysNavRoute)
       OpenNightlyUpdate -> dialog = NightlyUpdate
       is BudgetNavAction -> onAction(action)
@@ -253,6 +255,7 @@ internal fun BudgetNavRail(
 
 private enum class NavRailDialog {
   Rename,
+  Export,
   NightlyUpdate,
 }
 
@@ -277,6 +280,9 @@ private fun BudgetNavRailDialogs(
       onDismiss = onDismiss,
     )
   }
+
+  // Always composed, so the save launcher outlives the dialog
+  ExportBudget(isDialogOpen = dialog == Export, onDismiss = onDismiss)
 
   if (dialog == NightlyUpdate && nightlyUpdate is Available) {
     NightlyUpdateDialog(state = nightlyUpdate, onDismiss = onDismiss)
@@ -689,6 +695,14 @@ private fun BudgetMenu(
         onClick = {
           onDismissRequest()
           onAction(RenameBudget)
+        },
+      )
+      AktualDropdownMenuItem(
+        text = Strings.budgetNavMenuExportBudget,
+        leadingIcon = AktualIcons.Download,
+        onClick = {
+          onDismissRequest()
+          onAction(ExportBudget)
         },
       )
       if (canManageApiKeys) {
