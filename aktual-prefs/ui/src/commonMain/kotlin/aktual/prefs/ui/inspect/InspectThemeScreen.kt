@@ -387,7 +387,7 @@ internal fun ThemePropertyRow(
     horizontalArrangement = SpaceBetween,
     verticalAlignment = CenterVertically,
   ) {
-    val textColor = remember(property.color) { property.color.contrastingTextColor() }
+    val textColor = property.color.contrastingTextColor(colors.pageBackground)
     Text(
       modifier = Modifier.weight(1f),
       text = rememberHighlighted(property.name, query),
