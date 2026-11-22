@@ -99,7 +99,10 @@ internal constructor(
   // Both files must come from the same directory: prefer the root, otherwise there must be exactly
   // one directory holding both
   private fun sharedDirectory(names: List<String>): String? {
-    val dbDirs = names.filter { it == DB_ENTRY || it.endsWith("/$DB_ENTRY") }.map { it.dropLast(DB_ENTRY.length) }
+    val dbDirs =
+      names
+        .filter { it == DB_ENTRY || it.endsWith("/$DB_ENTRY") }
+        .map { it.dropLast(DB_ENTRY.length) }
     val metaDirs =
       names
         .filter { it == METADATA_ENTRY || it.endsWith("/$METADATA_ENTRY") }

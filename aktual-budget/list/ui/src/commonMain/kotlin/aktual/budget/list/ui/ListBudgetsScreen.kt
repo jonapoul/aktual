@@ -10,7 +10,6 @@ import aktual.budget.sync.components.SyncBudgetDialog
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
-import aktual.core.ui.rememberFilePicker
 import aktual.core.model.ServerUrl
 import aktual.core.nav.BudgetNavRailNavigator
 import aktual.core.nav.ChangePasswordNavigator
@@ -30,6 +29,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.rememberFilePicker
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
@@ -74,6 +74,7 @@ fun ListBudgetsScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
+  var showImport by remember { mutableStateOf(false) }
 
   LaunchedEffect(viewModel.event) {
     viewModel.event.collect { event ->
@@ -118,7 +119,6 @@ fun ListBudgetsScreen(
     }
   }
 
-  var showImport by remember { mutableStateOf(false) }
   val filePicker =
     rememberFilePicker(
       mimeTypes = ZIP_MIME_TYPES,
@@ -166,7 +166,8 @@ fun ListBudgetsScreen(
 }
 
 // Some file managers label zips with the legacy or generic types
-private val ZIP_MIME_TYPES = listOf("application/zip", "application/x-zip-compressed", "application/octet-stream")
+private val ZIP_MIME_TYPES =
+  listOf("application/zip", "application/x-zip-compressed", "application/octet-stream")
 
 private fun ServerUrl.openIn(uriHandler: UriHandler) = uriHandler.openUri(toString())
 
