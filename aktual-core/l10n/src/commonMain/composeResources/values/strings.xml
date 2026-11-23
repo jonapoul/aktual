@@ -797,7 +797,16 @@
   <string name="list_budgets_change_server">Log out</string>
   <string name="list_budgets_change_password">Change password</string>
   <string name="list_budgets_about">About</string>
+  <string name="list_budgets_create">Create budget</string>
   <string name="list_budgets_import">Import budget</string>
+  <string name="budget_create_title">Create budget</string>
+  <string name="budget_create_placeholder">Budget name</string>
+  <string name="budget_create_confirm">Create</string>
+  <string name="budget_create_cancel">Cancel</string>
+  <string name="budget_create_error_blank">Budget name cannot be blank</string>
+  <string name="budget_create_error_too_long">Budget name is too long (max length %1$d)</string>
+  <string name="budget_create_error_taken">“%1$s” already exists, try “%2$s” instead</string>
+  <string name="budget_create_error_failed">Couldn’t create the budget. Please try again.</string>
   <string name="budget_import_title">Import from Actual export</string>
   <string name="budget_import_description">You can import data from another Actual account or instance. First export your data from a different account, and it will give you a compressed file. This file is a simple zip file that contains the db.sqlite and metadata.json files.</string>
   <string name="budget_import_select_hint">Select one of these compressed files and import it here.</string>
@@ -824,7 +833,8 @@
   <string name="budget_delete">Delete</string>
 
   <string name="budget_success_empty">No budgets found</string>
-  <string name="budget_success_empty_second">Creating new budgets isn't currently supported in this app - you'll need to do this from the browser.</string>
+  <string name="budget_success_empty_second">Create a budget on this device, or open the server in your browser to create one there.</string>
+  <string name="budget_success_empty_create">Create budget</string>
   <string name="budget_success_empty_launch">Open Browser</string>
 
   <string name="budget_failure_message">Failed syncing the list of budgets</string>

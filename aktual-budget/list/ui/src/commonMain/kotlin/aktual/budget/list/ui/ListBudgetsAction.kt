@@ -9,6 +9,8 @@ internal data object Reload : ListBudgetsAction
 
 internal data object ChangePassword : ListBudgetsAction
 
+internal data object CreateBudget : ListBudgetsAction
+
 internal data object ImportBudget : ListBudgetsAction
 
 internal data object LogOut : ListBudgetsAction

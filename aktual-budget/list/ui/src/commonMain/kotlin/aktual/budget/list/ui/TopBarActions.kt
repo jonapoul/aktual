@@ -1,5 +1,6 @@
 package aktual.budget.list.ui
 
+import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cloud
 import aktual.core.icons.Cog
@@ -52,6 +53,16 @@ internal fun MoreMenu(
     expanded = showMenu,
     onDismissRequest = onDismissRequest,
   ) {
+    val createText = Strings.listBudgetsCreate
+    AktualDropdownMenuItem(
+      text = { Text(createText) },
+      onClick = {
+        onDismissRequest()
+        onAction(CreateBudget)
+      },
+      leadingIcon = { Icon(AktualIcons.Add, contentDescription = createText) },
+    )
+
     val importText = Strings.listBudgetsImport
     AktualDropdownMenuItem(
       text = { Text(importText) },

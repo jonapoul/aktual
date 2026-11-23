@@ -1,5 +1,6 @@
 package aktual.budget.list.ui
 
+import aktual.budget.list.vm.CreateBudgetState
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.list.vm.ImportBudgetState
 import aktual.budget.list.vm.ListBudgetsEvent
@@ -62,6 +63,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.io.InputStream
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 
 @Composable
 fun ListBudgetsScreen(
@@ -79,12 +81,14 @@ fun ListBudgetsScreen(
 
   var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
   var showImport by remember { mutableStateOf(false) }
+  var showCreate by remember { mutableStateOf(false) }
 
   LaunchedEffect(viewModel.event) {
     viewModel.event.collect { event ->
       when (event) {
         NavToBudget -> {
           showImport = false
+          showCreate = false
           toBudget()
         }
         ListBudgetsEvent.LogOut -> logOut()
@@ -127,6 +131,19 @@ fun ListBudgetsScreen(
     },
   )
 
+  val createState by viewModel.createState.collectAsStateWithLifecycle()
+  if (showCreate) {
+    CreateBudget(
+      state = createState,
+      listState = state,
+      onCreate = viewModel::createBudget,
+      onDismiss = {
+        showCreate = false
+        viewModel.clearCreateFailure()
+      },
+    )
+  }
+
   budgetToSync?.let { id ->
     SyncBudgetDialog(
       budgetId = id,
@@ -139,6 +156,10 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
+        CreateBudget -> {
+          viewModel.clearCreateFailure()
+          showCreate = true
+        }
         ImportBudget -> {
           viewModel.clearImportFailure()
           showImport = true
@@ -175,6 +196,26 @@ private fun DeleteBudget(
         Dismiss -> onDismiss()
       }
     },
+  )
+}
+
+@Composable
+private fun CreateBudget(
+  state: CreateBudgetState,
+  listState: ListBudgetsState,
+  onCreate: (String) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val existingNames =
+    remember(listState) {
+      val budgets = (listState as? Success)?.budgets.orEmpty()
+      budgets.mapTo(mutableSetOf()) { it.name }.toImmutableSet()
+    }
+  CreateBudgetDialog(
+    state = state,
+    existingNames = existingNames,
+    onCreate = onCreate,
+    onDismiss = onDismiss,
   )
 }
 
@@ -288,7 +329,11 @@ private fun StateContent(
               ),
           )
 
-        is Success -> ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
+        is Success ->
+          ContentEmpty(
+            onCreateBudget = { onAction(CreateBudget) },
+            onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
+          )
       }
 
       BottomSpacing()
