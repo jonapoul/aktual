@@ -254,7 +254,7 @@ internal constructor(
 
   // After a failed upload, the budget is already open
   fun openCreatedBudget() {
-    val state = mutableCreateState.value as? CreateBudgetState.UploadFailed ?: return
+    val state = mutableCreateState.value as? UploadFailed ?: return
     mutableCreateState.update { Idle }
     viewModelScope.launch { navToBudget(state.id) }
   }

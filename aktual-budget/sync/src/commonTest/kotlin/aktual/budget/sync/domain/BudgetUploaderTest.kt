@@ -6,14 +6,10 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncResponse
 import aktual.budget.utils.BudgetExport
-import aktual.budget.utils.BudgetExporter
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.UploadResult
 import aktual.core.model.BudgetServer
-import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.utils.Calendar
-import aktual.core.utils.UuidGenerator
 import aktual.test.CoTemporaryFolder
 import aktual.test.TestBudgetLocalPreferences
 import aktual.test.TestBudgetSync
@@ -50,7 +46,7 @@ class BudgetUploaderTest {
 
     val result = uploader(prefs).upload()
 
-    assertThat(result).isEqualTo(UploadResult.Success)
+    assertThat(result).isEqualTo(Success)
     assertThat(api.uploads).containsExactly(Upload(CLOUD_ID, "Household", null, ZIP))
     assertThat(prefs.value)
       .isEqualTo(
@@ -93,9 +89,9 @@ class BudgetUploaderTest {
 
   @Test
   fun `No server`() = runTest {
-    val result = uploader(TestBudgetLocalPreferences(), server = BudgetServer.None).upload()
+    val result = uploader(TestBudgetLocalPreferences(), server = None).upload()
 
-    assertThat(result).isEqualTo(UploadResult.NoServer)
+    assertThat(result).isEqualTo(NoServer)
     assertThat(api.uploads).isEmpty()
   }
 
@@ -105,7 +101,7 @@ class BudgetUploaderTest {
 
     val result = uploader(prefs).upload()
 
-    assertThat(result).isEqualTo(UploadResult.Encrypted)
+    assertThat(result).isEqualTo(Encrypted)
     assertThat(api.uploads).isEmpty()
   }
 
@@ -113,21 +109,20 @@ class BudgetUploaderTest {
 
   private fun uploader(
     prefs: TestBudgetLocalPreferences,
-    server: BudgetServer = BudgetServer.Remote(ServerUrl.Demo, Token("token")),
+    server: BudgetServer = BudgetServer.Remote(Demo, Token("token")),
   ) =
     BudgetUploaderImpl(
       server = server,
-      exporter =
-        BudgetExporter {
-          files.fileSystem.write(zipPath()) { write(ZIP) }
-          BudgetExport(zipPath(), "export.zip")
-        },
+      exporter = {
+        files.fileSystem.write(zipPath()) { write(ZIP) }
+        BudgetExport(zipPath(), "export.zip")
+      },
       api = api,
       preferences = prefs,
       files = files,
       sync = sync,
-      uuids = UuidGenerator { CLOUD_ID.value },
-      calendar = Calendar { TODAY },
+      uuids = { CLOUD_ID.value },
+      calendar = { TODAY },
       contexts = TestCoroutineContexts(EmptyCoroutineContext),
     )
 

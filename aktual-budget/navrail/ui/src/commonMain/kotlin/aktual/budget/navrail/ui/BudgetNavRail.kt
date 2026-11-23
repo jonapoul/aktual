@@ -13,6 +13,7 @@ import aktual.core.icons.Pencil1
 import aktual.core.icons.Reports
 import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
+import aktual.core.icons.Upload
 import aktual.core.icons.UserGroup
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
@@ -131,6 +132,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@Suppress("LongMethod")
 @Composable
 internal fun BudgetNavRail(
   appStack: NavStack<NavKey>,
@@ -674,6 +676,7 @@ internal fun budgetNavKeyStackSaver() =
     },
   )
 
+@Suppress("LongMethod")
 @Composable
 private fun BudgetMenu(
   expanded: Boolean,

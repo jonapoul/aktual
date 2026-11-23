@@ -4,10 +4,7 @@ import aktual.api.client.BudgetSyncApi
 import aktual.api.client.UploadRejectedException
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
-import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.EncryptKeyId
-import aktual.budget.model.DbMetadataKey.Companion.GroupId
-import aktual.budget.model.DbMetadataKey.Companion.LastUploaded
 import aktual.budget.utils.BudgetExporter
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.BudgetLocalPreferences
@@ -43,14 +40,14 @@ internal constructor(
   private val contexts: CoroutineContexts,
 ) : BudgetUploader {
   override suspend fun upload(): UploadResult {
-    if (server !is BudgetServer.Remote) return UploadResult.NoServer
+    if (server !is Remote) return NoServer
 
     val metadata = preferences.value
-    if (metadata[EncryptKeyId] != null) return UploadResult.Encrypted
+    if (metadata[EncryptKeyId] != null) return Encrypted
 
     val cloudFileId = metadata[CloudFileId] ?: uuids(::BudgetId)
     var zipPath: Path? = null
-    return runCatchingCancellable(
+    return runCatchingCancellable<UploadResult>(
       attempt = {
         val path = exporter.export().path.also { zipPath = it }
         val zip = withContext(contexts.io) { files.fileSystem.read(path) { readByteArray() } }
@@ -71,13 +68,14 @@ internal constructor(
 
         // Fills the server's empty message log
         sync.schedule()
-        UploadResult.Success
+        Success
       },
       onFailure = { e ->
         log.w(e) { "Failed uploading as $cloudFileId" }
         if (e is UploadRejectedException) {
           UploadResult.Rejected(e.reason)
         } else {
+          @Suppress("RedundantQualifier")
           UploadResult.Unreachable
         }
       },

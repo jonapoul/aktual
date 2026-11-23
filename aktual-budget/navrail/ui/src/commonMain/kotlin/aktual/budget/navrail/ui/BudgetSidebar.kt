@@ -38,6 +38,7 @@ import aktual.core.icons.Download
 import aktual.core.icons.InformationOutline
 import aktual.core.icons.Pencil1
 import aktual.core.icons.SearchAlternate
+import aktual.core.icons.Upload
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.icons.material.Logout

@@ -1,6 +1,6 @@
 package aktual.budget.navrail.vm
 
-import aktual.budget.utils.BudgetUploader
+import aktual.budget.navrail.vm.UploadBudgetState.Failed
 import aktual.budget.utils.UploadResult
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
@@ -23,13 +23,13 @@ class UploadBudgetViewModelTest {
     val viewModel = viewModel()
 
     viewModel.state.test {
-      assertThat(awaitItem()).isEqualTo(UploadBudgetState.Idle)
+      assertThat(awaitItem()).isEqualTo(Idle)
 
       viewModel.upload()
-      assertThatNextEmissionIsEqualTo(UploadBudgetState.Uploading)
+      assertThatNextEmissionIsEqualTo(Uploading)
 
-      result.complete(UploadResult.Success)
-      assertThatNextEmissionIsEqualTo(UploadBudgetState.Done)
+      result.complete(Success)
+      assertThatNextEmissionIsEqualTo(Done)
     }
   }
 
@@ -38,16 +38,16 @@ class UploadBudgetViewModelTest {
     val viewModel = viewModel()
 
     viewModel.state.test {
-      assertThat(awaitItem()).isEqualTo(UploadBudgetState.Idle)
+      assertThat(awaitItem()).isEqualTo(Idle)
 
       viewModel.upload()
-      assertThatNextEmissionIsEqualTo(UploadBudgetState.Uploading)
+      assertThatNextEmissionIsEqualTo(Uploading)
 
-      result.complete(UploadResult.Unreachable)
-      assertThatNextEmissionIsEqualTo(UploadBudgetState.Failed(UploadResult.Unreachable))
+      result.complete(Unreachable)
+      assertThatNextEmissionIsEqualTo(Failed(Unreachable))
 
       viewModel.reset()
-      assertThatNextEmissionIsEqualTo(UploadBudgetState.Idle)
+      assertThatNextEmissionIsEqualTo(Idle)
     }
   }
 
@@ -58,7 +58,7 @@ class UploadBudgetViewModelTest {
 
   private fun TestScope.viewModel() =
     UploadBudgetViewModel(
-      uploader = BudgetUploader { result.await() },
+      uploader = { result.await() },
       server = BudgetServer.Remote(ServerUrl(Https, "test.server.com"), Token("token")),
       viewModelContext = viewModelContext,
     )

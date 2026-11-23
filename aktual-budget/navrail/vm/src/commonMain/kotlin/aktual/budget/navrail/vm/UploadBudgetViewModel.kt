@@ -27,7 +27,7 @@ internal constructor(
   server: BudgetServer,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
-  val serverHost: String? = (server as? BudgetServer.Remote)?.url?.baseUrl
+  val serverHost: String? = (server as? Remote)?.url?.baseUrl
 
   private val mutableState = MutableStateFlow<UploadBudgetState>(Idle)
   val state: StateFlow<UploadBudgetState> = mutableState.asStateFlow()
@@ -38,15 +38,15 @@ internal constructor(
     viewModelScope.launch {
       val newState =
         when (val result = uploader.upload()) {
-          UploadResult.Success -> Done
-          is UploadResult.Failure -> UploadBudgetState.Failed(result)
+          Success -> UploadBudgetState.Done
+          is Failure -> UploadBudgetState.Failed(result)
         }
       mutableState.update { newState }
     }
   }
 
   // Leaves a running upload alone, so it finishes even with the dialog closed
-  fun reset() = mutableState.update { if (it is Uploading) it else Idle }
+  fun reset() = mutableState.update { it as? Uploading ?: Idle }
 }
 
 @Immutable

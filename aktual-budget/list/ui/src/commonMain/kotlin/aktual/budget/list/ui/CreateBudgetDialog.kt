@@ -46,16 +46,16 @@ internal fun CreateBudgetDialog(
   state: CreateBudgetState,
   existingNames: ImmutableSet<String>,
   onCreate: (name: String, syncWithServer: Boolean) -> Unit,
-  onOpenCreated: () -> Unit,
+  onOpenCreate: () -> Unit,
   onDismiss: () -> Unit,
 ) {
   var syncWithServer by rememberSaveable { mutableStateOf(false) }
   AktualAlertDialog(
-    onDismissRequest = if (state is UploadFailed) onOpenCreated else onDismiss,
+    onDismissRequest = if (state is UploadFailed) onOpenCreate else onDismiss,
     properties = DialogProperties(dismissOnClickOutside = false),
   ) {
     if (state is UploadFailed) {
-      UploadFailedDialogContent(failure = state.failure, onOpen = onOpenCreated)
+      UploadFailedDialogContent(failure = state.failure, onOpen = onOpenCreate)
       return@AktualAlertDialog
     }
     CreateBudgetDialogContent(

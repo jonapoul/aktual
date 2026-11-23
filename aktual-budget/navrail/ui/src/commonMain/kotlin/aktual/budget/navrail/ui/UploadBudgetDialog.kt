@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -40,7 +40,7 @@ internal fun UploadBudgetDialog(
     onDismiss()
   }
 
-  LaunchedEffect(state) { if (state is Done) close() }
+  SideEffect(state) { if (state is Done) close() }
 
   AktualAlertDialog(onDismissRequest = close) {
     UploadBudgetDialogContent(

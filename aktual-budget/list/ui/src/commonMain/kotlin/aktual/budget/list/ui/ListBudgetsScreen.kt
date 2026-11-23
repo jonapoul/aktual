@@ -143,7 +143,7 @@ fun ListBudgetsScreen(
       state = createState,
       listState = state,
       onCreate = viewModel::createBudget,
-      onOpenCreated = viewModel::openCreatedBudget,
+      onOpenCreate = viewModel::openCreatedBudget,
       onDismiss = {
         showCreate = false
         viewModel.clearCreateFailure()
@@ -211,7 +211,7 @@ private fun CreateBudget(
   state: CreateBudgetState,
   listState: ListBudgetsState,
   onCreate: (name: String, syncWithServer: Boolean) -> Unit,
-  onOpenCreated: () -> Unit,
+  onOpenCreate: () -> Unit,
   onDismiss: () -> Unit,
 ) {
   val existingNames =
@@ -223,7 +223,7 @@ private fun CreateBudget(
     state = state,
     existingNames = existingNames,
     onCreate = onCreate,
-    onOpenCreated = onOpenCreated,
+    onOpenCreate = onOpenCreate,
     onDismiss = onDismiss,
   )
 }
