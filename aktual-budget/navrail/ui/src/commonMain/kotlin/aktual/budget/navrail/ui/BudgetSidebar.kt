@@ -968,8 +968,9 @@ private val HeaderButtonColors = IconButtonColorProvider { theme, isPressed ->
 private fun SyncStatusLine(status: SidebarSyncStatus, modifier: Modifier = Modifier) {
   val (icon, iconColor, label) =
     when (status) {
+      Demo -> Triple(AktualIcons.CloudUnknown, colors.sidebarTextSubdued, Strings.budgetNavDemo)
       LocalOnly ->
-        Triple(AktualIcons.CloudUnknown, colors.sidebarTextSubdued, Strings.budgetNavDemo)
+        Triple(AktualIcons.CloudUnknown, colors.sidebarTextSubdued, Strings.budgetNavSyncLocal)
       Syncing ->
         Triple(AktualIcons.CloudCheck, colors.sidebarTextSubdued, Strings.budgetNavSyncSyncing)
       SyncError ->

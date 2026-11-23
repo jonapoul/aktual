@@ -79,7 +79,8 @@ internal constructor(
         serverHost = remote?.url?.baseUrl,
         // Keys can't manage other keys, and the budget needs to be on the server
         canManageApiKeys = remote != null && !remote.token.isApiKey && cloudFileId != null,
-        syncStatus = syncStatus(isSynced = remote != null && cloudFileId != null, syncState),
+        syncStatus =
+          syncStatus(hasServer = remote != null, isSynced = cloudFileId != null, syncState),
       )
     }
 
@@ -162,15 +163,20 @@ internal constructor(
     }
   }
 
-  private fun syncStatus(isSynced: Boolean, state: SyncState): SidebarSyncStatus =
-    if (!isSynced) {
-      LocalOnly
-    } else {
-      when (state) {
-        is SyncState.Error -> SyncError
-        Syncing -> Syncing
-        Inactive -> Synced
-      }
+  private fun syncStatus(
+    hasServer: Boolean,
+    isSynced: Boolean,
+    state: SyncState,
+  ): SidebarSyncStatus =
+    when {
+      !hasServer -> Demo
+      !isSynced -> LocalOnly
+      else ->
+        when (state) {
+          is SyncState.Error -> SyncError
+          Syncing -> Syncing
+          Inactive -> Synced
+        }
     }
 
   // Like savePrefs in packages/loot-core/src/server/prefs.ts

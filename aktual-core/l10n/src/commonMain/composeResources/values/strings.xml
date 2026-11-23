@@ -2522,6 +2522,7 @@
   <string name="budget_nav_accounts_collapse">Collapse %1$s</string>
 
   <string name="budget_nav_demo">Demo mode</string>
+  <string name="budget_nav_sync_local">Local only</string>
   <string name="budget_nav_sync_synced">Synced</string>
   <string name="budget_nav_sync_syncing">Syncing…</string>
   <string name="budget_nav_sync_error">Sync error</string>

@@ -15,6 +15,7 @@ data class DrawerHeaderState(
 
 // packages/desktop-client/src/components/sidebar/redesign/SyncStatusLine.tsx
 enum class SidebarSyncStatus {
+  Demo,
   LocalOnly,
   Syncing,
   SyncError,

@@ -294,7 +294,7 @@ class BudgetNavRailViewModelTest {
   @Test
   fun `Sync status follows the server and sync state`() = runDatabaseTest { scope ->
     viewModel(None, scope).headerState.test {
-      assertThat(awaitItem().syncStatus).isEqualTo(LocalOnly)
+      assertThat(awaitItem().syncStatus).isEqualTo(Demo)
     }
 
     viewModel(REMOTE, scope).headerState.test {
