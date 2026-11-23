@@ -70,10 +70,9 @@ object ActualApiContainer {
   @ThemeClient
   fun themeClient(buildConfig: BuildConfig, engine: HttpClientEngine): HttpClient =
     buildKtorClient(AktualJson, tag = "THEME", engine, buildConfig.isDebug)
-
-  // See validateSession() in packages/sync-server/src/util/validate-user.ts upstream
-  private val INVALID_TOKEN_REASONS =
-    setOf(FailureReason.TokenExpired.reason, FailureReason.Unauthorized.reason)
 }
 
-@Serializable private data class ErrorBody(val reason: String? = null)
+// See validateSession() in packages/sync-server/src/util/validate-user.ts upstream
+private val INVALID_TOKEN_REASONS = setOf(FailureReason.TokenExpired, FailureReason.Unauthorized)
+
+@Serializable private data class ErrorBody(val reason: FailureReason? = null)
