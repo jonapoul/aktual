@@ -70,15 +70,17 @@ internal constructor(
     viewModelScope.launchMolecule(Immediate) {
       val budgetNameFlow = remember { localPreferences.observe(BudgetName) }
       val budgetName by budgetNameFlow.collectAsState(initial = localPreferences[BudgetName])
+      val cloudFileIdFlow = remember { localPreferences.observe(CloudFileId) }
+      val cloudFileId by cloudFileIdFlow.collectAsState(initial = localPreferences[CloudFileId])
       val syncState by syncStateHolder.collectAsState()
       val remote = server as? Remote
       DrawerHeaderState(
         budgetName = budgetName,
         serverHost = remote?.url?.baseUrl,
         // Keys can't manage other keys, and the budget needs to be on the server
-        canManageApiKeys =
-          remote != null && !remote.token.isApiKey && localPreferences[CloudFileId] != null,
-        syncStatus = syncStatus(remote != null, syncState),
+        canManageApiKeys = remote != null && !remote.token.isApiKey && cloudFileId != null,
+        syncStatus =
+          syncStatus(hasServer = remote != null, isSynced = cloudFileId != null, syncState),
       )
     }
 
@@ -161,15 +163,20 @@ internal constructor(
     }
   }
 
-  private fun syncStatus(hasServer: Boolean, state: SyncState): SidebarSyncStatus =
-    if (!hasServer) {
-      LocalOnly
-    } else {
-      when (state) {
-        is SyncState.Error -> SyncError
-        Syncing -> Syncing
-        Inactive -> Synced
-      }
+  private fun syncStatus(
+    hasServer: Boolean,
+    isSynced: Boolean,
+    state: SyncState,
+  ): SidebarSyncStatus =
+    when {
+      !hasServer -> Demo
+      !isSynced -> LocalOnly
+      else ->
+        when (state) {
+          is SyncState.Error -> SyncError
+          Syncing -> Syncing
+          Inactive -> Synced
+        }
     }
 
   // Like savePrefs in packages/loot-core/src/server/prefs.ts

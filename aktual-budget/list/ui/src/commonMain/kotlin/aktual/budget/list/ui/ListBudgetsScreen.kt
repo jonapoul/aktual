@@ -1,5 +1,6 @@
 package aktual.budget.list.ui
 
+import aktual.budget.list.vm.CreateBudgetState
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.list.vm.ImportBudgetState
 import aktual.budget.list.vm.ListBudgetsEvent
@@ -9,6 +10,7 @@ import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.budget.sync.components.SyncBudgetDialog
+import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
@@ -19,18 +21,23 @@ import aktual.core.nav.InfoNavigator
 import aktual.core.nav.MetricsNavigator
 import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberFilePicker
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
@@ -62,6 +69,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.io.InputStream
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 
 @Composable
 fun ListBudgetsScreen(
@@ -79,12 +87,14 @@ fun ListBudgetsScreen(
 
   var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
   var showImport by remember { mutableStateOf(false) }
+  var showCreate by remember { mutableStateOf(false) }
 
   LaunchedEffect(viewModel.event) {
     viewModel.event.collect { event ->
       when (event) {
         NavToBudget -> {
           showImport = false
+          showCreate = false
           toBudget()
         }
         ListBudgetsEvent.LogOut -> logOut()
@@ -127,6 +137,19 @@ fun ListBudgetsScreen(
     },
   )
 
+  val createState by viewModel.createState.collectAsStateWithLifecycle()
+  if (showCreate) {
+    CreateBudget(
+      state = createState,
+      listState = state,
+      onCreate = viewModel::createBudget,
+      onDismiss = {
+        showCreate = false
+        viewModel.clearCreateFailure()
+      },
+    )
+  }
+
   budgetToSync?.let { id ->
     SyncBudgetDialog(
       budgetId = id,
@@ -139,6 +162,10 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
+        CreateBudget -> {
+          viewModel.clearCreateFailure()
+          showCreate = true
+        }
         ImportBudget -> {
           viewModel.clearImportFailure()
           showImport = true
@@ -175,6 +202,26 @@ private fun DeleteBudget(
         Dismiss -> onDismiss()
       }
     },
+  )
+}
+
+@Composable
+private fun CreateBudget(
+  state: CreateBudgetState,
+  listState: ListBudgetsState,
+  onCreate: (name: String, syncWithServer: Boolean) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val existingNames =
+    remember(listState) {
+      val budgets = (listState as? Success)?.budgets.orEmpty()
+      budgets.mapTo(mutableSetOf()) { it.name }.toImmutableSet()
+    }
+  CreateBudgetDialog(
+    state = state,
+    existingNames = existingNames,
+    onCreate = onCreate,
+    onDismiss = onDismiss,
   )
 }
 
@@ -237,6 +284,22 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: OnAction<Lis
           contentPadding = padding,
         )
       }
+
+      // The empty state has its own create button
+      if (state is Success && state.budgets.isNotEmpty()) {
+        AktualFab(
+          modifier =
+            Modifier.align(BottomEnd)
+              .padding(
+                end = Dimens.Huge,
+                bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
+              ),
+          text = Strings.listBudgetsCreate,
+          icon = AktualIcons.Add,
+          isExpanded = listState.isScrollingUp(),
+          onClick = { onAction(CreateBudget) },
+        )
+      }
     }
   }
 }
@@ -288,7 +351,11 @@ private fun StateContent(
               ),
           )
 
-        is Success -> ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
+        is Success ->
+          ContentEmpty(
+            onCreateBudget = { onAction(CreateBudget) },
+            onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
+          )
       }
 
       BottomSpacing()

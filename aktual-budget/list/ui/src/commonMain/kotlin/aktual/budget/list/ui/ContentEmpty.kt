@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 @Stable
 @Composable
 internal fun ContentEmpty(
+  onCreateBudget: () -> Unit,
   onCreateBudgetInBrowser: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -51,6 +52,14 @@ internal fun ContentEmpty(
 
     AktualButton(
       kind = Primary,
+      text = Strings.budgetSuccessEmptyCreate,
+      onClick = onCreateBudget,
+    )
+
+    VerticalSpacer(10.dp)
+
+    AktualButton(
+      kind = Normal,
       text = Strings.budgetSuccessEmptyLaunch,
       onClick = onCreateBudgetInBrowser,
     )
@@ -60,4 +69,4 @@ internal fun ContentEmpty(
 @PortraitPreview
 @Composable
 private fun PreviewContentEmpty(@PreviewParameter(ColorParameters::class) colors: Colors) =
-  PreviewWithColors(colors) { ContentEmpty(onCreateBudgetInBrowser = {}) }
+  PreviewWithColors(colors) { ContentEmpty(onCreateBudget = {}, onCreateBudgetInBrowser = {}) }

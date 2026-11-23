@@ -52,7 +52,14 @@ class DatabaseMigrationTest {
     migrateDatabase(driver, db)
 
     val recorded = db.migrationsQueries.getAll().awaitAsList()
-    assertThat(recorded).isEqualTo(DatabaseMigrations.map { it.first })
+    assertThat(recorded).isEqualTo(PreAktualMigrations + DatabaseMigrations.map { it.first })
+  }
+
+  @Test
+  fun `Pre-Aktual migrations all come before Aktual's`() = runTest {
+    driver = AndroidxSqlDriverFactory(budgetFiles).create(BUDGET_ID)
+    assertThat(PreAktualMigrations).isEqualTo(PreAktualMigrations.sorted())
+    assertThat(PreAktualMigrations.last() < DatabaseMigrations.first().first).isTrue()
   }
 
   @Test

@@ -1,12 +1,16 @@
 package aktual.app.nav
 
+import aktual.budget.model.BudgetId
+import aktual.budget.model.DbMetadata
 import aktual.budget.utils.SyncStateHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.ui.BottomBarState.Hidden
 import aktual.core.ui.BottomBarState.Visible
+import aktual.di.BudgetGraph
 import aktual.di.RunLevelState
 import aktual.prefs.SystemUiPreferences
 import aktual.prefs.SystemUiPreferencesImpl
+import aktual.test.TestBudgetLocalPreferences
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import app.cash.turbine.test
@@ -25,12 +29,15 @@ class BottomBarStateUseCaseTest {
   private lateinit var useCase: BottomBarStateUseCase
   private lateinit var syncStateHolder: SyncStateHolder
 
-  private fun runUseCaseTest(testBody: suspend TestScope.() -> Unit): TestResult = runTest {
+  private fun runUseCaseTest(
+    budgetGraph: BudgetGraph? = null,
+    testBody: suspend TestScope.() -> Unit,
+  ): TestResult = runTest {
     preferences = SystemUiPreferencesImpl(buildPreferences())
     pingStateHolder = PingStateHolder()
     syncStateHolder = SyncStateHolder()
 
-    val runLevelState = mockk<RunLevelState> { every { budget() } returns flowOf(null) }
+    val runLevelState = mockk<RunLevelState> { every { budget() } returns flowOf(budgetGraph) }
 
     useCase =
       BottomBarStateUseCase(
@@ -48,6 +55,34 @@ class BottomBarStateUseCaseTest {
       assertThatNextEmissionIsEqualTo(Visible(pingState = Unknown, Inactive, budgetName = null))
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `Shows sync state for a synced budget`() =
+    runUseCaseTest(
+      budgetGraph(DbMetadata(budgetName = "Household", cloudFileId = BudgetId("id"))),
+    ) {
+      useCase(backgroundScope).test {
+        assertThatNextEmissionIsEqualTo(Visible(pingState = Unknown, Inactive, budgetName = null))
+        assertThatNextEmissionIsEqualTo(
+          Visible(pingState = Unknown, Inactive, budgetName = "Household"),
+        )
+      }
+    }
+
+  @Test
+  fun `No sync state for a local-only budget`() =
+    runUseCaseTest(budgetGraph(DbMetadata(budgetName = "Household"))) {
+      useCase(backgroundScope).test {
+        assertThatNextEmissionIsEqualTo(Visible(pingState = Unknown, Inactive, budgetName = null))
+        assertThatNextEmissionIsEqualTo(
+          Visible(pingState = Unknown, syncState = null, budgetName = "Household"),
+        )
+      }
+    }
+
+  private fun budgetGraph(metadata: DbMetadata): BudgetGraph = mockk {
+    every { localPreferences } returns TestBudgetLocalPreferences(metadata)
   }
 
   @Test

@@ -8,7 +8,8 @@ import androidx.compose.runtime.Immutable
 sealed interface BottomBarState {
   data object Hidden : BottomBarState
 
+  /** [syncState] is null when the open budget is local-only, so there's nothing to sync. */
   @Immutable
-  data class Visible(val pingState: PingState, val syncState: SyncState, val budgetName: String?) :
+  data class Visible(val pingState: PingState, val syncState: SyncState?, val budgetName: String?) :
     BottomBarState
 }

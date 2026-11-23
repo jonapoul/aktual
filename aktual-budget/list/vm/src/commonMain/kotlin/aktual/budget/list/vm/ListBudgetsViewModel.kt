@@ -9,10 +9,12 @@ import aktual.budget.list.vm.ListBudgetsState.Success
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
+import aktual.budget.utils.BudgetCreator
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.ImportResult
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.core.utils.UuidGenerator
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.LoggedInScope
 import aktual.di.RunLevelController
@@ -46,6 +48,7 @@ import kotlinx.coroutines.withContext
 @Stable
 @ViewModelKey
 @ContributesIntoMap(LoggedInScope::class)
+@Suppress("LongParameterList")
 class ListBudgetsViewModel
 internal constructor(
   private val token: Token,
@@ -57,6 +60,8 @@ internal constructor(
   private val syncApi: SyncApi,
   private val runLevels: RunLevelController,
   private val zipImporter: ZipBudgetImporter,
+  private val budgetCreator: BudgetCreator,
+  private val uuids: UuidGenerator,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
@@ -77,6 +82,9 @@ internal constructor(
 
   private val mutableImportState = MutableStateFlow<ImportBudgetState>(Idle)
   val importState: StateFlow<ImportBudgetState> = mutableImportState.asStateFlow()
+
+  private val mutableCreateState = MutableStateFlow<CreateBudgetState>(Idle)
+  val createState: StateFlow<CreateBudgetState> = mutableCreateState.asStateFlow()
 
   private var lastUserFiles: List<UserFile>? = null
 
@@ -215,6 +223,32 @@ internal constructor(
       InvalidMetaFile -> BadMetadata
       is OtherFailure -> Unknown
     }
+
+  /** Creates a new budget, then opens it. */
+  fun createBudget(name: String, syncWithServer: Boolean) {
+    if (mutableCreateState.value is Creating) return
+    mutableCreateState.update { Creating }
+    viewModelScope.launch {
+      val trimmed = name.trim()
+      val id = budgetIdFromName(trimmed, uuids())
+      val metadata = budgetCreator(id, trimmed)
+      // TODO: upload the budget when syncWithServer is set. Local-only until then
+      log.i { "createBudget $id syncWithServer=$syncWithServer: $metadata" }
+
+      if (metadata == null) {
+        mutableCreateState.update { Failed }
+      } else {
+        mutableCreateState.update { Idle }
+        runLevels.onBudget(id, metadata)
+        navToBudget(id)
+      }
+    }
+  }
+
+  // Leaves a running creation alone, so reopening the dialog shows its progress
+  fun clearCreateFailure() = mutableCreateState.update {
+    if (it is Failed) Idle else it
+  }
 
   fun logOut() {
     viewModelScope.launch {

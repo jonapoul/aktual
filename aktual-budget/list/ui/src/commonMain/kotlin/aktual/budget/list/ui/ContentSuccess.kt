@@ -6,6 +6,8 @@ import aktual.budget.model.directoryId
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.scrollbar
@@ -63,7 +65,7 @@ internal fun ContentSuccess(
       )
     }
 
-    item { BottomSpacing() }
+    item { BottomSpacing(height = LocalBottomSpacing.current + FabClearance) }
   }
 }
 
