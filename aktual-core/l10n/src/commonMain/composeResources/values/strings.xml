@@ -431,7 +431,7 @@
   <string name="bank_sync_indicator_failed">Bank sync failed</string>
   <string name="bank_sync_just_now">just now</string>
 
-  <string name="bank_sync_sync_all">Sync all accounts</string>
+  <string name="bank_sync_sync_all">Sync all</string>
   <string name="bank_sync_sync_account">Sync %1$s</string>
   <string name="bank_sync_syncing">Syncing…</string>
   <string name="bank_sync_result_synced">%1$s: %2$d new, %3$d updated</string>

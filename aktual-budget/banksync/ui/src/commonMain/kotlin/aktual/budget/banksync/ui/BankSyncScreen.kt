@@ -18,25 +18,31 @@ import aktual.core.nav.BankSyncProvidersNavigator
 import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.TransactionsNavigator
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +59,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -143,9 +150,6 @@ private fun BankSyncScaffold(
               contentDescription = Strings.bankSyncAddAccount,
               onClick = { onAction(AddAccount) },
             )
-            if (state.providers.isNotEmpty()) {
-              SyncAllButton(isSyncing = state.isSyncing, onClick = { onAction(SyncAll) })
-            }
           }
         },
       )
@@ -167,6 +171,22 @@ private fun BankSyncScaffold(
           contentPadding = padding,
           onAction = onAction,
           listState = listState,
+        )
+      }
+
+      if (state is Success && state.canSync && state.providers.isNotEmpty()) {
+        AktualFab(
+          modifier =
+            Modifier.align(BottomEnd)
+              .padding(
+                end = Dimens.Huge,
+                bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
+              ),
+          text = Strings.bankSyncSyncAll,
+          icon = AktualIcons.ArrowsSynchronize,
+          isExpanded = listState.isScrollingUp(),
+          isLoading = state.isSyncing,
+          onClick = { onAction(SyncAll) },
         )
       }
     }
@@ -285,21 +305,11 @@ private fun ContentSuccess(
       }
     }
 
-    item { BottomSpacing() }
-  }
-}
-
-@Composable
-private fun SyncAllButton(isSyncing: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-  if (isSyncing) {
-    SyncingIndicator(modifier)
-  } else {
-    AktualIconButton(
-      modifier = modifier,
-      imageVector = AktualIcons.ArrowsSynchronize,
-      contentDescription = Strings.bankSyncSyncAll,
-      onClick = onClick,
-    )
+    item {
+      // Room to scroll the last account out from under the sync button
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
 
