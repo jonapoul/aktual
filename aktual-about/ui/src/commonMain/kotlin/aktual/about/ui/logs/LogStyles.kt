@@ -4,6 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.stringShort
 import aktual.theme.Colors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
@@ -72,7 +73,7 @@ internal fun LocalDate.dayLabel(today: LocalDate): String =
     else -> "${dayOfWeek.stringShort()} $day ${month.stringShort()}"
   }
 
-internal fun LocalTime.timeString(): String = TIME_FORMAT.format(this)
+@Stable internal fun LocalTime.timeString(): String = TIME_FORMAT.format(this)
 
 private val TIME_FORMAT = LocalTime.Format {
   hour()

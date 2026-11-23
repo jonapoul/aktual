@@ -5,8 +5,9 @@ import aktual.core.ui.AktualTheme.lineHeights
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.tabular
 import aktual.logging.LogLine
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,7 +29,6 @@ internal fun LogLineRow(
   line: LogLine,
   query: String,
   onTagClick: (String) -> Unit,
-  onTagLongClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) =
   Row(
@@ -47,40 +47,38 @@ internal fun LogLineRow(
 
     val highlight = colors.pillBackgroundSelected
 
-    val tag = line.tag
-    if (tag != null) {
-      val isEllipsized = tag.length > MAX_TAG_LENGTH
-      val tagText =
-        remember(tag, query, highlight) {
-          val shown = if (isEllipsized) tag.take(MAX_TAG_LENGTH) + "…" else tag
-          buildAnnotatedString { appendHighlighted(shown, query, highlight) }
-        }
-      Text(
-        modifier =
-          Modifier.combinedClickable(
-            onClick = { onTagClick(tag) },
-            onLongClick = { onTagLongClick(tag) }.takeIf { isEllipsized },
-          ),
-        text = tagText,
-        color = colors.pageTextPositive,
-        fontSize = LineFontSize,
-        lineHeight = LineHeight,
-      )
-    }
-
-    val message =
-      remember(line.message, query, highlight) {
-        buildAnnotatedString { appendHighlighted(line.message, query, highlight) }
+    Column(modifier = Modifier.weight(1f)) {
+      val tag = line.tag
+      if (tag != null) {
+        val tagText =
+          remember(tag, query, highlight) {
+            buildAnnotatedString { appendHighlighted(tag, query, highlight) }
+          }
+        Text(
+          modifier = Modifier.fillMaxWidth().clickable { onTagClick(tag) },
+          text = tagText,
+          color = colors.pageTextPositive,
+          fontSize = LineFontSize,
+          lineHeight = LineHeight,
+          overflow = Ellipsis,
+          maxLines = 1,
+        )
       }
 
-    SelectionContainer(modifier = Modifier.weight(1f)) {
-      Text(
-        text = message,
-        color = line.priority.messageColor(colors),
-        fontFamily = Monospace,
-        fontSize = LineFontSize,
-        lineHeight = LineHeight,
-      )
+      val message =
+        remember(line.message, query, highlight) {
+          buildAnnotatedString { appendHighlighted(line.message, query, highlight) }
+        }
+
+      SelectionContainer(modifier = Modifier.fillMaxWidth()) {
+        Text(
+          text = message,
+          color = line.priority.messageColor(colors),
+          fontFamily = Monospace,
+          fontSize = LineFontSize,
+          lineHeight = LineHeight,
+        )
+      }
     }
   }
 
@@ -107,6 +105,5 @@ internal fun AnnotatedString.Builder.appendHighlighted(
 }
 
 private const val TIME_LENGTH = 8
-private const val MAX_TAG_LENGTH = 15
 private val LineFontSize = textSizes.small
 private val LineHeight = lineHeights.large
