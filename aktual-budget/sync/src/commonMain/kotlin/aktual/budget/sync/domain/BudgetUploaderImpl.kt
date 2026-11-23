@@ -75,8 +75,7 @@ internal constructor(
         if (e is UploadRejectedException) {
           UploadResult.Rejected(e.reason)
         } else {
-          @Suppress("RedundantQualifier")
-          UploadResult.Unreachable
+          @Suppress("RedundantQualifier") UploadResult.Unreachable
         }
       },
       finally = {

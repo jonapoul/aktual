@@ -48,6 +48,8 @@ sealed interface Budget {
     override val groupId: String,
     val owner: String?,
     val usersWithAccess: ImmutableList<BudgetUserWithAccess> = persistentListOf(),
+    // The directory of the local copy, named after the cloud file ID unless it was created here
+    val localId: BudgetId,
   ) : Cloud {
     override val state
       get() = BudgetState.Synced
@@ -61,6 +63,8 @@ sealed interface Budget {
     override val groupId: String,
     val owner: String?,
     val usersWithAccess: ImmutableList<BudgetUserWithAccess> = persistentListOf(),
+    // The directory of the local copy, named after the cloud file ID unless it was created here
+    val localId: BudgetId,
   ) : Cloud {
     override val state
       get() = BudgetState.Detached
@@ -72,6 +76,8 @@ sealed interface Budget {
     override val encryptKeyId: String?,
     override val cloudFileId: BudgetId,
     override val groupId: String,
+    // The directory of the local copy, named after the cloud file ID unless it was created here
+    val localId: BudgetId,
   ) : Cloud {
     override val state
       get() = BudgetState.Broken
@@ -83,6 +89,8 @@ sealed interface Budget {
     override val encryptKeyId: String?,
     override val cloudFileId: BudgetId,
     override val groupId: String,
+    // The directory of the local copy, named after the cloud file ID unless it was created here
+    val localId: BudgetId,
   ) : Cloud {
     override val state
       get() = BudgetState.Unknown
@@ -93,6 +101,10 @@ sealed interface Budget {
 val Budget.directoryId: BudgetId
   get() =
     when (this) {
-      is Cloud -> cloudFileId
       is Local -> id
+      is Remote -> cloudFileId
+      is Synced -> localId
+      is Detached -> localId
+      is Broken -> localId
+      is Unknown -> localId
     }

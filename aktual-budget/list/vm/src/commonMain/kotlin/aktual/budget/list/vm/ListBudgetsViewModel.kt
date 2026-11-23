@@ -115,7 +115,9 @@ internal constructor(
         if (budget.canOpenLocally()) withContext(contexts.io) { files.readMetadata(id) } else null
 
       if (metadata == null) {
-        mutableEvent.emit(ListBudgetsEvent.ShowSyncDialog(id))
+        // Downloads by cloud file ID, so encrypted budgets get their key asked for
+        val cloudId = (budget as? Cloud)?.cloudFileId ?: id
+        mutableEvent.emit(ListBudgetsEvent.ShowSyncDialog(cloudId))
         return@launch
       }
 
@@ -148,8 +150,9 @@ internal constructor(
 
   fun clearDeletingState() = mutableDeletingState.update { Inactive }
 
-  fun deleteRemote(id: BudgetId) {
-    log.d { "deleteRemote $id" }
+  fun deleteRemote(budget: Budget.Cloud) {
+    val id = budget.directoryId
+    log.d { "deleteRemote $budget" }
     mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
 
     viewModelScope.launch {
@@ -161,13 +164,13 @@ internal constructor(
 
       runCatchingCancellable(
         attempt = {
-          val request = DeleteUserFileRequest(id, token)
+          val request = DeleteUserFileRequest(budget.cloudFileId, token)
           syncApi.delete(request)
         },
         onFailure = { e -> log.e(e) { "Failed deleting $id" } },
       )
 
-      log.d { "Successfully deleted $id" }
+      log.i { "Successfully deleted $id" }
       clearDeletingState()
       mutableCloseDialog.emit(true)
 

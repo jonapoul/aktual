@@ -190,7 +190,7 @@ private fun DeleteBudget(
   budget: Budget,
   deletingState: DeletingState,
   onDeleteLocal: (BudgetId) -> Unit,
-  onDeleteRemote: (BudgetId) -> Unit,
+  onDeleteRemote: (Budget.Cloud) -> Unit,
   onDismiss: () -> Unit,
 ) {
   DeleteBudgetDialog(
@@ -199,7 +199,7 @@ private fun DeleteBudget(
     onAction = { action ->
       when (action) {
         DeleteLocal -> onDeleteLocal(budget.directoryId)
-        DeleteRemote -> if (budget is Cloud) onDeleteRemote(budget.cloudFileId)
+        DeleteRemote -> if (budget is Cloud) onDeleteRemote(budget)
         Dismiss -> onDismiss()
       }
     },
