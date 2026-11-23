@@ -1762,6 +1762,10 @@
   <string name="reports_formula_query_remove">Remove %1$s</string>
   <string name="reports_formula_query_make_positive">Make positive</string>
   <string name="reports_formula_query_make_negative">Make negative</string>
+  <string name="reports_formula_query_flow">Direction</string>
+  <string name="reports_formula_query_flow_either">Either</string>
+  <string name="reports_formula_query_flow_inflow">Inflow</string>
+  <string name="reports_formula_query_flow_outflow">Outflow</string>
   <string name="reports_formula_viewer_edit">Edit report</string>
   <string name="reports_formula_viewer_appearance">Appearance</string>
   <string name="reports_formula_viewer_color_rule">Color rule</string>

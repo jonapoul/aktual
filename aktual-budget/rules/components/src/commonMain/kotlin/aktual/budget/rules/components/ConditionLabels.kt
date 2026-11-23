@@ -4,9 +4,11 @@ import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
+import aktual.budget.rules.domain.AmountFlow
 import aktual.budget.rules.domain.ConditionSchema
 import aktual.budget.rules.domain.DAY_RANGE_END
 import aktual.budget.rules.domain.DAY_RANGE_START
+import aktual.budget.rules.domain.amountFlow
 import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.toRecurConfigOrNull
 import aktual.budget.schedules.components.description
@@ -43,6 +45,23 @@ fun Field.label(): String =
     Cleared -> Strings.rulesFieldCleared
     Reconciled -> Strings.rulesFieldReconciled
     Unknown -> Strings.rulesFieldUnknown
+  }
+
+// The field with its direction, e.g. "amount (outflow)"
+@Composable
+fun Condition.fieldLabel(): String =
+  when (amountFlow) {
+    Either -> field.label()
+    Inflow -> Strings.rulesFieldAmountInflow
+    Outflow -> Strings.rulesFieldAmountOutflow
+  }
+
+@Composable
+fun AmountFlow.label(): String =
+  when (this) {
+    Either -> Strings.reportsFormulaQueryFlowEither
+    Inflow -> Strings.reportsFormulaQueryFlowInflow
+    Outflow -> Strings.reportsFormulaQueryFlowOutflow
   }
 
 @Composable
@@ -106,7 +125,7 @@ fun Condition.description(
   schema: ConditionSchema = FilterConditions,
 ): String =
   listOfNotNull(
-      field.label().replaceFirstChar { it.titlecase() },
+      fieldLabel().replaceFirstChar { it.titlecase() },
       operator.label(),
       valueLabel(names, schema),
     )

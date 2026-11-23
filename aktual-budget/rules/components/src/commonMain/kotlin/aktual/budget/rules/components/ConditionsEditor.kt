@@ -176,7 +176,7 @@ private fun ConditionRow(
   SettingRow(modifier = Modifier.testTag(ConditionTags.ConditionRow), onClick = onClick) {
     Text(
       modifier = Modifier.width(FIELD_WIDTH),
-      text = condition.field.label().replaceFirstChar { it.titlecase() },
+      text = condition.fieldLabel().replaceFirstChar { it.titlecase() },
       style = typography.bodyMedium,
       color = colors.tableHeaderText,
     )
