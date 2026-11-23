@@ -13,6 +13,7 @@ kotlin {
 
   commonTestDependencies {
     implementation(project(":aktual-api:impl"))
+    implementation(project(":aktual-prefs:impl"))
     implementation(project(":aktual-test:api"))
   }
 }

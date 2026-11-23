@@ -7,10 +7,10 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:banksync"))
     api(project(":aktual-budget:schedules"))
+    api(project(":aktual-budget:utils"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-prefs"))
     implementation(project(":aktual-budget:data:db"))
-    api(project(":aktual-budget:utils"))
     implementation(project(":aktual-logging"))
   }
 
