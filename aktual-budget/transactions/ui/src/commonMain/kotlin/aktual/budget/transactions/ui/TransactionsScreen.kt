@@ -283,7 +283,9 @@ private fun BankSyncSnackbars(
 ) {
   LaunchedEffect(finished) {
     finished.collect { summary ->
-      snackbars.show { showBankSyncSummary(summary, onViewAdded = toTransactions::synced) }
+      snackbars.show {
+        showBankSyncSummary(summary, onViewAdded = { toTransactions.synced(it.ids, it.total) })
+      }
     }
   }
 }

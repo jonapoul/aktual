@@ -11,6 +11,7 @@ import aktual.budget.banksync.vm.LastBankSync.MinutesAgo
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BankId
@@ -236,7 +237,7 @@ class BankSyncViewModelTest {
         controller.finish(Synced(AccountId("a"), "A", added = emptyList(), updated = emptyList()))
 
         assertThat(awaitItem())
-          .isEqualTo(Finished(BankSyncSummary.Synced("A", added = emptyList(), updated = 0)))
+          .isEqualTo(Finished(BankSyncSummary.Synced("A", added = 0, updated = 0)))
       }
 
       var state = awaitItem() as Success
@@ -277,6 +278,7 @@ class BankSyncViewModelTest {
   ): BankSyncViewModel {
     return BankSyncViewModel(
       accountDao = AccountDao(database),
+      transactionDao = TransactionDao(database),
       api = api,
       controller = controller,
       server = server,

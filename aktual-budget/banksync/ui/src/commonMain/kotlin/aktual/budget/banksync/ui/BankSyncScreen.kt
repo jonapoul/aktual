@@ -77,7 +77,12 @@ internal fun BankSyncScreen(
     viewModel.events.collect { event ->
       when (event) {
         is Finished ->
-          snackbars.show { showBankSyncSummary(event.summary, onViewAdded = transactions::synced) }
+          snackbars.show {
+            showBankSyncSummary(
+              event.summary,
+              onViewAdded = { transactions.synced(it.ids, it.total) },
+            )
+          }
       }
     }
   }

@@ -251,7 +251,7 @@ internal constructor(
 
   val bankSyncFinished: Flow<BankSyncSummary> =
     bankSyncController.finished.mapNotNull { results ->
-      BankSyncSummary.of(results.filter { it.account == accountId })
+      BankSyncSummary.of(results.filter { it.account == accountId }, transactionDao::sortIds)
     }
 
   // As typed, for the search field and filter chips. Shared by every account list

@@ -71,7 +71,8 @@ class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke(title: String, schedule: ScheduleId) =
     stack.push(ScheduleTransactionsNavRoute(title, schedule))
 
-  fun synced(ids: List<TransactionId>) = stack.push(SyncedTransactionsNavRoute(ids))
+  fun synced(ids: List<TransactionId>, total: Int) =
+    stack.push(SyncedTransactionsNavRoute(ids, total))
 }
 
 @Immutable

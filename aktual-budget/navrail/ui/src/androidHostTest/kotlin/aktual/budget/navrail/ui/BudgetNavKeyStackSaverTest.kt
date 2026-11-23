@@ -62,7 +62,7 @@ class BudgetNavKeyStackSaverTest {
         UncategorisedTransactionsNavRoute,
         CategoryTransactionsNavRoute(CategoryId("category"), YearMonth(2026, 10)),
         ScheduleTransactionsNavRoute("Rent", ScheduleId("schedule")),
-        SyncedTransactionsNavRoute(listOf(TransactionId("a"), TransactionId("b"))),
+        SyncedTransactionsNavRoute(listOf(TransactionId("a"), TransactionId("b")), total = 3),
         TransactionNavRoute(TransactionId("transaction")),
         CreateTransactionNavRoute(AccountId("account"), CategoryId("category")),
         CreateTransactionNavRoute(),

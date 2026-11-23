@@ -92,7 +92,7 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
         stack = stack,
         spec =
           TransactionsSpec(
-            filtered = FilteredSpec.SpecificIds(Strings.transactionsTitleSynced, route.ids),
+            filtered = FilteredSpec.SpecificIds(syncedTitle(route), route.ids),
           ),
       )
     }
@@ -143,6 +143,14 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
 @Composable
 private fun NavStack<BudgetNavKey>.isRootedAt(route: BudgetNavKey): Boolean =
   remember(route) { firstOrNull() == route }
+
+@Composable
+private fun syncedTitle(route: SyncedTransactionsNavRoute): String =
+  if (route.total > route.ids.size) {
+    Strings.transactionsTitleSyncedNewest(route.ids.size, route.total)
+  } else {
+    Strings.transactionsTitleSynced
+  }
 
 @Composable
 private fun TransactionsScreen(

@@ -7,6 +7,7 @@ import aktual.budget.banksync.domain.BankSyncProgress
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.banksync.domain.supportsApiKeys
 import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
@@ -54,6 +55,7 @@ import kotlinx.coroutines.launch
 class BankSyncViewModel
 internal constructor(
   private val accountDao: AccountDao,
+  private val transactionDao: TransactionDao,
   private val api: BankSyncApi,
   private val controller: BankSyncController,
   private val server: BudgetServer,
@@ -93,7 +95,9 @@ internal constructor(
     viewModelScope.launch {
       controller.finished.collect { results ->
         reload(showLoading = false)
-        BankSyncSummary.of(results)?.let { mutableEvents.tryEmit(BankSyncEvent.Finished(it)) }
+        BankSyncSummary.of(results, transactionDao::sortIds)?.let {
+          mutableEvents.tryEmit(BankSyncEvent.Finished(it))
+        }
       }
     }
   }

@@ -62,9 +62,11 @@ data class FilteredTransactionsNavRoute(val title: String, val filter: Condition
 data class ScheduleTransactionsNavRoute(val title: String, val id: ScheduleId) :
   BudgetNavKey.Transactions
 
-// The transactions a bank sync added
+// The newest transactions a bank sync added, of total. Capped by the caller, since the IDs are
+// saved with the nav stack
 @Serializable
-data class SyncedTransactionsNavRoute(val ids: List<TransactionId>) : BudgetNavKey.Transactions
+data class SyncedTransactionsNavRoute(val ids: List<TransactionId>, val total: Int) :
+  BudgetNavKey.Transactions
 
 @Serializable data class TransactionNavRoute(val id: TransactionId) : BudgetNavKey.Transactions
 

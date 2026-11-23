@@ -1,7 +1,7 @@
 package aktual.budget.banksync.components
 
 import aktual.budget.banksync.domain.BankSyncSummary
-import aktual.budget.model.TransactionId
+import aktual.budget.banksync.domain.LinkedTransactions
 import aktual.core.l10n.Res
 import aktual.core.l10n.bank_sync_result_failed
 import aktual.core.l10n.bank_sync_result_several
@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.getString
 // Links to what the sync added, if anything, and stays up longer to give time to tap it
 suspend fun SnackbarHostState.showBankSyncSummary(
   summary: BankSyncSummary,
-  onViewAdded: (List<TransactionId>) -> Unit,
+  onViewAdded: (LinkedTransactions) -> Unit,
 ) {
   val message =
     when (summary) {
@@ -29,7 +29,7 @@ suspend fun SnackbarHostState.showBankSyncSummary(
         getString(
           Res.string.bank_sync_result_synced,
           name(summary.name),
-          summary.added.size,
+          summary.added,
           summary.updated,
         )
 
@@ -40,7 +40,7 @@ suspend fun SnackbarHostState.showBankSyncSummary(
           getString(
             Res.string.bank_sync_result_several,
             summary.synced,
-            summary.added.size,
+            summary.added,
             summary.updated,
           )
         } else {
@@ -48,13 +48,13 @@ suspend fun SnackbarHostState.showBankSyncSummary(
             Res.string.bank_sync_result_several_failed,
             summary.synced,
             summary.synced + summary.failed,
-            summary.added.size,
+            summary.added,
             summary.updated,
           )
         }
     }
-  val actionLabel =
-    getString(Res.string.bank_sync_result_view).takeIf { summary.added.isNotEmpty() }
+  val linked = summary.linked
+  val actionLabel = linked?.let { getString(Res.string.bank_sync_result_view) }
   val duration = if (actionLabel == null) Short else Long
   val result =
     when {
@@ -64,7 +64,7 @@ suspend fun SnackbarHostState.showBankSyncSummary(
       else ->
         showSuccessSnackbar(message, actionLabel, withDismissAction = true, duration = duration)
     }
-  if (result == ActionPerformed) onViewAdded(summary.added)
+  if (linked != null && result == ActionPerformed) onViewAdded(linked)
 }
 
 private suspend fun name(name: String?) = name ?: getString(Res.string.bank_sync_unnamed_account)
