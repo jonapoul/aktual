@@ -47,9 +47,10 @@ object ActualApiContainer {
           if (exception is ResponseException) {
             runCatchingCancellable(
               attempt = {
-                val isExpired =
-                  exception.response.body<ErrorBody>().reason == FailureReason.TokenExpired.reason
-                if (isExpired && preferences.token.get() != null) {
+                val isInvalidToken =
+                  exception.response.status == Unauthorized &&
+                    exception.response.body<ErrorBody>().reason in INVALID_TOKEN_REASONS
+                if (isInvalidToken && preferences.token.get() != null) {
                   // Only for authenticated sessions. At login there's no stored token yet, so this
                   // would clear the backstack while already on the login screen
                   notifyTokenExpired()
@@ -71,4 +72,7 @@ object ActualApiContainer {
     buildKtorClient(AktualJson, tag = "THEME", engine, buildConfig.isDebug)
 }
 
-@Serializable private data class ErrorBody(val reason: String? = null)
+// See validateSession() in packages/sync-server/src/util/validate-user.ts upstream
+private val INVALID_TOKEN_REASONS: Set<FailureReason> = setOf(TokenExpired, Unauthorized)
+
+@Serializable private data class ErrorBody(val reason: FailureReason? = null)

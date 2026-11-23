@@ -45,7 +45,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -64,8 +67,14 @@ fun LoginScreen(
   back: BackNavigator,
   toServerUrl: ServerUrlNavigator,
   toListBudgets: ListBudgetsNavigator,
+  sessionEnded: Boolean = false,
   viewModel: LoginViewModel = metroViewModel(),
 ) {
+  var showSessionEnded by rememberSaveable { mutableStateOf(sessionEnded) }
+  if (showSessionEnded) {
+    SessionEndedDialog(onDismiss = { showSessionEnded = false })
+  }
+
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val enteredApiKey by viewModel.enteredApiKey.collectAsStateWithLifecycle()

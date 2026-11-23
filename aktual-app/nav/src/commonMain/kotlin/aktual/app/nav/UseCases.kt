@@ -164,7 +164,7 @@ class InitialRouteUseCase(private val runLevelState: RunLevelState) {
         when (graphs.lastOrNull()) {
           null -> null
           is AppGraph -> ServerUrlNavRoute
-          is ServerChosenGraph -> LoginNavRoute
+          is ServerChosenGraph -> LoginNavRoute()
           is LoggedInGraph -> ListBudgetsNavRoute
           is BudgetGraph -> BudgetNavRailNavRoute
         }
