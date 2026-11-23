@@ -17,6 +17,8 @@ data class Success(
   val providers: ImmutableList<BankSyncProvider>,
   val unlinked: ImmutableList<BankSyncAccount>,
   val canSync: Boolean = false,
+  // Linking needs a real bank login, so the demo budget can sync but not link
+  val canLink: Boolean = false,
   val isSyncing: Boolean = false,
 ) : BankSyncState
 

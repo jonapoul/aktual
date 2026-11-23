@@ -73,6 +73,7 @@ internal object BankSyncPreview {
         ),
       unlinked = persistentListOf(cash),
       canSync = true,
+      canLink = true,
     )
 
   val syncing =

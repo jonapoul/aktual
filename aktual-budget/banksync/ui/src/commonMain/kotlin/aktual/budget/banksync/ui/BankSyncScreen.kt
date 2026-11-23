@@ -136,15 +136,15 @@ private fun BankSyncScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.bankSyncTitle) },
         actions = {
-          val canSync = state is Success && state.canSync || state is Empty && state.canSync
-          if (canSync) {
+          val canLink = state is Success && state.canLink || state is Empty && state.canSync
+          if (canLink) {
             AktualIconButton(
               imageVector = AktualIcons.Key,
               contentDescription = Strings.bankSyncProvidersOpen,
               onClick = { onAction(OpenProviders) },
             )
           }
-          if (state is Success && state.canSync) {
+          if (state is Success && state.canLink) {
             AktualIconButton(
               imageVector = AktualIcons.Add,
               contentDescription = Strings.bankSyncAddAccount,
@@ -295,12 +295,12 @@ private fun ContentSuccess(
     }
 
     if (state.unlinked.isNotEmpty()) {
-      item(key = "unlinked") { UnlinkedHeader(canLink = state.canSync) }
+      item(key = "unlinked") { UnlinkedHeader(canLink = state.canLink) }
       items(state.unlinked, key = { it.id.value }) { account ->
         BankSyncAccountItem(
           account = account,
           isLinked = false,
-          onClick = { onAction(OpenLink(account.id)) }.takeIf { state.canSync },
+          onClick = { onAction(OpenLink(account.id)) }.takeIf { state.canLink },
         )
       }
     }

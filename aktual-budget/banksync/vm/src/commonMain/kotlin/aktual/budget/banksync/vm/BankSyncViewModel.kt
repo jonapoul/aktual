@@ -5,11 +5,13 @@ import aktual.api.model.banksync.BankSyncStatusResponse
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncProgress
 import aktual.budget.banksync.domain.BankSyncSummary
+import aktual.budget.banksync.domain.canBankSync
 import aktual.budget.banksync.domain.supportsApiKeys
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
+import aktual.budget.model.BudgetId
 import aktual.core.model.BudgetServer
 import aktual.core.model.isApiKeySession
 import aktual.core.utils.runCatchingCancellable
@@ -59,6 +61,7 @@ internal constructor(
   private val api: BankSyncApi,
   private val controller: BankSyncController,
   private val server: BudgetServer,
+  budgetId: BudgetId,
   private val clock: Clock,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -68,6 +71,7 @@ internal constructor(
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
   private var loadJob: Job? = null
+  private val canSync = server.canBankSync(budgetId)
 
   private val mutableEvents =
     MutableSharedFlow<BankSyncEvent>(extraBufferCapacity = 1, onBufferOverflow = DROP_OLDEST)
@@ -84,7 +88,8 @@ internal constructor(
         isLoading -> Loading
         failure != null -> Failure(failure)
         accounts.isEmpty() -> Empty(canSync = server is Remote)
-        else -> accounts.toSuccess(statuses, progress, canSync = server is Remote)
+        else ->
+          accounts.toSuccess(statuses, progress, canSync = canSync, canLink = server is Remote)
       }
     }
 
@@ -150,7 +155,7 @@ internal constructor(
   }
 
   private suspend fun checkProviders(sources: Set<AccountSyncSource>) {
-    if (server !is Remote) {
+    if (!canSync) {
       mutableStatuses.update {
         sources.associateWith { BankSyncProviderStatus.NoServer }.toPersistentMap()
       }
@@ -205,6 +210,7 @@ private class LoadedAccounts(
     statuses: Map<AccountSyncSource, BankSyncProviderStatus>,
     progress: BankSyncProgress,
     canSync: Boolean,
+    canLink: Boolean,
   ): Success {
     val syncing = if (progress.isRunning) progress.pending.toSet() else emptySet()
     return Success(
@@ -227,6 +233,7 @@ private class LoadedAccounts(
           .toImmutableList(),
       unlinked = unlinked,
       canSync = canSync,
+      canLink = canLink,
       isSyncing = progress.isRunning,
     )
   }

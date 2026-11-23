@@ -25,12 +25,14 @@ import alakazam.test.TestClock
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
+import assertk.assertions.prop
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -93,6 +95,7 @@ class BankSyncViewModelTest {
               ),
             unlinked = persistentListOf(account("cash", "Cash")),
             canSync = true,
+            canLink = true,
           ),
         )
     }
@@ -190,6 +193,25 @@ class BankSyncViewModelTest {
   }
 
   @Test
+  fun `Demo budget can sync but not link`() = runBankSyncTest {
+    insertAccount("a", "A", GoCardless)
+
+    val viewModel =
+      createViewModel(
+        FakeBankSyncApi(GoCardless to configured()),
+        server = None,
+        budgetId = Demo,
+      )
+
+    viewModel.state.test {
+      assertThat(awaitSuccess()).all {
+        prop(Success::canSync).isTrue()
+        prop(Success::canLink).isFalse()
+      }
+    }
+  }
+
+  @Test
   fun `Sync all and per-account sync go through the controller`() = runBankSyncTest {
     insertAccount("a", "A", GoCardless)
     val viewModel = createViewModel(FakeBankSyncApi(GoCardless to configured()))
@@ -275,6 +297,7 @@ class BankSyncViewModelTest {
   private fun TestContext.createViewModel(
     api: BankSyncApi,
     server: BudgetServer = REMOTE,
+    budgetId: BudgetId = BudgetId("abc-123"),
   ): BankSyncViewModel {
     return BankSyncViewModel(
       accountDao = AccountDao(database),
@@ -282,6 +305,7 @@ class BankSyncViewModelTest {
       api = api,
       controller = controller,
       server = server,
+      budgetId = budgetId,
       clock = TestClock(NOW),
       viewModelContext = scope.viewModelContext,
     )

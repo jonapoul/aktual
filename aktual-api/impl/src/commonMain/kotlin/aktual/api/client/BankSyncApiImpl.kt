@@ -18,6 +18,7 @@ import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -35,6 +36,7 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.put
 
+@Inject
 @ContributesBinding(BudgetScope::class)
 class BankSyncApiImpl
 internal constructor(

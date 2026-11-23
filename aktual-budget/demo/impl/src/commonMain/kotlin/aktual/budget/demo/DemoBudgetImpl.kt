@@ -5,6 +5,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.utils.BudgetFiles
 import aktual.core.utils.Calendar
+import aktual.core.utils.UuidGenerator
 import aktual.di.AppScope
 import aktual.di.BudgetGraph
 import aktual.di.Initializable
@@ -30,6 +31,7 @@ internal constructor(
   private val runLevelController: RunLevelController,
   private val calendar: Calendar,
   private val contexts: CoroutineContexts,
+  private val uuidGenerator: UuidGenerator,
 ) : DemoBudget, Initializable {
   override fun initialize() {
     // Clear out anything left behind if the app was killed with the demo open
@@ -45,6 +47,7 @@ internal constructor(
       files.writeMetadata(ID, metadata)
       driverFactory.create(ID).use { driver ->
         driver.shiftDemoDates(from = driver.demoGeneratedOn(), to = calendar.today())
+        driver.linkDemoBankAccounts(uuidGenerator)
       }
     }
     log.i { "Opening demo budget" }
