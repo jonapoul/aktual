@@ -73,6 +73,6 @@ object ActualApiContainer {
 }
 
 // See validateSession() in packages/sync-server/src/util/validate-user.ts upstream
-private val INVALID_TOKEN_REASONS = setOf(FailureReason.TokenExpired, FailureReason.Unauthorized)
+private val INVALID_TOKEN_REASONS: Set<FailureReason> = setOf(TokenExpired, Unauthorized)
 
 @Serializable private data class ErrorBody(val reason: FailureReason? = null)
