@@ -60,7 +60,7 @@ fun AktualAppContent(
   LaunchedEffect(viewModel) {
     viewModel.tokenExpired.collect {
       navStack.clear()
-      navStack.add(LoginNavRoute)
+      navStack.add(LoginNavRoute(sessionEnded = true))
     }
   }
 

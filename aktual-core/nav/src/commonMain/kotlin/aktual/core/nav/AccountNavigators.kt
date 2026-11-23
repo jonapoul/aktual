@@ -5,7 +5,7 @@ import androidx.navigation3.runtime.NavKey
 
 @Immutable
 class LoginNavigator(private val stack: NavStack<NavKey>) {
-  operator fun invoke() = stack.push(LoginNavRoute)
+  operator fun invoke() = stack.push(LoginNavRoute())
 }
 
 @Immutable

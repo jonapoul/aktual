@@ -35,7 +35,7 @@ class AccountNavEntryContributor internal constructor(private val runLevelState:
       )
     }
 
-    entry<LoginNavRoute> {
+    entry<LoginNavRoute> { route ->
       val serverChosenGraph by remember {
         runLevelState.serverChosen()
       }
@@ -46,6 +46,7 @@ class AccountNavEntryContributor internal constructor(private val runLevelState:
           back = BackNavigator(stack),
           toServerUrl = ServerUrlNavigator(stack),
           toListBudgets = ListBudgetsNavigator(stack),
+          sessionEnded = route.sessionEnded,
         )
       }
     }
