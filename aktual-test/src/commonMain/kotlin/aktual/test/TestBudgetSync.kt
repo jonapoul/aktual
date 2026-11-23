@@ -5,10 +5,13 @@ import aktual.budget.utils.BudgetSync
 
 class TestBudgetSync : BudgetSync {
   val changes = mutableListOf<LocalChange>()
+  var scheduled = 0
 
   override suspend fun invoke(changes: List<LocalChange>) {
     this.changes += changes
   }
 
-  override fun schedule() = Unit
+  override fun schedule() {
+    scheduled++
+  }
 }

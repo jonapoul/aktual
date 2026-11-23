@@ -232,14 +232,18 @@ internal constructor(
       val trimmed = name.trim()
       val id = budgetIdFromName(trimmed, uuids())
       val metadata = budgetCreator(id, trimmed)
-      // TODO: upload the budget when syncWithServer is set. Local-only until then
       log.i { "createBudget $id syncWithServer=$syncWithServer: $metadata" }
 
       if (metadata == null) {
         mutableCreateState.update { Failed }
       } else {
+        val graph = runLevels.onBudget(id, metadata)
+        // On failure it stays local-only, like upstream, and can be uploaded from the sidebar
+        if (syncWithServer) {
+          val result = graph.uploader.upload()
+          log.i { "Uploaded $id: $result" }
+        }
         mutableCreateState.update { Idle }
-        runLevels.onBudget(id, metadata)
         navToBudget(id)
       }
     }

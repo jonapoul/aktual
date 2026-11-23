@@ -424,6 +424,13 @@ class BudgetNavRailViewModelTest {
       failure?.let { throw it }
       renames += id to name
     }
+
+    override suspend fun uploadBudget(
+      id: BudgetId,
+      name: String,
+      groupId: String?,
+      zip: ByteArray,
+    ): String = error("Unused")
   }
 
   private companion object {
