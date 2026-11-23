@@ -157,10 +157,6 @@ internal fun LogDayScaffold(
           listState = checkNotNull(listState),
           query = filters.query,
           onAction = onAction,
-          onTagLongClick = { tag ->
-            snackbarHostState.currentSnackbarData?.dismiss()
-            scope.launch { snackbarHostState.showSnackbar(tag) }
-          },
         )
       }
     }
@@ -323,7 +319,6 @@ private fun LogLines(
   listState: LazyListState,
   query: String,
   onAction: OnAction<LogsAction>,
-  onTagLongClick: (String) -> Unit,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
@@ -348,7 +343,6 @@ private fun LogLines(
           line = line,
           query = query,
           onTagClick = { onAction(AddTag(it)) },
-          onTagLongClick = onTagLongClick,
         )
         HorizontalDivider(color = colors.cardBackground)
       }
