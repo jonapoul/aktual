@@ -4,6 +4,7 @@ import aktual.budget.list.vm.BudgetNameError
 import aktual.budget.list.vm.CreateBudgetState
 import aktual.budget.list.vm.MAX_BUDGET_NAME_LENGTH
 import aktual.budget.list.vm.validateBudgetName
+import aktual.budget.utils.UploadResult
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
@@ -45,13 +46,18 @@ internal fun CreateBudgetDialog(
   state: CreateBudgetState,
   existingNames: ImmutableSet<String>,
   onCreate: (name: String, syncWithServer: Boolean) -> Unit,
+  onOpenCreated: () -> Unit,
   onDismiss: () -> Unit,
 ) {
   var syncWithServer by rememberSaveable { mutableStateOf(false) }
   AktualAlertDialog(
-    onDismissRequest = onDismiss,
+    onDismissRequest = if (state is UploadFailed) onOpenCreated else onDismiss,
     properties = DialogProperties(dismissOnClickOutside = false),
   ) {
+    if (state is UploadFailed) {
+      UploadFailedDialogContent(failure = state.failure, onOpen = onOpenCreated)
+      return@AktualAlertDialog
+    }
     CreateBudgetDialogContent(
       state = state,
       existingNames = existingNames,
@@ -118,6 +124,34 @@ private fun CreateBudgetDialogContent(
 }
 
 @Composable
+private fun UploadFailedDialogContent(failure: UploadResult.Failure, onOpen: () -> Unit) =
+  AktualAlertDialogContent(
+    title = Strings.budgetCreateTitle,
+    buttons = {
+      DialogTextButton(kind = Primary, text = Strings.budgetCreateOpen, onClick = onOpen)
+    },
+    content = {
+      Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = spacedBy(Dimens.Large)) {
+        Text(
+          text = Strings.budgetCreateUploadFailed,
+          style = typography.bodyMedium,
+          color = colors.pageText,
+        )
+        Text(text = failure.message(), style = typography.bodyMedium, color = colors.errorText)
+      }
+    },
+  )
+
+@Composable
+private fun UploadResult.Failure.message(): String =
+  when (this) {
+    NoServer -> Strings.budgetUploadErrorNoServer
+    Encrypted -> Strings.budgetUploadErrorEncrypted
+    is Rejected -> Strings.budgetUploadErrorRejected(reason)
+    Unreachable -> Strings.budgetUploadErrorUnreachable
+  }
+
+@Composable
 private fun SyncWithServerRow(checked: Boolean, onCheckedChange: (Boolean) -> Unit) =
   Row(
     modifier = Modifier.fillMaxWidth(),
@@ -171,4 +205,16 @@ private class CreateBudgetDialogProvider :
     PreviewParams("My Finances 1", Idle, syncWithServer = true),
     PreviewParams("My Finances", Idle),
     PreviewParams("Household", Failed),
+  )
+
+@Preview
+@Composable
+private fun PreviewUploadFailedDialog(
+  @PreviewParameter(UploadFailedDialogProvider::class) params: ColorParams<UploadResult.Failure>,
+) = PreviewWithColorParams(params) { UploadFailedDialogContent(failure = params.data, onOpen = {}) }
+
+private class UploadFailedDialogProvider :
+  ColorParamsProvider<UploadResult.Failure>(
+    UploadResult.Rejected("file-has-new-key"),
+    UploadResult.Unreachable,
   )

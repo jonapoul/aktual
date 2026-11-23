@@ -18,5 +18,5 @@ sealed interface UploadResult {
 
   @JvmInline value class Rejected(val reason: String) : Failure
 
-  @JvmInline value class Unreachable(val message: String?) : Failure
+  data object Unreachable : Failure
 }

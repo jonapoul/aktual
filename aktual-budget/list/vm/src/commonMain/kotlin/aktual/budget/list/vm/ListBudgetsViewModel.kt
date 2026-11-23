@@ -12,6 +12,7 @@ import aktual.budget.model.directoryId
 import aktual.budget.utils.BudgetCreator
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.ImportResult
+import aktual.budget.utils.UploadResult
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.utils.UuidGenerator
@@ -238,15 +239,24 @@ internal constructor(
         mutableCreateState.update { Failed }
       } else {
         val graph = runLevels.onBudget(id, metadata)
-        // On failure it stays local-only, like upstream, and can be uploaded from the sidebar
-        if (syncWithServer) {
-          val result = graph.uploader.upload()
-          log.i { "Uploaded $id: $result" }
+        val result = if (syncWithServer) graph.uploader.upload() else UploadResult.Success
+        log.i { "Upload $id: $result" }
+        if (result is UploadResult.Failure) {
+          // It stays local-only, like upstream, but tell the user before opening it
+          mutableCreateState.update { CreateBudgetState.UploadFailed(id, result) }
+        } else {
+          mutableCreateState.update { Idle }
+          navToBudget(id)
         }
-        mutableCreateState.update { Idle }
-        navToBudget(id)
       }
     }
+  }
+
+  // After a failed upload, the budget is already open
+  fun openCreatedBudget() {
+    val state = mutableCreateState.value as? CreateBudgetState.UploadFailed ?: return
+    mutableCreateState.update { Idle }
+    viewModelScope.launch { navToBudget(state.id) }
   }
 
   // Leaves a running creation alone, so reopening the dialog shows its progress

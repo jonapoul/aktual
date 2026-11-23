@@ -78,7 +78,7 @@ internal constructor(
         if (e is UploadRejectedException) {
           UploadResult.Rejected(e.reason)
         } else {
-          UploadResult.Unreachable(e.message)
+          UploadResult.Unreachable
         }
       },
       finally = {
