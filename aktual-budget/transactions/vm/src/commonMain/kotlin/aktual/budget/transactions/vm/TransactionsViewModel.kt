@@ -4,6 +4,7 @@ import aktual.budget.banksync.domain.AccountDeleter
 import aktual.budget.banksync.domain.BankSyncController
 import aktual.budget.banksync.domain.BankSyncSummary
 import aktual.budget.banksync.domain.NewTransactions
+import aktual.budget.banksync.domain.canBankSync
 import aktual.budget.db.Accounts
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
@@ -12,6 +13,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetId
 import aktual.budget.model.CategorySpec
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
@@ -117,6 +119,7 @@ internal constructor(
   conditionEntitiesLoader: ConditionEntitiesLoader,
   newTransactions: NewTransactions,
   server: BudgetServer,
+  budgetId: BudgetId,
   private val clock: Clock,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
@@ -131,7 +134,7 @@ internal constructor(
   private val mutableToggledSplits =
     MutableStateFlow<PersistentSet<TransactionId>>(persistentSetOf())
   private val accountId = (spec.accountSpec as? AccountSpec.SpecificAccount)?.id
-  private val isRemote = server is Remote
+  private val canBankSyncBudget = server.canBankSync(budgetId)
   private var currentPagingSource: PagingSource<PageKey, Transaction>? = null
   // Buffered, so an event sent while the screen is being recreated waits for it
   private val mutableEvents = Channel<TransactionsEvent>(Channel.BUFFERED)
@@ -241,7 +244,7 @@ internal constructor(
 
   val canBankSync: StateFlow<Boolean> =
     mutableLoadedAccount
-      .map { it is SpecificAccount && it.account.isLinked() && isRemote }
+      .map { it is SpecificAccount && it.account.isLinked() && canBankSyncBudget }
       .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val isBankSyncing: StateFlow<Boolean> =
@@ -251,7 +254,7 @@ internal constructor(
 
   val bankSyncFinished: Flow<BankSyncSummary> =
     bankSyncController.finished.mapNotNull { results ->
-      BankSyncSummary.of(results.filter { it.account == accountId })
+      BankSyncSummary.of(results.filter { it.account == accountId }, transactionDao::sortIds)
     }
 
   // As typed, for the search field and filter chips. Shared by every account list

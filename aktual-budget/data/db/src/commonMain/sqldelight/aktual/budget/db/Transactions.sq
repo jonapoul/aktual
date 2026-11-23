@@ -795,6 +795,13 @@ SELECT vt.id
   WHERE t.schedule = :schedule
   ORDER BY vt.date DESC, vt.starting_balance_flag, vt.sort_order DESC, vt.id;
 
+-- Which of these are live, with what puts them in list order. The caller sorts, since a long list
+-- is queried in chunks
+getListOrderOfIds:
+SELECT vt.id, vt.date, vt.starting_balance_flag, vt.sort_order
+  FROM v_transactions_internal_alive AS vt
+  WHERE vt.id IN ?;
+
 -- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
 notesContainingHash:
 SELECT notes FROM v_transactions_internal_alive WHERE notes LIKE '%#%';

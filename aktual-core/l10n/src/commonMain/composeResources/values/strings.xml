@@ -431,13 +431,14 @@
   <string name="bank_sync_indicator_failed">Bank sync failed</string>
   <string name="bank_sync_just_now">just now</string>
 
-  <string name="bank_sync_sync_all">Sync all accounts</string>
+  <string name="bank_sync_sync_all">Sync all</string>
   <string name="bank_sync_sync_account">Sync %1$s</string>
   <string name="bank_sync_syncing">Syncing…</string>
   <string name="bank_sync_result_synced">%1$s: %2$d new, %3$d updated</string>
   <string name="bank_sync_result_failed">Couldn’t sync %1$s</string>
   <string name="bank_sync_result_several">Synced %1$d accounts: %2$d new, %3$d updated</string>
   <string name="bank_sync_result_several_failed">Synced %1$d of %2$d accounts: %3$d new, %4$d updated</string>
+  <string name="bank_sync_result_view">View new</string>
 
   <string name="bank_sync_unlinked_title">Unlinked accounts</string>
   <string name="bank_sync_unlinked_message">Tap an account to link it to a bank</string>
@@ -2305,6 +2306,8 @@
   <string name="transactions_title_closed">Closed Accounts</string>
   <string name="transactions_title_loading">Loading…</string>
   <string name="transactions_title_none">&lt;No title&gt;</string>
+  <string name="transactions_title_synced">New from bank sync</string>
+  <string name="transactions_title_synced_newest">Newest %1$d of %2$d from bank sync</string>
   <string name="transactions_choose_account">Choose account</string>
   <string name="transactions_uncategorised_title">Uncategorized</string>
   <string name="transactions_category_title">%1$s, %2$s</string>

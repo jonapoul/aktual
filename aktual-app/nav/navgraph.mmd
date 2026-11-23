@@ -38,6 +38,7 @@ flowchart TD
     tagTransactions["Tag Transactions"]
     uncategorisedTransactions["Uncategorised Transactions"]
     filteredTransactions["Filtered Transactions"]
+    syncedTransactions["Synced Transactions"]
     transaction["Transaction"]
     createTransaction["Create Transaction"]
     reportsDashboard["Reports Dashboard"]
@@ -145,6 +146,10 @@ flowchart TD
   tagTransactions --tap transaction--> transaction
   uncategorisedTransactions --tap transaction--> transaction
   filteredTransactions --tap transaction--> transaction
+  syncedTransactions --tap transaction--> transaction
+  accountTransactions --view new from bank sync snackbar--> syncedTransactions
+  transactions --view new from bank sync snackbar--> syncedTransactions
+  accountGroupTransactions --view new from bank sync snackbar--> syncedTransactions
 
   transactions --tap add--> createTransaction
   accountTransactions --tap add--> createTransaction
@@ -194,5 +199,6 @@ flowchart TD
   bankSync --tap unlinked account--> linkBankAccount
   bankSync --tap add account--> linkBankAccount
   bankSync --tap providers--> bankSyncProviders
+  bankSync --view new from sync snackbar--> syncedTransactions
   linkBankAccount --no providers set up--> bankSyncProviders
   bankSyncProviders --tap provider--> bankSyncProviderSetup

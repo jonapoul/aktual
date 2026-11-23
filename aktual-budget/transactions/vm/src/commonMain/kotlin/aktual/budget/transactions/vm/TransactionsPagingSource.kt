@@ -32,8 +32,8 @@ internal class TransactionsPagingSource(
   // source is created whenever the data is invalidated.
   private var filteredIds: SearchMatches? = null
 
-  // The same for a report's drilled down list, whose conditions are matched in memory, and a
-  // schedule's linked transactions
+  // The same for a report's drilled down list, whose conditions are matched in memory, a
+  // schedule's linked transactions and a bank sync's new ones
   private var filterIds: List<TransactionId>? = null
 
   // And for a searched account list, matched in memory too
@@ -206,6 +206,7 @@ internal class TransactionsPagingSource(
     when (filtered) {
       is Conditions -> matcher.matching(filtered.filter)
       is LinkedToSchedule -> transactionDao.getIdsBySchedule(filtered.id)
+      is SpecificIds -> transactionDao.sortIds(filtered.ids)
     }
 
   private fun List<TransactionId>.page(offset: Long, limit: Long): List<TransactionId> {

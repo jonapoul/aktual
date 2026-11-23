@@ -13,6 +13,7 @@ kotlin {
     implementation(libs.compose.resources)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.runtime)
+    implementation(project(":aktual-api:impl"))
     implementation(project(":aktual-budget:data:db"))
     implementation(project(":aktual-core:utils"))
     implementation(project(":aktual-logging"))

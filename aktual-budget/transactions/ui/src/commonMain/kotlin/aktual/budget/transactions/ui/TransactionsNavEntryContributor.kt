@@ -7,6 +7,7 @@ import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.ui.edit.EditTransactionScreen
 import aktual.budget.transactions.vm.edit.EditTransactionTarget
+import aktual.core.l10n.Strings
 import aktual.core.nav.AccountGroupTransactionsNavRoute
 import aktual.core.nav.AccountTransactionsNavRoute
 import aktual.core.nav.BackNavigator
@@ -23,6 +24,7 @@ import aktual.core.nav.ListPayeeLocationsNavigator
 import aktual.core.nav.NavStack
 import aktual.core.nav.ScheduleTransactionsNavRoute
 import aktual.core.nav.SwitchAccountNavigator
+import aktual.core.nav.SyncedTransactionsNavRoute
 import aktual.core.nav.TransactionNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.nav.TransactionsNavigator
@@ -85,6 +87,16 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
       )
     }
 
+    budgetEntry<SyncedTransactionsNavRoute> { route ->
+      TransactionsScreen(
+        stack = stack,
+        spec =
+          TransactionsSpec(
+            filtered = FilteredSpec.SpecificIds(syncedTitle(route), route.ids),
+          ),
+      )
+    }
+
     budgetEntry<CategoryTransactionsNavRoute> { route ->
       TransactionsScreen(
         stack = stack,
@@ -133,6 +145,14 @@ private fun NavStack<BudgetNavKey>.isRootedAt(route: BudgetNavKey): Boolean =
   remember(route) { firstOrNull() == route }
 
 @Composable
+private fun syncedTitle(route: SyncedTransactionsNavRoute): String =
+  if (route.total > route.ids.size) {
+    Strings.transactionsTitleSyncedNewest(route.ids.size, route.total)
+  } else {
+    Strings.transactionsTitleSynced
+  }
+
+@Composable
 private fun TransactionsScreen(
   stack: NavStack<BudgetNavKey>,
   spec: TransactionsSpec,
@@ -142,7 +162,7 @@ private fun TransactionsScreen(
     back = BackNavigator(stack),
     accountDeleted = DeletedAccountNavigator(stack),
     openTransaction = EditTransactionNavigator(stack),
-    openTag = TransactionsNavigator(stack),
+    toTransactions = TransactionsNavigator(stack),
     switchAccount = SwitchAccountNavigator(stack),
     spec = spec,
     isRoot = isRoot,
