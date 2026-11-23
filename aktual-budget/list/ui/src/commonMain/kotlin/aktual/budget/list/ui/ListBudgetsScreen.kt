@@ -143,6 +143,7 @@ fun ListBudgetsScreen(
       state = createState,
       listState = state,
       onCreate = viewModel::createBudget,
+      onOpenCreate = viewModel::openCreatedBudget,
       onDismiss = {
         showCreate = false
         viewModel.clearCreateFailure()
@@ -189,7 +190,7 @@ private fun DeleteBudget(
   budget: Budget,
   deletingState: DeletingState,
   onDeleteLocal: (BudgetId) -> Unit,
-  onDeleteRemote: (BudgetId) -> Unit,
+  onDeleteRemote: (Budget.Cloud) -> Unit,
   onDismiss: () -> Unit,
 ) {
   DeleteBudgetDialog(
@@ -198,7 +199,7 @@ private fun DeleteBudget(
     onAction = { action ->
       when (action) {
         DeleteLocal -> onDeleteLocal(budget.directoryId)
-        DeleteRemote -> if (budget is Cloud) onDeleteRemote(budget.cloudFileId)
+        DeleteRemote -> if (budget is Cloud) onDeleteRemote(budget)
         Dismiss -> onDismiss()
       }
     },
@@ -210,6 +211,7 @@ private fun CreateBudget(
   state: CreateBudgetState,
   listState: ListBudgetsState,
   onCreate: (name: String, syncWithServer: Boolean) -> Unit,
+  onOpenCreate: () -> Unit,
   onDismiss: () -> Unit,
 ) {
   val existingNames =
@@ -221,6 +223,7 @@ private fun CreateBudget(
     state = state,
     existingNames = existingNames,
     onCreate = onCreate,
+    onOpenCreate = onOpenCreate,
     onDismiss = onDismiss,
   )
 }

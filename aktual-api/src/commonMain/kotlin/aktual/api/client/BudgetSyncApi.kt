@@ -9,6 +9,10 @@ interface BudgetSyncApi {
   suspend fun syncBudget(requestBody: ByteString): SyncResponse
 
   suspend fun renameBudget(id: BudgetId, name: String)
+
+  // Uploads a zip of the budget, returning its group ID. Throws UploadRejectedException if the
+  // server refuses it
+  suspend fun uploadBudget(id: BudgetId, name: String, groupId: String?, zip: ByteArray): String
 }
 
 // The sync server rejected the messages with a 400, keeping none of them. See
@@ -19,3 +23,7 @@ class SyncRejectedException(val reason: String, cause: Throwable? = null) :
   val isClockDrift: Boolean
     get() = reason == "clock-drift"
 }
+
+// See the upload-user-file handler in packages/sync-server/src/app-sync.ts upstream
+class UploadRejectedException(val reason: String, cause: Throwable? = null) :
+  Exception("Upload rejected: $reason", cause)

@@ -1,6 +1,7 @@
 package aktual.api.client
 
 import aktual.api.model.sync.UpdateUserFileNameRequest
+import aktual.api.model.sync.UploadUserFileResponse
 import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncResponse
 import aktual.budget.proto.SyncResponseDecoder
@@ -9,6 +10,7 @@ import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -17,6 +19,7 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodeURLParameter
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import okio.ByteString
 import okio.buffer
@@ -65,6 +68,35 @@ internal constructor(
     }
   }
 
+  override suspend fun uploadBudget(
+    id: BudgetId,
+    name: String,
+    groupId: String?,
+    zip: ByteArray,
+  ): String {
+    val remote = remote()
+    val response =
+      try {
+        client.post {
+          url(remote.url, "/sync/upload-user-file")
+          header(AktualHeaders.TOKEN, remote.token.value)
+          header(AktualHeaders.FILE_ID, id)
+          header(AktualHeaders.NAME, name.encodeURLParameter())
+          header(AktualHeaders.FORMAT, SYNC_FORMAT)
+          groupId?.let { header(AktualHeaders.GROUP_ID, it) }
+          contentType(ContentType("application", "encrypted-file"))
+          setBody(zip)
+        }
+      } catch (e: ClientRequestException) {
+        throw UploadRejectedException(e.response.bodyAsText(), e)
+      }
+    return response.body<UploadUserFileResponse>().groupId
+  }
+
   private fun remote(): BudgetServer.Remote =
     checkNotNull(server as? Remote) { "No server to sync with" }
+
+  private companion object {
+    const val SYNC_FORMAT = "2"
+  }
 }

@@ -9,4 +9,8 @@ kotlin {
     implementation(project(":aktual-logging"))
     implementation(project(":aktual-prefs"))
   }
+
+  commonTestDependencies {
+    implementation(project(":aktual-test"))
+  }
 }

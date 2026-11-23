@@ -13,6 +13,7 @@ internal val PreviewBudgetSynced =
     cloudFileId = BudgetId("abc123"),
     groupId = "abc123",
     owner = null,
+    localId = BudgetId("abc123"),
   )
 
 internal val PreviewBudgetRemote =
@@ -32,4 +33,5 @@ internal val PreviewBudgetBroken =
     encryptKeyId = null,
     cloudFileId = BudgetId("ghi789"),
     groupId = "ghi789",
+    localId = BudgetId("ghi789"),
   )

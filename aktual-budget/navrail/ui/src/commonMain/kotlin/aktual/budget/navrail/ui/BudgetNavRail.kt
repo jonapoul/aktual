@@ -13,6 +13,7 @@ import aktual.core.icons.Pencil1
 import aktual.core.icons.Reports
 import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
+import aktual.core.icons.Upload
 import aktual.core.icons.UserGroup
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
@@ -131,6 +132,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
+@Suppress("LongMethod")
 @Composable
 internal fun BudgetNavRail(
   appStack: NavStack<NavKey>,
@@ -174,6 +176,7 @@ internal fun BudgetNavRail(
     when (action) {
       RenameBudget -> dialog = Rename
       ExportBudget -> dialog = Export
+      UploadBudget -> dialog = Upload
       OpenApiKeys -> activeStack.push(ApiKeysNavRoute)
       OpenNightlyUpdate -> dialog = NightlyUpdate
       is BudgetNavAction -> onAction(action)
@@ -231,6 +234,7 @@ internal fun BudgetNavRail(
       contributors = contributors,
       isDemo = headerState.isDemo,
       canManageApiKeys = headerState.canManageApiKeys,
+      canUpload = headerState.canUpload,
       appStack = appStack,
       activeStack = activeStack,
       selectedTab = selectedTab,
@@ -256,6 +260,7 @@ internal fun BudgetNavRail(
 private enum class NavRailDialog {
   Rename,
   Export,
+  Upload,
   NightlyUpdate,
 }
 
@@ -283,6 +288,10 @@ private fun BudgetNavRailDialogs(
 
   // Always composed, so the save launcher outlives the dialog
   ExportBudget(isDialogOpen = dialog == Export, onDismiss = onDismiss)
+
+  if (dialog == Upload) {
+    UploadBudgetDialog(onDismiss = onDismiss)
+  }
 
   if (dialog == NightlyUpdate && nightlyUpdate is Available) {
     NightlyUpdateDialog(state = nightlyUpdate, onDismiss = onDismiss)
@@ -437,6 +446,7 @@ private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   isDemo: Boolean,
   canManageApiKeys: Boolean,
+  canUpload: Boolean,
   appStack: NavStack<NavKey>,
   activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
@@ -453,6 +463,7 @@ private fun SideNavLayout(
         expanded = showMenu,
         isDemo = isDemo,
         canManageApiKeys = canManageApiKeys,
+        canUpload = canUpload,
         onSelectTab = onSelectTab,
         onSetPrivacyMode = onSetPrivacyMode,
         onAction = onAction,
@@ -665,11 +676,13 @@ internal fun budgetNavKeyStackSaver() =
     },
   )
 
+@Suppress("LongMethod")
 @Composable
 private fun BudgetMenu(
   expanded: Boolean,
   isDemo: Boolean,
   canManageApiKeys: Boolean,
+  canUpload: Boolean,
   onDismissRequest: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
   onSetPrivacyMode: (Boolean) -> Unit,
@@ -705,6 +718,16 @@ private fun BudgetMenu(
           onAction(ExportBudget)
         },
       )
+      if (canUpload) {
+        AktualDropdownMenuItem(
+          text = Strings.budgetNavMenuUploadBudget,
+          leadingIcon = AktualIcons.Upload,
+          onClick = {
+            onDismissRequest()
+            onAction(UploadBudget)
+          },
+        )
+      }
       if (canManageApiKeys) {
         AktualDropdownMenuItem(
           text = Strings.budgetNavMenuApiKeys,

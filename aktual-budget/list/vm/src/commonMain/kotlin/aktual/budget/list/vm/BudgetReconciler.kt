@@ -63,6 +63,7 @@ internal constructor(
               groupId = file.groupId,
               owner = file.owner,
               usersWithAccess = users,
+              localId = local.id,
             )
           } else {
             Budget.Detached(
@@ -73,6 +74,7 @@ internal constructor(
               groupId = file.groupId,
               owner = file.owner,
               usersWithAccess = users,
+              localId = local.id,
             )
           }
         } else {
@@ -110,6 +112,7 @@ internal constructor(
       encryptKeyId = md?.encryptKeyIdOrNull,
       cloudFileId = cloudId,
       groupId = md?.get(GroupId).orEmpty(),
+      localId = id,
     )
   }
 
@@ -121,6 +124,7 @@ internal constructor(
       encryptKeyId = md?.encryptKeyIdOrNull,
       cloudFileId = cloudId,
       groupId = md?.get(GroupId).orEmpty(),
+      localId = id,
     )
   }
 

@@ -809,6 +809,8 @@
   <string name="budget_create_error_too_long">Budget name is too long (max length %1$d)</string>
   <string name="budget_create_error_taken">“%1$s” already exists</string>
   <string name="budget_create_error_failed">Couldn’t create the budget. Please try again.</string>
+  <string name="budget_create_upload_failed">The budget was created on this device, but couldn’t be uploaded. You can try again from the budget menu.</string>
+  <string name="budget_create_open">Open budget</string>
   <string name="budget_import_title">Import from Actual export</string>
   <string name="budget_import_description">You can import data from another Actual account or instance. First export your data from a different account, and it will give you a compressed file. This file is a simple zip file that contains the db.sqlite and metadata.json files.</string>
   <string name="budget_import_select_hint">Select one of these compressed files and import it here.</string>
@@ -2503,6 +2505,7 @@
   <string name="budget_nav_menu_switch_budget">Switch budget</string>
   <string name="budget_nav_menu_rename_budget">Rename budget</string>
   <string name="budget_nav_menu_export_budget">Export budget</string>
+  <string name="budget_nav_menu_upload_budget">Upload to server</string>
   <string name="budget_nav_menu_log_out">Log out</string>
   <string name="budget_nav_menu_exit_demo">Exit demo</string>
   <string name="budget_nav_menu_privacy_on">Enable privacy mode</string>
@@ -2536,6 +2539,13 @@
   <string name="budget_export_save">Save to file</string>
   <string name="budget_export_close">Close</string>
   <string name="budget_export_failed">Export failed: %1$s</string>
+  <string name="budget_upload_description">Upload this budget to %1$s so your other devices can open it. It syncs from then on.</string>
+  <string name="budget_upload_confirm">Upload</string>
+  <string name="budget_upload_cancel">Cancel</string>
+  <string name="budget_upload_error_rejected">The server refused the upload: %1$s</string>
+  <string name="budget_upload_error_unreachable">Couldn’t reach the server.</string>
+  <string name="budget_upload_error_encrypted">Encrypted budgets can’t be uploaded yet.</string>
+  <string name="budget_upload_error_no_server">There’s no server to upload to.</string>
 
   <!-- settings -->
   <string name="settings_toolbar">App Settings</string>

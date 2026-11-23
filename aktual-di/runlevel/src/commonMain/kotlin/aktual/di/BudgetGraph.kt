@@ -4,6 +4,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.utils.BudgetLocalPreferences
 import aktual.budget.utils.BudgetSync
+import aktual.budget.utils.BudgetUploader
 import aktual.core.model.BudgetServer
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.BindingContainer
@@ -20,6 +21,7 @@ interface BudgetGraph : AktualGraph {
   val server: BudgetServer
   val budgetSync: BudgetSync
   val localPreferences: BudgetLocalPreferences
+  val uploader: BudgetUploader
 
   override val coroutineScope: BudgetCoroutineScope
 

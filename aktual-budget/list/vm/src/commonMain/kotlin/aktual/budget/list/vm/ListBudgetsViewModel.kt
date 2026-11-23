@@ -12,6 +12,7 @@ import aktual.budget.model.directoryId
 import aktual.budget.utils.BudgetCreator
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.ImportResult
+import aktual.budget.utils.UploadResult
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.utils.UuidGenerator
@@ -114,7 +115,9 @@ internal constructor(
         if (budget.canOpenLocally()) withContext(contexts.io) { files.readMetadata(id) } else null
 
       if (metadata == null) {
-        mutableEvent.emit(ListBudgetsEvent.ShowSyncDialog(id))
+        // Downloads by cloud file ID, so encrypted budgets get their key asked for
+        val cloudId = (budget as? Cloud)?.cloudFileId ?: id
+        mutableEvent.emit(ListBudgetsEvent.ShowSyncDialog(cloudId))
         return@launch
       }
 
@@ -147,8 +150,9 @@ internal constructor(
 
   fun clearDeletingState() = mutableDeletingState.update { Inactive }
 
-  fun deleteRemote(id: BudgetId) {
-    log.d { "deleteRemote $id" }
+  fun deleteRemote(budget: Budget.Cloud) {
+    val id = budget.directoryId
+    log.d { "deleteRemote $budget" }
     mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
 
     viewModelScope.launch {
@@ -160,13 +164,13 @@ internal constructor(
 
       runCatchingCancellable(
         attempt = {
-          val request = DeleteUserFileRequest(id, token)
+          val request = DeleteUserFileRequest(budget.cloudFileId, token)
           syncApi.delete(request)
         },
         onFailure = { e -> log.e(e) { "Failed deleting $id" } },
       )
 
-      log.d { "Successfully deleted $id" }
+      log.i { "Successfully deleted $id" }
       clearDeletingState()
       mutableCloseDialog.emit(true)
 
@@ -232,17 +236,30 @@ internal constructor(
       val trimmed = name.trim()
       val id = budgetIdFromName(trimmed, uuids())
       val metadata = budgetCreator(id, trimmed)
-      // TODO: upload the budget when syncWithServer is set. Local-only until then
       log.i { "createBudget $id syncWithServer=$syncWithServer: $metadata" }
 
       if (metadata == null) {
         mutableCreateState.update { Failed }
       } else {
-        mutableCreateState.update { Idle }
-        runLevels.onBudget(id, metadata)
-        navToBudget(id)
+        val graph = runLevels.onBudget(id, metadata)
+        val result = if (syncWithServer) graph.uploader.upload() else UploadResult.Success
+        log.i { "Upload $id: $result" }
+        if (result is UploadResult.Failure) {
+          // It stays local-only, like upstream, but tell the user before opening it
+          mutableCreateState.update { CreateBudgetState.UploadFailed(id, result) }
+        } else {
+          mutableCreateState.update { Idle }
+          navToBudget(id)
+        }
       }
     }
+  }
+
+  // After a failed upload, the budget is already open
+  fun openCreatedBudget() {
+    val state = mutableCreateState.value as? UploadFailed ?: return
+    mutableCreateState.update { Idle }
+    viewModelScope.launch { navToBudget(state.id) }
   }
 
   // Leaves a running creation alone, so reopening the dialog shows its progress

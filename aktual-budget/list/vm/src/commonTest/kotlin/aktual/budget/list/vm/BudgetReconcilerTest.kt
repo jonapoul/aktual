@@ -57,6 +57,7 @@ class BudgetReconcilerTest {
           cloudFileId = BudgetId("a"),
           groupId = "g1",
           owner = null,
+          localId = BudgetId("a"),
         ),
       )
   }
@@ -77,6 +78,7 @@ class BudgetReconcilerTest {
           cloudFileId = BudgetId("a"),
           groupId = "g2",
           owner = null,
+          localId = BudgetId("a"),
         ),
       )
   }
@@ -113,6 +115,7 @@ class BudgetReconcilerTest {
           encryptKeyId = null,
           cloudFileId = BudgetId("a"),
           groupId = "g1",
+          localId = BudgetId("a"),
         ),
       )
   }
@@ -143,6 +146,7 @@ class BudgetReconcilerTest {
           encryptKeyId = null,
           cloudFileId = BudgetId("a"),
           groupId = "g1",
+          localId = BudgetId("a"),
         ),
       )
   }
@@ -166,8 +170,30 @@ class BudgetReconcilerTest {
         cloudFileId = BudgetId("a"),
         groupId = "g1",
         owner = null,
+        localId = BudgetId("a"),
       )
     assertThat(result).containsExactly(expected)
+  }
+
+  @Test
+  fun `Local copy keeps its own directory when created on this device`() = runReconcilerTest {
+    seedLocal(BudgetId("My-Budget-0123456"), groupId = "g1", name = "Main", cloudFileId = "a")
+
+    val result =
+      reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g1", name = "Main")))
+
+    assertThat(result)
+      .containsExactly(
+        Budget.Synced(
+          name = "Main",
+          hasKey = false,
+          encryptKeyId = null,
+          cloudFileId = BudgetId("a"),
+          groupId = "g1",
+          owner = null,
+          localId = BudgetId("My-Budget-0123456"),
+        ),
+      )
   }
 
   @Test
@@ -204,8 +230,15 @@ class BudgetReconcilerTest {
         )
     }
 
-  private fun seedLocal(id: BudgetId, groupId: String, name: String) {
-    files.writeMetadata(id, DbMetadata(cloudFileId = id, groupId = groupId, budgetName = name))
+  private fun seedLocal(
+    id: BudgetId,
+    groupId: String,
+    name: String,
+    cloudFileId: String = id.value,
+  ) {
+    val metadata =
+      DbMetadata(cloudFileId = BudgetId(cloudFileId), groupId = groupId, budgetName = name)
+    files.writeMetadata(id, metadata)
   }
 
   private fun userFile(id: String, groupId: String, name: String, encryptKeyId: KeyId? = null) =
