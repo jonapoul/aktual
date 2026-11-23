@@ -209,7 +209,7 @@ private fun DeleteBudget(
 private fun CreateBudget(
   state: CreateBudgetState,
   listState: ListBudgetsState,
-  onCreate: (String) -> Unit,
+  onCreate: (name: String, syncWithServer: Boolean) -> Unit,
   onDismiss: () -> Unit,
 ) {
   val existingNames =

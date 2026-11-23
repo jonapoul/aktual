@@ -3,7 +3,6 @@ package aktual.budget.list.ui
 import aktual.budget.list.vm.BudgetNameError
 import aktual.budget.list.vm.CreateBudgetState
 import aktual.budget.list.vm.MAX_BUDGET_NAME_LENGTH
-import aktual.budget.list.vm.uniqueBudgetName
 import aktual.budget.list.vm.validateBudgetName
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
@@ -17,17 +16,25 @@ import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.keyboardFocusRequester
+import aktual.core.ui.switch
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.window.DialogProperties
@@ -38,9 +45,10 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun CreateBudgetDialog(
   state: CreateBudgetState,
   existingNames: ImmutableSet<String>,
-  onCreate: (String) -> Unit,
+  onCreate: (name: String, syncWithServer: Boolean) -> Unit,
   onDismiss: () -> Unit,
-) =
+) {
+  var syncWithServer by rememberSaveable { mutableStateOf(false) }
   AktualAlertDialog(
     onDismissRequest = onDismiss,
     properties = DialogProperties(dismissOnClickOutside = false),
@@ -48,17 +56,22 @@ internal fun CreateBudgetDialog(
     CreateBudgetDialogContent(
       state = state,
       existingNames = existingNames,
-      nameState = rememberSelectedTextFieldState(uniqueBudgetName(existingNames)),
-      onCreate = onCreate,
+      nameState = rememberTextFieldState(),
+      syncWithServer = syncWithServer,
+      onSyncWithServerChange = { syncWithServer = it },
+      onCreate = { name -> onCreate(name, syncWithServer) },
       onDismiss = onDismiss,
     )
   }
+}
 
 @Composable
 private fun CreateBudgetDialogContent(
   state: CreateBudgetState,
   existingNames: ImmutableSet<String>,
   nameState: TextFieldState,
+  syncWithServer: Boolean,
+  onSyncWithServerChange: (Boolean) -> Unit,
   onCreate: (String) -> Unit,
   onDismiss: () -> Unit,
 ) {
@@ -88,11 +101,13 @@ private fun CreateBudgetDialogContent(
           onKeyboardAction = { if (enabled) onCreate(name) },
         )
 
+        SyncWithServerRow(checked = syncWithServer, onCheckedChange = onSyncWithServerChange)
+
         // Blank already disables the button, so don't nag about it
         val message =
           when {
             state is Failed -> Strings.budgetCreateErrorFailed
-            error != null && error != Blank -> error.message(name)
+            error != null && error != Blank -> error.message()
             else -> null
           }
         message?.let {
@@ -103,17 +118,30 @@ private fun CreateBudgetDialogContent(
   )
 }
 
-// Selected so typing replaces the suggested name
 @Composable
-private fun rememberSelectedTextFieldState(initialText: String): TextFieldState =
-  rememberTextFieldState(initialText, initialSelection = TextRange(0, initialText.length))
+private fun SyncWithServerRow(checked: Boolean, onCheckedChange: (Boolean) -> Unit) =
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    verticalAlignment = CenterVertically,
+    horizontalArrangement = spacedBy(Dimens.Large),
+  ) {
+    Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(Dimens.Medium)) {
+      Text(text = Strings.budgetCreateSync, style = typography.bodyLarge)
+      Text(
+        text = Strings.budgetCreateSyncHint,
+        style = typography.bodySmall,
+        color = colors.pageTextSubdued,
+      )
+    }
+    Switch(checked = checked, onCheckedChange = onCheckedChange, colors = colors.switch())
+  }
 
 @Composable
-private fun BudgetNameError.message(name: String): String =
+private fun BudgetNameError.message(): String =
   when (this) {
     Blank -> Strings.budgetCreateErrorBlank
     TooLong -> Strings.budgetCreateErrorTooLong(MAX_BUDGET_NAME_LENGTH)
-    is Taken -> Strings.budgetCreateErrorTaken(name.trim(), suggestion)
+    is Taken -> Strings.budgetCreateErrorTaken(name)
   }
 
 @Preview
@@ -126,16 +154,22 @@ private fun PreviewCreateBudgetDialog(
       state = params.data.state,
       existingNames = persistentSetOf("My Finances"),
       nameState = rememberTextFieldState(params.data.name),
+      syncWithServer = params.data.syncWithServer,
+      onSyncWithServerChange = {},
       onCreate = {},
       onDismiss = {},
     )
   }
 
-private data class PreviewParams(val name: String, val state: CreateBudgetState)
+private data class PreviewParams(
+  val name: String,
+  val state: CreateBudgetState,
+  val syncWithServer: Boolean = false,
+)
 
 private class CreateBudgetDialogProvider :
   ColorParamsProvider<PreviewParams>(
-    PreviewParams("My Finances 1", Idle),
+    PreviewParams("My Finances 1", Idle, syncWithServer = true),
     PreviewParams("My Finances", Idle),
     PreviewParams("Household", Failed),
   )

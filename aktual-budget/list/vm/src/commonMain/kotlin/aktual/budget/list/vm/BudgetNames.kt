@@ -5,7 +5,6 @@ import androidx.compose.runtime.Immutable
 
 // Ported from packages/loot-core/src/server/util/budget-name.ts
 
-const val DEFAULT_BUDGET_NAME = "My Finances"
 const val MAX_BUDGET_NAME_LENGTH = 100
 
 @Immutable
@@ -14,29 +13,14 @@ sealed interface BudgetNameError {
 
   data object TooLong : BudgetNameError
 
-  @JvmInline value class Taken(val suggestion: String) : BudgetNameError
+  @JvmInline value class Taken(val name: String) : BudgetNameError
 }
 
-/** Appends an index to [initialName] until it doesn't clash with [existing]. */
-fun uniqueBudgetName(
-  existing: Collection<String>,
-  initialName: String = DEFAULT_BUDGET_NAME,
-): String {
-  var name = initialName
-  var index = 1
-  while (name in existing) {
-    name = "$initialName $index"
-    index++
-  }
-  return name
-}
-
-/** Returns null if [name] can be used for a new budget. */
 fun validateBudgetName(name: String, existing: Collection<String>): BudgetNameError? {
   val trimmed = name.trim()
-  val unique = uniqueBudgetName(existing, trimmed)
+  val matching = existing.firstOrNull { it == trimmed }
   return when {
-    unique != trimmed -> BudgetNameError.Taken(unique)
+    matching != null -> BudgetNameError.Taken(matching)
     trimmed.length > MAX_BUDGET_NAME_LENGTH -> TooLong
     trimmed.isEmpty() -> Blank
     else -> null

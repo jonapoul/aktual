@@ -8,17 +8,6 @@ import kotlin.test.Test
 
 class BudgetNamesTest {
   @Test
-  fun `Default name when nothing clashes`() {
-    assertThat(uniqueBudgetName(existing = listOf("Other"))).isEqualTo("My Finances")
-  }
-
-  @Test
-  fun `Append the first free index`() {
-    val existing = listOf("My Finances", "My Finances 1")
-    assertThat(uniqueBudgetName(existing)).isEqualTo("My Finances 2")
-  }
-
-  @Test
   fun `Valid name`() {
     assertThat(validateBudgetName("  Household ", existing = listOf("Other"))).isNull()
   }
@@ -35,9 +24,9 @@ class BudgetNamesTest {
   }
 
   @Test
-  fun `Taken name suggests a free one`() {
+  fun `Taken name`() {
     assertThat(validateBudgetName("Household ", existing = listOf("Household")))
-      .isEqualTo(BudgetNameError.Taken("Household 1"))
+      .isEqualTo(BudgetNameError.Taken("Household"))
   }
 
   @Test

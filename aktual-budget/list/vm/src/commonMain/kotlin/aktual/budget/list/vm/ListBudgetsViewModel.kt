@@ -224,15 +224,16 @@ internal constructor(
       is OtherFailure -> Unknown
     }
 
-  /** Creates a new local-only budget, then opens it. */
-  fun createBudget(name: String) {
+  /** Creates a new budget, then opens it. */
+  fun createBudget(name: String, syncWithServer: Boolean) {
     if (mutableCreateState.value is Creating) return
     mutableCreateState.update { Creating }
     viewModelScope.launch {
       val trimmed = name.trim()
       val id = budgetIdFromName(trimmed, uuids())
       val metadata = budgetCreator(id, trimmed)
-      log.i { "createBudget $id: $metadata" }
+      // TODO: upload the budget when syncWithServer is set. Local-only until then
+      log.i { "createBudget $id syncWithServer=$syncWithServer: $metadata" }
 
       if (metadata == null) {
         mutableCreateState.update { Failed }
