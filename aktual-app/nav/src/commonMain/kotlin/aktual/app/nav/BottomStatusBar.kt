@@ -85,7 +85,7 @@ internal fun BottomStatusBar(
 
       HorizontalSpacer(weight = 1f)
 
-      SyncState(state.syncState, attrs, onClickSync)
+      state.syncState?.let { SyncState(it, attrs, onClickSync) }
     }
 
     HorizontalSpacer(weight = 1f)

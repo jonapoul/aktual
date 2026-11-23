@@ -12,6 +12,7 @@ import aktual.budget.model.AccountSyncState
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.DbMetadataKey.Companion.SidebarAccountsOpenState
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.localChange
@@ -304,6 +305,18 @@ class BudgetNavRailViewModelTest {
 
       syncStateHolder.update { ClockDrift }
       assertThat(awaitItem().syncStatus).isEqualTo(SyncError)
+    }
+  }
+
+  @Test
+  fun `Budget without a cloud file is local-only even with a server`() = runDatabaseTest { scope ->
+    prefs.update { metadata -> metadata - CloudFileId }
+
+    viewModel(REMOTE, scope).headerState.test {
+      assertThat(awaitItem()).all {
+        prop(DrawerHeaderState::syncStatus).isEqualTo(LocalOnly)
+        prop(DrawerHeaderState::canManageApiKeys).isFalse()
+      }
     }
   }
 

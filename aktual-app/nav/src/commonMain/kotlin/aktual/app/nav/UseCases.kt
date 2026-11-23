@@ -6,6 +6,7 @@ import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.DbMetadataKey.Companion.BudgetName
+import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.model.NumberFormat
 import aktual.budget.utils.BudgetFiles
 import aktual.budget.utils.SyncStateHolder
@@ -182,24 +183,30 @@ class BottomBarStateUseCase(
   operator fun invoke(scope: CoroutineScope): StateFlow<BottomBarState> {
     val showStatusBar = preferences.showBottomBar.asStateFlow(scope)
 
-    val budgetName: Flow<String?> =
+    val budget: Flow<OpenBudget?> =
       runLevelState.budget().flatMapLatest { bg ->
-        bg?.localPreferences?.map { meta -> meta[BudgetName] } ?: flowOf(null)
+        bg?.localPreferences?.map { meta ->
+          OpenBudget(name = meta[BudgetName], isLocalOnly = meta[CloudFileId] == null)
+        } ?: flowOf(null)
       }
 
     return scope.launchMolecule(Immediate) {
       val showStatusBar by showStatusBar.collectAsState()
-      val budgetName by budgetName.collectAsState(initial = null)
+      val budget by budget.collectAsState(initial = null)
       val pingState by pingStateHolder.collectAsState()
       val syncState by syncStateHolder.collectAsState()
       if (showStatusBar) {
-        BottomBarState.Visible(pingState, syncState, budgetName)
+        // A local-only budget has nothing to sync
+        val sync = syncState.takeUnless { budget?.isLocalOnly == true }
+        BottomBarState.Visible(pingState, sync, budget?.name)
       } else {
         BottomBarState.Hidden
       }
     }
   }
 }
+
+private data class OpenBudget(val name: String?, val isLocalOnly: Boolean)
 
 @Inject
 class AppLifecycleManager(
