@@ -123,6 +123,63 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
       ),
   )
 
+// Upstream migrations from before Aktual tracked them. Upstream won't open a database missing any
+// of them, so fresh databases record them too. The schema already holds their changes
+internal val PreAktualMigrations: List<Long> =
+  listOf(
+    1548957970627L,
+    1550601598648L,
+    1555786194328L,
+    1561751833510L,
+    1567699552727L,
+    1582384163573L,
+    1597756566448L,
+    1608652596043L,
+    1608652596044L,
+    1612625548236L,
+    1614782639336L,
+    1615745967948L,
+    1616167010796L,
+    1618975177358L,
+    1632571489012L,
+    1679728867040L,
+    1681115033845L,
+    1682974838138L,
+    1685007876842L,
+    1686139660866L,
+    1688749527273L,
+    1688841238000L,
+    1691233396000L,
+    1694438752000L,
+    1697046240000L,
+    1704572023730L,
+    1704572023731L,
+    1707267033000L,
+    1712784523000L,
+    1716359441000L,
+    1720310586000L,
+    1720664867241L,
+    1720665000000L,
+    1722717601000L,
+    1722804019000L,
+    1723665565000L,
+    1730744182000L,
+    1736640000000L,
+    1737158400000L,
+    1738491452000L,
+    1739139550000L,
+    1740506588539L,
+    1745425408000L,
+    1749799110000L,
+    1749799110001L,
+    1754611200000L,
+    1759260219000L,
+    1759842823172L,
+    1762178745667L,
+    1765518577215L,
+    1768872504000L,
+  )
+
 private const val TAG = "MigrateDatabase"
 
 // Puts pages synced from a client that predates dashboard_pages.sort_order last. Must match the

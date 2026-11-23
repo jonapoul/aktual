@@ -44,7 +44,8 @@ class AndroidxSqlDriverFactory(private val files: BudgetFiles) : SqlDriverFactor
     if (!fileAlreadyExists) {
       // Fresh database: schema already contains all columns/tables, so mark all migrations done
       log.d(TAG) { "Inserting migrations into fresh database file" }
-      val values = DatabaseMigrations.joinToString { (version, _) -> "($version)" }
+      val versions = PreAktualMigrations + DatabaseMigrations.map { (version, _) -> version }
+      val values = versions.joinToString { version -> "($version)" }
       val sql = "INSERT INTO __migrations__(id) VALUES $values"
       execute(identifier = null, sql = sql, parameters = 0).await()
     }
