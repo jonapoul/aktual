@@ -109,14 +109,28 @@ class ConditionEditingTest {
     val between = JsonObject(mapOf("num1" to JsonPrimitive(1), "num2" to JsonPrimitive(2)))
     assertThat(Condition(Amount, IsBetween, between).editableKind()).isNull()
     assertThat(Condition(Amount, Is, JsonPrimitive("12")).editableKind()).isNull()
-    assertThat(
-        Condition(Amount, Is, JsonPrimitive(1), options = ConditionOptions(inflow = true))
-          .editableKind(),
-      )
-      .isNull()
     assertThat(Condition(Date, Is, JsonPrimitive("2024-01")).editableKind()).isNull()
     assertThat(Condition(Acct, Is, JsonNull).editableKind()).isNull()
     assertThat(Condition(Notes, HasTags, JsonPrimitive("#a")).editableKind()).isNull()
+  }
+
+  @Test
+  fun `Inflow and outflow amounts are editable`() {
+    val outflow = Condition(Amount, LessThan, JsonPrimitive(1000), ConditionOptions(outflow = true))
+    assertThat(outflow.editableKind()).isEqualTo(Money)
+    assertThat(outflow.amountFlow).isEqualTo(Outflow)
+    assertThat(Condition(Amount, Is, JsonPrimitive(1)).amountFlow).isEqualTo(Either)
+  }
+
+  @Test
+  fun `Picking a direction sets the options and drops the sign`() {
+    val condition = Condition(Amount, LessThan, JsonPrimitive(-1000))
+    assertThat(condition.withAmountFlow(Inflow))
+      .isEqualTo(Condition(Amount, LessThan, JsonPrimitive(1000), ConditionOptions(inflow = true)))
+    assertThat(condition.withAmountFlow(Outflow))
+      .isEqualTo(Condition(Amount, LessThan, JsonPrimitive(1000), ConditionOptions(outflow = true)))
+    assertThat(condition.withAmountFlow(Outflow).withAmountFlow(Either))
+      .isEqualTo(Condition(Amount, LessThan, JsonPrimitive(1000)))
   }
 
   @Test

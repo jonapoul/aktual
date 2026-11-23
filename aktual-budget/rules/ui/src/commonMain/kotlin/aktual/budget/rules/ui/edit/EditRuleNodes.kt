@@ -9,6 +9,7 @@ import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.isIdField
 import aktual.budget.rules.components.ConditionSheet
+import aktual.budget.rules.components.fieldLabel
 import aktual.budget.rules.components.label
 import aktual.budget.rules.components.nameOf
 import aktual.budget.rules.components.valueLabel
@@ -156,7 +157,7 @@ internal fun LazyListScope.conditionsNode(
     TimelineRow(modifier = Modifier.animateItem(), hasRail = true) {
       val key = conditionKeys.getOrNull(index)
       RuleCard(
-        title = "${condition.field.label()} ${condition.operator.label()}",
+        title = "${condition.fieldLabel()} ${condition.operator.label()}",
         value =
           condition.valueLabel(names ?: persistentMapOf(), RuleConditions).takeUnless {
             condition.isEmpty()

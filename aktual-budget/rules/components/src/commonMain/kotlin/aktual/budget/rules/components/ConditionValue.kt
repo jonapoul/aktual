@@ -85,6 +85,7 @@ fun ConditionValue(
   onChange: (JsonElement) -> Unit,
   onPickEntity: () -> Unit,
   modifier: Modifier = Modifier,
+  isSigned: Boolean = true,
 ) {
   when (kind) {
     Entity -> EntityPicker(value = value, names = names, onPick = onPickEntity, modifier = modifier)
@@ -108,7 +109,8 @@ fun ConditionValue(
         onCommit = { text -> onChange(JsonPrimitive(text)) },
       )
 
-    Money -> MoneyField(value = value, onChange = onChange, modifier = modifier)
+    Money ->
+      MoneyField(value = value, onChange = onChange, isSigned = isSigned, modifier = modifier)
 
     Day -> DayField(value = value, onChange = onChange, modifier = modifier)
 
@@ -154,17 +156,19 @@ fun ConditionValue(
   }
 }
 
-// Shows the unsigned amount, with a sign toggle since number keyboards don't all offer a minus
+// Shows the unsigned amount, with a sign toggle since number keyboards don't all offer a minus.
+// Without [isSigned] there's no toggle and the amount stays positive
 @Composable
 private fun MoneyField(
   value: JsonElement,
   onChange: (JsonElement) -> Unit,
+  isSigned: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val amount = Amount(value.jsonPrimitive.long)
   // Zero has no sign of its own, so keep the last one picked
   var isZeroNegative by rememberSaveable { mutableStateOf(true) }
-  val isNegative = if (amount == Zero) isZeroNegative else amount < Zero
+  val isNegative = isSigned && if (amount == Zero) isZeroNegative else amount < Zero
 
   fun commit(newAmount: Amount, negative: Boolean) {
     if (newAmount == Zero) isZeroNegative = negative
@@ -179,22 +183,29 @@ private fun MoneyField(
     keyboardType = Decimal,
     onCommit = { text ->
       evaluateAmountInput(text)?.let { typed ->
-        val signed = if (isNegative) -typed else typed
+        val signed =
+          when {
+            isNegative -> -typed
+            !isSigned && typed < Zero -> -typed
+            else -> typed
+          }
         commit(signed, if (signed == Zero) isNegative else signed < Zero)
       }
     },
     leadingIcon = {
       Row(verticalAlignment = Alignment.CenterVertically) {
-        AktualIconButton(
-          imageVector = if (isNegative) AktualIcons.Subtract else AktualIcons.Add,
-          contentDescription =
-            if (isNegative) {
-              Strings.reportsFormulaQueryMakePositive
-            } else {
-              Strings.reportsFormulaQueryMakeNegative
-            },
-          onClick = { commit(-amount, !isNegative) },
-        )
+        if (isSigned) {
+          AktualIconButton(
+            imageVector = if (isNegative) AktualIcons.Subtract else AktualIcons.Add,
+            contentDescription =
+              if (isNegative) {
+                Strings.reportsFormulaQueryMakePositive
+              } else {
+                Strings.reportsFormulaQueryMakeNegative
+              },
+            onClick = { commit(-amount, !isNegative) },
+          )
+        }
         if (symbol != null && currency.position == BeforeAmount) CurrencySymbol(symbol)
       }
     },

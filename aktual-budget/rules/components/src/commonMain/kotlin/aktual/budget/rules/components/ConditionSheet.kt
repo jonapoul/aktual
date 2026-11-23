@@ -2,21 +2,26 @@ package aktual.budget.rules.components
 
 import aktual.budget.model.Condition
 import aktual.budget.model.Field
+import aktual.budget.rules.domain.AmountFlow
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionSchema
+import aktual.budget.rules.domain.amountFlow
 import aktual.budget.rules.domain.editableKind
 import aktual.budget.rules.domain.entities
 import aktual.budget.rules.domain.newCondition
 import aktual.budget.rules.domain.operators
+import aktual.budget.rules.domain.withAmountFlow
 import aktual.budget.rules.domain.withOperator
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.HostedSheet
 import aktual.core.ui.SectionLabel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
@@ -86,7 +91,7 @@ fun ConditionSheet(
   }
 
 @Composable
-private fun ConditionContent(
+private fun ColumnScope.ConditionContent(
   condition: Condition,
   schema: ConditionSchema,
   fields: ImmutableList<Field>,
@@ -96,7 +101,7 @@ private fun ConditionContent(
 ) {
   val kind = condition.editableKind(schema)
   if (kind == null) {
-    val summary = "${condition.field.label()} ${condition.operator.label()} ${condition.value}"
+    val summary = "${condition.fieldLabel()} ${condition.operator.label()} ${condition.value}"
     Text(
       text = Strings.reportsFormulaQueryUnsupportedCondition(summary),
       style = typography.bodyMedium,
@@ -128,12 +133,27 @@ private fun ConditionContent(
       }
     }
 
+    val flow = condition.amountFlow
+    if (condition.field == Amount) {
+      Column {
+        SectionLabel(Strings.reportsFormulaQueryFlow)
+        AktualSlidingToggleButton(
+          modifier = Modifier.fillMaxWidth(),
+          selected = flow,
+          options = AmountFlow.all,
+          onSelect = { onChange(condition.withAmountFlow(it)) },
+          string = { it.label() },
+        )
+      }
+    }
+
     ConditionValue(
       kind = kind,
       value = condition.value,
       names = data.names,
       onChange = { value -> onChange(condition.copy(value = value)) },
       onPickEntity = onPickEntity,
+      isSigned = flow == Either,
     )
   }
 }

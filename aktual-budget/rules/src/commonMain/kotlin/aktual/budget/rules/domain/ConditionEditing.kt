@@ -18,6 +18,7 @@ import aktual.budget.model.PayeeOperator
 import aktual.budget.model.ReconciledOperator
 import aktual.budget.model.SavedOperator
 import aktual.budget.model.TransferOperator
+import aktual.log
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -221,11 +222,20 @@ private fun idValueKind(op: Operator): ConditionValueKind =
 // Null when the editor can't show the condition, like an amount range or a custom name. Those
 // are kept as they are, and can only be deleted
 fun Condition.editableKind(schema: ConditionSchema = FilterConditions): ConditionValueKind? {
-  val flows = options?.inflow == true || options?.outflow == true
-  if (customName != null || flows || operator !in operators(schema)) return null
+  val operators = operators(schema)
   val kind = valueKind()
-  return kind.takeIf { value.fits(it) }
+  val fits = value.fits(kind)
+  if (customName != null || operator !in operators || !fits) {
+    log.d(TAG) {
+      "Can't edit $this: customName=$customName, operators=$operators, kind=$kind, " +
+        "fits=$fits, valueClass=${value::class.simpleName}"
+    }
+    return null
+  }
+  return kind
 }
+
+private const val TAG = "ConditionEditing"
 
 // Upstream only offers is and isapprox on a recurring date, which a schedule's rule has
 fun Condition.operators(schema: ConditionSchema = FilterConditions): ImmutableList<Operator> {
