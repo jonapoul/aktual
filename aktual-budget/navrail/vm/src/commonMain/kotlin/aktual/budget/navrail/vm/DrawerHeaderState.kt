@@ -7,6 +7,7 @@ data class DrawerHeaderState(
   val budgetName: String?,
   val serverHost: String?,
   val canManageApiKeys: Boolean = false,
+  val canUpload: Boolean = false,
   val syncStatus: SidebarSyncStatus = Synced,
 ) {
   val isDemo: Boolean

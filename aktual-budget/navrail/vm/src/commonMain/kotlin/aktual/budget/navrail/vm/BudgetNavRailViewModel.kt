@@ -79,6 +79,7 @@ internal constructor(
         serverHost = remote?.url?.baseUrl,
         // Keys can't manage other keys, and the budget needs to be on the server
         canManageApiKeys = remote != null && !remote.token.isApiKey && cloudFileId != null,
+        canUpload = remote != null && cloudFileId == null,
         syncStatus =
           syncStatus(hasServer = remote != null, isSynced = cloudFileId != null, syncState),
       )

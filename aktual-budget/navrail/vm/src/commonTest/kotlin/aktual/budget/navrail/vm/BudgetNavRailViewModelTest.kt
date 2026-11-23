@@ -316,8 +316,17 @@ class BudgetNavRailViewModelTest {
       assertThat(awaitItem()).all {
         prop(DrawerHeaderState::syncStatus).isEqualTo(LocalOnly)
         prop(DrawerHeaderState::canManageApiKeys).isFalse()
+        prop(DrawerHeaderState::canUpload).isTrue()
       }
     }
+  }
+
+  @Test
+  fun `Only local-only budgets with a server can be uploaded`() = runDatabaseTest { scope ->
+    viewModel(REMOTE, scope).headerState.test { assertThat(awaitItem().canUpload).isFalse() }
+
+    prefs.update { metadata -> metadata - CloudFileId }
+    viewModel(None, scope).headerState.test { assertThat(awaitItem().canUpload).isFalse() }
   }
 
   private suspend fun ReceiveTurbine<SidebarAccountsState>.awaitLoadedState():

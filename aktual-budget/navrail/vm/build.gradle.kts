@@ -10,7 +10,7 @@ kotlin {
     api(project(":aktual-core:nav"))
     api(project(":aktual-prefs"))
     implementation(project(":aktual-budget:data:db"))
-    implementation(project(":aktual-budget:utils"))
+    api(project(":aktual-budget:utils"))
     implementation(project(":aktual-logging"))
   }
 

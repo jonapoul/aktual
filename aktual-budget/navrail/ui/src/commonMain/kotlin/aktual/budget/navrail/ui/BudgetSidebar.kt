@@ -939,6 +939,16 @@ private fun DrawerHeader(
             onAction(ExportBudget)
           },
         )
+        if (state.canUpload) {
+          AktualDropdownMenuItem(
+            text = Strings.budgetNavMenuUploadBudget,
+            leadingIcon = AktualIcons.Upload,
+            onClick = {
+              showMenu = false
+              onAction(UploadBudget)
+            },
+          )
+        }
         if (state.canManageApiKeys) {
           AktualDropdownMenuItem(
             text = Strings.budgetNavMenuApiKeys,
