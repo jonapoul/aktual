@@ -10,6 +10,7 @@ import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.directoryId
 import aktual.budget.sync.components.SyncBudgetDialog
+import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
@@ -20,18 +21,23 @@ import aktual.core.nav.InfoNavigator
 import aktual.core.nav.MetricsNavigator
 import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberFilePicker
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
@@ -276,6 +282,22 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: OnAction<Lis
           onAction = onAction,
           listState = listState,
           contentPadding = padding,
+        )
+      }
+
+      // The empty state has its own create button
+      if (state is Success && state.budgets.isNotEmpty()) {
+        AktualFab(
+          modifier =
+            Modifier.align(BottomEnd)
+              .padding(
+                end = Dimens.Huge,
+                bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
+              ),
+          text = Strings.listBudgetsCreate,
+          icon = AktualIcons.Add,
+          isExpanded = listState.isScrollingUp(),
+          onClick = { onAction(CreateBudget) },
         )
       }
     }
