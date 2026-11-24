@@ -77,7 +77,7 @@ class IncrementalSyncerTest {
   fun `Budget deleted from the server`() = runTest {
     coEvery { syncDao.getClockTimestamp() } returns CLOCK
     coEvery { syncDao.getMessagesSince(SINCE) } returns emptyList()
-    coEvery { syncApi.syncBudget(any<ByteString>()) } throws SyncRejectedException("file-not-found")
+    coEvery { syncApi.syncBudget(any<ByteString>()) } throws SyncRejectedException(FileNotFound)
 
     assertThat(syncer().sync()).isEqualTo(FileNotFoundError)
   }

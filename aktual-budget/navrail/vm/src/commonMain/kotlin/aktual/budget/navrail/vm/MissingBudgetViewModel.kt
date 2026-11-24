@@ -10,6 +10,7 @@ import aktual.budget.utils.BudgetUploader
 import aktual.budget.utils.SyncStateHolder
 import aktual.budget.utils.UploadResult
 import aktual.core.model.BudgetServer
+import aktual.core.utils.mapState
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -45,27 +46,18 @@ internal constructor(
   val serverHost: String? = (server as? Remote)?.url?.baseUrl
 
   private val upload = MutableStateFlow<UploadStep>(Idle)
+  private val isEncrypted = localPreferences.observe(EncryptKeyId).mapState { it != null }
 
   val state: StateFlow<MissingBudgetState> =
-    combine(syncStateHolder, upload, localPreferences.observe(EncryptKeyId)) {
-        syncState,
-        upload,
-        encryptKeyId ->
-        state(syncState, upload, isEncrypted = encryptKeyId != null)
-      }
+    combine(syncStateHolder, upload, isEncrypted, ::state)
       .stateIn(
         viewModelScope,
         Eagerly,
-        initialValue =
-          state(
-            syncState = syncStateHolder.value,
-            upload = upload.value,
-            isEncrypted = localPreferences[EncryptKeyId] != null,
-          ),
+        initialValue = state(syncStateHolder.value, upload.value, isEncrypted.value),
       )
 
   fun reupload() {
-    if (upload.value is Uploading || localPreferences[EncryptKeyId] != null) return
+    if (upload.value is Uploading || isEncrypted.value) return
     upload.update { Uploading }
     // The server keeps deleted budgets' IDs, so this one can't be reused
     detach()
