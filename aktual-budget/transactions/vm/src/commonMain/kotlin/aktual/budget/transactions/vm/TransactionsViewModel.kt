@@ -152,8 +152,9 @@ internal constructor(
 
   val events: Flow<TransactionsEvent> = mutableEvents.receiveAsFlow()
 
-  val density: StateFlow<TransactionsDensity> =
-    prefs.mapState { meta -> meta[TransactionDensity] ?: Default }
+  val density: StateFlow<TransactionsDensity> = prefs.mapState { meta ->
+    meta[TransactionDensity] ?: Default
+  }
 
   // Colours the #tags in each row's notes
   val tags: StateFlow<ImmutableList<TagLabel>> =

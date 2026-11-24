@@ -159,8 +159,9 @@ internal constructor(
   // A draft kept from before the process was killed
   private val restored: EditorSnapshot? = savedState.restoreEditorSnapshot()
 
-  private val showHiddenCategories: StateFlow<Boolean> =
-    localPreferences.mapState { it[BudgetShowHiddenCategories] == true }
+  private val showHiddenCategories: StateFlow<Boolean> = localPreferences.mapState {
+    it[BudgetShowHiddenCategories] == true
+  }
 
   // upstream's sync-transfer-date synced pref, off unless set to "true"
   private val syncTransferDate: StateFlow<Boolean> =

@@ -22,14 +22,16 @@ class MapStateTest {
   @Test
   fun `Emits only when the mapped value changes`() = runTest {
     val source = MutableStateFlow(Pair("a", 1))
-    source.mapState { it.first }.test {
-      assertThat(awaitItem()).isEqualTo("a")
+    source
+      .mapState { it.first }
+      .test {
+        assertThat(awaitItem()).isEqualTo("a")
 
-      source.update { it.copy(second = 2) }
-      expectNoEvents()
+        source.update { it.copy(second = 2) }
+        expectNoEvents()
 
-      source.update { it.copy(first = "b") }
-      assertThat(awaitItem()).isEqualTo("b")
-    }
+        source.update { it.copy(first = "b") }
+        assertThat(awaitItem()).isEqualTo("b")
+      }
   }
 }

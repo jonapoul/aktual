@@ -17,5 +17,7 @@ interface BudgetLocalPreferences : MutableStateFlow<DbMetadata> {
 
   operator fun plusAssign(metadata: DbMetadata) = update { previous -> previous + metadata }
 
-  fun <T : Any> observe(key: DbMetadataKey<T>): StateFlow<T?> = mapState { metadata -> metadata[key] }
+  fun <T : Any> observe(key: DbMetadataKey<T>): StateFlow<T?> = mapState { metadata ->
+    metadata[key]
+  }
 }
