@@ -64,7 +64,10 @@ internal fun NotesSheet(
   onSave: (String) -> Unit,
   onCreateTag: (String) -> Unit,
 ) {
-  val text = rememberTextFieldState(initialText = notes.orEmpty())
+  // Select it all, so typing replaces the existing notes
+  val initial = notes.orEmpty()
+  val text =
+    rememberTextFieldState(initialText = initial, initialSelection = TextRange(0, initial.length))
 
   EditorSheet(
     title = Strings.transactionNotes,
@@ -87,8 +90,12 @@ private fun NotesSheetContent(
 ) {
   val focusRequester = keyboardFocusRequester()
   val notesText = text.text.toString()
-  val cursor = text.selection.end
-  val query = remember(notesText, cursor) { tagQuery(notesText, cursor) }
+  val selection = text.selection
+  // No tag suggestions over a selection, e.g. the whole text selected when the sheet opens
+  val query =
+    remember(notesText, selection) {
+      if (selection.collapsed) tagQuery(notesText, selection.end) else null
+    }
   val matches = remember(tags, query) { query?.let { tags.matching(it) } }
   val canCreate = query != null && tags.canCreate(query)
 
