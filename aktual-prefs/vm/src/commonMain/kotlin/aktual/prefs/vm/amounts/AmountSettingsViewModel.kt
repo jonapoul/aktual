@@ -15,7 +15,6 @@ import aktual.prefs.vm.launchAndSet
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
@@ -44,10 +43,7 @@ internal constructor(
       val spaceBetweenAmountAndSymbol by collectAsState(preferences.spaceBetweenAmountAndSymbol)
       // Hidden like upstream while the flag is off, but the stored currency still applies
       val currencySupport by collectAsState(flags[CurrencySupport])
-      val budgetName by remember {
-        localPreferences.observe(BudgetName)
-      }
-        .collectAsState(localPreferences[BudgetName])
+      val budgetName by localPreferences.observe(BudgetName).collectAsState()
       AmountSettingsState(
         budgetName = budgetName.orEmpty(),
         numberFormat =

@@ -36,10 +36,7 @@ internal constructor(
       val dateFormat by collectAsState(preferences.dateFormat)
       val firstDayOfWeek by collectAsState(preferences.firstDayOfWeek)
       val today by remember { calendar.observeToday() }.collectAsState(calendar.today())
-      val budgetName by remember {
-        localPreferences.observe(BudgetName)
-      }
-        .collectAsState(localPreferences[BudgetName])
+      val budgetName by localPreferences.observe(BudgetName).collectAsState()
       DateSettingsState(
         budgetName = budgetName.orEmpty(),
         dateFormat =

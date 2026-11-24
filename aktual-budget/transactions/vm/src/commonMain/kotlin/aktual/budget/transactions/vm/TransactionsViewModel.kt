@@ -45,6 +45,7 @@ import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.budget.transactions.vm.LoadedAccount.Uncategorised
 import aktual.budget.utils.BudgetLocalPreferences
 import aktual.core.model.BudgetServer
+import aktual.core.utils.mapState
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
@@ -152,13 +153,7 @@ internal constructor(
   val events: Flow<TransactionsEvent> = mutableEvents.receiveAsFlow()
 
   val density: StateFlow<TransactionsDensity> =
-    prefs
-      .map { meta -> meta[TransactionDensity] ?: Default }
-      .stateIn(
-        viewModelScope,
-        Eagerly,
-        initialValue = prefs[TransactionDensity] ?: Default,
-      )
+    prefs.mapState { meta -> meta[TransactionDensity] ?: Default }
 
   // Colours the #tags in each row's notes
   val tags: StateFlow<ImmutableList<TagLabel>> =

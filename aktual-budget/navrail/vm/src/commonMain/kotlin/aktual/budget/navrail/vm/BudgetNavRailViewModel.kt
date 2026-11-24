@@ -26,7 +26,6 @@ import aktual.prefs.SystemUiPreferences
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
@@ -68,10 +67,8 @@ internal constructor(
 
   val headerState: StateFlow<DrawerHeaderState> =
     viewModelScope.launchMolecule(Immediate) {
-      val budgetNameFlow = remember { localPreferences.observe(BudgetName) }
-      val budgetName by budgetNameFlow.collectAsState(initial = localPreferences[BudgetName])
-      val cloudFileIdFlow = remember { localPreferences.observe(CloudFileId) }
-      val cloudFileId by cloudFileIdFlow.collectAsState(initial = localPreferences[CloudFileId])
+      val budgetName by localPreferences.observe(BudgetName).collectAsState()
+      val cloudFileId by localPreferences.observe(CloudFileId).collectAsState()
       val syncState by syncStateHolder.collectAsState()
       val remote = server as? Remote
       DrawerHeaderState(
