@@ -1,6 +1,7 @@
 package aktual.budget.sync.domain
 
 import aktual.api.client.BudgetSyncApi
+import aktual.api.client.SyncRejectedException
 import aktual.budget.db.dao.ApplyResult
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.BudgetId
@@ -70,6 +71,15 @@ class IncrementalSyncerTest {
     assertThat(requests.flatMap { it.messages }).isEqualTo(local)
     assertThat(applied.captured.map { it.content.row }).containsExactly("other", "later")
     coVerify(exactly = 1) { syncDao.applyMessages(any(), any()) }
+  }
+
+  @Test
+  fun `Budget deleted from the server`() = runTest {
+    coEvery { syncDao.getClockTimestamp() } returns CLOCK
+    coEvery { syncDao.getMessagesSince(SINCE) } returns emptyList()
+    coEvery { syncApi.syncBudget(any<ByteString>()) } throws SyncRejectedException(FileNotFound)
+
+    assertThat(syncer().sync()).isEqualTo(FileNotFoundError)
   }
 
   @Test

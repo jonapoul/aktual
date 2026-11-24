@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.core.model.AktualJson
 import aktual.core.model.BudgetServer
 import aktual.test.SyncResponses
@@ -57,8 +58,21 @@ class BudgetSyncApiTest {
     assertFailure { api.syncBudget(EMPTY) }
       .isInstanceOf<SyncRejectedException>()
       .all {
-        prop(SyncRejectedException::reason).isEqualTo("clock-drift")
+        prop(SyncRejectedException::reason).isEqualTo(FailureReason("clock-drift"))
         prop(SyncRejectedException::isClockDrift).isTrue()
+      }
+  }
+
+  @Test
+  fun `File not found rejection`() = runTest {
+    mockEngine += { respond(content = "file-not-found", status = BadRequest) }
+
+    assertFailure { api.syncBudget(EMPTY) }
+      .isInstanceOf<SyncRejectedException>()
+      .all {
+        prop(SyncRejectedException::reason).isEqualTo(FailureReason("file-not-found"))
+        prop(SyncRejectedException::isFileNotFound).isTrue()
+        prop(SyncRejectedException::isClockDrift).isFalse()
       }
   }
 
@@ -69,8 +83,9 @@ class BudgetSyncApiTest {
     assertFailure { api.syncBudget(EMPTY) }
       .isInstanceOf<SyncRejectedException>()
       .all {
-        prop(SyncRejectedException::reason).isEqualTo("invalid-timestamp")
+        prop(SyncRejectedException::reason).isEqualTo(FailureReason("invalid-timestamp"))
         prop(SyncRejectedException::isClockDrift).isFalse()
+        prop(SyncRejectedException::isFileNotFound).isFalse()
       }
   }
 

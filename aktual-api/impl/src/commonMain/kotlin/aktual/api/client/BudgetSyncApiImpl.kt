@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.UpdateUserFileNameRequest
 import aktual.api.model.sync.UploadUserFileResponse
 import aktual.budget.model.BudgetId
@@ -48,7 +49,7 @@ internal constructor(
         }
       } catch (e: ClientRequestException) {
         if (e.response.status == BadRequest) {
-          throw SyncRejectedException(e.response.bodyAsText(), e)
+          throw SyncRejectedException(FailureReason(e.response.bodyAsText()), e)
         }
         throw e
       }

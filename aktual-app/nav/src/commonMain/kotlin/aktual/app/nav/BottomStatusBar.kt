@@ -196,6 +196,7 @@ private fun SyncState.icon() =
   when (this) {
     NoToken -> AktualIcons.ExclamationOutline
     ClockDrift -> AktualIcons.ExclamationOutline
+    FileNotFound -> AktualIcons.ExclamationOutline
     is SyncFailed -> AktualIcons.ExclamationOutline
     Syncing -> AktualIcons.ArrowsSynchronize
     Inactive -> AktualIcons.ArrowsSynchronize
@@ -206,6 +207,7 @@ private fun SyncState.text() =
   when (this) {
     NoToken -> Strings.syncNoToken
     ClockDrift -> Strings.syncClockDrift
+    FileNotFound -> Strings.syncFileNotFound
     is SyncFailed -> Strings.syncFailed
     Syncing -> Strings.syncSyncing
     Inactive -> Strings.sync
@@ -216,6 +218,7 @@ private fun SyncState.tint(colors: Colors, attrs: BottomBarThemeAttrs) =
   when (this) {
     NoToken -> colors.warningText
     ClockDrift -> colors.errorText
+    FileNotFound -> colors.errorText
     is SyncFailed -> colors.errorText
     Syncing -> colors.reportsBlue
     Inactive -> attrs.foreground(colors)
@@ -254,6 +257,7 @@ private class BottomBarProvider :
     BottomBarParams(state = Success, syncState = NoToken, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = SyncFailed("abc"), budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = ClockDrift, budgetName = "My Budget"),
+    BottomBarParams(state = Success, syncState = FileNotFound, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = Syncing, budgetName = "My Budget"),
     BottomBarParams(state = Failure),
     BottomBarParams(state = Unknown),

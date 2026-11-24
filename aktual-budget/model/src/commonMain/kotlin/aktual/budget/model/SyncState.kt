@@ -15,5 +15,8 @@ sealed interface SyncState {
   // The server rejected our changes because the device clock is too far ahead of it
   data object ClockDrift : Error
 
+  // The budget was deleted from the server while open here
+  data object FileNotFound : Error
+
   data class SyncFailed(val cause: String) : Error
 }

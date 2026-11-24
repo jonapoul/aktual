@@ -94,7 +94,7 @@ private fun UploadBudgetDialogContent(
   )
 
 @Composable
-private fun UploadResult.Failure.message(): String =
+internal fun UploadResult.Failure.message(): String =
   when (this) {
     NoServer -> Strings.budgetUploadErrorNoServer
     Encrypted -> Strings.budgetUploadErrorEncrypted

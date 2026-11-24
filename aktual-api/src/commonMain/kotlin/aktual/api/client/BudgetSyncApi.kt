@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncResponse
 import okio.ByteString
@@ -17,11 +18,15 @@ interface BudgetSyncApi {
 
 // The sync server rejected the messages with a 400, keeping none of them. See
 // packages/sync-server/src/sync-simple.js upstream
-class SyncRejectedException(val reason: String, cause: Throwable? = null) :
-  Exception("Sync rejected: $reason", cause) {
+class SyncRejectedException(val reason: FailureReason, cause: Throwable? = null) :
+  Exception("Sync rejected: ${reason.reason}", cause) {
   // A message was timestamped too far ahead of the server's clock
   val isClockDrift: Boolean
-    get() = reason == "clock-drift"
+    get() = reason == ClockDrift
+
+  // The budget was deleted from the server, or never existed there
+  val isFileNotFound: Boolean
+    get() = reason == FileNotFound
 }
 
 // See the upload-user-file handler in packages/sync-server/src/app-sync.ts upstream

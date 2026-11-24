@@ -255,6 +255,8 @@ internal fun BudgetNavRail(
     onPostSchedules = viewModel::postUnpostedSchedules,
     onDismissSchedules = viewModel::dismissUnpostedSchedules,
   )
+
+  MissingBudgetDialog(onClose = { onAction(SwitchFile) })
 }
 
 private enum class NavRailDialog {

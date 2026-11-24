@@ -35,6 +35,7 @@
   <string name="sync_no_token">No token</string>
   <string name="sync_failed">Sync failed</string>
   <string name="sync_clock_drift">Sync failed, check your device time</string>
+  <string name="sync_file_not_found">Budget not on server</string>
   <string name="sync_syncing">Syncing…</string>
 
   <string name="month_jan_short">Jan</string>
@@ -2546,6 +2547,13 @@
   <string name="budget_upload_error_unreachable">Couldn’t reach the server.</string>
   <string name="budget_upload_error_encrypted">Encrypted budgets can’t be uploaded yet.</string>
   <string name="budget_upload_error_no_server">There’s no server to upload to.</string>
+
+  <string name="budget_missing_title">Budget not found</string>
+  <string name="budget_missing_description">This budget is no longer on %1$s. It may have been deleted from another device. Your copy on this device hasn’t been changed.</string>
+  <string name="budget_missing_encrypted">Encrypted budgets can’t be uploaded again yet, so you can keep it on this device or close it.</string>
+  <string name="budget_missing_reupload">Upload again</string>
+  <string name="budget_missing_keep_local">Keep on this device</string>
+  <string name="budget_missing_close">Close budget</string>
 
   <!-- settings -->
   <string name="settings_toolbar">App Settings</string>
