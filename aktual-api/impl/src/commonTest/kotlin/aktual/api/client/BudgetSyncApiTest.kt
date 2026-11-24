@@ -63,6 +63,19 @@ class BudgetSyncApiTest {
   }
 
   @Test
+  fun `File not found rejection`() = runTest {
+    mockEngine += { respond(content = "file-not-found", status = BadRequest) }
+
+    assertFailure { api.syncBudget(EMPTY) }
+      .isInstanceOf<SyncRejectedException>()
+      .all {
+        prop(SyncRejectedException::reason).isEqualTo("file-not-found")
+        prop(SyncRejectedException::isFileNotFound).isTrue()
+        prop(SyncRejectedException::isClockDrift).isFalse()
+      }
+  }
+
+  @Test
   fun `Invalid timestamp rejection`() = runTest {
     mockEngine += { respond(content = "invalid-timestamp", status = BadRequest) }
 
@@ -71,6 +84,7 @@ class BudgetSyncApiTest {
       .all {
         prop(SyncRejectedException::reason).isEqualTo("invalid-timestamp")
         prop(SyncRejectedException::isClockDrift).isFalse()
+        prop(SyncRejectedException::isFileNotFound).isFalse()
       }
   }
 

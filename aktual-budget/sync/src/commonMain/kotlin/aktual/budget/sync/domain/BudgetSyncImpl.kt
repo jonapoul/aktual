@@ -121,6 +121,13 @@ internal constructor(
         return
       }
 
+      FileNotFoundError -> {
+        // Kept until the user uploads the budget again or keeps it local-only
+        update(FileNotFound)
+        syncEvents.complete(Failed)
+        return
+      }
+
       is SyncResult.Error -> {
         update(SyncFailed(result.toString()))
         syncEvents.complete(Failed)

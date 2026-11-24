@@ -40,6 +40,11 @@ internal class IncrementalSyncer(
             ClockDriftError
           }
 
+          is SyncRejectedException if e.isFileNotFound -> {
+            log.w { "Server rejected sync, budget no longer exists there" }
+            FileNotFoundError
+          }
+
           else -> {
             log.e(e) { "Failed syncing" }
             SyncResult.OtherError(e)

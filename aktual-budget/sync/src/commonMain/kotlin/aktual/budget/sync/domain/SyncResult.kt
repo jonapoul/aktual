@@ -13,6 +13,8 @@ internal sealed interface SyncResult {
 
   data object ClockDriftError : Error
 
+  data object FileNotFoundError : Error
+
   data class MissingPrefError(val missingGroupId: Boolean, val missingBudgetId: Boolean) : Error
 
   data class OtherError(val cause: Throwable? = null) : Error

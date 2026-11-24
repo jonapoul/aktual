@@ -22,6 +22,10 @@ class SyncRejectedException(val reason: String, cause: Throwable? = null) :
   // A message was timestamped too far ahead of the server's clock
   val isClockDrift: Boolean
     get() = reason == "clock-drift"
+
+  // The budget was deleted from the server, or never existed there
+  val isFileNotFound: Boolean
+    get() = reason == "file-not-found"
 }
 
 // See the upload-user-file handler in packages/sync-server/src/app-sync.ts upstream
