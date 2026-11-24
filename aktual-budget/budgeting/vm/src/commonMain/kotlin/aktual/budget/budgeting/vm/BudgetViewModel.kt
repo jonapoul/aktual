@@ -275,7 +275,7 @@ internal constructor(
         calendar.observeToday().map { it.yearMonth }.distinctUntilChanged(),
         calculator.observeBounds(),
         requested,
-        localPreferences.observe(BudgetMonthCount).distinctUntilChanged(),
+        localPreferences.observe(BudgetMonthCount),
         fittingMonths,
       ) { current, bounds, requested, chosen, fitting ->
         // packages/desktop-client/src/components/budget/index.tsx maxMonths

@@ -44,10 +44,7 @@ internal constructor(
       val spaceBetweenAmountAndSymbol by collectAsState(preferences.spaceBetweenAmountAndSymbol)
       // Hidden like upstream while the flag is off, but the stored currency still applies
       val currencySupport by collectAsState(flags[CurrencySupport])
-      val budgetName by remember {
-        localPreferences.observe(BudgetName)
-      }
-        .collectAsState(localPreferences[BudgetName])
+      val budgetName by remember { localPreferences.observe(BudgetName) }.collectAsState()
       AmountSettingsState(
         budgetName = budgetName.orEmpty(),
         numberFormat =

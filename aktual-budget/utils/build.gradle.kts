@@ -7,5 +7,6 @@ kotlin {
     api(libs.okio)
     api(project(":aktual-budget:model"))
     api(project(":aktual-di:core"))
+    implementation(project(":aktual-core:utils"))
   }
 }

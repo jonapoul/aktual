@@ -56,6 +56,7 @@ import aktual.core.model.Coordinates
 import aktual.core.utils.Calendar
 import aktual.core.utils.LocationProvider
 import aktual.core.utils.UuidGenerator
+import aktual.core.utils.mapState
 import aktual.core.utils.runCatchingCancellable
 import aktual.di.BudgetCoroutineScope
 import aktual.di.BudgetScope
@@ -158,11 +159,9 @@ internal constructor(
   // A draft kept from before the process was killed
   private val restored: EditorSnapshot? = savedState.restoreEditorSnapshot()
 
-  private val showHiddenCategories: StateFlow<Boolean> =
-    localPreferences
-      .observe(BudgetShowHiddenCategories)
-      .map { it == true }
-      .stateIn(viewModelScope, Eagerly, false)
+  private val showHiddenCategories: StateFlow<Boolean> = localPreferences.mapState {
+    it[BudgetShowHiddenCategories] == true
+  }
 
   // upstream's sync-transfer-date synced pref, off unless set to "true"
   private val syncTransferDate: StateFlow<Boolean> =
