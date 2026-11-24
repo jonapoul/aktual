@@ -58,8 +58,8 @@ internal constructor(
 
   val state: StateFlow<HomeState> =
     viewModelScope.launchMolecule(Immediate) {
-      val budgetName by localPreferences.observe(BudgetName).collectAsState()
-      val cardOrder by localPreferences.observe(HomeCardOrder).collectAsState()
+      val budgetName by remember { localPreferences.observe(BudgetName) }.collectAsState()
+      val cardOrder by remember { localPreferences.observe(HomeCardOrder) }.collectAsState()
 
       val thisMonthFlow =
         remember(retries) {
