@@ -2,6 +2,7 @@ package aktual.budget.apikeys.vm
 
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeyId
+import aktual.api.model.apikeys.ApiKeyPermission
 import aktual.api.model.apikeys.ApiKeysResponse
 import aktual.api.model.apikeys.CreatedApiKey
 import aktual.budget.model.BudgetId
@@ -18,6 +19,7 @@ import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -83,11 +85,39 @@ class ApiKeysViewModelTest {
       assertThat(awaitItem()).isNull()
       viewModel.add()
       assertThat(awaitItem()).isEqualTo(CreateKey())
-      viewModel.create(" Importer ")
+      viewModel.create(" Importer ", canSyncSharedBanks = false)
       assertThat(awaitItem()).isEqualTo(CreateKey(isBusy = true))
       assertThat(awaitItem()).isEqualTo(CreatedKey(Token("actual_abc")))
     }
-    assertThat(api.created).containsExactly("Importer" to listOf(BUDGET))
+    assertThat(api.created)
+      .containsExactly(FakeApiKeysApi.Created("Importer", listOf(BUDGET), emptyList()))
+  }
+
+  @Test
+  fun `Creating a key that can sync shared banks`() = runTest {
+    val viewModel = createViewModel()
+
+    viewModel.create("Importer", canSyncSharedBanks = true)
+    advanceUntilIdle()
+
+    assertThat(api.created)
+      .containsExactly(
+        FakeApiKeysApi.Created("Importer", listOf(BUDGET), listOf(BankSyncGlobal)),
+      )
+  }
+
+  @Test
+  fun `Shows which keys can sync shared banks`() = runTest {
+    api.listResponse =
+      ApiKeysResponse.Success(
+        listOf(key(KEY_ID, BUDGET, permissions = listOf(BankSyncGlobal))),
+      )
+
+    createViewModel().state.test {
+      assertThat(awaitItem()).isEqualTo(Loading)
+      assertThat(awaitItem())
+        .isEqualTo(Loaded(persistentListOf(ITEM.copy(canSyncSharedBanks = true))))
+    }
   }
 
   @Test
@@ -98,7 +128,7 @@ class ApiKeysViewModelTest {
       assertThat(awaitItem()).isNull()
       viewModel.add()
       assertThat(awaitItem()).isEqualTo(CreateKey())
-      viewModel.create("Importer")
+      viewModel.create("Importer", canSyncSharedBanks = false)
       assertThat(awaitItem()).isEqualTo(CreateKey(isBusy = true))
       assertThat(awaitItem()).isEqualTo(CreateKey(hasFailed = true))
     }
@@ -142,8 +172,18 @@ class ApiKeysViewModelTest {
       viewModelContext = viewModelContext,
     )
 
-  private fun key(id: ApiKeyId, budget: BudgetId) =
-    ApiKey(id = id, name = "Importer", budgets = listOf(budget), createdAtSeconds = CREATED_AT)
+  private fun key(
+    id: ApiKeyId,
+    budget: BudgetId,
+    permissions: List<ApiKeyPermission> = emptyList(),
+  ) =
+    ApiKey(
+      id = id,
+      name = "Importer",
+      budgets = listOf(budget),
+      createdAtSeconds = CREATED_AT,
+      permissions = permissions,
+    )
 
   private companion object {
     val KEY_ID = ApiKeyId("k1")

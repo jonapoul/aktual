@@ -2,6 +2,7 @@ package aktual.api.client
 
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeyId
+import aktual.api.model.apikeys.ApiKeyPermission
 import aktual.api.model.apikeys.ApiKeysResponse
 import aktual.api.model.apikeys.CreateApiKeyRequest
 import aktual.api.model.apikeys.CreatedApiKey
@@ -35,11 +36,12 @@ internal constructor(
   override suspend fun create(
     name: String,
     budgets: List<BudgetId>,
+    permissions: List<ApiKeyPermission>,
   ): ApiKeysResponse<CreatedApiKey> {
     val response = client.post {
       request()
       contentType(Json)
-      setBody(CreateApiKeyRequest(name, budgets))
+      setBody(CreateApiKeyRequest(name, budgets, permissions.ifEmpty { null }))
     }
     return parse<CreatedApiKey>(response)
   }

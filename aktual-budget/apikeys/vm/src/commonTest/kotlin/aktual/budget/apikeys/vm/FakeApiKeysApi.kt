@@ -3,6 +3,7 @@ package aktual.budget.apikeys.vm
 import aktual.api.client.ApiKeysApi
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeyId
+import aktual.api.model.apikeys.ApiKeyPermission
 import aktual.api.model.apikeys.ApiKeysResponse
 import aktual.api.model.apikeys.CreatedApiKey
 import aktual.budget.model.BudgetId
@@ -12,7 +13,7 @@ internal class FakeApiKeysApi : ApiKeysApi {
   var createResponse: ApiKeysResponse<CreatedApiKey> = ApiKeysResponse.Failed(reason = null)
   var revokeResponse: ApiKeysResponse<Unit> = ApiKeysResponse.Success(Unit)
 
-  val created = mutableListOf<Pair<String, List<BudgetId>>>()
+  val created = mutableListOf<Created>()
   val revoked = mutableListOf<ApiKeyId>()
 
   override suspend fun list() = listResponse
@@ -20,8 +21,9 @@ internal class FakeApiKeysApi : ApiKeysApi {
   override suspend fun create(
     name: String,
     budgets: List<BudgetId>,
+    permissions: List<ApiKeyPermission>,
   ): ApiKeysResponse<CreatedApiKey> {
-    created += name to budgets
+    created += Created(name, budgets, permissions)
     return createResponse
   }
 
@@ -29,4 +31,10 @@ internal class FakeApiKeysApi : ApiKeysApi {
     revoked += id
     return revokeResponse
   }
+
+  data class Created(
+    val name: String,
+    val budgets: List<BudgetId>,
+    val permissions: List<ApiKeyPermission>,
+  )
 }

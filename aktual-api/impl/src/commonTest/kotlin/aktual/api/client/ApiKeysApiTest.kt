@@ -66,10 +66,24 @@ class ApiKeysApiTest {
               name = "Home Assistant",
               budgets = listOf(KEY_BUDGET),
               createdAtSeconds = 1793059200,
+              permissions = listOf(BankSyncGlobal),
             ),
           ),
         ),
       )
+  }
+
+  @Test
+  fun `List keys from a server without permissions`() = runTest {
+    mockEngine += { respondJson(ApiKeysResponses.LIST_WITHOUT_PERMISSIONS_200) }
+
+    val response = api.list()
+
+    assertThat(response)
+      .isInstanceOf<ApiKeysResponse.Success<List<ApiKey>>>()
+      .prop(ApiKeysResponse.Success<List<ApiKey>>::data)
+      .transform { keys -> keys.map(ApiKey::permissions) }
+      .isEqualTo(listOf(emptyList()))
   }
 
   @Test
@@ -96,6 +110,30 @@ class ApiKeysApiTest {
           ),
         ),
       )
+  }
+
+  @Test
+  fun `Create key with bank sync permission`() = runTest {
+    mockEngine += { respondJson(ApiKeysResponses.CREATE_BANK_SYNC_201, status = Created) }
+
+    val response =
+      api.create(
+        name = "Home Assistant",
+        budgets = listOf(KEY_BUDGET),
+        permissions = listOf(BankSyncGlobal),
+      )
+
+    assertThat(mockEngine.latestRequest().body)
+      .isInstanceOf<TextContent>()
+      .prop(TextContent::text)
+      .isEqualTo(
+        """{"name":"Home Assistant","fileIds":["${KEY_BUDGET.value}"],"permissions":["bank-sync-global"]}""",
+      )
+    assertThat(response)
+      .isInstanceOf<ApiKeysResponse.Success<CreatedApiKey>>()
+      .prop(ApiKeysResponse.Success<CreatedApiKey>::data)
+      .prop(CreatedApiKey::permissions)
+      .isEqualTo(listOf(BankSyncGlobal))
   }
 
   @Test

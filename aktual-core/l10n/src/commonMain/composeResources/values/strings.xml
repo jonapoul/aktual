@@ -409,6 +409,9 @@
   <string name="api_keys_create_title">New API key</string>
   <string name="api_keys_create">Create</string>
   <string name="api_keys_name_placeholder">e.g. Transaction importer</string>
+  <string name="api_keys_shared_bank_sync">Allow bank sync using shared connections</string>
+  <string name="api_keys_shared_bank_sync_message">Allows access to all accounts available through the server’s shared bank connections, including accounts outside this budget.</string>
+  <string name="api_keys_shared_bank_sync_allowed">Shared bank sync allowed</string>
   <string name="api_keys_create_failed">Could not create the API key</string>
   <string name="api_keys_created_title">API key created</string>
   <string name="api_keys_created_message">Make sure to copy this token now. You won’t be able to see it again.</string>

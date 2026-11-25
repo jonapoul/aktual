@@ -2,6 +2,7 @@ package aktual.api.client
 
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeyId
+import aktual.api.model.apikeys.ApiKeyPermission
 import aktual.api.model.apikeys.ApiKeysResponse
 import aktual.api.model.apikeys.CreatedApiKey
 import aktual.budget.model.BudgetId
@@ -15,7 +16,11 @@ import aktual.budget.model.BudgetId
 interface ApiKeysApi {
   suspend fun list(): ApiKeysResponse<List<ApiKey>>
 
-  suspend fun create(name: String, budgets: List<BudgetId>): ApiKeysResponse<CreatedApiKey>
+  suspend fun create(
+    name: String,
+    budgets: List<BudgetId>,
+    permissions: List<ApiKeyPermission> = emptyList(),
+  ): ApiKeysResponse<CreatedApiKey>
 
   suspend fun revoke(id: ApiKeyId): ApiKeysResponse<Unit>
 }

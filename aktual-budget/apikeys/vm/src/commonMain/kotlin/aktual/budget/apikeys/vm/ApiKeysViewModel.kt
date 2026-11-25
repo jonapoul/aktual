@@ -2,6 +2,7 @@ package aktual.budget.apikeys.vm
 
 import aktual.api.client.ApiKeysApi
 import aktual.api.model.apikeys.ApiKey
+import aktual.api.model.apikeys.ApiKeyPermission
 import aktual.api.model.apikeys.ApiKeysResponse
 import aktual.budget.model.DbMetadataKey.Companion.CloudFileId
 import aktual.budget.utils.BudgetLocalPreferences
@@ -66,14 +67,16 @@ internal constructor(
     mutableDialog.update { CreateKey() }
   }
 
-  fun create(name: String) {
+  fun create(name: String, canSyncSharedBanks: Boolean) {
     val budget = localPreferences[CloudFileId] ?: return
     if ((mutableDialog.value as? CreateKey)?.isBusy == true) return
     mutableDialog.update { CreateKey(isBusy = true) }
+    val permissions =
+      if (canSyncSharedBanks) listOf(ApiKeyPermission.BankSyncGlobal) else emptyList()
     viewModelScope.launch {
       val response =
         runCatchingCancellable(
-          attempt = { api.create(name.trim(), listOf(budget)) },
+          attempt = { api.create(name.trim(), listOf(budget), permissions) },
           onFailure = { e ->
             log.e(e) { "Failed creating API key" }
             null
@@ -148,5 +151,6 @@ internal constructor(
       id = id,
       name = name,
       created = Instant.fromEpochSeconds(createdAtSeconds).toLocalDateTime(timeZones.get()).date,
+      canSyncSharedBanks = BankSyncGlobal in permissions,
     )
 }

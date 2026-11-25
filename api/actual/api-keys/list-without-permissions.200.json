@@ -1,0 +1,11 @@
+{
+  "status": "ok",
+  "data": [
+    {
+      "id": "8b1f0c3e-5a7d-4f2b-9c61-2e4d8a9f7b10",
+      "name": "Home Assistant",
+      "createdAt": 1793059200,
+      "fileIds": ["c4b9b5f0-7d3a-4e8c-a1f2-6b0d9e3c5a71"]
+    }
+  ]
+}
