@@ -2723,7 +2723,6 @@
   <string name="settings_experimental_balance_forecast_report">Balance Forecast Report</string>
   <string name="settings_experimental_budget_analysis_report">Budget Analysis Report</string>
   <string name="settings_experimental_monte_carlo_report">Monte Carlo Analysis Report</string>
-  <string name="settings_experimental_enable_banking">Enable Banking sync (EU banks)</string>
   <string name="settings_updates">Updates</string>
   <string name="settings_updates_desc">Nightly builds are made from the latest code every day. They get new features first, but may have more bugs.</string>
   <string name="settings_updates_nightly">Check for nightly builds</string>

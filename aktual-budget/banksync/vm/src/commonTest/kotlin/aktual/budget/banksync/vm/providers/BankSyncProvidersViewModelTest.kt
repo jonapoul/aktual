@@ -13,8 +13,6 @@ import aktual.budget.model.AccountSyncSource
 import aktual.core.model.BudgetServer
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.prefs.BudgetFeatureFlags
-import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.viewModelContext
 import app.cash.turbine.test
 import assertk.assertThat
@@ -40,39 +38,12 @@ class BankSyncProvidersViewModelTest {
           BankSyncProvidersState.Loaded(
             persistentListOf(
               BankSyncProviderItem(GoCardless, Configured),
+              BankSyncProviderItem(EnableBanking, NotConfigured),
               BankSyncProviderItem(SimpleFin, NotConfigured),
               BankSyncProviderItem(PluggyAi, NotConfigured),
               BankSyncProviderItem(Akahu, NotConfigured),
             ),
           ),
-        )
-    }
-  }
-
-  @Test
-  fun `Enable Banking is listed once its flag is on`() = runTest {
-    val flags = FakeBudgetFeatureFlags()
-    val viewModel = createViewModel(flags = flags)
-
-    viewModel.state.test {
-      testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem().providers())
-        .containsExactly(
-          AccountSyncSource.GoCardless,
-          AccountSyncSource.SimpleFin,
-          AccountSyncSource.PluggyAi,
-          AccountSyncSource.Akahu,
-        )
-
-      flags[EnableBanking].set(true)
-      testScheduler.advanceUntilIdle()
-      assertThat(expectMostRecentItem().providers())
-        .containsExactly(
-          AccountSyncSource.GoCardless,
-          AccountSyncSource.EnableBanking,
-          AccountSyncSource.SimpleFin,
-          AccountSyncSource.PluggyAi,
-          AccountSyncSource.Akahu,
         )
     }
   }
@@ -127,6 +98,7 @@ class BankSyncProvidersViewModelTest {
     BankSyncProvidersState.Loaded(
       persistentListOf(
         BankSyncProviderItem(GoCardless, goCardless),
+        BankSyncProviderItem(EnableBanking, otherStatus(goCardless)),
         BankSyncProviderItem(SimpleFin, otherStatus(goCardless)),
         BankSyncProviderItem(PluggyAi, otherStatus(goCardless)),
         BankSyncProviderItem(Akahu, otherStatus(goCardless)),
@@ -139,10 +111,7 @@ class BankSyncProvidersViewModelTest {
 
   private fun BankSyncProvidersState.providers() = (this as Loaded).providers.map { it.source }
 
-  private fun TestScope.createViewModel(
-    server: BudgetServer = SERVER,
-    flags: BudgetFeatureFlags = FakeBudgetFeatureFlags(),
-  ): BankSyncProvidersViewModel {
+  private fun TestScope.createViewModel(server: BudgetServer = SERVER): BankSyncProvidersViewModel {
     val configured = Success(configured = true)
     val unconfigured = Success(configured = false)
     return BankSyncProvidersViewModel(
@@ -156,7 +125,6 @@ class BankSyncProvidersViewModelTest {
         ),
       setup = BankSyncProviderSetupImpl(secrets, FakeEnableBankingApi()),
       server = server,
-      flags = flags,
       viewModelContext = viewModelContext,
     )
   }

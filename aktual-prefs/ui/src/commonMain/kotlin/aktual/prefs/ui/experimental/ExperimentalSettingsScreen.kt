@@ -91,7 +91,6 @@ private fun FeatureFlag.title(): String =
     BalanceForecastReport -> Strings.settingsExperimentalBalanceForecastReport
     BudgetAnalysisReport -> Strings.settingsExperimentalBudgetAnalysisReport
     MonteCarloReport -> Strings.settingsExperimentalMonteCarloReport
-    EnableBanking -> Strings.settingsExperimentalEnableBanking
   }
 
 @PortraitPreview
