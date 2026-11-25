@@ -128,7 +128,7 @@ class ApiKeysApiTest {
       .isInstanceOf<TextContent>()
       .prop(TextContent::text)
       .isEqualTo(
-        """{"name":"Home Assistant","fileIds":["${KEY_BUDGET.value}"],"permissions":["bank-sync-global"]}"""
+        """{"name":"Home Assistant","fileIds":["${KEY_BUDGET.value}"],"permissions":["bank-sync-global"]}""",
       )
     assertThat(response)
       .isInstanceOf<ApiKeysResponse.Success<CreatedApiKey>>()

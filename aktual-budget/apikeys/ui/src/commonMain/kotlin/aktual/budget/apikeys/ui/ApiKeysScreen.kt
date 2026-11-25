@@ -252,6 +252,13 @@ private fun KeyItem(
         style = typography.bodySmall,
         color = colors.pageTextSubdued,
       )
+      if (key.canSyncSharedBanks) {
+        Text(
+          text = Strings.apiKeysSharedBankSyncAllowed,
+          style = typography.bodySmall,
+          color = colors.pageTextSubdued,
+        )
+      }
     }
 
     AktualButton(text = Strings.apiKeysRevoke, onClick = { onAction(Revoke(key)) })
@@ -289,7 +296,7 @@ private val PREVIEW_IMPORTER =
   ApiKeyItem(ApiKeyId("1"), "Transaction importer", LocalDate(2026, 11, 2))
 
 private val PREVIEW_HOME_ASSISTANT =
-  ApiKeyItem(ApiKeyId("2"), "Home Assistant", LocalDate(2026, 10, 14))
+  ApiKeyItem(ApiKeyId("2"), "Home Assistant", LocalDate(2026, 10, 14), canSyncSharedBanks = true)
 
 private class ApiKeysStateProvider :
   ColorParamsProvider<ApiKeysState>(
