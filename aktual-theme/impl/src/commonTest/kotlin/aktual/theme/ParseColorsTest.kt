@@ -51,6 +51,52 @@ class ParseColorsTest {
   }
 
   @Test
+  fun `Colours a theme leaves out follow its accent`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1b1c1d;
+        --color-accent: #2b8fed;
+        --color-accentText: #66b5fa;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css)
+
+    assertThat(colors).all {
+      prop(CustomColors::accent).isEqualTo(Color(0xFF2b8fed))
+      prop(CustomColors::buttonPrimaryBackground).isEqualTo(Color(0xFF2b8fed))
+      prop(CustomColors::checkboxBackgroundSelected).isEqualTo(Color(0xFF2b8fed))
+      prop(CustomColors::calendarSelectedBackground).isEqualTo(Color(0xFF2b8fed))
+      prop(CustomColors::pageTextLink).isEqualTo(Color(0xFF66b5fa))
+      prop(CustomColors::accentHover).isEqualTo(DarkColors.accentHover)
+    }
+  }
+
+  @Test
+  fun `Take the accent from older themes' colours`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1b1c1d;
+        --color-buttonPrimaryBackground: #2b8fed;
+        --color-pageTextLink: #66b5fa;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css)
+
+    assertThat(colors).all {
+      prop(CustomColors::accent).isEqualTo(Color(0xFF2b8fed))
+      prop(CustomColors::accentText).isEqualTo(Color(0xFF66b5fa))
+      prop(CustomColors::checkboxBackgroundSelected).isEqualTo(Color(0xFF2b8fed))
+      prop(CustomColors::menuItemTextSelected).isEqualTo(Color(0xFF66b5fa))
+    }
+  }
+
+  @Test
   fun `Ignore comments`() {
     val css =
       """

@@ -10,6 +10,14 @@ sealed interface Colors {
   val id: ThemeId
   val isLight: Boolean
 
+  val accent: Color
+  val accentContrast: Color
+  val accentHover: Color
+  val accentText: Color
+  val accentBorder: Color
+  val accentSubtle: Color
+  val accentSubtleText: Color
+
   val pageBackground: Color
   val pageBackgroundTopLeft: Color
   val pageBackgroundBottomRight: Color
@@ -180,6 +188,7 @@ sealed interface Colors {
   val calendarItemText: Color
   val calendarItemBackground: Color
   val calendarSelectedBackground: Color
+  val calendarSelectedText: Color
   val calendarCellBackground: Color
   val datePickerRangeBackground: Color
 
