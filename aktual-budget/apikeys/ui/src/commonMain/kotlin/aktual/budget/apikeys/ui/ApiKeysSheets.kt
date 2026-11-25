@@ -43,7 +43,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,7 +83,13 @@ internal fun ApiKeysSheets(
     // The server shows a new key only once, and a stray swipe shouldn't lose a typed name either
     isDismissible = current is RevokeKey,
   ) { host ->
-    if (sheet == null) LaunchedEffect(host) { host.dismiss() }
+    if (sheet == null) {
+      DisposableEffect(host) {
+        host.dismiss()
+        onDispose {}
+      }
+    }
+
     when (current) {
       is CreateKey ->
         HostedSheet(onDismiss = host.dismiss) {
