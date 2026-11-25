@@ -1,5 +1,7 @@
 package aktual.budget.apikeys.ui
 
+import aktual.api.model.apikeys.ApiKeyId
+import aktual.budget.apikeys.vm.ApiKeyItem
 import aktual.budget.apikeys.vm.ApiKeysDialog
 import aktual.budget.apikeys.vm.CreateKey
 import aktual.budget.apikeys.vm.CreatedKey
@@ -12,15 +14,20 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
+import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
 import aktual.core.ui.disambiguated
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.switch
+import aktual.theme.Colors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,6 +56,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun ApiKeysDialogs(
@@ -178,18 +186,28 @@ private fun CreatedKeyDialog(key: Token, onDismiss: () -> Unit) {
   val clipboard = LocalClipboard.current
   val scope = rememberCoroutineScope()
   AktualAlertDialog(
-    title = Strings.apiKeysCreatedTitle,
     onDismissRequest = onDismiss,
     properties = DialogProperties(dismissOnClickOutside = false),
+  ) {
+    CreatedKeyDialogContent(
+      key = key,
+      onCopy = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(key.value)) } },
+      onDismiss = onDismiss,
+    )
+  }
+}
+
+@Composable
+private fun CreatedKeyDialogContent(key: Token, onCopy: () -> Unit, onDismiss: () -> Unit) =
+  AktualAlertDialogContent(
+    title = Strings.apiKeysCreatedTitle,
     buttons = {
-      DialogTextButton(
-        text = Strings.apiKeysCopy,
-        onClick = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(key.value)) } },
-      )
+      DialogTextButton(text = Strings.apiKeysCopy, onClick = onCopy)
       DialogTextButton(kind = Primary, text = Strings.apiKeysDone, onClick = onDismiss)
     },
   ) {
     Text(text = Strings.apiKeysCreatedMessage, style = typography.bodyMedium)
+    VerticalSpacer(Dimens.Medium)
     SelectionContainer {
       Text(
         text = key.value,
@@ -198,13 +216,21 @@ private fun CreatedKeyDialog(key: Token, onDismiss: () -> Unit) {
       )
     }
   }
-}
 
 @Composable
 private fun RevokeKeyDialog(dialog: RevokeKey, onConfirm: () -> Unit, onDismiss: () -> Unit) =
-  AktualAlertDialog(
+  AktualAlertDialog(onDismissRequest = onDismiss) {
+    RevokeKeyDialogContent(dialog = dialog, onConfirm = onConfirm, onDismiss = onDismiss)
+  }
+
+@Composable
+private fun RevokeKeyDialogContent(
+  dialog: RevokeKey,
+  onConfirm: () -> Unit,
+  onDismiss: () -> Unit,
+) =
+  AktualAlertDialogContent(
     title = Strings.apiKeysRevokeTitle,
-    onDismissRequest = onDismiss,
     buttons = {
       DialogTextButton(text = Strings.apiKeysCancel, onClick = onDismiss)
       DialogTextButton(
@@ -245,3 +271,32 @@ private fun PreviewCreateKeyDialog(
 
 private class CreateKeyProvider :
   ColorParamsProvider<CreateKey>(CreateKey(), CreateKey(isBusy = true), CreateKey(hasFailed = true))
+
+@Preview
+@Composable
+private fun PreviewCreatedKeyDialog(@PreviewParameter(ColorParameters::class) params: Colors) =
+  PreviewWithColors(params) {
+    CreatedKeyDialogContent(
+      key = Token("actual_q7Xc2mVb9LpR4tYw8NzK3hJf6Gd1Sa5Ue0Io-_TnBvM"),
+      onCopy = {},
+      onDismiss = {},
+    )
+  }
+
+@Preview
+@Composable
+private fun PreviewRevokeKeyDialog(
+  @PreviewParameter(RevokeKeyProvider::class) params: ColorParams<RevokeKey>,
+) =
+  PreviewWithColorParams(params) {
+    RevokeKeyDialogContent(dialog = this, onConfirm = {}, onDismiss = {})
+  }
+
+private val PREVIEW_KEY = ApiKeyItem(ApiKeyId("1"), "Transaction importer", LocalDate(2026, 11, 2))
+
+private class RevokeKeyProvider :
+  ColorParamsProvider<RevokeKey>(
+    RevokeKey(PREVIEW_KEY),
+    RevokeKey(PREVIEW_KEY, isBusy = true),
+    RevokeKey(PREVIEW_KEY, hasFailed = true),
+  )
