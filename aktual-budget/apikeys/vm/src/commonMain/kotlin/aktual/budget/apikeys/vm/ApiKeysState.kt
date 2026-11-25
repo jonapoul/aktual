@@ -6,7 +6,14 @@ import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
-@Immutable data class ApiKeyItem(val id: ApiKeyId, val name: String, val created: LocalDate)
+@Immutable
+data class ApiKeyItem(
+  val id: ApiKeyId,
+  val name: String,
+  val created: LocalDate,
+  // Can bank sync with the server's shared provider connections, not just the budget's own
+  val canSyncSharedBanks: Boolean = false,
+)
 
 @Immutable sealed interface ApiKeysState
 

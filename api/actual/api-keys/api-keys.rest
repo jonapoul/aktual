@@ -19,6 +19,20 @@ Content-Type: application/json
 <> create-success.201.json
 
 ###
+# @name api-keys/create-bank-sync
+POST {{ACTUAL_BASE_URL}}/api-keys
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{
+    "name": "Home Assistant",
+    "fileIds": ["{{ACTUAL_MAIN_FILE_ID}}"],
+    "permissions": ["bank-sync-global"]
+}
+
+<> create-bank-sync.201.json
+
+###
 # @name api-keys/revoke
 DELETE {{ACTUAL_BASE_URL}}/api-keys/{{ACTUAL_API_KEY_ID}}
 X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
