@@ -2,14 +2,13 @@ package aktual.budget.apikeys.ui
 
 import aktual.api.model.apikeys.ApiKeyId
 import aktual.budget.apikeys.vm.ApiKeyItem
-import aktual.budget.apikeys.vm.ApiKeysDialog
+import aktual.budget.apikeys.vm.ApiKeysSheet
 import aktual.budget.apikeys.vm.CreateKey
 import aktual.budget.apikeys.vm.CreatedKey
 import aktual.budget.apikeys.vm.RevokeKey
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
-import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
@@ -17,21 +16,24 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.DialogTextButton
-import aktual.core.ui.Dimens
+import aktual.core.ui.HostedSheet
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.SheetHost
 import aktual.core.ui.disabledIf
 import aktual.core.ui.disambiguated
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.plainTextClipEntry
 import aktual.core.ui.switch
+import aktual.core.ui.verticalScrollWithBar
 import aktual.theme.Colors
-import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
@@ -41,8 +43,11 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -54,95 +59,111 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
+// Creating a key then showing it swaps pages inside one sheet
 @Composable
-internal fun ApiKeysDialogs(
-  dialog: ApiKeysDialog?,
+internal fun ApiKeysSheets(
+  sheet: ApiKeysSheet?,
   onCreate: (name: String, canSyncSharedBanks: Boolean) -> Unit,
   onConfirmRevoke: () -> Unit,
   onDismiss: () -> Unit,
 ) {
-  when (dialog) {
-    null -> Unit
-    is CreateKey -> CreateKeyDialog(dialog, onCreate, onDismiss)
-    is CreatedKey -> CreatedKeyDialog(dialog.key, onDismiss)
-    is RevokeKey -> RevokeKeyDialog(dialog, onConfirmRevoke, onDismiss)
+  // Keeps the last sheet on screen while it slides away after the VM clears it, e.g. on revoking
+  var lastShown by remember { mutableStateOf(sheet) }
+  SideEffect { if (sheet != null) lastShown = sheet }
+  val current = sheet ?: lastShown ?: return
+
+  SheetHost(
+    onDismiss = {
+      lastShown = null
+      onDismiss()
+    },
+  ) { host ->
+    if (sheet == null) LaunchedEffect(host) { host.dismiss() }
+    when (current) {
+      is CreateKey ->
+        HostedSheet(onDismiss = host.dismiss) {
+          CreateKeySheet(current, onCreate, onCancel = { close() })
+        }
+
+      is CreatedKey ->
+        HostedSheet(onDismiss = host.dismiss) {
+          CreatedKeySheet(current.key, onDone = { close() })
+        }
+
+      is RevokeKey ->
+        HostedSheet(onDismiss = host.dismiss) {
+          RevokeKeySheetContent(current, onConfirmRevoke, onCancel = { close() })
+        }
+    }
   }
 }
 
 @Composable
-private fun CreateKeyDialog(
-  dialog: CreateKey,
+private fun CreateKeySheet(
+  sheet: CreateKey,
   onCreate: (name: String, canSyncSharedBanks: Boolean) -> Unit,
-  onDismiss: () -> Unit,
+  onCancel: () -> Unit,
 ) {
   var canSyncSharedBanks by rememberSaveable { mutableStateOf(false) }
-  AktualAlertDialog(
-    onDismissRequest = onDismiss,
-    properties = DialogProperties(dismissOnClickOutside = false),
-  ) {
-    CreateKeyDialogContent(
-      dialog = dialog,
-      state = rememberTextFieldState(),
-      canSyncSharedBanks = canSyncSharedBanks,
-      onCanSyncSharedBanksChange = { canSyncSharedBanks = it },
-      onCreate = onCreate,
-      onDismiss = onDismiss,
-    )
-  }
+  CreateKeySheetContent(
+    sheet = sheet,
+    state = rememberTextFieldState(),
+    canSyncSharedBanks = canSyncSharedBanks,
+    onCanSyncSharedBanksChange = { canSyncSharedBanks = it },
+    onCreate = onCreate,
+    onCancel = onCancel,
+  )
 }
 
 @Composable
-private fun CreateKeyDialogContent(
-  dialog: CreateKey,
+private fun CreateKeySheetContent(
+  sheet: CreateKey,
   state: TextFieldState,
   canSyncSharedBanks: Boolean,
   onCanSyncSharedBanksChange: (Boolean) -> Unit,
   onCreate: (name: String, canSyncSharedBanks: Boolean) -> Unit,
-  onDismiss: () -> Unit,
+  onCancel: () -> Unit,
 ) {
   val name = state.text.trim().toString()
-  val enabled = name.isNotEmpty() && name.length <= MAX_NAME_LENGTH && !dialog.isBusy
-  AktualAlertDialogContent(
+  val enabled = name.isNotEmpty() && name.length <= MAX_NAME_LENGTH && !sheet.isBusy
+  ApiKeysSheetPage(
     title = Strings.apiKeysCreateTitle,
     buttons = {
-      DialogTextButton(text = Strings.apiKeysCancel, onClick = onDismiss)
-      DialogTextButton(
+      AktualButton(
+        modifier = Modifier.weight(1f),
+        text = Strings.apiKeysCancel,
+        variant = Secondary,
+        onClick = onCancel,
+      )
+      AktualButton(
+        modifier = Modifier.weight(1f),
         kind = Primary,
         text = Strings.apiKeysCreate,
         isEnabled = enabled,
+        isLoading = sheet.isBusy,
         onClick = { onCreate(name, canSyncSharedBanks) },
       )
     },
-    content = {
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        AktualTextField(
-          modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester()),
-          state = state,
-          isEnabled = !dialog.isBusy,
-          placeholderText = Strings.apiKeysNamePlaceholder,
-          singleLine = true,
-          keyboardOptions = KeyboardOptions(capitalization = Sentences, imeAction = Done),
-          onKeyboardAction = { if (enabled) onCreate(name, canSyncSharedBanks) },
-        )
-        SharedBankSyncRow(
-          checked = canSyncSharedBanks,
-          enabled = !dialog.isBusy,
-          onCheckedChange = onCanSyncSharedBanksChange,
-        )
-        if (dialog.hasFailed) {
-          Text(
-            text = Strings.apiKeysCreateFailed,
-            style = typography.bodySmall,
-            color = colors.errorText,
-          )
-        }
-      }
-    },
-  )
+  ) {
+    AktualTextField(
+      modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester()),
+      state = state,
+      isEnabled = !sheet.isBusy,
+      placeholderText = Strings.apiKeysNamePlaceholder,
+      singleLine = true,
+      keyboardOptions = KeyboardOptions(capitalization = Sentences, imeAction = Done),
+      onKeyboardAction = { if (enabled) onCreate(name, canSyncSharedBanks) },
+    )
+    SharedBankSyncRow(
+      checked = canSyncSharedBanks,
+      enabled = !sheet.isBusy,
+      onCheckedChange = onCanSyncSharedBanksChange,
+    )
+    if (sheet.hasFailed) ErrorText(Strings.apiKeysCreateFailed)
+  }
 }
 
 @Composable
@@ -182,32 +203,36 @@ private fun SharedBankSyncRow(
   }
 
 @Composable
-private fun CreatedKeyDialog(key: Token, onDismiss: () -> Unit) {
+private fun CreatedKeySheet(key: Token, onDone: () -> Unit) {
   val clipboard = LocalClipboard.current
   val scope = rememberCoroutineScope()
-  AktualAlertDialog(
-    onDismissRequest = onDismiss,
-    properties = DialogProperties(dismissOnClickOutside = false),
-  ) {
-    CreatedKeyDialogContent(
-      key = key,
-      onCopy = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(key.value)) } },
-      onDismiss = onDismiss,
-    )
-  }
+  CreatedKeySheetContent(
+    key = key,
+    onCopy = { scope.launch { clipboard.setClipEntry(plainTextClipEntry(key.value)) } },
+    onDone = onDone,
+  )
 }
 
 @Composable
-private fun CreatedKeyDialogContent(key: Token, onCopy: () -> Unit, onDismiss: () -> Unit) =
-  AktualAlertDialogContent(
+private fun CreatedKeySheetContent(key: Token, onCopy: () -> Unit, onDone: () -> Unit) =
+  ApiKeysSheetPage(
     title = Strings.apiKeysCreatedTitle,
     buttons = {
-      DialogTextButton(text = Strings.apiKeysCopy, onClick = onCopy)
-      DialogTextButton(kind = Primary, text = Strings.apiKeysDone, onClick = onDismiss)
+      AktualButton(
+        modifier = Modifier.weight(1f),
+        text = Strings.apiKeysCopy,
+        variant = Secondary,
+        onClick = onCopy,
+      )
+      AktualButton(
+        modifier = Modifier.weight(1f),
+        kind = Primary,
+        text = Strings.apiKeysDone,
+        onClick = onDone,
+      )
     },
   ) {
     Text(text = Strings.apiKeysCreatedMessage, style = typography.bodyMedium)
-    VerticalSpacer(Dimens.Medium)
     SelectionContainer {
       Text(
         text = key.value,
@@ -218,54 +243,77 @@ private fun CreatedKeyDialogContent(key: Token, onCopy: () -> Unit, onDismiss: (
   }
 
 @Composable
-private fun RevokeKeyDialog(dialog: RevokeKey, onConfirm: () -> Unit, onDismiss: () -> Unit) =
-  AktualAlertDialog(onDismissRequest = onDismiss) {
-    RevokeKeyDialogContent(dialog = dialog, onConfirm = onConfirm, onDismiss = onDismiss)
-  }
-
-@Composable
-private fun RevokeKeyDialogContent(
-  dialog: RevokeKey,
-  onConfirm: () -> Unit,
-  onDismiss: () -> Unit,
-) =
-  AktualAlertDialogContent(
+private fun RevokeKeySheetContent(sheet: RevokeKey, onConfirm: () -> Unit, onCancel: () -> Unit) =
+  ApiKeysSheetPage(
     title = Strings.apiKeysRevokeTitle,
     buttons = {
-      DialogTextButton(text = Strings.apiKeysCancel, onClick = onDismiss)
-      DialogTextButton(
+      AktualButton(
+        modifier = Modifier.weight(1f),
+        text = Strings.apiKeysCancel,
+        variant = Secondary,
+        onClick = onCancel,
+      )
+      AktualButton(
+        modifier = Modifier.weight(1f),
         kind = Destructive,
         text = Strings.apiKeysRevoke,
-        isEnabled = !dialog.isBusy,
+        isLoading = sheet.isBusy,
         onClick = onConfirm,
       )
     },
   ) {
-    Text(Strings.apiKeysRevokeMessage(dialog.key.name))
-    if (dialog.hasFailed) {
-      Text(
-        text = Strings.apiKeysRevokeFailed,
-        style = typography.bodySmall,
-        color = colors.errorText,
-      )
-    }
+    Text(text = Strings.apiKeysRevokeMessage(sheet.key.name), style = typography.bodyMedium)
+    if (sheet.hasFailed) ErrorText(Strings.apiKeysRevokeFailed)
   }
+
+@Composable
+private fun ApiKeysSheetPage(
+  title: String,
+  buttons: @Composable RowScope.() -> Unit,
+  content: @Composable ColumnScope.() -> Unit,
+) =
+  Column(
+    modifier =
+      Modifier.fillMaxWidth()
+        .verticalScrollWithBar()
+        .padding(horizontal = ApiKeysSheetDS.padding)
+        .padding(bottom = ApiKeysSheetDS.padding),
+    verticalArrangement = Arrangement.spacedBy(ApiKeysSheetDS.spacing),
+  ) {
+    Text(text = title, style = typography.headlineSmall)
+    content()
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(ApiKeysSheetDS.buttonSpacing),
+      content = buttons,
+    )
+  }
+
+@Composable
+private fun ErrorText(text: String) =
+  Text(text = text, style = typography.bodySmall, color = colors.errorText)
+
+private object ApiKeysSheetDS {
+  val padding = 20.dp
+  val spacing = 16.dp
+  val buttonSpacing = 12.dp
+}
 
 private const val MAX_NAME_LENGTH = 100
 
 @Preview
 @Composable
-private fun PreviewCreateKeyDialog(
+private fun PreviewCreateKeySheet(
   @PreviewParameter(CreateKeyProvider::class) params: ColorParams<CreateKey>,
 ) =
   PreviewWithColorParams(params) {
-    CreateKeyDialogContent(
-      dialog = this,
+    CreateKeySheetContent(
+      sheet = this,
       state = rememberTextFieldState("Transaction importer"),
       canSyncSharedBanks = true,
       onCanSyncSharedBanksChange = {},
       onCreate = { _, _ -> },
-      onDismiss = {},
+      onCancel = {},
     )
   }
 
@@ -274,22 +322,22 @@ private class CreateKeyProvider :
 
 @Preview
 @Composable
-private fun PreviewCreatedKeyDialog(@PreviewParameter(ColorParameters::class) params: Colors) =
+private fun PreviewCreatedKeySheet(@PreviewParameter(ColorParameters::class) params: Colors) =
   PreviewWithColors(params) {
-    CreatedKeyDialogContent(
+    CreatedKeySheetContent(
       key = Token("actual_q7Xc2mVb9LpR4tYw8NzK3hJf6Gd1Sa5Ue0Io-_TnBvM"),
       onCopy = {},
-      onDismiss = {},
+      onDone = {},
     )
   }
 
 @Preview
 @Composable
-private fun PreviewRevokeKeyDialog(
+private fun PreviewRevokeKeySheet(
   @PreviewParameter(RevokeKeyProvider::class) params: ColorParams<RevokeKey>,
 ) =
   PreviewWithColorParams(params) {
-    RevokeKeyDialogContent(dialog = this, onConfirm = {}, onDismiss = {})
+    RevokeKeySheetContent(sheet = this, onConfirm = {}, onCancel = {})
   }
 
 private val PREVIEW_KEY = ApiKeyItem(ApiKeyId("1"), "Transaction importer", LocalDate(2026, 11, 2))

@@ -76,7 +76,7 @@ internal fun ApiKeysScreen(
   viewModel: ApiKeysViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val dialog by viewModel.dialog.collectAsStateWithLifecycle()
+  val sheet by viewModel.sheet.collectAsStateWithLifecycle()
 
   ApiKeysScaffold(
     modifier = modifier,
@@ -91,11 +91,11 @@ internal fun ApiKeysScreen(
     },
   )
 
-  ApiKeysDialogs(
-    dialog = dialog,
+  ApiKeysSheets(
+    sheet = sheet,
     onCreate = viewModel::create,
     onConfirmRevoke = viewModel::confirmRevoke,
-    onDismiss = viewModel::dismissDialog,
+    onDismiss = viewModel::dismissSheet,
   )
 }
 

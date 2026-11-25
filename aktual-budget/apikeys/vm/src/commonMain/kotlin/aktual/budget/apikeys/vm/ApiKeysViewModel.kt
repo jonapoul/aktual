@@ -44,11 +44,11 @@ internal constructor(
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableState = MutableStateFlow<ApiKeysState>(Loading)
-  private val mutableDialog = MutableStateFlow<ApiKeysDialog?>(null)
+  private val mutableSheet = MutableStateFlow<ApiKeysSheet?>(null)
   private var loadJob: Job? = null
 
   val state: StateFlow<ApiKeysState> = mutableState.asStateFlow()
-  val dialog: StateFlow<ApiKeysDialog?> = mutableDialog.asStateFlow()
+  val sheet: StateFlow<ApiKeysSheet?> = mutableSheet.asStateFlow()
 
   init {
     reload()
@@ -64,13 +64,13 @@ internal constructor(
   }
 
   fun add() {
-    mutableDialog.update { CreateKey() }
+    mutableSheet.update { CreateKey() }
   }
 
   fun create(name: String, canSyncSharedBanks: Boolean) {
     val budget = localPreferences[CloudFileId] ?: return
-    if ((mutableDialog.value as? CreateKey)?.isBusy == true) return
-    mutableDialog.update { CreateKey(isBusy = true) }
+    if ((mutableSheet.value as? CreateKey)?.isBusy == true) return
+    mutableSheet.update { CreateKey(isBusy = true) }
     val permissions =
       if (canSyncSharedBanks) listOf(ApiKeyPermission.BankSyncGlobal) else emptyList()
     viewModelScope.launch {
@@ -83,42 +83,42 @@ internal constructor(
           },
         )
       if (response is Success) {
-        mutableDialog.update { CreatedKey(response.data.key) }
+        mutableSheet.update { CreatedKey(response.data.key) }
         reload()
       } else {
-        mutableDialog.update { CreateKey(hasFailed = true) }
+        mutableSheet.update { CreateKey(hasFailed = true) }
       }
     }
   }
 
   fun revoke(key: ApiKeyItem) {
-    mutableDialog.update { RevokeKey(key) }
+    mutableSheet.update { RevokeKey(key) }
   }
 
   fun confirmRevoke() {
-    val dialog = mutableDialog.value as? RevokeKey ?: return
-    if (dialog.isBusy) return
-    mutableDialog.update { dialog.copy(isBusy = true, hasFailed = false) }
+    val sheet = mutableSheet.value as? RevokeKey ?: return
+    if (sheet.isBusy) return
+    mutableSheet.update { sheet.copy(isBusy = true, hasFailed = false) }
     viewModelScope.launch {
       val response =
         runCatchingCancellable(
-          attempt = { api.revoke(dialog.key.id) },
+          attempt = { api.revoke(sheet.key.id) },
           onFailure = { e ->
             log.e(e) { "Failed revoking API key" }
             null
           },
         )
       if (response is Success) {
-        mutableDialog.update { null }
+        mutableSheet.update { null }
         reload()
       } else {
-        mutableDialog.update { dialog.copy(hasFailed = true) }
+        mutableSheet.update { sheet.copy(hasFailed = true) }
       }
     }
   }
 
-  fun dismissDialog() {
-    mutableDialog.update { null }
+  fun dismissSheet() {
+    mutableSheet.update { null }
   }
 
   private suspend fun load(): ApiKeysState {
