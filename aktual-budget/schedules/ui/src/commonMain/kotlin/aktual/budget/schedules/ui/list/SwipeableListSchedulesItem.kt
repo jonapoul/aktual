@@ -66,7 +66,7 @@ private fun swipeActions(
     )
 
   if (schedule.isCompleted) {
-    val restartBackground = colors.buttonPrimaryBackground
+    val restartBackground = colors.accent
     return persistentListOf(
       SwipeAction(
         text = Strings.listSchedulesRestart,

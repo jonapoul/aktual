@@ -608,7 +608,7 @@ internal fun HeroAmount(
   fontSize: TextUnit = HeroAmountSize,
   cursorHeight: Dp = CursorHeight,
 ) {
-  val lineColor = if (isTyping) colors.buttonPrimaryBackground else colors.tableBorder
+  val lineColor = if (isTyping) colors.accent else colors.tableBorder
   val textColor =
     when {
       isTyping && !isValid -> colors.errorText
@@ -644,8 +644,7 @@ internal fun HeroAmount(
     )
     if (isTyping && !showSelection) {
       Box(
-        modifier =
-          Modifier.size(CursorWidth, cursorHeight).background(colors.buttonPrimaryBackground),
+        modifier = Modifier.size(CursorWidth, cursorHeight).background(colors.accent),
       )
     }
     AmountMenu(

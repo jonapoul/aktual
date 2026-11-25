@@ -370,7 +370,7 @@ private fun SummaryCard(
         .background(colors.tableBackground, CardShape)
         .border(
           width = if (isCurrent) 2.dp else 1.dp,
-          color = if (isCurrent) colors.pageTextLink else colors.tableBorder,
+          color = if (isCurrent) colors.accentBorder else colors.tableBorder,
           shape = CardShape,
         )
         .clip(CardShape)
@@ -391,7 +391,7 @@ private fun SummaryCard(
           text = Strings.budgetingThisMonth,
           fontSize = textSizes.small,
           fontWeight = Medium,
-          color = colors.pageTextLink,
+          color = colors.accentText,
           maxLines = 1,
           textAlign = End,
         )

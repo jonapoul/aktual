@@ -73,7 +73,7 @@ internal fun ArtifactItem(
       Text(
         text = artifact.name ?: artifact.artifactId,
         fontWeight = W700,
-        color = colors.pageTextPositive,
+        color = colors.accentText,
         fontSize = textSizes.mediumPlus,
       )
 

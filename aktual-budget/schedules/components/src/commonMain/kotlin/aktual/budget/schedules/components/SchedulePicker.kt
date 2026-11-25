@@ -205,8 +205,7 @@ private fun ScheduleItem(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val background by
-    animateColorAsState(if (isSelected) colors.settingsNavItemBackgroundSelected else Transparent)
+  val background by animateColorAsState(if (isSelected) colors.accentSubtle else Transparent)
   ListItem(
     modifier =
       modifier
@@ -217,7 +216,7 @@ private fun ScheduleItem(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
         color =
           when {
-            isSelected -> colors.settingsNavItemTextSelected
+            isSelected -> colors.accentSubtleText
             schedule.name == null || schedule.isCompleted -> colors.pageTextSubdued
             else -> colors.pageText
           },

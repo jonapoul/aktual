@@ -106,7 +106,7 @@ private fun OptionItem(
 ) {
   val background by
     animateColorAsState(
-      if (isSelected) colors.settingsNavItemBackgroundSelected else Color.Transparent,
+      if (isSelected) colors.accentSubtle else Color.Transparent,
     )
 
   Row(
@@ -151,7 +151,7 @@ private fun OptionItem(
           color =
             when {
               !enabled -> colors.pageText.disabled
-              isSelected -> colors.settingsNavItemTextSelected
+              isSelected -> colors.accentSubtleText
               else -> colors.pageText
             },
         )

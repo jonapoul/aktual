@@ -369,7 +369,7 @@ private fun WideRows(
         MonoCell(
           text = tag,
           width = TagWidth,
-          color = colors.pageTextPositive,
+          color = colors.accentText,
           modifier = Modifier.clickable(enabled = tag.isNotEmpty()) { onAction(AddTag(tag)) },
         )
         MonoCell(

@@ -46,7 +46,7 @@ internal fun <T> OptionSheet(
         val isChosen = option == selected && enabled
         val background by
           animateColorAsState(
-            if (isChosen) colors.settingsNavItemBackgroundSelected else Transparent,
+            if (isChosen) colors.accentSubtle else Transparent,
           )
         Row(
           modifier =
@@ -76,7 +76,7 @@ internal fun <T> OptionSheet(
             color =
               when {
                 !enabled -> colors.pageTextSubdued
-                isChosen -> colors.settingsNavItemTextSelected
+                isChosen -> colors.accentSubtleText
                 else -> colors.pageText
               },
             fontWeight = if (isChosen) Medium else null,

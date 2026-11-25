@@ -97,7 +97,7 @@ private fun ShortcutChip(
   highlight: Boolean = false,
   tint: Color? = null,
 ) {
-  val accent = colors.buttonPrimaryBackground
+  val accent = colors.accent
   Chip(
     modifier = Modifier.height(CHIP_HEIGHT),
     text = text,

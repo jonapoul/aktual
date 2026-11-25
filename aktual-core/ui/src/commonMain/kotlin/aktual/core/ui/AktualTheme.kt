@@ -56,7 +56,7 @@ fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
       LocalContentColor provides c.pageText,
       LocalTextSelectionColors provides
         TextSelectionColors(
-          handleColor = c.formInputBorderSelected,
+          handleColor = c.accent,
           backgroundColor = c.formInputBackgroundSelection,
         ),
     ) {
@@ -101,8 +101,10 @@ private fun aktualColorScheme(colors: Colors): ColorScheme =
   remember(colors) {
     val base = if (colors.isLight) lightColorScheme() else darkColorScheme()
     base.copy(
-      primary = colors.buttonPrimaryBackground,
-      onPrimary = colors.buttonPrimaryText,
+      primary = colors.accent,
+      onPrimary = colors.accentContrast,
+      primaryContainer = colors.accentSubtle,
+      onPrimaryContainer = colors.accentSubtleText,
       secondaryContainer = colors.tableBorder,
       background = colors.pageBackground,
       onBackground = colors.pageText,

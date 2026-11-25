@@ -117,7 +117,7 @@ fun AktualAlertDialogContent(
           Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = highlight ?: colors.pageTextPositive,
+            tint = highlight ?: colors.accentText,
           )
         }
 
@@ -125,7 +125,7 @@ fun AktualAlertDialogContent(
           Text(
             modifier = Modifier.padding(vertical = Dimens.Large),
             text = title,
-            color = highlight ?: colors.pageTextPositive,
+            color = highlight ?: colors.accentText,
             style = typography.headlineSmall,
           )
         }
@@ -141,7 +141,7 @@ fun AktualAlertDialogContent(
       }
 
       if (buttons != null) {
-        CompositionLocalProvider(LocalContentColor provides colors.pageTextPositive) {
+        CompositionLocalProvider(LocalContentColor provides colors.accentText) {
           Row(
             modifier = Modifier.align(Alignment.End),
             horizontalArrangement = Arrangement.spacedBy(Dimens.Large),

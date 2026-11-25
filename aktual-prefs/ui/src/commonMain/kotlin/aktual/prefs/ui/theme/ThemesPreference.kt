@@ -131,7 +131,7 @@ private fun ThemeItem(
   val isChosen = isSelected && enabled
   val backgroundColor by
     animateColorAsState(
-      if (isChosen) colors.settingsNavItemBackgroundSelected else Color.Transparent,
+      if (isChosen) colors.accentSubtle else Color.Transparent,
     )
 
   Row(
@@ -173,7 +173,7 @@ private fun ThemeItem(
         color =
           when {
             !enabled -> colors.settingsCardText.disabled
-            isChosen -> colors.settingsNavItemTextSelected
+            isChosen -> colors.accentSubtleText
             else -> colors.settingsCardText
           },
       )

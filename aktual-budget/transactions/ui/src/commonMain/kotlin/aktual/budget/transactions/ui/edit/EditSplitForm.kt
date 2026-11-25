@@ -379,8 +379,7 @@ private fun PartAmount(
     )
     if (isTyping && !isSelected) {
       Box(
-        modifier =
-          Modifier.size(CursorWidth, PartCursorHeight).background(colors.buttonPrimaryBackground),
+        modifier = Modifier.size(CursorWidth, PartCursorHeight).background(colors.accent),
       )
     }
     AmountMenu(

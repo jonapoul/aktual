@@ -183,11 +183,10 @@ fun Colors.normalButton(
 @Composable
 fun Colors.tonalButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
-    containerColor =
-      buttonPrimaryBackground.copy(alpha = if (isPressed) ALPHA_TONAL_PRESSED else ALPHA_TONAL),
-    disabledContainerColor = buttonPrimaryBackground.copy(alpha = ALPHA_TONAL_DISABLED),
-    contentColor = pageTextPositive,
-    disabledContentColor = pageTextPositive.disabled,
+    containerColor = accent.copy(alpha = if (isPressed) ALPHA_TONAL_PRESSED else ALPHA_TONAL),
+    disabledContainerColor = accent.copy(alpha = ALPHA_TONAL_DISABLED),
+    contentColor = accentText,
+    disabledContentColor = accentText.disabled,
   )
 
 @Composable
@@ -236,11 +235,10 @@ fun Colors.bareIconButton(isPressed: Boolean): IconButtonColors =
 @Composable
 fun Colors.tonalIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
-    containerColor =
-      buttonPrimaryBackground.copy(alpha = if (isPressed) ALPHA_TONAL_PRESSED else ALPHA_TONAL),
-    disabledContainerColor = buttonPrimaryBackground.copy(alpha = ALPHA_TONAL_DISABLED),
-    contentColor = pageTextPositive,
-    disabledContentColor = pageTextPositive.disabled,
+    containerColor = accent.copy(alpha = if (isPressed) ALPHA_TONAL_PRESSED else ALPHA_TONAL),
+    disabledContainerColor = accent.copy(alpha = ALPHA_TONAL_DISABLED),
+    contentColor = accentText,
+    disabledContentColor = accentText.disabled,
   )
 
 @Composable

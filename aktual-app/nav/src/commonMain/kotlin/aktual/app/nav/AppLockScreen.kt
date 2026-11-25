@@ -108,7 +108,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
         modifier = Modifier.size(40.dp),
         imageVector = AktualIcons.LockClosed,
         contentDescription = null,
-        tint = colors.pageTextPositive,
+        tint = colors.accentText,
       )
     }
 
