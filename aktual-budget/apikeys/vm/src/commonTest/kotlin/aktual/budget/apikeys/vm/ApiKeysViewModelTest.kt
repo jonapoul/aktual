@@ -81,7 +81,7 @@ class ApiKeysViewModelTest {
         CreatedApiKey(KEY_ID, "Importer", listOf(BUDGET), CREATED_AT, Token("actual_abc")),
       )
 
-    viewModel.dialog.test {
+    viewModel.sheet.test {
       assertThat(awaitItem()).isNull()
       viewModel.add()
       assertThat(awaitItem()).isEqualTo(CreateKey())
@@ -121,10 +121,10 @@ class ApiKeysViewModelTest {
   }
 
   @Test
-  fun `Failing to create a key keeps the dialog open`() = runTest {
+  fun `Failing to create a key keeps the sheet open`() = runTest {
     val viewModel = createViewModel()
 
-    viewModel.dialog.test {
+    viewModel.sheet.test {
       assertThat(awaitItem()).isNull()
       viewModel.add()
       assertThat(awaitItem()).isEqualTo(CreateKey())
@@ -138,7 +138,7 @@ class ApiKeysViewModelTest {
   fun `Revoking a key`() = runTest {
     val viewModel = createViewModel()
 
-    viewModel.dialog.test {
+    viewModel.sheet.test {
       assertThat(awaitItem()).isNull()
       viewModel.revoke(ITEM)
       assertThat(awaitItem()).isEqualTo(RevokeKey(ITEM))
@@ -154,7 +154,7 @@ class ApiKeysViewModelTest {
     api.revokeResponse = ApiKeysResponse.Failed(ApiKeyNotFound)
     val viewModel = createViewModel()
 
-    viewModel.dialog.test {
+    viewModel.sheet.test {
       assertThat(awaitItem()).isNull()
       viewModel.revoke(ITEM)
       assertThat(awaitItem()).isEqualTo(RevokeKey(ITEM))

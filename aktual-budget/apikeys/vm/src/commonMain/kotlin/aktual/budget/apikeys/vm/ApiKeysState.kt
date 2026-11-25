@@ -28,15 +28,15 @@ data object Empty : ApiKeysState
 
 @JvmInline value class Loaded(val keys: ImmutableList<ApiKeyItem>) : ApiKeysState
 
-@Immutable sealed interface ApiKeysDialog
+@Immutable sealed interface ApiKeysSheet
 
-data class CreateKey(val isBusy: Boolean = false, val hasFailed: Boolean = false) : ApiKeysDialog
+data class CreateKey(val isBusy: Boolean = false, val hasFailed: Boolean = false) : ApiKeysSheet
 
 // The server only shows the key once, so this is the user's one chance to copy it
-@JvmInline value class CreatedKey(val key: Token) : ApiKeysDialog
+@JvmInline value class CreatedKey(val key: Token) : ApiKeysSheet
 
 data class RevokeKey(
   val key: ApiKeyItem,
   val isBusy: Boolean = false,
   val hasFailed: Boolean = false,
-) : ApiKeysDialog
+) : ApiKeysSheet
