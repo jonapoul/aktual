@@ -1,3 +1,10 @@
+accent
+accentBorder
+accentContrast
+accentHover
+accentSubtle
+accentSubtleText
+accentText
 budgetCurrentMonth
 budgetHeaderCurrentMonth
 budgetHeaderOtherMonth
@@ -48,6 +55,7 @@ calendarCellBackground
 calendarItemBackground
 calendarItemText
 calendarSelectedBackground
+calendarSelectedText
 calendarText
 cardBackground
 cardBorder
