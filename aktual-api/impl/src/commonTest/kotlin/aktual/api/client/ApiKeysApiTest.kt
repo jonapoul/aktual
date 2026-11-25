@@ -2,7 +2,6 @@ package aktual.api.client
 
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeyId
-import aktual.api.model.apikeys.ApiKeyPermission
 import aktual.api.model.apikeys.ApiKeysResponse
 import aktual.api.model.apikeys.CreatedApiKey
 import aktual.budget.model.BudgetId
@@ -67,7 +66,7 @@ class ApiKeysApiTest {
               name = "Home Assistant",
               budgets = listOf(KEY_BUDGET),
               createdAtSeconds = 1793059200,
-              permissions = listOf(ApiKeyPermission.BankSyncGlobal),
+              permissions = listOf(BankSyncGlobal),
             ),
           ),
         ),
@@ -121,7 +120,7 @@ class ApiKeysApiTest {
       api.create(
         name = "Home Assistant",
         budgets = listOf(KEY_BUDGET),
-        permissions = listOf(ApiKeyPermission.BankSyncGlobal),
+        permissions = listOf(BankSyncGlobal),
       )
 
     assertThat(mockEngine.latestRequest().body)
@@ -134,7 +133,7 @@ class ApiKeysApiTest {
       .isInstanceOf<ApiKeysResponse.Success<CreatedApiKey>>()
       .prop(ApiKeysResponse.Success<CreatedApiKey>::data)
       .prop(CreatedApiKey::permissions)
-      .isEqualTo(listOf(ApiKeyPermission.BankSyncGlobal))
+      .isEqualTo(listOf(BankSyncGlobal))
   }
 
   @Test

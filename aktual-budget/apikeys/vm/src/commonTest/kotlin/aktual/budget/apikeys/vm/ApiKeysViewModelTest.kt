@@ -102,7 +102,7 @@ class ApiKeysViewModelTest {
 
     assertThat(api.created)
       .containsExactly(
-        FakeApiKeysApi.Created("Importer", listOf(BUDGET), listOf(ApiKeyPermission.BankSyncGlobal)),
+        FakeApiKeysApi.Created("Importer", listOf(BUDGET), listOf(BankSyncGlobal)),
       )
   }
 
@@ -110,7 +110,7 @@ class ApiKeysViewModelTest {
   fun `Shows which keys can sync shared banks`() = runTest {
     api.listResponse =
       ApiKeysResponse.Success(
-        listOf(key(KEY_ID, BUDGET, permissions = listOf(ApiKeyPermission.BankSyncGlobal))),
+        listOf(key(KEY_ID, BUDGET, permissions = listOf(BankSyncGlobal))),
       )
 
     createViewModel().state.test {

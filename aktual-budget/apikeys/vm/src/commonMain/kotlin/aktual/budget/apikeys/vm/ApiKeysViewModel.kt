@@ -151,6 +151,6 @@ internal constructor(
       id = id,
       name = name,
       created = Instant.fromEpochSeconds(createdAtSeconds).toLocalDateTime(timeZones.get()).date,
-      canSyncSharedBanks = ApiKeyPermission.BankSyncGlobal in permissions,
+      canSyncSharedBanks = BankSyncGlobal in permissions,
     )
 }
