@@ -101,6 +101,8 @@ internal class BankSyncTestScope(
       clock = clock,
     )
 
+  private val settingsLoader = BankSyncSettingsLoaderImpl(preferences)
+
   val importer =
     BankSyncImporter(
       writer = writer,
@@ -110,7 +112,7 @@ internal class BankSyncTestScope(
           contextDao = RuleContextDao(database),
           uuidGenerator = ::uuid,
         ),
-      settingsLoader = BankSyncSettingsLoaderImpl(preferences),
+      settingsLoader = settingsLoader,
       dao = BankSyncDao(database),
       uuidGenerator = ::uuid,
       calendar = { TODAY },
@@ -123,6 +125,7 @@ internal class BankSyncTestScope(
     BankSyncControllerImpl(
       api = api,
       importer = importer,
+      settingsLoader = settingsLoader,
       writer = writer,
       newTransactions = newTransactions,
       dao = BankSyncDao(database),

@@ -49,6 +49,7 @@ class BankSyncControllerImpl
 internal constructor(
   private val api: BankSyncApi,
   private val importer: BankSyncImporter,
+  private val settingsLoader: BankSyncSettingsLoader,
   private val writer: TransactionWriter,
   private val newTransactions: NewTransactions,
   private val dao: BankSyncDao,
@@ -133,6 +134,8 @@ internal constructor(
           requisitionId = account.bankId.value.takeIf { source == GoCardless },
           includeBalance = initialSync.takeIf { source == GoCardless },
           aspspName = account.bankName.takeIf { source == EnableBanking },
+          importPending =
+            if (source == EnableBanking) settingsLoader.load(account.id).importPending else null,
         )
       handle(account, api.transactions(source, request), initialSync)
     }
