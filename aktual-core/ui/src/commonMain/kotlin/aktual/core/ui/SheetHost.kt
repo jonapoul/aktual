@@ -25,12 +25,14 @@ import kotlinx.coroutines.launch
  * rather than opening a new sheet. Give the first page [SheetHostState.dismiss] as its `onDismiss`.
  * A page given anything else is a sub-page, with a back button that calls its `onDismiss`. The
  * sheet keeps the height of its tallest page so far, so it doesn't shrink when swapping pages. New
- * pages slide in from the end, and going back slides them out again.
+ * pages slide in from the end, and going back slides them out again. See [AktualModalBottomSheet]
+ * for [isDismissible].
  */
 @Composable
 fun SheetHost(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
+  isDismissible: Boolean = true,
   content: @Composable (host: SheetHostState) -> Unit,
 ) {
   val sheetState =
@@ -54,6 +56,7 @@ fun SheetHost(
     onDismissRequest = onDismiss,
     sheetState = sheetState,
     onBack = onBack,
+    isDismissible = isDismissible,
   ) {
     BackHandler(enabled = onBack != null) { onBack?.invoke() }
     var tallestPage by remember { mutableIntStateOf(0) }

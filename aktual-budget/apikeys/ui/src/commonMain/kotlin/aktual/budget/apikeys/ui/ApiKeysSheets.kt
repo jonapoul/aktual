@@ -80,6 +80,8 @@ internal fun ApiKeysSheets(
       lastShown = null
       onDismiss()
     },
+    // The server shows a new key only once, and a stray swipe shouldn't lose a typed name either
+    isDismissible = current is RevokeKey,
   ) { host ->
     if (sheet == null) LaunchedEffect(host) { host.dismiss() }
     when (current) {

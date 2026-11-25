@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
@@ -31,6 +32,8 @@ import androidx.compose.ui.platform.testTag
  * A wrapper around [ModalBottomSheet] that signals [DialogBlurState] so the background blur overlay
  * animates in while this sheet is showing. Pass [blurBackground] as false to keep the content
  * behind the sheet readable. A back button shows beside the drag handle while [onBack] is set.
+ * While [isDismissible] is false, swiping, tapping outside, back and the close button don't hide
+ * it, so it only closes from its own buttons.
  */
 @Composable
 fun AktualModalBottomSheet(
@@ -39,6 +42,7 @@ fun AktualModalBottomSheet(
   sheetState: SheetState = rememberBottomSheetState(initialValue = Hidden),
   blurBackground: Boolean = true,
   onBack: (() -> Unit)? = null,
+  isDismissible: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   // The sheet only starts animating in once the dialog window has measured it, so follow its
@@ -66,6 +70,12 @@ fun AktualModalBottomSheet(
     modifier = modifier,
     onDismissRequest = onDismissRequest,
     sheetState = sheetState,
+    sheetGesturesEnabled = isDismissible,
+    properties =
+      ModalBottomSheetProperties(
+        shouldDismissOnBackPress = isDismissible,
+        shouldDismissOnClickOutside = isDismissible,
+      ),
     containerColor = colors.modalBackground,
     contentColor = colors.pageText,
     dragHandle = {
@@ -79,12 +89,14 @@ fun AktualModalBottomSheet(
           )
         }
         BottomSheetDefaults.DragHandle(modifier = Modifier.align(Center))
-        AktualIconButton(
-          modifier = Modifier.align(CenterEnd),
-          imageVector = AktualIcons.Delete,
-          contentDescription = Strings.inputClose,
-          onClick = onDismissRequest,
-        )
+        if (isDismissible) {
+          AktualIconButton(
+            modifier = Modifier.align(CenterEnd),
+            imageVector = AktualIcons.Delete,
+            contentDescription = Strings.inputClose,
+            onClick = onDismissRequest,
+          )
+        }
       }
     },
     content = {
