@@ -23,6 +23,9 @@
 #
 set -euo pipefail
 
+# Sort the same way everywhere, so the tracker files don't reorder between machines
+export LC_ALL=C
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRACKER_FILE="$SCRIPT_DIR/last-known-theme-attributes.txt"
 PALETTE_TRACKER_FILE="$SCRIPT_DIR/last-known-palette.txt"
