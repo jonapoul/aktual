@@ -2,6 +2,7 @@ package aktual.budget.reports.ui.report
 
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.reports.components.YearMonthPicker
 import aktual.budget.reports.components.string
 import aktual.budget.reports.ui.Tags
@@ -13,7 +14,6 @@ import aktual.budget.reports.vm.CUSTOM_SORT_BYS
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.CustomReportConfig
-import aktual.budget.reports.vm.CustomReportDates
 import aktual.budget.reports.vm.canIncludeCurrent
 import aktual.budget.reports.vm.canShowTrendLines
 import aktual.budget.reports.vm.dateRangeOptions
@@ -26,6 +26,7 @@ import aktual.budget.reports.vm.isIntervalEnabled
 import aktual.budget.reports.vm.report.CustomReportEditorData
 import aktual.budget.reports.vm.selectedCategories
 import aktual.budget.reports.vm.showsSort
+import aktual.budget.reports.vm.staticMonths
 import aktual.budget.reports.vm.withBalanceType
 import aktual.budget.reports.vm.withDateRange
 import aktual.budget.reports.vm.withGraphType
@@ -70,7 +71,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonthRange
-import kotlinx.datetime.yearMonth
 
 // packages/desktop-client/src/components/reports/ReportSidebar.tsx and ReportTopbar.tsx. Each
 // change goes through the options' rules, so the draft never holds a combination upstream disables.
@@ -229,7 +229,7 @@ private fun DatesSection(
         onSelect = { isStatic ->
           if (isStatic) {
             val range = currentRange(preview, editorData)
-            if (range != null) edit { it.withStaticDates(range) }
+            if (range != null) edit { it.withStaticDates(range, editorData.firstDayOfWeek) }
           } else {
             edit { it.withLiveDates() }
           }
@@ -254,20 +254,22 @@ private fun DatesSection(
         )
       }
       is Static ->
-        if (editorData != null) StaticMonths(dates = dates, editorData = editorData, edit = edit)
+        if (editorData != null) StaticMonths(draft = draft, editorData = editorData, edit = edit)
     }
   }
 
 @Composable
 private fun StaticMonths(
-  dates: CustomReportDates.Static,
+  draft: CustomReportConfig,
   editorData: CustomReportEditorData,
   edit: ((CustomReportConfig) -> CustomReportConfig) -> Unit,
 ) {
-  val start = dates.start.yearMonth
-  val end = dates.end.yearMonth
-  val months = editorData.query.months
-  val range = YearMonthRange(minOf(months.start, start), maxOf(months.endInclusive, end))
+  val firstDayOfWeek = editorData.firstDayOfWeek
+  val months = draft.staticMonths(firstDayOfWeek) ?: return
+  val start = months.start
+  val end = months.endInclusive
+  val available = editorData.query.months
+  val range = YearMonthRange(minOf(available.start, start), maxOf(available.endInclusive, end))
   Row(
     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -278,7 +280,7 @@ private fun StaticMonths(
         modifier = Modifier.fillMaxWidth(),
         value = start,
         range = range,
-        onValueChange = { month -> edit { it.withStaticMonths(month, end) } },
+        onValueChange = { month -> edit { it.withStaticMonths(month, end, firstDayOfWeek) } },
       )
     }
     Column(modifier = Modifier.weight(1f)) {
@@ -287,7 +289,9 @@ private fun StaticMonths(
         modifier = Modifier.fillMaxWidth(),
         value = end,
         range = range,
-        onValueChange = { month -> edit { it.withStaticMonths(minOf(start, month), month) } },
+        onValueChange = { month ->
+          edit { it.withStaticMonths(minOf(start, month), month, firstDayOfWeek) }
+        },
       )
     }
   }
@@ -414,7 +418,7 @@ private fun PickerSheet(
         selected = draft.interval,
         isEnabled = draft::isIntervalEnabled,
         label = { it.label() },
-        onSelect = { interval -> edit { it.withInterval(interval) } },
+        onSelect = { interval -> edit { it.withInterval(interval, editorData.firstDayOfWeek) } },
         onDismiss = onDismiss,
       )
     Sort ->
@@ -500,5 +504,9 @@ private fun currentRange(
   val month = editorData?.query?.currentMonth ?: return null
   return month.firstDay..month.lastDay
 }
+
+// Upstream treats an unset preference as Sunday
+private val CustomReportEditorData?.firstDayOfWeek: FirstDayOfWeek
+  get() = this?.query?.firstDayOfWeek ?: Default
 
 private val DATE_MODES = persistentListOf(false, true)

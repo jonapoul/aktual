@@ -645,6 +645,9 @@ internal fun weekStart(date: LocalDate, firstDayOfWeek: FirstDayOfWeek): LocalDa
   return date.minus(daysIntoWeek, DAY)
 }
 
+internal fun weekEnd(date: LocalDate, firstDayOfWeek: FirstDayOfWeek): LocalDate =
+  weekStart(date, firstDayOfWeek).plus(DAYS_PER_WEEK - 1, DAY)
+
 private const val DAY_DIVISOR = 1L
 private const val MONTH_DIVISOR = 100L
 private const val YEAR_DIVISOR = 10_000L

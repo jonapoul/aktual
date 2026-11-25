@@ -14,6 +14,7 @@ import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
 
 class CustomReportOptionsTest {
   @Test
@@ -157,26 +158,62 @@ class CustomReportOptionsTest {
         DateRangeType.PriorYearToDate,
         DateRangeType.AllTime,
       )
-    assertThat(DEFAULT.withDateRange(ThisMonth).withInterval(Quarterly).dates)
+    assertThat(DEFAULT.withDateRange(ThisMonth).withInterval(Quarterly, Sunday).dates)
       .isEqualTo(CustomReportDates.Live(Last12Months, includeCurrent = false))
   }
 
   @Test
   fun `Quarterly static dates cover whole quarters`() {
-    val quarterly = DEFAULT.withInterval(Quarterly)
-    assertThat(quarterly.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 5)).dates)
+    val quarterly = DEFAULT.withInterval(Quarterly, Sunday)
+    assertThat(quarterly.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 5), Sunday).dates)
       .isEqualTo(CustomReportDates.Static(LocalDate(2026, 1, 1), LocalDate(2026, 6, 30)))
 
-    val monthly = DEFAULT.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 5))
-    assertThat(monthly.withInterval(Quarterly).dates)
+    val monthly = DEFAULT.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 5), Sunday)
+    assertThat(monthly.withInterval(Quarterly, Sunday).dates)
       .isEqualTo(CustomReportDates.Static(LocalDate(2026, 1, 1), LocalDate(2026, 6, 30)))
+  }
+
+  @Test
+  fun `Weekly static dates widen to whole weeks`() {
+    val monthly = DEFAULT.withStaticMonths(YearMonth(2026, 3), YearMonth(2026, 5), Sunday)
+    assertThat(monthly.withInterval(Weekly, Sunday).dates)
+      .isEqualTo(CustomReportDates.Static(LocalDate(2026, 3, 1), LocalDate(2026, 6, 6)))
+    assertThat(monthly.withInterval(Weekly, Monday).dates)
+      .isEqualTo(CustomReportDates.Static(LocalDate(2026, 2, 23), LocalDate(2026, 5, 31)))
+  }
+
+  @Test
+  fun `Weekly static dates on week boundaries don't change`() {
+    val february = DEFAULT.withStaticMonths(YearMonth(2026, 2), YearMonth(2026, 2), Sunday)
+    assertThat(february.withInterval(Weekly, Sunday).dates).isEqualTo(february.dates)
+  }
+
+  @Test
+  fun `Picking months while weekly gives whole weeks without drifting`() {
+    val weekly = DEFAULT.withInterval(Weekly, Sunday)
+    val april = weekly.withStaticMonths(YearMonth(2026, 4), YearMonth(2026, 4), Sunday)
+    assertThat(april.dates)
+      .isEqualTo(CustomReportDates.Static(LocalDate(2026, 3, 29), LocalDate(2026, 5, 2)))
+    assertThat(april.staticMonths(Sunday))
+      .isEqualTo(YearMonthRange(YearMonth(2026, 4), YearMonth(2026, 4)))
+
+    // Each edit sends back the months the pickers show, so the start stays put
+    var edited = april
+    repeat(2) { i ->
+      val months = requireNotNull(edited.staticMonths(Sunday))
+      edited = edited.withStaticMonths(months.start, YearMonth(2026, 5 + i), Sunday)
+    }
+    assertThat(edited.dates)
+      .isEqualTo(CustomReportDates.Static(LocalDate(2026, 3, 29), LocalDate(2026, 7, 4)))
+    assertThat(edited.staticMonths(Sunday))
+      .isEqualTo(YearMonthRange(YearMonth(2026, 4), YearMonth(2026, 6)))
   }
 
   @Test
   fun `Changing interval keeps a range it offers`() {
     val live = DEFAULT.copy(dates = CustomReportDates.Live(YearToDate, includeCurrent = true))
-    assertThat(live.withInterval(Weekly).dates).isEqualTo(live.dates)
-    assertThat(live.withInterval(Daily).dates)
+    assertThat(live.withInterval(Weekly, Sunday).dates).isEqualTo(live.dates)
+    assertThat(live.withInterval(Daily, Sunday).dates)
       .isEqualTo(CustomReportDates.Live(ThisMonth, includeCurrent = true))
   }
 
@@ -184,7 +221,7 @@ class CustomReportOptionsTest {
   fun `Only past ranges can include the current period`() {
     assertThat(DEFAULT.withDateRange(Last3Months).canIncludeCurrent).isTrue()
     assertThat(DEFAULT.withDateRange(ThisMonth).canIncludeCurrent).isFalse()
-    assertThat(DEFAULT.withStaticDates(RANGE).canIncludeCurrent).isFalse()
+    assertThat(DEFAULT.withStaticDates(RANGE, Sunday).canIncludeCurrent).isFalse()
   }
 
   @Test
@@ -197,17 +234,17 @@ class CustomReportOptionsTest {
 
   @Test
   fun `Static dates cover whole months`() {
-    assertThat(DEFAULT.withStaticDates(RANGE).dates)
+    assertThat(DEFAULT.withStaticDates(RANGE, Sunday).dates)
       .isEqualTo(CustomReportDates.Static(LocalDate(2026, 3, 1), LocalDate(2026, 5, 31)))
 
-    val moved = DEFAULT.withStaticMonths(YearMonth(2026, 6), YearMonth(2026, 4))
+    val moved = DEFAULT.withStaticMonths(YearMonth(2026, 6), YearMonth(2026, 4), Sunday)
     assertThat(moved.dates)
       .isEqualTo(CustomReportDates.Static(LocalDate(2026, 6, 1), LocalDate(2026, 6, 30)))
   }
 
   @Test
   fun `Live dates start from the interval's default`() {
-    val yearly = DEFAULT.copy(interval = Yearly).withStaticDates(RANGE)
+    val yearly = DEFAULT.copy(interval = Yearly).withStaticDates(RANGE, Sunday)
     assertThat(yearly.withLiveDates().dates)
       .isEqualTo(CustomReportDates.Live(YearToDate, includeCurrent = true))
   }
