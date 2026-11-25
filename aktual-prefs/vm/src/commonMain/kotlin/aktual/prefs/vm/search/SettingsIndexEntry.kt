@@ -21,7 +21,6 @@ import aktual.core.l10n.settings_experimental_action_templating
 import aktual.core.l10n.settings_experimental_balance_forecast_report
 import aktual.core.l10n.settings_experimental_budget_analysis_report
 import aktual.core.l10n.settings_experimental_currency
-import aktual.core.l10n.settings_experimental_enable_banking
 import aktual.core.l10n.settings_experimental_formula_mode
 import aktual.core.l10n.settings_experimental_goal_templates
 import aktual.core.l10n.settings_experimental_goal_templates_ui
@@ -224,5 +223,4 @@ private val FeatureFlag.title: StringResource
       BalanceForecastReport -> Res.string.settings_experimental_balance_forecast_report
       BudgetAnalysisReport -> Res.string.settings_experimental_budget_analysis_report
       MonteCarloReport -> Res.string.settings_experimental_monte_carlo_report
-      EnableBanking -> Res.string.settings_experimental_enable_banking
     }

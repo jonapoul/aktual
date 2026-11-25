@@ -114,7 +114,6 @@ sealed interface SyncedPrefKey {
     BalanceForecastReport("flags.balanceForecastReport"),
     BudgetAnalysisReport("flags.budgetAnalysisReport"),
     MonteCarloReport("flags.monteCarloReport"),
-    EnableBanking("flags.enableBanking"),
   }
 
   data class Other(override val key: String) : SyncedPrefKey

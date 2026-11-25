@@ -21,7 +21,6 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
-import aktual.prefs.BudgetFeatureFlags
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -65,7 +64,6 @@ internal constructor(
   private val api: BankSyncApi,
   private val linker: BankAccountLinker,
   private val server: BudgetServer,
-  private val flags: BudgetFeatureFlags,
   waiter: GoCardlessLoginWaiter,
   enableBanking: EnableBankingApi,
   buildConfig: BuildConfig,
@@ -300,12 +298,8 @@ internal constructor(
 
   private suspend fun configuredProviders(): ImmutableList<AccountSyncSource> {
     if (server !is Remote) return persistentListOf()
-    val enableBanking = EnableBanking in flags
     val configured = coroutineScope {
-      PROVIDERS.filter { source ->
-          (!server.isApiKeySession || source.supportsApiKeys) &&
-            (enableBanking || source != EnableBanking)
-        }
+      PROVIDERS.filter { source -> !server.isApiKeySession || source.supportsApiKeys }
         .map { source -> async { source.takeIf { isConfigured(it) } } }
         .awaitAll()
     }

@@ -11,8 +11,6 @@ import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
 import aktual.log
-import aktual.prefs.BudgetFeatureFlags
-import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -45,14 +43,12 @@ internal constructor(
   private val api: BankSyncApi,
   private val setup: BankSyncProviderSetup,
   private val server: BudgetServer,
-  flags: BudgetFeatureFlags,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
   private val mutableStatuses =
     MutableStateFlow(PROVIDERS.associateWith { BankSyncProviderStatus.Checking })
   private val mutableResetting = MutableStateFlow<AccountSyncSource?>(null)
   private var refreshJob: Job? = null
-  private val enableBankingFlag = flags[EnableBanking].asStateFlow(viewModelScope)
 
   private val mutableEvents =
     MutableSharedFlow<BankSyncProvidersEvent>(
@@ -65,15 +61,12 @@ internal constructor(
     viewModelScope.launchMolecule(Immediate) {
       val statuses by mutableStatuses.collectAsState()
       val resetting by mutableResetting.collectAsState()
-      val enableBanking by enableBankingFlag.collectAsState()
       if (server.isApiKeySession) {
         BankSyncProvidersState.ApiKeySession
       } else if (server is Remote) {
         BankSyncProvidersState.Loaded(
           providers =
-            PROVIDERS.filter { enableBanking || it != EnableBanking }
-              .map { BankSyncProviderItem(it, statuses.getValue(it)) }
-              .toImmutableList(),
+            PROVIDERS.map { BankSyncProviderItem(it, statuses.getValue(it)) }.toImmutableList(),
           resetting = resetting,
         )
       } else {

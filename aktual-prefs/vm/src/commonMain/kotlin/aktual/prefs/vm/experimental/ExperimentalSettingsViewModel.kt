@@ -1,7 +1,6 @@
 package aktual.prefs.vm.experimental
 
 import aktual.budget.model.SyncedPrefKey.FeatureFlag
-import aktual.core.model.BudgetServer
 import aktual.di.BudgetScope
 import aktual.di.ViewModelContext
 import aktual.di.newScope
@@ -24,11 +23,8 @@ import kotlinx.coroutines.flow.StateFlow
 class ExperimentalSettingsViewModel
 internal constructor(
   flags: BudgetFeatureFlags,
-  server: BudgetServer,
   viewModelContext: ViewModelContext,
 ) : ViewModel(viewModelContext.newScope()) {
-  private val isUsingServer = server is Remote
-
   val state: StateFlow<ExperimentalSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
       val values = FeatureFlag.entries.associateWith { flag -> collectAsState(flags[flag]).value }
@@ -55,7 +51,6 @@ internal constructor(
   private fun isVisible(flag: FeatureFlag, values: Map<FeatureFlag, Boolean>): Boolean =
     when (flag) {
       GoalTemplatesUi -> values.getValue(GoalTemplates)
-      EnableBanking -> isUsingServer
       GoalTemplates,
       ActionTemplating,
       FormulaMode,
@@ -78,7 +73,6 @@ internal constructor(
         BalanceForecastReport,
         BudgetAnalysisReport,
         MonteCarloReport,
-        EnableBanking,
       )
   }
 }

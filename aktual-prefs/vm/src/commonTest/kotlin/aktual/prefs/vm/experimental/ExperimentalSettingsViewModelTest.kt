@@ -1,9 +1,6 @@
 package aktual.prefs.vm.experimental
 
 import aktual.budget.model.SyncedPrefKey.FeatureFlag
-import aktual.core.model.BudgetServer
-import aktual.core.model.ServerUrl
-import aktual.core.model.Token
 import aktual.test.FakeBudgetFeatureFlags
 import aktual.test.viewModelContext
 import app.cash.turbine.test
@@ -60,19 +57,6 @@ class ExperimentalSettingsViewModelTest {
   }
 
   @Test
-  fun `Enable Banking only shows with a server`() = runTest {
-    viewModel(FakeBudgetFeatureFlags(), None).state.test {
-      assertThat(awaitItem()[EnableBanking].preference.visible).isFalse()
-      cancelAndIgnoreRemainingEvents()
-    }
-
-    viewModel(FakeBudgetFeatureFlags(), TestServer).state.test {
-      assertThat(awaitItem()[EnableBanking].preference.visible).isTrue()
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
   fun `Features keep upstream's order`() = runTest {
     viewModel(FakeBudgetFeatureFlags()).state.test {
       assertThat(awaitItem().features.map { it.flag }).isEqualTo(FeatureFlag.entries)
@@ -84,17 +68,6 @@ class ExperimentalSettingsViewModelTest {
     it.flag == flag
   }
 
-  private fun TestScope.viewModel(
-    flags: FakeBudgetFeatureFlags,
-    server: BudgetServer = TestServer,
-  ) =
-    ExperimentalSettingsViewModel(
-      flags = flags,
-      server = server,
-      viewModelContext = viewModelContext,
-    )
-
-  private companion object {
-    val TestServer = BudgetServer.Remote(ServerUrl("https://example.com"), Token("token"))
-  }
+  private fun TestScope.viewModel(flags: FakeBudgetFeatureFlags) =
+    ExperimentalSettingsViewModel(flags = flags, viewModelContext = viewModelContext)
 }
