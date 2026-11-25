@@ -12,6 +12,7 @@ import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.model.SortBy
 import aktual.budget.model.tagNamesInNotes
+import aktual.budget.rules.domain.TransactionFilter
 import kotlin.math.abs
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
@@ -86,6 +87,7 @@ internal fun customSpreadsheet(
   range: LocalDateRange,
   firstDayOfWeek: FirstDayOfWeek,
   inputs: CustomReportInputs,
+  filter: TransactionFilter,
 ): CustomSpreadsheet {
   val intervals = intervals(config.interval, range, firstDayOfWeek)
   val indexOf = intervalIndexer(config, intervals, firstDayOfWeek)
@@ -138,7 +140,7 @@ internal fun customSpreadsheet(
 
   return CustomSpreadsheet(
     intervals = trimmedIntervals.toImmutableList(),
-    intervalCount = intervals.size,
+    intervalCount = averagedIntervalCount(config, range, intervals, filter),
     groups = sortedGroups.toImmutableList(),
     categoryGroups =
       categoryGroups(
