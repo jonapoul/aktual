@@ -8,5 +8,6 @@ internal fun SecretResponse.Failed.toSetupError(): SetupError =
   when (reason) {
     NotAdmin -> NotAdmin
     Unauthorized -> LoggedOut
+    FileAccessDenied -> NoBudgetAccess
     else -> Other(details ?: reason?.reason)
   }

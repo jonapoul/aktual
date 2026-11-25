@@ -82,11 +82,16 @@ internal constructor(
             null
           },
         )
-      if (response is Success) {
-        mutableSheet.update { CreatedKey(response.data.key) }
-        reload()
-      } else {
-        mutableSheet.update { CreateKey(hasFailed = true) }
+      when {
+        response is Success -> {
+          mutableSheet.update { CreatedKey(response.data.key) }
+          reload()
+        }
+
+        response is Failed && response.reason == FileAccessDenied ->
+          mutableSheet.update { CreateKey(error = NoBudgetAccess) }
+
+        else -> mutableSheet.update { CreateKey(error = Failed) }
       }
     }
   }
@@ -108,7 +113,8 @@ internal constructor(
             null
           },
         )
-      if (response is Success) {
+      // Not found means it's already gone, e.g. revoked from another device
+      if (response is Success || response is Failed && response.reason == ApiKeyNotFound) {
         mutableSheet.update { null }
         reload()
       } else {
