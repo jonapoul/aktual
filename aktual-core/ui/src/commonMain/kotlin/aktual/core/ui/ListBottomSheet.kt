@@ -134,11 +134,10 @@ fun BottomSheetListItem(
   val contentColor =
     when {
       !enabled -> colors.pageText.disabled
-      isChosen -> colors.settingsNavItemTextSelected
+      isChosen -> colors.accentSubtleText
       else -> colors.pageText
     }
-  val background by
-    animateColorAsState(if (isChosen) colors.settingsNavItemBackgroundSelected else Transparent)
+  val background by animateColorAsState(if (isChosen) colors.accentSubtle else Transparent)
   CompositionLocalProvider(LocalContentColor provides contentColor) {
     Row(
       modifier =
@@ -169,7 +168,7 @@ fun BottomSheetListItem(
         color =
           when {
             !enabled -> Unspecified
-            isChosen -> colors.settingsNavItemTextSelected
+            isChosen -> colors.accentSubtleText
             else -> labelColor
           },
         fontWeight = if (isChosen) Medium else null,

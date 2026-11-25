@@ -592,7 +592,7 @@ private fun FormulaText(formula: String, modifier: Modifier = Modifier) =
       modifier = modifier,
       text = formula,
       style = typography.bodyMedium.disambiguated(),
-      color = colors.pageTextPositive,
+      color = colors.accentText,
       maxLines = 1,
       overflow = Ellipsis,
     )

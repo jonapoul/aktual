@@ -400,13 +400,13 @@ private fun ColumnHeader(
         text = if (showSpent) Strings.budgetingColumnSpent else Strings.budgetingColumnBudgeted,
         fontSize = textSizes.smallPlus,
         fontWeight = Medium,
-        color = colors.pageTextLink,
+        color = colors.accentText,
       )
       Icon(
         modifier = Modifier.size(16.dp),
         imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
-        tint = colors.pageTextLink,
+        tint = colors.accentText,
       )
     }
 

@@ -105,8 +105,7 @@ internal fun <T> ColumnScope.SortSection(
 
 @Composable
 private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String) {
-  val background by
-    animateColorAsState(if (isSelected) colors.settingsNavItemBackgroundSelected else Transparent)
+  val background by animateColorAsState(if (isSelected) colors.accentSubtle else Transparent)
   Row(
     modifier =
       Modifier.fillMaxWidth()
@@ -121,7 +120,7 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
     Text(
       text = name,
       style = typography.bodyLarge,
-      color = if (isSelected) colors.settingsNavItemTextSelected else Unspecified,
+      color = if (isSelected) colors.accentSubtleText else Unspecified,
       fontWeight = if (isSelected) Medium else null,
     )
   }

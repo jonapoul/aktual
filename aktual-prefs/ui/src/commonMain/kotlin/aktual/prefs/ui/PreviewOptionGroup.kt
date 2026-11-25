@@ -97,12 +97,12 @@ private fun PreviewOptionRow(
 ) {
   val background by
     animateColorAsState(
-      if (isSelected && enabled) colors.settingsNavItemBackgroundSelected else Transparent,
+      if (isSelected && enabled) colors.accentSubtle else Transparent,
     )
   val contentColor =
     when {
       !enabled -> colors.pageTextSubdued
-      isSelected -> colors.settingsNavItemTextSelected
+      isSelected -> colors.accentSubtleText
       else -> colors.pageText
     }
   CompositionLocalProvider(LocalContentColor provides contentColor) {

@@ -98,7 +98,7 @@ private fun MonthGrid(today: LocalDate, firstDay: DayOfWeek) {
               Text(
                 text = day.toString(),
                 style = typography.bodySmall.tabular(),
-                color = if (day == today.day) colors.buttonPrimaryText else colors.pageText,
+                color = if (day == today.day) colors.accentContrast else colors.pageText,
               )
             }
           }
@@ -116,8 +116,7 @@ private fun RowScope.Cell(
   Box(modifier = Modifier.weight(1f).height(CellHeight), contentAlignment = Center) {
     if (isToday) {
       Box(
-        modifier =
-          Modifier.size(CellHeight).clip(CircleShape).background(colors.buttonPrimaryBackground),
+        modifier = Modifier.size(CellHeight).clip(CircleShape).background(colors.accent),
       )
     }
     content()

@@ -61,19 +61,19 @@ internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
         textStyle(
           weight = W700,
           size = textSizes.display,
-          color = colors.pageTextPositive,
+          color = colors.accentText,
         ),
       headlineMedium =
         textStyle(
           weight = W600,
           size = textSizes.heading,
-          color = colors.pageTextPositive,
+          color = colors.accentText,
         ),
       headlineSmall =
         textStyle(
           weight = W500,
           size = textSizes.extraLarge,
-          color = colors.pageTextPositive,
+          color = colors.accentText,
         ),
       titleLarge = textStyle(weight = W500, size = textSizes.heading),
       titleMedium = textStyle(weight = W400, size = textSizes.titlePlus),

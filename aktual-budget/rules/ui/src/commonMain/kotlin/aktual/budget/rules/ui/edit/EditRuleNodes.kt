@@ -258,7 +258,7 @@ internal fun LazyListScope.actionsNode(
       modifier = Modifier.animateItem(),
       hasRail = false,
       node = {
-        IconNode(AktualIcons.Bolt, colors.buttonPrimaryBackground, colors.buttonPrimaryText)
+        IconNode(AktualIcons.Bolt, colors.accent, colors.accentContrast)
       },
     ) {
       NodeHeading(Strings.editRuleThen)

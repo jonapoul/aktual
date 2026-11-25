@@ -63,8 +63,7 @@ internal fun TimeFrameSheet(
 
 @Composable
 private fun ModeRow(mode: TimeFrameMode, isSelected: Boolean, onSelect: () -> Unit) {
-  val background by
-    animateColorAsState(if (isSelected) colors.settingsNavItemBackgroundSelected else Transparent)
+  val background by animateColorAsState(if (isSelected) colors.accentSubtle else Transparent)
   Row(
     modifier =
       Modifier.fillMaxWidth()
@@ -79,7 +78,7 @@ private fun ModeRow(mode: TimeFrameMode, isSelected: Boolean, onSelect: () -> Un
     Text(
       text = mode.label(),
       style = typography.bodyLarge,
-      color = if (isSelected) colors.settingsNavItemTextSelected else Unspecified,
+      color = if (isSelected) colors.accentSubtleText else Unspecified,
       fontWeight = if (isSelected) Medium else null,
     )
   }

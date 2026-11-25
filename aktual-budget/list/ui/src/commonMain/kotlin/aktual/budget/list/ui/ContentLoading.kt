@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun ContentLoading(modifier: Modifier = Modifier) {
   Box(modifier = modifier, contentAlignment = Center) {
-    AktualProgressIndicator(size = 50.dp, color = colors.buttonPrimaryBackground)
+    AktualProgressIndicator(size = 50.dp, color = colors.accent)
   }
 }
 

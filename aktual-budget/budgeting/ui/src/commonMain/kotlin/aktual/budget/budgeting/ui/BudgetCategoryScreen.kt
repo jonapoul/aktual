@@ -398,7 +398,7 @@ private fun Legend(isIncome: Boolean, modifier: Modifier = Modifier) {
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     verticalAlignment = CenterVertically,
   ) {
-    LegendItem(color = colors.pageTextLink, label = Strings.budgetingBudgeted)
+    LegendItem(color = colors.accentText, label = Strings.budgetingBudgeted)
     LegendItem(
       color = colors.pageTextSubdued,
       label = if (isIncome) Strings.budgetingColumnReceived else Strings.budgetingSpent,
@@ -422,7 +422,7 @@ private fun HistoryChart(
   onSelect: (YearMonth) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val budgetedColor = colors.pageTextLink
+  val budgetedColor = colors.accentText
   val spentColor = colors.pageTextSubdued
   val highlight = colors.tableRowBackgroundHover
   val axis = colors.tableBorder

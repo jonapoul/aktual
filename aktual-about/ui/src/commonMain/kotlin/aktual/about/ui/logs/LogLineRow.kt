@@ -57,7 +57,7 @@ internal fun LogLineRow(
         Text(
           modifier = Modifier.fillMaxWidth().clickable { onTagClick(tag) },
           text = tagText,
-          color = colors.pageTextPositive,
+          color = colors.accentText,
           fontSize = LineFontSize,
           lineHeight = LineHeight,
           overflow = Ellipsis,

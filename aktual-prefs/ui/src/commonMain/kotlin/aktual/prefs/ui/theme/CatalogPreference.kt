@@ -194,7 +194,7 @@ private fun CatalogThemeItem(
   val isChosen = isSelected && enabled
   val background by
     animateColorAsState(
-      if (isChosen) colors.settingsNavItemBackgroundSelected else Color.Transparent,
+      if (isChosen) colors.accentSubtle else Color.Transparent,
     )
 
   Row(
@@ -244,7 +244,7 @@ private fun CatalogThemeItem(
             color =
               when {
                 !enabled -> colors.settingsCardText.disabled
-                isChosen -> colors.settingsNavItemTextSelected
+                isChosen -> colors.accentSubtleText
                 else -> colors.settingsCardText
               },
             maxLines = 1,

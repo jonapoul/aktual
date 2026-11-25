@@ -569,7 +569,7 @@ private fun FilterDisplay(filter: SummaryFilter) =
         text = Strings.reportsSummaryAll,
         fontSize = textSizes.heading,
         textAlign = Center,
-        color = colors.pageTextPositive,
+        color = colors.accentText,
       )
     } else {
       Column(
