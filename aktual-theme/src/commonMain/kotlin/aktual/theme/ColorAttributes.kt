@@ -9,6 +9,13 @@ import androidx.compose.ui.graphics.Color
 @Suppress("LongMethod")
 fun Colors.attributes(): Map<String, Color> =
   linkedMapOf(
+    "accent" to accent,
+    "accentContrast" to accentContrast,
+    "accentHover" to accentHover,
+    "accentText" to accentText,
+    "accentBorder" to accentBorder,
+    "accentSubtle" to accentSubtle,
+    "accentSubtleText" to accentSubtleText,
     "pageBackground" to pageBackground,
     "pageBackgroundTopLeft" to pageBackgroundTopLeft,
     "pageBackgroundBottomRight" to pageBackgroundBottomRight,
@@ -163,6 +170,7 @@ fun Colors.attributes(): Map<String, Color> =
     "calendarItemText" to calendarItemText,
     "calendarItemBackground" to calendarItemBackground,
     "calendarSelectedBackground" to calendarSelectedBackground,
+    "calendarSelectedText" to calendarSelectedText,
     "calendarCellBackground" to calendarCellBackground,
     "datePickerRangeBackground" to datePickerRangeBackground,
     "buttonBareText" to buttonBareText,

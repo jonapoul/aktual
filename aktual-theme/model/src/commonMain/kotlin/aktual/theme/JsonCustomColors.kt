@@ -27,8 +27,43 @@ data class JsonCustomColors(
   @SerialName("misc") val misc: MiscColors,
   @SerialName("chartQual") val chartQual: ChartQualColors,
   @SerialName("settings") val settings: SettingsColors,
+  // Themes saved before the accent colours existed take them from the colours that used to play
+  // their part
+  @SerialName("accent")
+  val accentColors: AccentColors =
+    AccentColors(
+      accent = button.buttonPrimaryBackground,
+      accentContrast = button.buttonPrimaryText,
+      accentHover = button.buttonPrimaryBackgroundHover,
+      accentText = page.pageTextLink,
+      accentBorder = form.formInputBorderSelected,
+      accentSubtle = table.tableRowBackgroundHighlight,
+      accentSubtleText = misc.pillTextSelected,
+    ),
   @SerialName("isLight") override val isLight: Boolean,
 ) : CustomColors {
+
+  // Accent
+  override val accent: Color
+    get() = accentColors.accent
+
+  override val accentContrast: Color
+    get() = accentColors.accentContrast
+
+  override val accentHover: Color
+    get() = accentColors.accentHover
+
+  override val accentText: Color
+    get() = accentColors.accentText
+
+  override val accentBorder: Color
+    get() = accentColors.accentBorder
+
+  override val accentSubtle: Color
+    get() = accentColors.accentSubtle
+
+  override val accentSubtleText: Color
+    get() = accentColors.accentSubtleText
 
   // Page
   override val pageBackground: Color
@@ -442,6 +477,9 @@ data class JsonCustomColors(
 
   override val calendarSelectedBackground: Color
     get() = button.calendarSelectedBackground
+
+  override val calendarSelectedText: Color
+    get() = button.calendarSelectedText
 
   override val calendarCellBackground: Color
     get() = button.calendarCellBackground
@@ -935,6 +973,7 @@ data class ButtonColors(
   @SerialName("buttonBareBackgroundActive") val buttonBareBackgroundActive: Color,
   @SerialName("buttonBareDisabledText") val buttonBareDisabledText: Color,
   @SerialName("buttonBareDisabledBackground") val buttonBareDisabledBackground: Color,
+  @SerialName("calendarSelectedText") val calendarSelectedText: Color = buttonPrimaryText,
 )
 
 @Serializable
@@ -1054,4 +1093,15 @@ data class SettingsColors(
   @SerialName("settingsNavItemBackgroundSelected") val settingsNavItemBackgroundSelected: Color,
   @SerialName("settingsNavItemText") val settingsNavItemText: Color,
   @SerialName("settingsNavItemTextSelected") val settingsNavItemTextSelected: Color,
+)
+
+@Serializable
+data class AccentColors(
+  @SerialName("accent") val accent: Color,
+  @SerialName("accentContrast") val accentContrast: Color,
+  @SerialName("accentHover") val accentHover: Color,
+  @SerialName("accentText") val accentText: Color,
+  @SerialName("accentBorder") val accentBorder: Color,
+  @SerialName("accentSubtle") val accentSubtle: Color,
+  @SerialName("accentSubtleText") val accentSubtleText: Color,
 )
