@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.api.model.apikeys.ApiKey
 import aktual.api.model.apikeys.ApiKeyId
 import aktual.api.model.apikeys.ApiKeyPermission
@@ -56,14 +57,14 @@ internal constructor(
   ): ApiKeysResponse<T> {
     // Servers without these endpoints serve the web app's HTML instead
     if (response.contentType()?.match(Json) != true) {
-      return ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED)
+      return Unsupported
     }
     val envelope = response.body<BankSyncEnvelope<T>>()
     val data = envelope.data ?: emptyData
     return if (envelope.isOk && data != null) {
       ApiKeysResponse.Success(data)
     } else {
-      ApiKeysResponse.Failed(envelope.reason)
+      ApiKeysResponse.Failed(envelope.reason?.let(::FailureReason))
     }
   }
 

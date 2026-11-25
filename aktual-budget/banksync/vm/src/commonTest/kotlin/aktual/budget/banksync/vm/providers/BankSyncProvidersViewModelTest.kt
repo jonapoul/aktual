@@ -84,7 +84,7 @@ class BankSyncProvidersViewModelTest {
 
   @Test
   fun `Only admins can reset`() = runTest {
-    secrets.response = SecretResponse.Failed(SecretResponse.NOT_ADMIN, details = "Admins only")
+    secrets.response = SecretResponse.Failed(NotAdmin, details = "Admins only")
     val viewModel = createViewModel()
 
     viewModel.events.test {
@@ -108,8 +108,6 @@ class BankSyncProvidersViewModelTest {
   // Only GoCardless is configured, so the rest stay unconfigured once checked
   private fun otherStatus(goCardless: BankSyncProviderStatus): BankSyncProviderStatus =
     if (goCardless == Checking) Checking else NotConfigured
-
-  private fun BankSyncProvidersState.providers() = (this as Loaded).providers.map { it.source }
 
   private fun TestScope.createViewModel(server: BudgetServer = SERVER): BankSyncProvidersViewModel {
     val configured = Success(configured = true)

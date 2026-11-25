@@ -73,7 +73,7 @@ internal constructor(
       onFailure = { e ->
         log.w(e) { "Failed uploading as $cloudFileId" }
         if (e is UploadRejectedException) {
-          UploadResult.Rejected(e.reason)
+          UploadResult.Rejected(e.reason.reason)
         } else {
           @Suppress("RedundantQualifier") UploadResult.Unreachable
         }

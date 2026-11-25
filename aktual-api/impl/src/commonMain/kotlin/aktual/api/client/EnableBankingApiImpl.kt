@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.api.model.banksync.BankSyncEnvelope
 import aktual.api.model.banksync.BankSyncTransactionsResponse
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
@@ -46,9 +47,9 @@ internal constructor(
     val configured = (envelope.data as? JsonObject)?.get("configured") as? JsonPrimitive
     return when (val failure = envelope.failure()) {
       null if configured?.booleanOrNull == true -> Success
-      is ProviderError -> SecretResponse.Failed(failure.errorCode, failure.errorType)
-      is Rejected -> SecretResponse.Failed(failure.reason, failure.details)
-      null -> SecretResponse.Failed(envelope.reason, envelope.details)
+      is ProviderError -> SecretResponse.Failed(FailureReason(failure.errorCode), failure.errorType)
+      is Rejected -> SecretResponse.Failed(failure.reason?.let(::FailureReason), failure.details)
+      null -> SecretResponse.Failed(envelope.reason?.let(::FailureReason), envelope.details)
     }
   }
 

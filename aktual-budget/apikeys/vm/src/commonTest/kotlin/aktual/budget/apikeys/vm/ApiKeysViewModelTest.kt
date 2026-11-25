@@ -49,7 +49,7 @@ class ApiKeysViewModelTest {
 
   @Test
   fun `Server without API keys`() = runTest {
-    api.listResponse = ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED)
+    api.listResponse = ApiKeysResponse.Unsupported
     createViewModel().state.test {
       assertThat(awaitItem()).isEqualTo(Loading)
       assertThat(awaitItem()).isEqualTo(Unsupported)
@@ -66,7 +66,7 @@ class ApiKeysViewModelTest {
 
   @Test
   fun `Failed to load`() = runTest {
-    api.listResponse = ApiKeysResponse.Failed("unauthorized")
+    api.listResponse = ApiKeysResponse.Failed(Unauthorized)
     createViewModel().state.test {
       assertThat(awaitItem()).isEqualTo(Loading)
       assertThat(awaitItem()).isEqualTo(Failure("unauthorized"))
@@ -151,7 +151,7 @@ class ApiKeysViewModelTest {
 
   @Test
   fun `Failing to revoke a key`() = runTest {
-    api.revokeResponse = ApiKeysResponse.Failed(ApiKeysResponse.API_KEY_NOT_FOUND)
+    api.revokeResponse = ApiKeysResponse.Failed(ApiKeyNotFound)
     val viewModel = createViewModel()
 
     viewModel.dialog.test {

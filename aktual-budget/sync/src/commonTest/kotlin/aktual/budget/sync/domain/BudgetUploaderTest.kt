@@ -77,7 +77,7 @@ class BudgetUploaderTest {
   @Test
   fun `Keep the budget local when the server rejects it`() = runTest {
     val prefs = TestBudgetLocalPreferences(DbMetadata(budgetName = "Household"))
-    api.failure = UploadRejectedException("unauthorized")
+    api.failure = UploadRejectedException(Unauthorized)
 
     val result = uploader(prefs).upload()
 

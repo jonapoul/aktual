@@ -79,7 +79,7 @@ class SecretsApiTest {
     assertThat(response)
       .isEqualTo(
         SecretResponse.Failed(
-          reason = SecretResponse.NOT_ADMIN,
+          reason = NotAdmin,
           details = "You have to be admin to manage global secrets",
         ),
       )

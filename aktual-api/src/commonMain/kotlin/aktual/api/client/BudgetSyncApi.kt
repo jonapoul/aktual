@@ -30,5 +30,5 @@ class SyncRejectedException(val reason: FailureReason, cause: Throwable? = null)
 }
 
 // See the upload-user-file handler in packages/sync-server/src/app-sync.ts upstream
-class UploadRejectedException(val reason: String, cause: Throwable? = null) :
-  Exception("Upload rejected: $reason", cause)
+class UploadRejectedException(val reason: FailureReason, cause: Throwable? = null) :
+  Exception("Upload rejected: ${reason.reason}", cause)

@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.api.model.banksync.BankSyncTransactionsResponse.ProviderError
 import aktual.api.model.banksync.BankSyncTransactionsResponse.Rejected
 import aktual.api.model.banksync.EnableBankingAccountsResponse
@@ -69,7 +70,9 @@ class EnableBankingApiTest {
     val response = api.configure("app-id", "key")
 
     assertThat(response)
-      .isEqualTo(SecretResponse.Failed("CONFIGURATION_FAILED", "Invalid application ID"))
+      .isEqualTo(
+        SecretResponse.Failed(FailureReason("CONFIGURATION_FAILED"), "Invalid application ID"),
+      )
   }
 
   @Test
