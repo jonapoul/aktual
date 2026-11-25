@@ -1,5 +1,7 @@
 package aktual.api.model.banksync
 
+import aktual.api.model.account.FailureReason
+
 /**
  * A bank sync provider's credential, which the server keeps and only admins can set.
  *
@@ -22,10 +24,5 @@ enum class BankSyncSecret(val value: String) {
 sealed interface SecretResponse {
   data object Success : SecretResponse
 
-  data class Failed(val reason: String?, val details: String?) : SecretResponse
-
-  companion object {
-    const val NOT_ADMIN = "not-admin"
-    const val UNAUTHORIZED = "unauthorized"
-  }
+  data class Failed(val reason: FailureReason?, val details: String?) : SecretResponse
 }

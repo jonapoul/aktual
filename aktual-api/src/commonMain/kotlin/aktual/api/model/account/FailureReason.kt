@@ -12,9 +12,13 @@ import kotlinx.serialization.Serializable
 value class FailureReason(val reason: String) {
   companion object {
     val AlreadyBootstrapped = FailureReason("already-bootstrapped")
+    val ApiKeyNotFound = FailureReason("api-key-not-found")
     val ClockDrift = FailureReason("clock-drift")
+    val FileAccessDenied = FailureReason("file-access-denied")
     val FileNotFound = FailureReason("file-not-found")
+    val InvalidApiKey = FailureReason("invalid-api-key")
     val InvalidPassword = FailureReason("invalid-password")
+    val NotAdmin = FailureReason("not-admin")
     val TokenExpired = FailureReason("token-expired")
     val Unauthorized = FailureReason("unauthorized")
     val UnprocessableEntity = FailureReason("unprocessable-entity")

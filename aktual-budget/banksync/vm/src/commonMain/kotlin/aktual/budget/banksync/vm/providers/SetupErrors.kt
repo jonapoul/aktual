@@ -6,7 +6,7 @@ import aktual.budget.banksync.vm.providers.SetupError.Other
 // packages/desktop-client/src/util/secrets-errors.ts getSecretsError()
 internal fun SecretResponse.Failed.toSetupError(): SetupError =
   when (reason) {
-    SecretResponse.NOT_ADMIN -> NotAdmin
-    SecretResponse.UNAUTHORIZED -> LoggedOut
-    else -> Other(details ?: reason)
+    NotAdmin -> NotAdmin
+    Unauthorized -> LoggedOut
+    else -> Other(details ?: reason?.reason)
   }

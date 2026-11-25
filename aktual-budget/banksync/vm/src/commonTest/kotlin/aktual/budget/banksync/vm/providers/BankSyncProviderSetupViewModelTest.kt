@@ -1,7 +1,7 @@
 package aktual.budget.banksync.vm.providers
 
+import aktual.api.model.account.FailureReason
 import aktual.api.model.banksync.BankSyncSecret
-import aktual.api.model.banksync.SecretResponse
 import aktual.api.model.banksync.SecretResponse.Failed
 import aktual.budget.banksync.domain.BankSyncProviderSetupImpl
 import aktual.budget.banksync.vm.FakeEnableBankingApi
@@ -72,7 +72,8 @@ class BankSyncProviderSetupViewModelTest {
 
   @Test
   fun `Shows why Enable Banking rejected the credentials`() = runTest {
-    enableBanking.configureResponse = Failed("CONFIGURATION_FAILED", "Invalid application ID")
+    enableBanking.configureResponse =
+      Failed(FailureReason("CONFIGURATION_FAILED"), "Invalid application ID")
     val viewModel = createViewModel(EnableBanking)
     viewModel.setValue(EnableBankingApplicationId, "app")
     viewModel.setValue(EnableBankingSecretKey, "pem")
@@ -91,7 +92,7 @@ class BankSyncProviderSetupViewModelTest {
 
   @Test
   fun `Only admins can save`() = runTest {
-    secrets.response = Failed(SecretResponse.NOT_ADMIN, details = "Admins only")
+    secrets.response = Failed(NotAdmin, details = "Admins only")
     val viewModel = createViewModel(SimpleFin)
     viewModel.setValue(SimpleFinToken, "token")
 

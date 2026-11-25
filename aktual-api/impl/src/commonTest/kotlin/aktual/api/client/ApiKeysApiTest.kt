@@ -142,7 +142,7 @@ class ApiKeysApiTest {
 
     val response = api.create(name = "", budgets = emptyList())
 
-    assertThat(response).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.INVALID_API_KEY))
+    assertThat(response).isEqualTo(ApiKeysResponse.Failed(InvalidApiKey))
   }
 
   @Test
@@ -163,7 +163,7 @@ class ApiKeysApiTest {
 
     val response = api.revoke(KEY_ID)
 
-    assertThat(response).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.API_KEY_NOT_FOUND))
+    assertThat(response).isEqualTo(ApiKeysResponse.Failed(ApiKeyNotFound))
   }
 
   @Test
@@ -175,7 +175,7 @@ class ApiKeysApiTest {
       )
     }
 
-    assertThat(api.list()).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED))
+    assertThat(api.list()).isEqualTo(Unsupported)
   }
 
   @Test
@@ -187,7 +187,7 @@ class ApiKeysApiTest {
       )
     }
 
-    assertThat(api.revoke(KEY_ID)).isEqualTo(ApiKeysResponse.Failed(ApiKeysResponse.UNSUPPORTED))
+    assertThat(api.revoke(KEY_ID)).isEqualTo(Unsupported)
   }
 
   private companion object {

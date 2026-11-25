@@ -58,7 +58,7 @@ class BudgetSyncApiTest {
     assertFailure { api.syncBudget(EMPTY) }
       .isInstanceOf<SyncRejectedException>()
       .all {
-        prop(SyncRejectedException::reason).isEqualTo(FailureReason("clock-drift"))
+        prop(SyncRejectedException::reason).isEqualTo(ClockDrift)
         prop(SyncRejectedException::isClockDrift).isTrue()
       }
   }
@@ -70,7 +70,7 @@ class BudgetSyncApiTest {
     assertFailure { api.syncBudget(EMPTY) }
       .isInstanceOf<SyncRejectedException>()
       .all {
-        prop(SyncRejectedException::reason).isEqualTo(FailureReason("file-not-found"))
+        prop(SyncRejectedException::reason).isEqualTo(FileNotFound)
         prop(SyncRejectedException::isFileNotFound).isTrue()
         prop(SyncRejectedException::isClockDrift).isFalse()
       }
@@ -130,6 +130,6 @@ class BudgetSyncApiTest {
     assertFailure { api.uploadBudget(BUDGET_ID, "My Budget", groupId = null, zip = byteArrayOf()) }
       .isInstanceOf<UploadRejectedException>()
       .prop(UploadRejectedException::reason)
-      .isEqualTo("file-has-new-key")
+      .isEqualTo(FailureReason("file-has-new-key"))
   }
 }

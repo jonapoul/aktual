@@ -131,12 +131,8 @@ internal constructor(
             if (keys.isEmpty()) Empty else Loaded(keys.toImmutableList())
           }
 
-          is Failed ->
-            if (response.reason == ApiKeysResponse.UNSUPPORTED) {
-              Unsupported
-            } else {
-              Failure(response.reason)
-            }
+          is Failed -> Failure(response.reason?.reason)
+          ApiKeysResponse.Unsupported -> Unsupported
         }
       },
       onFailure = { e ->

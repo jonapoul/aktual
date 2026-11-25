@@ -57,7 +57,7 @@ internal class BankSyncProviderSetupTest {
 
   @Test
   fun `Stops at the first refusal`() = runTest {
-    val refused = SecretResponse.Failed(SecretResponse.NOT_ADMIN, details = null)
+    val refused = SecretResponse.Failed(NotAdmin, details = null)
     secrets.response = refused
 
     val response =

@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.api.model.account.FailureReason
 import aktual.api.model.banksync.BankSyncEnvelope
 import aktual.api.model.banksync.BankSyncSecret
 import aktual.api.model.banksync.SecretResponse
@@ -47,7 +48,7 @@ internal constructor(
     return if (envelope.isOk) {
       Success
     } else {
-      Failed(envelope.reason, envelope.details)
+      Failed(envelope.reason?.let(::FailureReason), envelope.details)
     }
   }
 

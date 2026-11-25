@@ -89,7 +89,7 @@ internal constructor(
           setBody(zip)
         }
       } catch (e: ClientRequestException) {
-        throw UploadRejectedException(e.response.bodyAsText(), e)
+        throw UploadRejectedException(FailureReason(e.response.bodyAsText()), e)
       }
     return response.body<UploadUserFileResponse>().groupId
   }
