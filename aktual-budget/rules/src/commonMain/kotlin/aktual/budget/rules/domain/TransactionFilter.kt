@@ -56,6 +56,12 @@ interface TransactionFilter {
   val bounds: FilterBounds
 
   fun matches(row: FilterRow): Boolean
+
+  /**
+   * Whether a transaction on [date] could match, judging only by date conditions. Other conditions
+   * could match on any date, unless they match nothing at all
+   */
+  fun couldMatchOn(date: LocalDate): Boolean
 }
 
 fun interface TransactionFilterCompiler {

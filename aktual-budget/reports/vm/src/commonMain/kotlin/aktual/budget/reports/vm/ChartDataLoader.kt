@@ -201,7 +201,7 @@ internal class ChartDataLoader(
       )
       .combine(tagged) { inputs, (rows, tags) -> inputs.copy(tagged = rows, tags = tags) }
       .map { inputs ->
-        val sheet = customSpreadsheet(config, range, firstDayOfWeek, inputs)
+        val sheet = customSpreadsheet(config, range, firstDayOfWeek, inputs, filter)
         CustomData(
           title = title,
           config = config,

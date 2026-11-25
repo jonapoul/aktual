@@ -46,6 +46,13 @@ private constructor(private val conditions: List<FilterCondition>, private val o
       else -> conditions.all { it.matches(row) }
     }
 
+  override fun couldMatchOn(date: LocalDate): Boolean =
+    when {
+      conditions.isEmpty() -> true
+      op == Or -> conditions.any { it.couldMatchOn(date) }
+      else -> conditions.all { it.couldMatchOn(date) }
+    }
+
   companion object {
     fun compile(conditions: List<Condition>, op: ConditionOp): CompiledTransactionFilter {
       val compiled =
@@ -130,6 +137,32 @@ private class FilterCondition(private val condition: CompiledCondition) {
     )
 
   private fun Set<String>?.narrowTo(ids: Set<String>): Set<String> = this?.intersect(ids) ?: ids
+
+  fun couldMatchOn(date: LocalDate): Boolean =
+    if (field.type == Date) matchesDate(date) else !matchesNothing()
+
+  // conditionsToAQL's { id: null }, for lists and tag filters with nothing in them
+  private fun matchesNothing(): Boolean =
+    when (op) {
+      OneOf,
+      NotOneOf -> (value as? TextList)?.values?.isEmpty() == true
+      HasTags,
+      HasAnyTag -> tagRegexes.isEmpty()
+
+      Contains,
+      DoesNotContain,
+      GreaterThan,
+      GreaterThanOrEquals,
+      Is,
+      IsApprox,
+      IsBetween,
+      IsNot,
+      LessThan,
+      LessThanOrEquals,
+      Matches,
+      OffBudget,
+      OnBudget -> false
+    }
 
   fun matches(row: FilterRow): Boolean =
     when (field.type) {

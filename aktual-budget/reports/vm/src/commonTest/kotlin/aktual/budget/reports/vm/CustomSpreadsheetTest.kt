@@ -20,6 +20,7 @@ import aktual.budget.reports.vm.CustomGroup.OffBudget
 import aktual.budget.reports.vm.CustomGroup.Transfers
 import aktual.budget.reports.vm.CustomGroup.Uncategorized
 import aktual.budget.reports.vm.CustomGroup.UncategorizedAndOffBudget
+import aktual.budget.rules.domain.CompiledTransactionFilter
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
@@ -631,6 +632,7 @@ class CustomSpreadsheetTest {
           tagged = tagged,
           tags = tags,
         ),
+      filter = CompiledTransactionFilter.compile(config.conditions, config.conditionsOp),
     )
 
   private companion object {
