@@ -4,6 +4,7 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.ReportsDao
 import aktual.budget.model.BudgetType
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.rules.domain.ConditionEntities
 import aktual.budget.rules.domain.ConditionEntitiesLoader
@@ -39,6 +40,7 @@ data class QueryEditorData(
   // Closed accounts included
   val allAccounts: ImmutableList<ConditionEntity> = persistentListOf(),
   val isTrackingBudget: Boolean = false,
+  val firstDayOfWeek: FirstDayOfWeek = Default,
 ) : ConditionEntities
 
 @Inject
@@ -74,11 +76,15 @@ internal class QueryEditorDataLoader(
           ),
         allAccounts = accounts.getAllWithStatus().entities({ it.id.toString() }, { it.name }),
         isTrackingBudget = BudgetType.from(budgetType()) == Tracking,
+        firstDayOfWeek = FirstDayOfWeek.from(firstDayOfWeek()) ?: Default,
       )
     }
 
   private suspend fun budgetType(): String? =
     preferences.getValue(SyncedPrefKey.Global.BudgetType).awaitAsOneOrNull()?.value_
+
+  private suspend fun firstDayOfWeek(): String? =
+    preferences.getValue(SyncedPrefKey.Global.FirstDayOfWeekIdx).awaitAsOneOrNull()?.value_
 
   private inline fun <T> List<T>.entities(
     id: (T) -> String,

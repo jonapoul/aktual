@@ -3,6 +3,7 @@ package aktual.budget.reports.vm
 import aktual.budget.model.BalanceType
 import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DateRangeType
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
@@ -13,6 +14,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDateRange
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
 import kotlinx.datetime.yearMonth
 
 // packages/desktop-client/src/components/reports/ReportOptions.ts and disabledList.ts. Category and
@@ -106,27 +108,27 @@ fun CustomReportConfig.withBalanceType(option: BalanceType): CustomReportConfig 
   var config = copy(balanceType = option)
   if (option == Budgeted) {
     if (groupBy in NOT_BUDGETED_GROUP_BYS) config = config.withGroupBy(Category)
-    if (interval == Daily || interval == Weekly) config = config.withInterval(Monthly)
+    if (interval == Daily || interval == Weekly) config = config.withIntervalRange(Monthly)
   }
   return config
 }
 
 // A live range the interval doesn't offer moves to the interval's default, and a static one widens
-// to whole quarters for quarterly reports
-fun CustomReportConfig.withInterval(option: Interval): CustomReportConfig {
-  val live = dates as? Live
-  val newDates =
-    if (live != null && live.type !in dateRangeOptions(option)) {
-      live.copy(type = defaultRange(option))
-    } else {
-      dates
-    }
-  val config = copy(interval = option, dates = newDates)
-  val static = newDates as? Static
-  return if (option == Quarterly && static != null) {
-    config.withStaticMonths(static.start.yearMonth, static.end.yearMonth)
-  } else {
-    config
+// to whole quarters or weeks for quarterly or weekly reports
+fun CustomReportConfig.withInterval(
+  option: Interval,
+  firstDayOfWeek: FirstDayOfWeek,
+): CustomReportConfig {
+  val config = withIntervalRange(option)
+  val static = config.dates as? Static ?: return config
+  return when (option) {
+    Quarterly ->
+      config.withStaticMonths(static.start.yearMonth, static.end.yearMonth, firstDayOfWeek)
+    Weekly -> config.copy(dates = static.toWholeWeeks(firstDayOfWeek))
+    Daily,
+    Monthly,
+    Yearly,
+    Unknown -> config
   }
 }
 
@@ -157,24 +159,63 @@ fun CustomReportConfig.withIncludeCurrent(includeCurrent: Boolean): CustomReport
 }
 
 // The static range starts as whatever the live range covers now, whole months either side
-fun CustomReportConfig.withStaticDates(current: LocalDateRange): CustomReportConfig =
-  withStaticMonths(current.start.yearMonth, current.endInclusive.yearMonth)
+fun CustomReportConfig.withStaticDates(
+  current: LocalDateRange,
+  firstDayOfWeek: FirstDayOfWeek,
+): CustomReportConfig =
+  withStaticMonths(current.start.yearMonth, current.endInclusive.yearMonth, firstDayOfWeek)
 
 fun CustomReportConfig.withLiveDates(): CustomReportConfig =
   copy(dates = CustomReportDates.Live(defaultRange(interval), includeCurrent = true))
 
-// Moving one end past the other moves both. Quarterly reports cover whole quarters, as upstream's
-// pickers only offer quarters
-fun CustomReportConfig.withStaticMonths(start: YearMonth, end: YearMonth): CustomReportConfig {
+// Moving one end past the other moves both. Quarterly and weekly reports cover whole quarters or
+// weeks, as upstream's pickers only offer those
+fun CustomReportConfig.withStaticMonths(
+  start: YearMonth,
+  end: YearMonth,
+  firstDayOfWeek: FirstDayOfWeek,
+): CustomReportConfig {
   val last = maxOf(start, end)
+  val months = CustomReportDates.Static(start.firstDay, last.lastDay)
   val dates =
-    if (interval == Quarterly) {
-      CustomReportDates.Static(quarter(start).start.firstDay, quarter(last).endInclusive.lastDay)
-    } else {
-      CustomReportDates.Static(start.firstDay, last.lastDay)
+    when (interval) {
+      Quarterly ->
+        CustomReportDates.Static(quarter(start).start.firstDay, quarter(last).endInclusive.lastDay)
+      Weekly -> months.toWholeWeeks(firstDayOfWeek)
+      Daily,
+      Monthly,
+      Yearly,
+      Unknown -> months
     }
   return copy(dates = dates)
 }
+
+// The months the pickers show. A weekly range can reach into the months either side, so each end
+// shows the month its week was widened from, or every edit would move the range a month further out
+fun CustomReportConfig.staticMonths(firstDayOfWeek: FirstDayOfWeek): YearMonthRange? {
+  val static = dates as? Static ?: return null
+  return if (interval == Weekly) {
+    val start = weekEnd(static.start, firstDayOfWeek)
+    val end = weekStart(static.end, firstDayOfWeek)
+    YearMonthRange(start.yearMonth, maxOf(start, end).yearMonth)
+  } else {
+    YearMonthRange(static.start.yearMonth, static.end.yearMonth)
+  }
+}
+
+private fun CustomReportConfig.withIntervalRange(option: Interval): CustomReportConfig {
+  val live = dates as? Live
+  val newDates =
+    if (live != null && live.type !in dateRangeOptions(option)) {
+      live.copy(type = defaultRange(option))
+    } else {
+      dates
+    }
+  return copy(interval = option, dates = newDates)
+}
+
+private fun CustomReportDates.Static.toWholeWeeks(firstDayOfWeek: FirstDayOfWeek) =
+  CustomReportDates.Static(weekStart(start, firstDayOfWeek), weekEnd(end, firstDayOfWeek))
 
 private data class GraphRules(
   val disabledGroupBys: Set<GroupBy>,
