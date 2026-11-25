@@ -18,4 +18,6 @@ data class BankSyncTransactionsRequest(
   @SerialName("includeBalance") val includeBalance: Boolean? = null,
   // Enable Banking only - `banks.name` of the account's bank
   @SerialName("aspspName") val aspspName: String? = null,
+  // Enable Banking only - false asks the bank for booked transactions only
+  @SerialName("importPending") val importPending: Boolean? = null,
 )

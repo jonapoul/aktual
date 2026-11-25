@@ -12,6 +12,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.BankSyncStatus
+import aktual.budget.model.SyncedPrefKey.PerAccount.SyncImportPending
 import aktual.core.model.Token
 import app.cash.turbine.test
 import assertk.all
@@ -91,9 +92,25 @@ internal class BankSyncControllerImplTest {
             includeBalance = true,
           ),
         AccountSyncSource.EnableBanking to
-          BankSyncTransactionsRequest("provider-b", START, aspspName = "ASPSP"),
+          BankSyncTransactionsRequest(
+            accountId = "provider-b",
+            startDate = START,
+            aspspName = "ASPSP",
+            importPending = true,
+          ),
         AccountSyncSource.Akahu to BankSyncTransactionsRequest("provider-c", START),
       )
+  }
+
+  @Test
+  fun `Enable Banking requests carry the pending setting`() = runBankSyncTest {
+    insertLinkedAccount(A, source = EnableBanking, bankName = "ASPSP")
+    preferences[SyncImportPending(A)] = "false"
+    api.responses["provider-a"] = success()
+
+    controller(api).sync()
+
+    assertThat(api.requests.map { it.second.importPending }).containsExactly(false)
   }
 
   @Test
