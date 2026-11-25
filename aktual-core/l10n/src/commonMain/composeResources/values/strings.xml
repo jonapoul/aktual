@@ -413,6 +413,7 @@
   <string name="api_keys_shared_bank_sync_message">Allows access to all accounts available through the server’s shared bank connections, including accounts outside this budget.</string>
   <string name="api_keys_shared_bank_sync_allowed">Shared bank sync allowed</string>
   <string name="api_keys_create_failed">Could not create the API key</string>
+  <string name="api_keys_create_no_budget_access">You don’t have access to this budget, so can’t create a key for it</string>
   <string name="api_keys_created_title">API key created</string>
   <string name="api_keys_created_message">Make sure to copy this token now. You won’t be able to see it again.</string>
   <string name="api_keys_copy">Copy</string>
@@ -557,6 +558,7 @@
   <string name="bank_sync_setup_title">Set up %1$s</string>
   <string name="bank_sync_setup_save">Save and continue</string>
   <string name="bank_sync_setup_not_admin">You have to be an admin to set up bank sync providers.</string>
+  <string name="bank_sync_setup_no_budget_access">You don’t have permission to manage this budget’s bank sync providers.</string>
   <string name="bank_sync_setup_logged_out">You aren’t logged in.</string>
   <string name="bank_sync_setup_failed">Something went wrong while saving. Please try again.</string>
   <string name="bank_sync_setup_gocardless_intro">Create a GoCardless Bank Account Data account, then copy its secret ID and secret key here.</string>

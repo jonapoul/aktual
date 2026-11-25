@@ -130,7 +130,22 @@ class ApiKeysViewModelTest {
       assertThat(awaitItem()).isEqualTo(CreateKey())
       viewModel.create("Importer", canSyncSharedBanks = false)
       assertThat(awaitItem()).isEqualTo(CreateKey(isBusy = true))
-      assertThat(awaitItem()).isEqualTo(CreateKey(hasFailed = true))
+      assertThat(awaitItem()).isEqualTo(CreateKey(error = Failed))
+    }
+  }
+
+  @Test
+  fun `Creating a key without access to the budget`() = runTest {
+    api.createResponse = ApiKeysResponse.Failed(FileAccessDenied)
+    val viewModel = createViewModel()
+
+    viewModel.sheet.test {
+      assertThat(awaitItem()).isNull()
+      viewModel.add()
+      assertThat(awaitItem()).isEqualTo(CreateKey())
+      viewModel.create("Importer", canSyncSharedBanks = false)
+      assertThat(awaitItem()).isEqualTo(CreateKey(isBusy = true))
+      assertThat(awaitItem()).isEqualTo(CreateKey(error = NoBudgetAccess))
     }
   }
 
@@ -151,7 +166,7 @@ class ApiKeysViewModelTest {
 
   @Test
   fun `Failing to revoke a key`() = runTest {
-    api.revokeResponse = ApiKeysResponse.Failed(ApiKeyNotFound)
+    api.revokeResponse = ApiKeysResponse.Failed(reason = null)
     val viewModel = createViewModel()
 
     viewModel.sheet.test {
@@ -161,6 +176,21 @@ class ApiKeysViewModelTest {
       viewModel.confirmRevoke()
       assertThat(awaitItem()).isEqualTo(RevokeKey(ITEM, isBusy = true))
       assertThat(awaitItem()).isEqualTo(RevokeKey(ITEM, hasFailed = true))
+    }
+  }
+
+  @Test
+  fun `Revoking a key that's already gone closes the sheet`() = runTest {
+    api.revokeResponse = ApiKeysResponse.Failed(ApiKeyNotFound)
+    val viewModel = createViewModel()
+
+    viewModel.sheet.test {
+      assertThat(awaitItem()).isNull()
+      viewModel.revoke(ITEM)
+      assertThat(awaitItem()).isEqualTo(RevokeKey(ITEM))
+      viewModel.confirmRevoke()
+      assertThat(awaitItem()).isEqualTo(RevokeKey(ITEM, isBusy = true))
+      assertThat(awaitItem()).isNull()
     }
   }
 

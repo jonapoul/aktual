@@ -312,6 +312,7 @@ private fun errorMessage(error: SetupError): String =
   when (error) {
     NotAdmin -> Strings.bankSyncSetupNotAdmin
     LoggedOut -> Strings.bankSyncSetupLoggedOut
+    NoBudgetAccess -> Strings.bankSyncSetupNoBudgetAccess
     is Other -> error.cause ?: Strings.bankSyncSetupFailed
   }
 

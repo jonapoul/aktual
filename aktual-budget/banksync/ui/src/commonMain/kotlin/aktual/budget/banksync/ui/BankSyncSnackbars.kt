@@ -10,6 +10,7 @@ import aktual.core.l10n.bank_sync_settings_save_failed
 import aktual.core.l10n.bank_sync_settings_unlink_failed
 import aktual.core.l10n.bank_sync_setup_failed
 import aktual.core.l10n.bank_sync_setup_logged_out
+import aktual.core.l10n.bank_sync_setup_no_budget_access
 import aktual.core.l10n.bank_sync_setup_not_admin
 import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.showSuccessSnackbar
@@ -48,6 +49,7 @@ internal suspend fun SnackbarHostState.showProviderResetFailed(error: SetupError
     when (error) {
       NotAdmin -> getString(Res.string.bank_sync_setup_not_admin)
       LoggedOut -> getString(Res.string.bank_sync_setup_logged_out)
+      NoBudgetAccess -> getString(Res.string.bank_sync_setup_no_budget_access)
       is Other -> error.cause ?: getString(Res.string.bank_sync_setup_failed)
     }
   showErrorSnackbar(getString(Res.string.bank_sync_providers_reset_failed, reason))

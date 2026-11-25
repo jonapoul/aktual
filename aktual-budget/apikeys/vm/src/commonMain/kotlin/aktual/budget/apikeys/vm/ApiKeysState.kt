@@ -30,7 +30,12 @@ data object Empty : ApiKeysState
 
 @Immutable sealed interface ApiKeysSheet
 
-data class CreateKey(val isBusy: Boolean = false, val hasFailed: Boolean = false) : ApiKeysSheet
+data class CreateKey(val isBusy: Boolean = false, val error: CreateKeyError? = null) : ApiKeysSheet
+
+enum class CreateKeyError {
+  Failed,
+  NoBudgetAccess,
+}
 
 // The server only shows the key once, so this is the user's one chance to copy it
 @JvmInline value class CreatedKey(val key: Token) : ApiKeysSheet

@@ -21,7 +21,5 @@ value class FailureReason(val reason: String) {
     val NotAdmin = FailureReason("not-admin")
     val TokenExpired = FailureReason("token-expired")
     val Unauthorized = FailureReason("unauthorized")
-    val UnprocessableEntity = FailureReason("unprocessable-entity")
-    val UserNotFound = FailureReason("user-not-found")
   }
 }

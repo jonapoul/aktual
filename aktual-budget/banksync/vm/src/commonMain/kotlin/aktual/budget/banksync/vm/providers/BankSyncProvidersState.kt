@@ -34,5 +34,7 @@ sealed interface SetupError {
 
   data object LoggedOut : SetupError
 
+  data object NoBudgetAccess : SetupError
+
   @JvmInline value class Other(val cause: String?) : SetupError
 }

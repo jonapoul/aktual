@@ -107,6 +107,21 @@ class BankSyncProviderSetupViewModelTest {
     }
   }
 
+  @Test
+  fun `Saving without access to the budget`() = runTest {
+    secrets.response =
+      Failed(FileAccessDenied, details = "You don't have permissions over this file")
+    val viewModel = createViewModel(SimpleFin)
+    viewModel.setValue(SimpleFinToken, "token")
+
+    viewModel.state.test {
+      skipItems(1)
+      viewModel.save()
+      skipItems(1)
+      assertThat(awaitItem().error).isEqualTo(NoBudgetAccess)
+    }
+  }
+
   private fun TestScope.createViewModel(source: AccountSyncSource): BankSyncProviderSetupViewModel {
     return BankSyncProviderSetupViewModel(
       source = source,

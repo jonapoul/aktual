@@ -170,7 +170,11 @@ private fun CreateKeySheetContent(
       enabled = !sheet.isBusy,
       onCheckedChange = onCanSyncSharedBanksChange,
     )
-    if (sheet.hasFailed) ErrorText(Strings.apiKeysCreateFailed)
+    when (sheet.error) {
+      Failed -> ErrorText(Strings.apiKeysCreateFailed)
+      NoBudgetAccess -> ErrorText(Strings.apiKeysCreateNoBudgetAccess)
+      null -> Unit
+    }
   }
 }
 
@@ -326,7 +330,12 @@ private fun PreviewCreateKeySheet(
   }
 
 private class CreateKeyProvider :
-  ColorParamsProvider<CreateKey>(CreateKey(), CreateKey(isBusy = true), CreateKey(hasFailed = true))
+  ColorParamsProvider<CreateKey>(
+    CreateKey(),
+    CreateKey(isBusy = true),
+    CreateKey(error = Failed),
+    CreateKey(error = NoBudgetAccess),
+  )
 
 @Preview
 @Composable
