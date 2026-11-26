@@ -14,7 +14,6 @@ import kotlinx.serialization.json.buildJsonArray
 
 internal val LocalNameFetcher = staticCompositionLocalOf<NameFetcher> { DummyNameFetcher }
 
-@Suppress("StringLiteralDuplication")
 internal object DummyNameFetcher : NameFetcher {
   override fun invoke(field: Field, id: String): Flow<String?> = flowOf("Dummy")
 

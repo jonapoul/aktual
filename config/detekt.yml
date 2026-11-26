@@ -27,6 +27,7 @@ complexity:
   ReplaceSafeCallChainWithRun:
     active: false
   StringLiteralDuplication:
+    allowedDuplications: 3
     excludes: [ "**/test/**", "**/*Test/**" ]
   TooManyFunctions:
     allowedFunctionsPerClass: 20

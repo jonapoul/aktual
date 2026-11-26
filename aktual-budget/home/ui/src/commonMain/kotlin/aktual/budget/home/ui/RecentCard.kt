@@ -173,7 +173,6 @@ private fun PreviewRecentCard(
 private class RecentCardStateProvider :
   ColorParamsProvider<RecentCardState>(PREVIEW_RECENT, Loading, Failed)
 
-@Suppress("StringLiteralDuplication")
 internal val PREVIEW_RECENT =
   Loaded(
     persistentListOf(

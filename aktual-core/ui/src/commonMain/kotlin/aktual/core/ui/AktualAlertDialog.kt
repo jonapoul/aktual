@@ -1,5 +1,3 @@
-@file:Suppress("StringLiteralDuplication")
-
 package aktual.core.ui
 
 import aktual.core.ui.AktualTheme.colors
@@ -170,9 +168,9 @@ private fun PreviewExampleContentWithButtons(
         Text(
           "This is some text with even more text here to show how it behaves when splitting over lines",
         )
-        AktualButton(kind = Primary, text = "Click me", onClick = {})
+        AktualButton(kind = Primary, text = "Button A", onClick = {})
         Text("This is some text")
-        AktualButton(text = "Click me", onClick = {})
+        AktualButton(text = "Button B", onClick = {})
       },
     )
   }
@@ -190,10 +188,10 @@ private fun PreviewExampleContentWithoutButtons(
       highlight = colors.noticeText,
       content = {
         Column(horizontalAlignment = CenterHorizontally) {
-          Text("This is some text")
-          AktualButton(kind = Primary, text = "Click me", onClick = {})
-          Text("This is some text")
-          AktualButton(text = "Click me", onClick = {})
+          Text("First paragraph")
+          AktualButton(kind = Primary, text = "Button C", onClick = {})
+          Text("Second paragraph")
+          AktualButton(text = "Button D", onClick = {})
         }
       },
     )
