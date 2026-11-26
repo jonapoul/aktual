@@ -2,7 +2,8 @@ package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
-import aktual.core.icons.Delete
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Undo
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,13 +49,13 @@ fun EditFabs(
   onSave: () -> Unit,
   onDiscard: () -> Unit,
   modifier: Modifier = Modifier,
+  saveModifier: Modifier = Modifier,
+  discardModifier: Modifier = Modifier,
   isSaveVisible: Boolean = true,
   isDiscardVisible: Boolean = isSaveVisible,
   canSave: Boolean = true,
   isSaving: Boolean = false,
   isExpanded: Boolean = true,
-  saveModifier: Modifier = Modifier,
-  discardModifier: Modifier = Modifier,
 ) {
   Box(
     modifier =
@@ -63,7 +64,7 @@ fun EditFabs(
     AktualFab(
       modifier = discardModifier.align(BottomStart),
       text = discardText,
-      icon = AktualIcons.Delete,
+      icon = MaterialIcons.Undo,
       kind = Destructive,
       isVisible = isDiscardVisible,
       isExpanded = false,

@@ -69,6 +69,7 @@ import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -230,7 +231,6 @@ private fun EditRuleScaffold(
         onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavBack) },
         onShowMatches = { showMatches = true },
         onDelete = { showDeleteDialog = true },
-        onAction = onAction,
       )
     },
   ) { innerPadding ->
@@ -273,23 +273,14 @@ private fun EditRuleScaffold(
           )
       }
 
-      // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
-      // when the button hides after saving
-      Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
-        SaveDiscardFabs(
-          state = state,
-          mode = mode,
-          listState = listState,
-          onDiscard = { showDiscardDialog = true },
-          onAction = onAction,
-        )
-        SnackbarHost(
-          hostState = snackbarHostState,
-          modifier = Modifier.align(CenterHorizontally),
-          snackbar = ::AktualSnackbar,
-        )
-        BottomSpacing()
-      }
+      BottomBar(
+        state = state,
+        mode = mode,
+        listState = listState,
+        snackbarHostState = snackbarHostState,
+        onDiscard = { showDiscardDialog = true },
+        onAction = onAction,
+      )
     }
   }
 
@@ -333,7 +324,6 @@ private fun EditRuleTopBar(
   onBack: () -> Unit,
   onShowMatches: () -> Unit,
   onDelete: () -> Unit,
-  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   TopAppBar(
@@ -354,26 +344,36 @@ private fun EditRuleTopBar(
   )
 }
 
+// Not in the scaffold's slots, which put the snackbar above the save button so it jumps down when
+// the button hides after saving
 @Composable
-private fun SaveDiscardFabs(
+private fun BoxScope.BottomBar(
   state: EditRuleState,
   mode: Mode,
   listState: LazyListState,
+  snackbarHostState: SnackbarHostState,
   onDiscard: () -> Unit,
   onAction: OnAction<EditRuleAction>,
-) {
-  val success = state as? Success
-  EditFabs(
-    saveText = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-    discardText = Strings.editRuleDiscardConfirm,
-    onSave = { onAction(Save) },
-    onDiscard = onDiscard,
-    isSaveVisible = success?.hasChanges == true,
-    canSave = success?.canSave == true,
-    isSaving = success?.isWorking == true,
-    isExpanded = listState.isScrollingUp(),
-  )
-}
+) =
+  Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
+    val success = state as? Success
+    EditFabs(
+      saveText = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+      discardText = Strings.editRuleDiscardConfirm,
+      onSave = { onAction(Save) },
+      onDiscard = onDiscard,
+      isSaveVisible = success?.hasChanges == true,
+      canSave = success?.canSave == true,
+      isSaving = success?.isWorking == true,
+      isExpanded = listState.isScrollingUp(),
+    )
+    SnackbarHost(
+      hostState = snackbarHostState,
+      modifier = Modifier.align(CenterHorizontally),
+      snackbar = ::AktualSnackbar,
+    )
+    BottomSpacing()
+  }
 
 @Composable
 private fun MoreMenu(
