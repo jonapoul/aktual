@@ -1,5 +1,3 @@
-@file:Suppress("JUnitMalformedDeclaration")
-
 package aktual.budget.schedules.components
 
 import aktual.budget.model.DateFormat.YyyyMmDd
