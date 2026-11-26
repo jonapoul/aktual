@@ -254,7 +254,6 @@ private fun SuccessContent(
 }
 
 @Composable
-@Suppress("MagicNumber")
 private fun formatted(duration: Duration): String =
   remember(duration) {
     val d = duration.inWholeDays

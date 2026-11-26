@@ -65,7 +65,6 @@ internal fun PieChart(
 
 internal data class PieSlice(val value: Float, val color: Color)
 
-@Suppress("MagicNumber")
 private fun DrawScope.drawPie(
   slices: ImmutableList<PieSlice>,
   total: Float,

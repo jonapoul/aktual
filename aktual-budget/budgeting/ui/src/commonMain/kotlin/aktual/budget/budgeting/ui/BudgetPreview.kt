@@ -1,4 +1,3 @@
-@file:Suppress("MagicNumber")
 
 package aktual.budget.budgeting.ui
 

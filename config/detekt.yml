@@ -97,6 +97,7 @@ style:
       - "Preview"
     ignoreCompanionObjectPropertyDeclaration: true
     ignorePropertyDeclaration: true
+    ignoreNumbers: ["-1", "0", "1", "2", "3", "24", "60", "90", "100", "360"]
   MaxChainedCallsOnSameLine:
     maxChainedCalls: 8
   MaxLineLength:

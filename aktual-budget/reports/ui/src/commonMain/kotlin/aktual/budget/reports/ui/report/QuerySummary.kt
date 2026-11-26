@@ -44,7 +44,7 @@ internal fun TimeFrame?.label(): String {
 private const val MAX_SUMMARY_CONDITIONS = 2
 private const val SEPARATOR = "; "
 
-@Suppress("MagicNumber", "StringLiteralDuplication")
+@Suppress("StringLiteralDuplication")
 internal val PREVIEW_FORMULA_META =
   FormulaReportMeta(
     name = "Groceries / month",
@@ -75,7 +75,7 @@ internal val PREVIEW_FORMULA_META =
       ),
   )
 
-@Suppress("MagicNumber", "StringLiteralDuplication")
+@Suppress("StringLiteralDuplication")
 internal val PREVIEW_QUERY_DATA =
   QueryEditorData(
     accounts = persistentListOf(ConditionEntity("checking", "Checking")),

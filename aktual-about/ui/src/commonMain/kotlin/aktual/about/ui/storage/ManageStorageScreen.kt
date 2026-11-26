@@ -537,7 +537,6 @@ private fun percentTotalStorage(state: ManageStorageState.Loaded): String {
   return Strings.storagePercent(percentString)
 }
 
-@Suppress("MagicNumber")
 private val PreviewLoadedState =
   ManageStorageState.Loaded(
     totalSize = 52_428_800L.bytes,

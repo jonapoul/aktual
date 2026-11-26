@@ -10,7 +10,6 @@ import kotlinx.serialization.encoding.Encoder
 internal object ColorSerializer : KSerializer<Color> {
   override val descriptor = PrimitiveSerialDescriptor("Color", STRING)
 
-  @Suppress("MagicNumber")
   override fun serialize(encoder: Encoder, value: Color) {
     // toArgb() returns AARRGGBB; parseHex 8-char branch expects CSS RRGGBBAA
     val argb = value.toArgb()

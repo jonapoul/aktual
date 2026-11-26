@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package aktual.budget.schedules.components
 
 import aktual.budget.model.RecurConfig
@@ -124,6 +122,7 @@ private object RecurPatternComparator : Comparator<RecurPattern> {
 }
 
 @Composable
+@Suppress("MagicNumber")
 private fun ordinal(number: Int): String {
   if (number in 10..19) return Strings.recurOrdinalTh(number)
   return when (number % 10) {
