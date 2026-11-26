@@ -11,6 +11,8 @@ internal data object NavigateBack : EditPayeeAction
 
 internal data object SavePayee : EditPayeeAction
 
+internal data object RevertPayee : EditPayeeAction
+
 internal data object DismissSaveError : EditPayeeAction
 
 @JvmInline internal value class SetName(val name: String) : EditPayeeAction

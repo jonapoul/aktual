@@ -13,6 +13,8 @@ internal sealed interface FormulaReportAction {
 
   data object Save : FormulaReportAction
 
+  data object Revert : FormulaReportAction
+
   @JvmInline value class Edit(val transform: (FormulaEdits) -> FormulaEdits) : FormulaReportAction
 
   data object EditName : FormulaReportAction

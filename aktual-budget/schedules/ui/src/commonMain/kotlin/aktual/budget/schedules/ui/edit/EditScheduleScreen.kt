@@ -37,6 +37,7 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -50,7 +51,6 @@ import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -167,6 +167,7 @@ internal fun EditScheduleScreen(
       when (action) {
         NavigateBack -> back()
         SaveSchedule -> viewModel.save()
+        RevertSchedule -> viewModel.revert()
         DeleteSchedule -> viewModel.delete()
         DismissError -> viewModel.dismissError()
         is ViewTransactions -> if (id != null) viewTransactions(action.title, id)
@@ -219,8 +220,11 @@ private fun EditScheduleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = {
-          NavBackIconButton(
-            onClick = { if (hasChanges) dialog = Discard else onAction(NavigateBack) },
+          BackOrDiscardButton(
+            hasChanges = hasChanges,
+            discardText = Strings.editScheduleDiscardConfirm,
+            onBack = { onAction(NavigateBack) },
+            onDiscard = { dialog = Discard },
           )
         },
         title = {
@@ -282,7 +286,6 @@ private fun EditScheduleScaffold(
         SaveDiscardFabs(
           state = loaded,
           scrollState = scrollState,
-          onDiscard = { dialog = Discard },
           onAction = onAction,
         )
         SnackbarHost(
@@ -307,14 +310,13 @@ private fun EditScheduleScaffold(
 private fun SaveDiscardFabs(
   state: EditScheduleState.Loaded?,
   scrollState: ScrollState,
-  onDiscard: () -> Unit,
   onAction: OnAction<EditScheduleAction>,
 ) {
   EditFabs(
     saveText = if (state?.isNew == true) Strings.editScheduleCreate else Strings.editScheduleSave,
     discardText = Strings.editScheduleDiscardConfirm,
     onSave = { onAction(SaveSchedule) },
-    onDiscard = onDiscard,
+    onDiscard = { onAction(RevertSchedule) },
     isSaveVisible = state != null && (state.isNew || state.hasChanges),
     isDiscardVisible = state?.hasChanges == true,
     canSave = state?.canSave == true,

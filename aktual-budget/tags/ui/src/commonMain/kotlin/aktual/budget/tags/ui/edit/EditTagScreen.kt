@@ -14,6 +14,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -27,7 +28,6 @@ import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -117,6 +117,7 @@ fun EditTagScreen(
     onAction = { action ->
       when (action) {
         SaveTag -> viewModel.save()
+        RevertTag -> viewModel.revert()
         is SetTag -> viewModel.setTag(action.tag)
         is SetDescription -> viewModel.setDescription(action.description)
         is SetColor -> viewModel.setColor(action.color)
@@ -178,7 +179,9 @@ private fun EditTagScaffold(
         editing = editing,
         hazeState = hazeState,
         scrollState = scrollState,
-        onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavigateBack) },
+        hasChanges = hasChanges,
+        onBack = { onAction(NavigateBack) },
+        onDiscard = { showDiscardDialog = true },
       )
     },
   ) { innerPadding ->
@@ -221,7 +224,13 @@ private fun EditTagScaffold(
           saveText = Strings.tagsCreateSave,
           discardText = Strings.tagsDiscardConfirm,
           onSave = { onAction(SaveTag) },
-          onDiscard = { showDiscardDialog = true },
+          onDiscard = {
+            editing?.let {
+              tagState.setTextAndPlaceCursorAtEnd(it.initialTag)
+              descriptionState.setTextAndPlaceCursorAtEnd(it.initialDescription)
+            }
+            onAction(RevertTag)
+          },
           isSaveVisible = editing != null && (editing.isNew || hasChanges),
           isDiscardVisible = hasChanges,
           canSave = canSave,
@@ -256,12 +265,21 @@ private fun EditTagTopBar(
   editing: EditTagState.Editing?,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
+  hasChanges: Boolean,
   onBack: () -> Unit,
+  onDiscard: () -> Unit,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = onBack) },
+    navigationIcon = {
+      BackOrDiscardButton(
+        hasChanges = hasChanges,
+        discardText = Strings.tagsDiscardConfirm,
+        onBack = onBack,
+        onDiscard = onDiscard,
+      )
+    },
     title = {
       editing?.let {
         Text(text = if (it.isNew) Strings.tagsCreateTitle else Strings.tagsEditTitle)

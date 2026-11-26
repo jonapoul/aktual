@@ -41,6 +41,7 @@ import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -50,7 +51,6 @@ import aktual.core.ui.EditFabs
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -174,6 +174,7 @@ private fun EditRuleViewModel.handle(action: ViewModelAction) {
   when (action) {
     Delete -> delete()
     Save -> save()
+    Revert -> revert()
     is SetStage -> setStage(action.value)
     is SetConditionsOp -> setConditionsOp(action.value)
     is SetCondition -> setCondition(action.key, action.condition)
@@ -228,7 +229,8 @@ private fun EditRuleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         state = state,
         mode = mode,
-        onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavBack) },
+        onBack = { onAction(NavBack) },
+        onDiscard = { showDiscardDialog = true },
         onShowMatches = { showMatches = true },
         onDelete = { showDeleteDialog = true },
       )
@@ -278,7 +280,6 @@ private fun EditRuleScaffold(
         mode = mode,
         listState = listState,
         snackbarHostState = snackbarHostState,
-        onDiscard = { showDiscardDialog = true },
         onAction = onAction,
       )
     }
@@ -322,6 +323,7 @@ private fun EditRuleTopBar(
   state: EditRuleState,
   mode: Mode,
   onBack: () -> Unit,
+  onDiscard: () -> Unit,
   onShowMatches: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
@@ -329,7 +331,14 @@ private fun EditRuleTopBar(
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = onBack) },
+    navigationIcon = {
+      BackOrDiscardButton(
+        hasChanges = state is Success && state.hasChanges,
+        discardText = Strings.editRuleDiscardConfirm,
+        onBack = onBack,
+        onDiscard = onDiscard,
+      )
+    },
     title = {
       Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
     },
@@ -352,7 +361,6 @@ private fun BoxScope.BottomBar(
   mode: Mode,
   listState: LazyListState,
   snackbarHostState: SnackbarHostState,
-  onDiscard: () -> Unit,
   onAction: OnAction<EditRuleAction>,
 ) =
   Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
@@ -361,7 +369,7 @@ private fun BoxScope.BottomBar(
       saveText = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
       discardText = Strings.editRuleDiscardConfirm,
       onSave = { onAction(Save) },
-      onDiscard = onDiscard,
+      onDiscard = { onAction(Revert) },
       isSaveVisible = success?.hasChanges == true,
       canSave = success?.canSave == true,
       isSaving = success?.isWorking == true,

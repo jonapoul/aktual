@@ -13,6 +13,8 @@ internal data object NavigateBack : EditScheduleAction
 
 internal data object SaveSchedule : EditScheduleAction
 
+internal data object RevertSchedule : EditScheduleAction
+
 internal data object DeleteSchedule : EditScheduleAction
 
 internal data object DismissError : EditScheduleAction

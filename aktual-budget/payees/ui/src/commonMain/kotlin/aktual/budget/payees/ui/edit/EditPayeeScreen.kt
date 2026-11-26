@@ -41,6 +41,7 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -56,7 +57,6 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalSnackbars
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -174,6 +174,7 @@ internal fun EditPayeeScreen(
       when (action) {
         NavigateBack -> back()
         SavePayee -> viewModel.save()
+        RevertPayee -> viewModel.revert()
         DismissSaveError -> viewModel.dismissSaveError()
         is SetName -> viewModel.setName(action.name)
         is SetFavorite -> viewModel.setFavorite(action.isFavorite)
@@ -243,7 +244,9 @@ private fun EditPayeeScaffold(
         editing = editing,
         hazeState = hazeState,
         scrollState = scrollState,
-        onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavigateBack) },
+        hasChanges = hasChanges,
+        onBack = { onAction(NavigateBack) },
+        onDiscard = { showDiscardDialog = true },
       )
     },
   ) { innerPadding ->
@@ -291,7 +294,10 @@ private fun EditPayeeScaffold(
           saveText = Strings.payeesEditSave,
           discardText = Strings.payeesDiscardConfirm,
           onSave = { onAction(SavePayee) },
-          onDiscard = { showDiscardDialog = true },
+          onDiscard = {
+            editing?.let { nameState.setTextAndPlaceCursorAtEnd(it.payee.name) }
+            onAction(RevertPayee)
+          },
           isSaveVisible = hasChanges && editing?.payee?.isTransfer == false,
           isDiscardVisible = hasChanges,
           canSave = canSave,
@@ -326,12 +332,21 @@ private fun EditPayeeTopBar(
   editing: Editing?,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
+  hasChanges: Boolean,
   onBack: () -> Unit,
+  onDiscard: () -> Unit,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = onBack) },
+    navigationIcon = {
+      BackOrDiscardButton(
+        hasChanges = hasChanges,
+        discardText = Strings.payeesDiscardConfirm,
+        onBack = onBack,
+        onDiscard = onDiscard,
+      )
+    },
     title = { if (editing != null) Text(text = Strings.payeesEditTitle) },
   )
 }
