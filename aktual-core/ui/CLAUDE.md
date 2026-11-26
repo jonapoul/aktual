@@ -43,7 +43,11 @@ In `AktualAlertDialog` button slots (and `AktualDatePickerDialog` confirm/dismis
 
 ## Edit screens
 
-Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`: `DiscardChangesButton` in place of the back button once there are changes, `DiscardChangesDialog` (pass the screen's own strings) when it or `BackHandler` fires, and `SaveFab` bottom-end above the snackbar host, passing `isExpanded = scrollState.isScrollingUp()` so it collapses like `AktualFab` while scrolling down. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FAB. `EditRuleScreen` is the reference.
+Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`: `DiscardChangesButton` in place of the back button once there are changes, `DiscardChangesDialog` (pass the screen's own strings) when it or `BackHandler` fires, and `SaveFab` bottom-end above the snackbar host, passing `isExpanded = scrollState.isScrollingUp()`. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FAB. `EditRuleScreen` is the reference.
+
+## FABs
+
+Put a list screen's main action (create, add) and its search in floating action buttons, not the top bar. Place them with `CornerFabs` (`CornerFabs.kt`) as the last child of the screen's `Box`: `SearchFab` in `start`, `AktualFab` in `end`, both passing the same `isExpanded = listState.isScrollingUp()` so they collapse to a faded icon while scrolling down. Toggle them with `isVisible` rather than an `if`, so they slide in and out with the shared animation. Hide the create FAB when the empty state has its own create button. End the scroll content with `FabClearance` + `BottomSpacing`. `ListSchedulesScreen` is the reference. Keep search in the top bar when it opens inline there (transactions).
 
 ## Progress indicators
 

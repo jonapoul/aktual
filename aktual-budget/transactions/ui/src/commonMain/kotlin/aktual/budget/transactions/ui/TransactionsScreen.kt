@@ -26,6 +26,8 @@ import aktual.budget.transactions.vm.SavedFiltersState
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionsEvent
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.core.icons.Add
+import aktual.core.icons.AktualIcons
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.transactions_filter_conditions_taken
@@ -36,9 +38,11 @@ import aktual.core.nav.EditTransactionNavigator
 import aktual.core.nav.SwitchAccountNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.ColorParams
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.HazedPullToRefreshBox
@@ -51,6 +55,7 @@ import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.Snackbars
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.showErrorSnackbar
 import androidx.compose.animation.AnimatedVisibility
@@ -471,6 +476,18 @@ internal fun TransactionsScaffold(
               onAction = onAction,
             )
           }
+
+          CornerFabs(
+            end = {
+              AktualFab(
+                text = Strings.transactionsCreate,
+                icon = AktualIcons.Add,
+                isVisible = !isSearching,
+                isExpanded = listState.isScrollingUp(),
+                onClick = { onAction(CreateTransaction) },
+              )
+            },
+          )
         }
       }
     }

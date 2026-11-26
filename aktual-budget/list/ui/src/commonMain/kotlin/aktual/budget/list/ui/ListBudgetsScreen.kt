@@ -22,11 +22,11 @@ import aktual.core.nav.MetricsNavigator
 import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
 import aktual.core.ui.AktualFab
-import aktual.core.ui.CornerFabs
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
@@ -296,7 +296,7 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: OnAction<Lis
             isExpanded = listState.isScrollingUp(),
             onClick = { onAction(CreateBudget) },
           )
-        }
+        },
       )
     }
   }

@@ -36,7 +36,7 @@ fun BoxScope.CornerFabs(
           start = Dimens.Huge,
           end = Dimens.Huge,
           bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
-        )
+        ),
   ) {
     Box(modifier = Modifier.align(BottomStart), content = start)
     Box(modifier = Modifier.align(BottomEnd), content = end)

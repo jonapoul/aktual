@@ -19,12 +19,12 @@ import aktual.core.nav.BankSyncSettingsNavigator
 import aktual.core.nav.LinkBankAccountNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualFab
-import aktual.core.ui.CornerFabs
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.Dimens
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
@@ -183,7 +183,7 @@ private fun BankSyncScaffold(
             isLoading = success?.isSyncing == true,
             onClick = { onAction(SyncAll) },
           )
-        }
+        },
       )
     }
   }
