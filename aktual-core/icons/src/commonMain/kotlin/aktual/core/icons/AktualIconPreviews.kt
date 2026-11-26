@@ -37,6 +37,7 @@ private val aktualIcons =
       CheveronLeft,
       CheveronRight,
       CheveronUpDown,
+      Close,
       CloseBracket,
       Cloud,
       CloudCheck,

@@ -154,6 +154,14 @@ internal constructor(
 
   fun setLearnCategories(learn: Boolean) = mutableLearnCategories.update { learn }
 
+  // Throws away unsaved edits. The screen resets its name field too, since it owns the text
+  fun revert() {
+    val l = loaded.value ?: return
+    mutableName.update { l.name }
+    mutableFavorite.update { l.isFavorite }
+    mutableLearnCategories.update { l.learnsCategories }
+  }
+
   fun dismissSaveError() = mutableSaveError.update { null }
 
   fun deleteLocation(id: PayeeLocationId) {

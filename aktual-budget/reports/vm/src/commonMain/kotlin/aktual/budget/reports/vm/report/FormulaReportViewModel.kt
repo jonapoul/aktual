@@ -145,6 +145,12 @@ internal constructor(
     budgetScope.launch { sync.setFormula(id, edits) }
   }
 
+  // Throws away unsaved edits but keeps editing
+  fun revert() {
+    val meta = (saved.value as? Found)?.meta ?: return
+    draft.update { meta.toEdits() }
+  }
+
   fun discard() {
     isEditing.update { false }
     val meta = (saved.value as? Found)?.meta ?: return
