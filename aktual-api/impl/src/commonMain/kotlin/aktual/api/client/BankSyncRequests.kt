@@ -10,8 +10,6 @@ import io.ktor.client.plugins.timeout
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import kotlin.time.Duration
 
 /** POSTs [body] as JSON to [source]'s [endpoint] on [remote], timing out after [timeout] if set. */
@@ -34,7 +32,7 @@ internal inline fun <reified T : Any> HttpRequestBuilder.bankSyncRequest(
 
   // Rejections like an unconfigured provider come back as 4xx with the usual JSON envelope
   expectSuccess = false
-  contentType(ContentType.Application.Json)
+  jsonContentType()
   setBody(body)
 }
 
