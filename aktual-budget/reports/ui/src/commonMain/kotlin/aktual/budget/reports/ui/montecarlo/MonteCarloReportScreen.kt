@@ -24,7 +24,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.EditFabs
 import aktual.core.ui.FabClearance
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -142,7 +142,14 @@ internal fun MonteCarloScaffold(
     topBar = {
       TopAppBar(
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
+        navigationIcon = {
+          BackOrDiscardButton(
+            hasChanges = (state as? Loaded)?.hasChanges == true,
+            discardText = Strings.monteCarloDiscardConfirm,
+            onBack = { onAction(NavBack) },
+            onDiscard = { onAction(NavBack) },
+          )
+        },
         title = {
           Text(
             text =
@@ -195,13 +202,12 @@ internal fun MonteCarloScaffold(
           }
       }
 
-      // Discard asks first, like leaving the screen
       Column(modifier = Modifier.align(BottomCenter)) {
         EditFabs(
           saveText = Strings.monteCarloSave,
           discardText = Strings.monteCarloDiscardConfirm,
           onSave = { onAction(Save) },
-          onDiscard = { onAction(NavBack) },
+          onDiscard = { onAction(Revert) },
           isSaveVisible = (state as? Loaded)?.hasChanges == true,
           isExpanded = scrollState.isScrollingUp(),
         )
@@ -293,6 +299,7 @@ private fun MonteCarloViewModel.onAction(
   when (action) {
     NavBack -> afterCommit(onNavBack)
     Save -> afterCommit { save() }
+    Revert -> afterCommit { reset() }
     is ToggleSection -> afterCommit { toggleSection(action.section) }
     is Rename -> rename(action.name)
     is Edit -> edit(action.transform)

@@ -23,7 +23,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.EditFabs
 import aktual.core.ui.FabClearance
-import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
@@ -59,7 +59,15 @@ internal fun ReportEditorTopBar(
 ) =
   TopAppBar(
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = { onAction(Back) }) },
+    navigationIcon = {
+      BackOrDiscardButton(
+        modifier = Modifier.testTag(Tags.DiscardReport),
+        hasChanges = hasChanges,
+        discardText = Strings.reportsTextDiscard,
+        onBack = { onAction(Back) },
+        onDiscard = { onAction(Back) },
+      )
+    },
     title = {
       Column {
         Text(text = title)

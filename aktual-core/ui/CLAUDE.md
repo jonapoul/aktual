@@ -43,7 +43,7 @@ In `AktualAlertDialog` button slots (and `AktualDatePickerDialog` confirm/dismis
 
 ## Edit screens
 
-Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`. Put `EditFabs` along the bottom of the screen's `Box` (above the snackbar host if it has one, then `BottomSpacing`): an icon-only discard FAB at the start and save at the end, both toggled with `isSaveVisible` / `isDiscardVisible` and passing `isExpanded = scrollState.isScrollingUp()`. Keep the plain back button in the toolbar, but make it, the discard FAB and `BackHandler` all open `DiscardChangesDialog` (pass the screen's own strings) when there are changes. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FABs. `EditRuleScreen` is the reference.
+Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`. Put `EditFabs` along the bottom of the screen's `Box` (above the snackbar host if it has one, then `BottomSpacing`): an icon-only undo FAB at the start that reverts the edits and stays on the screen, and save at the end. Show each only when it has something to do (`isSaveVisible` / `isDiscardVisible`), passing `isExpanded = scrollState.isScrollingUp()`. Use `BackOrDiscardButton` in the toolbar: a back button that turns into a red cross once there are changes. The cross and `BackHandler` open `DiscardChangesDialog` (pass the screen's own strings), then leave. If a text field's `TextFieldState` lives in the UI, reset it alongside the view model's revert. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FABs. `EditRuleScreen` is the reference.
 
 ## FABs
 

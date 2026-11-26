@@ -45,7 +45,7 @@ import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.EditFabs
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -117,6 +117,7 @@ fun ReportScreen(
         is Rename -> viewModel.rename(action.name)
         is EditSettings -> viewModel.edit(action.transform)
         SaveSettings -> viewModel.save()
+        RevertSettings -> viewModel.discard()
         is Chart ->
           when (val chart = action.action) {
             is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
@@ -266,10 +267,10 @@ internal fun ReportScaffold(
             showSettings = false
             onAction(SaveSettings)
           },
-          onDiscard = { onAction(NavBack) },
+          onDiscard = { onAction(RevertSettings) },
           isSaveVisible = hasChanges,
           saveModifier = Modifier.testTag(Tags.SaveReport),
-          discardModifier = Modifier.testTag(Tags.DiscardReport),
+          discardModifier = Modifier.testTag(Tags.RevertReport),
         )
         BottomSpacing()
       }
@@ -292,7 +293,15 @@ private fun ReportTopBar(
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
+    navigationIcon = {
+      BackOrDiscardButton(
+        modifier = Modifier.testTag(Tags.DiscardReport),
+        hasChanges = hasChanges,
+        discardText = Strings.reportsTextDiscard,
+        onBack = { onAction(NavBack) },
+        onDiscard = { onAction(NavBack) },
+      )
+    },
     title = {
       Column {
         Text(

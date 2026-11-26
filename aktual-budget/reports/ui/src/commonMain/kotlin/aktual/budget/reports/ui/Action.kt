@@ -31,6 +31,9 @@ internal sealed interface Action {
 
   data object SaveSettings : Action
 
+  // Throws away unsaved changes to the settings, staying on the report
+  data object RevertSettings : Action
+
   data object CreateNewReport : Action
 
   data object OpenSearch : Action

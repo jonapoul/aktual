@@ -31,7 +31,7 @@ class FormulaReportScaffoldTest {
   }
 
   @Test
-  fun `Save and close send their actions while editing`() = runComposeUiTest {
+  fun `Save, revert and close send their actions while editing`() = runComposeUiTest {
     // given
     val actions = mutableListOf<FormulaReportAction>()
     setPreviewContent {
@@ -40,10 +40,16 @@ class FormulaReportScaffoldTest {
 
     // when
     onNodeWithTag(Tags.SaveReport).onChild().assertIsEnabled().performClick()
+    onNodeWithTag(Tags.RevertReport).performClick()
     onNodeWithTag(Tags.CloseEditor).performClick()
 
     // then
-    assertThat(actions).containsExactly(FormulaReportAction.Save, FormulaReportAction.StopEditing)
+    assertThat(actions)
+      .containsExactly(
+        FormulaReportAction.Save,
+        FormulaReportAction.Revert,
+        FormulaReportAction.StopEditing,
+      )
   }
 
   @Test

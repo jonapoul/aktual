@@ -40,7 +40,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.EditFabs
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
@@ -169,6 +169,7 @@ internal fun FormulaReportScreen(
           StartEditing -> viewModel.startEditing()
           StopEditing -> stopEditing()
           Save -> viewModel.save()
+          Revert -> viewModel.revert()
           is Edit -> viewModel.edit(action.transform)
           EditName -> dialog = Name
           EditFormula -> page = Formula
@@ -360,19 +361,19 @@ internal fun FormulaReportScaffold(
         }
       }
 
-      // Discard asks, then stops editing. Back stops editing too, with nothing to discard
+      // Discard reverts and keeps editing
       Column(modifier = Modifier.align(BottomCenter)) {
         EditFabs(
           saveText = Strings.reportsFormulaEditorSave,
           discardText = Strings.reportsFormulaEditorClose,
           onSave = { onAction(Save) },
-          onDiscard = { onAction(StopEditing) },
+          onDiscard = { onAction(Revert) },
           isSaveVisible = loaded?.isEditing == true,
           isDiscardVisible = loaded?.isEditing == true && loaded.hasChanges,
           canSave = loaded?.hasChanges == true,
           isExpanded = scrollState.isScrollingUp(),
           saveModifier = Modifier.testTag(Tags.SaveReport),
-          discardModifier = Modifier.testTag(Tags.CloseEditor),
+          discardModifier = Modifier.testTag(Tags.RevertReport),
         )
         BottomSpacing()
       }
@@ -392,7 +393,14 @@ private fun FormulaReportTopBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
-      NavBackIconButton(onClick = { onAction(if (isEditing) StopEditing else Back) })
+      // While editing, both stop editing rather than leaving, asking first if there are changes
+      BackOrDiscardButton(
+        modifier = Modifier.testTag(Tags.CloseEditor),
+        hasChanges = loaded?.hasChanges == true,
+        discardText = Strings.reportsFormulaEditorClose,
+        onBack = { onAction(if (isEditing) StopEditing else Back) },
+        onDiscard = { onAction(StopEditing) },
+      )
     },
     title = {
       val name = loaded?.draft?.name?.takeUnless { it.isBlank() }
