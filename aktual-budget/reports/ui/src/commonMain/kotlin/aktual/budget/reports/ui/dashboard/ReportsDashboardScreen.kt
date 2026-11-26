@@ -13,8 +13,6 @@ import aktual.budget.reports.vm.dashboard.DashboardPage
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Check
-import aktual.core.icons.Delete
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CreateReportNavigator
@@ -23,15 +21,16 @@ import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualFab
-import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.CornerFabs
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.EditFabs
 import aktual.core.ui.FabClearance
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
@@ -75,6 +74,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -185,10 +185,11 @@ internal fun ReportsDashboardScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = {
           if (reorder.isEditing) {
-            AktualIconButton(
-              imageVector = AktualIcons.Delete,
-              contentDescription = Strings.reportsDashboardReorderCancel,
-              onClick = ::stopEditing,
+            BackOrDiscardButton(
+              hasChanges = reorder.hasChanges,
+              discardText = Strings.reportsDashboardReorderCancel,
+              onBack = ::stopEditing,
+              onDiscard = ::stopEditing,
             )
           } else {
             NavDrawerIconButton()
@@ -202,14 +203,7 @@ internal fun ReportsDashboardScaffold(
           }
         },
         actions = {
-          if (reorder.isEditing) {
-            AktualIconButton(
-              imageVector = AktualIcons.Check,
-              contentDescription = Strings.reportsDashboardReorderDone,
-              onClick = ::save,
-            )
-            return@TopAppBar
-          }
+          if (reorder.isEditing) return@TopAppBar
           DashboardMenu(
             page = selectedPage,
             canDelete = pages.size > 1,
@@ -245,6 +239,18 @@ internal fun ReportsDashboardScaffold(
         canCreate = !items.isNullOrEmpty(),
         onAction,
       )
+
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.reportsDashboardReorderSave,
+          discardText = Strings.reportsDashboardReorderDiscard,
+          onSave = ::save,
+          onDiscard = reorder::revert,
+          isSaveVisible = reorder.isEditing && reorder.hasChanges,
+          isExpanded = listState.isScrollingUp(),
+        )
+        BottomSpacing()
+      }
     }
   }
 

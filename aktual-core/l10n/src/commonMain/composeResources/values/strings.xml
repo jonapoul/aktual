@@ -483,6 +483,10 @@
   <string name="bank_sync_settings_open">Open %1$s’s bank sync settings</string>
   <string name="bank_sync_settings_save">Save</string>
   <string name="bank_sync_settings_save_failed">Couldn’t save settings: %1$s</string>
+  <string name="bank_sync_settings_discard_title">Discard changes?</string>
+  <string name="bank_sync_settings_discard_message">Your changes to these settings will be lost.</string>
+  <string name="bank_sync_settings_discard_confirm">Discard</string>
+  <string name="bank_sync_settings_discard_cancel">Keep editing</string>
   <string name="bank_sync_settings_failure_title">Couldn’t load bank sync settings</string>
   <string name="bank_sync_settings_failure_missing">This account doesn’t exist</string>
   <string name="bank_sync_settings_mapping">Field mapping</string>
@@ -595,8 +599,6 @@
   <string name="budgeting_reorder_move_up">Move up</string>
   <string name="budgeting_reorder_move_down">Move down</string>
   <string name="budgeting_reorder_hidden">Hidden</string>
-  <string name="budgeting_reorder_unsaved">Unsaved changes</string>
-  <string name="budgeting_reorder_no_changes">No changes yet</string>
   <string name="budgeting_reorder_save">Save</string>
   <string name="budgeting_reorder_discard">Discard</string>
   <string name="budgeting_reorder_discard_title">Discard changes?</string>
@@ -1407,7 +1409,6 @@
   <string name="reports_dashboard_delete_page_cancel">Cancel</string>
   <string name="reports_dashboard_search">Search reports</string>
   <string name="reports_dashboard_reorder">Reorder reports</string>
-  <string name="reports_dashboard_reorder_done">Done reordering</string>
   <string name="reports_dashboard_reorder_cancel">Stop reordering</string>
   <string name="reports_dashboard_reorder_save_title">Save new order?</string>
   <string name="reports_dashboard_reorder_save_message">You’ve moved some reports.</string>

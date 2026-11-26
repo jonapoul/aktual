@@ -16,37 +16,33 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
-import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
-import aktual.core.ui.BasicTextButton
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.EditFabs
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalSnackbars
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.buttonTextStyle
-import aktual.core.ui.disabled
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
-import aktual.core.ui.normalButton
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -79,6 +75,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -167,7 +164,14 @@ internal fun ReorderCategoriesScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = requestBack) },
+        navigationIcon = {
+          BackOrDiscardButton(
+            hasChanges = hasChanges,
+            discardText = Strings.budgetingReorderDiscard,
+            onBack = requestBack,
+            onDiscard = requestBack,
+          )
+        },
         title = { Text(text = Strings.budgetingReorder, maxLines = 1, overflow = Ellipsis) },
         actions = {
           if (loaded != null) {
@@ -186,16 +190,6 @@ internal fun ReorderCategoriesScaffold(
           }
         },
       )
-    },
-    bottomBar = {
-      if (loaded != null) {
-        ReorderBottomBar(
-          hasChanges = loaded.hasChanges,
-          isSaving = loaded.isSaving,
-          onDiscard = onDiscard,
-          onSave = onSave,
-        )
-      }
     },
   ) { innerPadding ->
     when (state) {
@@ -217,6 +211,19 @@ internal fun ReorderCategoriesScaffold(
             listState = listState,
             contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           )
+
+          Column(modifier = Modifier.align(BottomCenter)) {
+            EditFabs(
+              saveText = Strings.budgetingReorderSave,
+              discardText = Strings.budgetingReorderDiscard,
+              onSave = onSave,
+              onDiscard = onDiscard,
+              isSaveVisible = state.hasChanges,
+              isSaving = state.isSaving,
+              isExpanded = listState.isScrollingUp(),
+            )
+            BottomSpacing()
+          }
         }
     }
   }
@@ -337,7 +344,10 @@ private fun ReorderList(
       }
     }
 
-    item(key = "bottom") { Spacer(Modifier.size(Dimens.ScreenPadding)) }
+    item(key = "bottom") {
+      Spacer(Modifier.size(FabClearance))
+      BottomSpacing()
+    }
   }
 }
 
@@ -458,57 +468,6 @@ private fun HiddenLabel(modifier: Modifier = Modifier) =
     color = colors.tableTextSubdued,
     maxLines = 1,
   )
-
-@Composable
-private fun ReorderBottomBar(
-  hasChanges: Boolean,
-  isSaving: Boolean,
-  onDiscard: () -> Unit,
-  onSave: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(modifier = modifier.fillMaxWidth().background(colors.pageBackground)) {
-    HorizontalDivider()
-    Row(
-      modifier = Modifier.fillMaxWidth().padding(Dimens.ScreenPadding),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = CenterVertically,
-    ) {
-      Text(
-        modifier = Modifier.weight(1f),
-        text =
-          if (hasChanges) Strings.budgetingReorderUnsaved else Strings.budgetingReorderNoChanges,
-        fontSize = textSizes.medium,
-        color = if (hasChanges) colors.pageText else colors.pageTextSubdued,
-        maxLines = 1,
-        overflow = Ellipsis,
-      )
-
-      val canDiscard = hasChanges && !isSaving
-      BasicTextButton(
-        text = Strings.budgetingReorderDiscard,
-        onClick = onDiscard,
-        isEnabled = canDiscard,
-        style = typography.buttonTextStyle,
-        border =
-          BorderStroke(
-            Hairline,
-            if (canDiscard) colors.errorText else colors.buttonNormalBorder.disabled,
-          ),
-        colors = { pressed -> colors.normalButton(pressed, text = colors.errorText) },
-      )
-
-      AktualButton(
-        kind = Primary,
-        text = Strings.budgetingReorderSave,
-        isLoading = isSaving,
-        isEnabled = hasChanges,
-        onClick = onSave,
-      )
-    }
-    BottomSpacing()
-  }
-}
 
 @Composable
 private fun DiscardDialog(onCancel: () -> Unit, onDiscard: () -> Unit) {

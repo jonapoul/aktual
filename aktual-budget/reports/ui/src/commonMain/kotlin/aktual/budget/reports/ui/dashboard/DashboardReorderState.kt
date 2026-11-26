@@ -88,6 +88,12 @@ internal class DashboardReorderState(
     return changed
   }
 
+  // Puts back the saved order, staying in edit mode
+  fun revert() {
+    dropHeld()
+    order = saved
+  }
+
   fun discard() {
     dropHeld()
     isEditing = false

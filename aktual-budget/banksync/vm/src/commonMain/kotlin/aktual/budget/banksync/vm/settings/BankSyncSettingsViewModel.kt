@@ -125,6 +125,8 @@ internal constructor(
     s.copy(mappings = s.mappings.with(mutableDirection.value, field, value))
   }
 
+  fun revert() = mutableSettings.update { settings -> mutableLoaded.value?.saved ?: settings }
+
   fun save() {
     viewModelScope.launch {
       runCatchingCancellable(
