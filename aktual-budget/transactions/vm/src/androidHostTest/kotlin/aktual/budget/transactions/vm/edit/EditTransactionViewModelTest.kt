@@ -671,12 +671,12 @@ class EditTransactionViewModelTest {
         assertThat(viewModel.unusedPayees.value).isNull()
         assertThat(renames.added).containsExactly(listOf("Argos") to PayeeId("b"))
         assertThat(PayeeDao(this@runSyncedTest).unused()).doesNotContain(PayeeId("a"))
-        assertThat(PayeeDao(this@runSyncedTest).get(PayeeId("a"))?.tombstone).isEqualTo(true)
+        assertThat(PayeeDao(this@runSyncedTest)[PayeeId("a")]?.tombstone).isEqualTo(true)
 
         viewModel.undoMerge(merged as MergedPayees)
         scope.advanceUntilIdle()
         assertThat(renames.undone).containsExactly(PayeeRename.Created(RuleId("rename")))
-        assertThat(PayeeDao(this@runSyncedTest).get(PayeeId("a"))?.tombstone).isEqualTo(false)
+        assertThat(PayeeDao(this@runSyncedTest)[PayeeId("a")]?.tombstone).isEqualTo(false)
       }
     }
 

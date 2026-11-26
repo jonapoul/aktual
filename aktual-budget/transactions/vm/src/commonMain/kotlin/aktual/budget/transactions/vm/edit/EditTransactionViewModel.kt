@@ -890,8 +890,9 @@ internal constructor(
     before: TransactionDraft,
     after: TransactionDraft,
   ): UnusedPayees? {
-    val target = after.changedPayees(before).firstOrNull() ?: return null
-    if (target in mutableEntities.value?.transferAccounts.orEmpty()) return null
+    val transfers = mutableEntities.value?.transferAccounts.orEmpty()
+    val target =
+      after.changedPayees(before).firstOrNull()?.takeIf { it !in transfers } ?: return null
     val old = before.payees() - after.payees()
     if (old.isEmpty()) return null
     val unused = payeeDao.unused()

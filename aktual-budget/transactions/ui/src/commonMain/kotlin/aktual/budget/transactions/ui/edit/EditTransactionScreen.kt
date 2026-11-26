@@ -63,6 +63,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.Snackbars
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -127,21 +128,7 @@ internal fun EditTransactionScreen(
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
-      when (event) {
-        Deleted,
-        Saved,
-        Discarded -> back()
-        is MergedPayees -> {
-          snackbars.show { showMerged(event, onUndo = viewModel::undoMerge) }
-          back()
-        }
-        NearbyPayeesFound -> fieldState.edit(Payee)
-        NoNearbyPayees,
-        LocationUnavailable,
-        LocationSaveFailed,
-        is LocationSaved,
-        is LocationAlreadySaved -> snackbars.show { showLocationEvent(event, toLocations) }
-      }
+      viewModel.onEvent(event, back, fieldState, snackbars, toLocations)
     }
   }
 
@@ -187,6 +174,30 @@ internal fun EditTransactionScreen(
       onMerge = viewModel::mergeUnusedPayees,
       onKeep = viewModel::keepUnusedPayees,
     )
+  }
+}
+
+private fun EditTransactionViewModel.onEvent(
+  event: EditTransactionEvent,
+  back: BackNavigator,
+  fieldState: EditFieldState,
+  snackbars: Snackbars,
+  toLocations: ListPayeeLocationsNavigator,
+) {
+  when (event) {
+    Deleted,
+    Saved,
+    Discarded -> back()
+    is MergedPayees -> {
+      snackbars.show { showMerged(event, onUndo = ::undoMerge) }
+      back()
+    }
+    NearbyPayeesFound -> fieldState.edit(Payee)
+    NoNearbyPayees,
+    LocationUnavailable,
+    LocationSaveFailed,
+    is LocationSaved,
+    is LocationAlreadySaved -> snackbars.show { showLocationEvent(event, toLocations) }
   }
 }
 

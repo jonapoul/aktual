@@ -223,10 +223,14 @@ internal fun UnusedPayeesDialog(
 ) {
   var addRenameRule by rememberSaveable { mutableStateOf(true) }
   val single = unused.payees.singleOrNull()
+  val title =
+    if (single != null) {
+      Strings.transactionUnusedPayeeTitle
+    } else {
+      Strings.transactionUnusedPayeesTitle
+    }
   AktualAlertDialog(
-    title =
-      if (single != null) Strings.transactionUnusedPayeeTitle
-      else Strings.transactionUnusedPayeesTitle,
+    title = title,
     onDismissRequest = { if (!isWorking) onKeep() },
     buttons = {
       DialogTextButton(
