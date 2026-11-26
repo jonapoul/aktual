@@ -128,11 +128,12 @@ fun AktualFab(
   kind: ButtonKind = Primary,
   isVisible: Boolean = true,
   isExpanded: Boolean = true,
+  isFaded: Boolean = !isExpanded,
   isEnabled: Boolean = true,
   isLoading: Boolean = false,
 ) {
   val themeColors = AktualTheme.colors
-  val alpha by animateFloatAsState(if (isExpanded) 1f else FAB_COLLAPSED_ALPHA)
+  val alpha by animateFloatAsState(if (isFaded) FAB_FADED_ALPHA else 1f)
   val enabled = isEnabled && !isLoading
 
   AnimatedVisibility(
@@ -181,7 +182,7 @@ private fun FabContent(text: String, icon: ImageVector, isExpanded: Boolean) {
   }
 }
 
-private const val FAB_COLLAPSED_ALPHA = 0.6f
+private const val FAB_FADED_ALPHA = 0.6f
 private const val FAB_HIDDEN_SCALE = 0.8f
 private val FabPadding = PaddingValues(16.dp)
 private val FabContentHeight = 24.dp

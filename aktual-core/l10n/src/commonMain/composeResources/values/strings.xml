@@ -1380,6 +1380,7 @@
   <string name="reports_reset_zoom">Reset zoom</string>
   <string name="reports_chart_info">About this report</string>
   <string name="reports_dashboard_create">Create new report</string>
+  <string name="reports_dashboard_fab_create">Create</string>
   <string name="reports_dashboard_choose">Choose dashboard</string>
   <string name="reports_dashboard_untitled">Untitled dashboard</string>
   <string name="reports_dashboard_new_page">New dashboard</string>
@@ -1888,7 +1889,7 @@
   <string name="rules_toolbar">Rules</string>
 
   <string name="rules_toolbar_search">Search</string>
-  <string name="rules_create">Create rule</string>
+  <string name="rules_create">Create</string>
   <string name="rules_search_placeholder">Search rules</string>
   <string name="rules_search_prompt">Enter some text to search rule conditions and actions</string>
   <string name="rules_search_no_results">No rules match “%1$s”</string>
@@ -2151,7 +2152,7 @@
   <string name="edit_schedule_error_dismiss">OK</string>
   <string name="edit_schedule_failure_title">Couldn’t load schedule</string>
   <string name="edit_schedule_failure_not_found">This schedule doesn’t exist any more.</string>
-  <string name="list_schedules_create">Create schedule</string>
+  <string name="list_schedules_create">Create</string>
   <string name="recur_every_day">Every day</string>
   <string name="recur_every_week">Every week on %1$s</string>
   <string name="recur_every_month">Every month on the %1$s</string>
@@ -2205,6 +2206,7 @@
   <string name="tags_search_prompt">Enter some text to search tag names and descriptions</string>
   <string name="tags_search_no_results">No tags match “%1$s”</string>
   <string name="tags_create">Create tag</string>
+  <string name="tags_fab_create">Create</string>
   <string name="tags_menu">Menu</string>
   <string name="tags_sort_field_name">Name</string>
   <string name="tags_sort_field_usage">Number of transactions</string>
@@ -2410,7 +2412,7 @@
   <string name="transaction_unused_payees_keep">Do nothing</string>
   <string name="transaction_unused_payees_merged">Merged into %1$s</string>
   <string name="transaction_unused_payees_undo">Undo</string>
-  <string name="transactions_create">Add transaction</string>
+  <string name="transactions_create">Add</string>
   <string name="transaction_create_title">New transaction</string>
   <string name="transaction_create_no_accounts_title">No accounts</string>
   <string name="transaction_create_no_accounts">To add a transaction, you need to create an account first.</string>

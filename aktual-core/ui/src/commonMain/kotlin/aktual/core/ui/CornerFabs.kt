@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 val FabClearance = 72.dp
 
 /**
- * Places FABs in the bottom corners of the screen, above the nav bar. Usually [SearchFab] at the
- * start and the screen's main [AktualFab] (e.g. create) at the end, both passing the same
- * `isExpanded` from `isScrollingUp()`. End the scrolling content with [FabClearance].
+ * Places FABs in the bottom corners of the screen, above the nav bar. Usually an icon-only
+ * [SearchFab] at the start and the screen's main [AktualFab] (e.g. create) at the end, with a
+ * one-word label. End the scrolling content with [FabClearance].
  */
 @Composable
 fun BoxScope.CornerFabs(
@@ -43,21 +43,23 @@ fun BoxScope.CornerFabs(
   }
 }
 
+// Icon only, so it never crowds the end FAB. Still fades with it while scrolling down
 @Composable
 fun SearchFab(
-  text: String,
+  contentDescription: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isVisible: Boolean = true,
-  isExpanded: Boolean = true,
+  isFaded: Boolean = false,
 ) {
   AktualFab(
     modifier = modifier,
-    text = text,
+    text = contentDescription,
     icon = AktualIcons.SearchAlternate,
     kind = Normal,
     isVisible = isVisible,
-    isExpanded = isExpanded,
+    isExpanded = false,
+    isFaded = isFaded,
     onClick = onClick,
   )
 }

@@ -47,7 +47,7 @@ Screens that edit an entity with unsaved-change tracking use the pieces in `Edit
 
 ## FABs
 
-Put a list screen's main action (create, add) and its search in floating action buttons, not the top bar. Place them with `CornerFabs` (`CornerFabs.kt`) as the last child of the screen's `Box`: `SearchFab` in `start`, `AktualFab` in `end`, both passing the same `isExpanded = listState.isScrollingUp()` so they collapse to a faded icon while scrolling down. Toggle them with `isVisible` rather than an `if`, so they slide in and out with the shared animation. Hide the create FAB when the empty state has its own create button. End the scroll content with `FabClearance` + `BottomSpacing`. `ListSchedulesScreen` is the reference. Keep search in the top bar when it opens inline there (transactions).
+Put a list screen's main action (create, add) and its search in floating action buttons, not the top bar. Place them with `CornerFabs` (`CornerFabs.kt`) as the last child of the screen's `Box`: `SearchFab` in `start` (icon only, passing `isFaded = !isScrollingUp`), `AktualFab` in `end` with `isExpanded = listState.isScrollingUp()` so it collapses to a faded icon while scrolling down. Keep the end FAB's label to one word (`Create`, `Add`): the screen title gives the context. Add a `<feature>_fab_create` string if the longer one is used elsewhere. Toggle them with `isVisible` rather than an `if`, so they slide in and out with the shared animation. Hide the create FAB when the empty state has its own create button. End the scroll content with `FabClearance` + `BottomSpacing`. `ListSchedulesScreen` is the reference. Keep search in the top bar when it opens inline there (transactions).
 
 ## Progress indicators
 

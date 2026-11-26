@@ -200,15 +200,15 @@ private fun ListTagsScaffold(
       CornerFabs(
         start = {
           SearchFab(
-            text = Strings.tagsSearch,
+            contentDescription = Strings.tagsSearch,
             isVisible = successState != null,
-            isExpanded = isExpanded,
+            isFaded = !isExpanded,
             onClick = { onAction(OpenSearch) },
           )
         },
         end = {
           AktualFab(
-            text = Strings.tagsCreate,
+            text = Strings.tagsFabCreate,
             icon = AktualIcons.Add,
             isVisible = state != Empty,
             isExpanded = isExpanded,

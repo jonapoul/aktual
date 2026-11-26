@@ -241,15 +241,15 @@ internal fun ReportsDashboardScaffold(
       CornerFabs(
         start = {
           SearchFab(
-            text = Strings.reportsDashboardSearch,
+            contentDescription = Strings.reportsDashboardSearch,
             isVisible = !reorder.isEditing,
-            isExpanded = isExpanded,
+            isFaded = !isExpanded,
             onClick = { onAction(OpenSearch) },
           )
         },
         end = {
           AktualFab(
-            text = Strings.reportsDashboardCreate,
+            text = Strings.reportsDashboardFabCreate,
             icon = AktualIcons.Add,
             isVisible = !reorder.isEditing && !items.isNullOrEmpty(),
             isExpanded = isExpanded,

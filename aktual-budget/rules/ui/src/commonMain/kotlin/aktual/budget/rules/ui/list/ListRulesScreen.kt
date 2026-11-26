@@ -150,9 +150,9 @@ private fun ListRulesScaffold(
       CornerFabs(
         start = {
           SearchFab(
-            text = Strings.rulesToolbarSearch,
+            contentDescription = Strings.rulesToolbarSearch,
             isVisible = state is Success,
-            isExpanded = isExpanded,
+            isFaded = !isExpanded,
             onClick = { onAction(OpenSearch) },
           )
         },

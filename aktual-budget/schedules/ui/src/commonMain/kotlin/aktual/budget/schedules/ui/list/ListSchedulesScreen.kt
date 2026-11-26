@@ -230,9 +230,9 @@ private fun ListSchedulesScaffold(
       CornerFabs(
         start = {
           SearchFab(
-            text = Strings.listSchedulesSearch,
+            contentDescription = Strings.listSchedulesSearch,
             isVisible = successState != null,
-            isExpanded = isExpanded,
+            isFaded = !isExpanded,
             onClick = { onAction(OpenSearch) },
           )
         },
