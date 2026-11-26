@@ -1,4 +1,3 @@
-
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Amount
