@@ -18,7 +18,9 @@ import aktual.test.runDatabaseTest
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlin.test.Test
+import kotlin.test.assertNotNull
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -50,6 +52,47 @@ class PayeeRenameRulesTest {
       .isEqualTo(listOf("existing" to "conditions"))
     assertThat(sync.conditions())
       .isEqualTo(listOf(importedOneOf("Kroger", "Kroger #1", "Kroger #2")))
+  }
+
+  @Test
+  fun `Undoing a new rule deletes it`() = runRenameTest {
+    // given
+    val rename = renames.add(listOf("Kroger #1"), to = KROGER)
+    sync.changes.clear()
+
+    // when
+    renames.undo(assertNotNull(rename))
+
+    // then
+    assertThat(sync.changes.map { it.row to it.column })
+      .isEqualTo(listOf("new-rule" to "tombstone"))
+  }
+
+  @Test
+  fun `Undoing an extended rule puts its names back`() = runRenameTest {
+    // given
+    rule("existing", RuleStage.Pre, importedOneOf("Kroger"), setPayee(KROGER))
+    val rename = renames.add(listOf("Kroger #1"), to = KROGER)
+    sync.changes.clear()
+
+    // when
+    renames.undo(assertNotNull(rename))
+
+    // then
+    assertThat(sync.conditions()).isEqualTo(listOf(importedOneOf("Kroger")))
+  }
+
+  @Test
+  fun `Names the rule already has change nothing`() = runRenameTest {
+    // given
+    rule("existing", RuleStage.Pre, importedOneOf("Kroger"), setPayee(KROGER))
+
+    // when
+    val rename = renames.add(listOf("Kroger"), to = KROGER)
+
+    // then
+    assertThat(rename).isNull()
+    assertThat(sync.changes).isEmpty()
   }
 
   @Test

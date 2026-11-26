@@ -14,6 +14,7 @@ import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.localChange
+import aktual.budget.model.tombstone
 import aktual.budget.utils.BudgetSync
 import aktual.core.utils.UuidGenerator
 import aktual.di.BudgetScope
@@ -31,32 +32,46 @@ internal constructor(
   private val budgetSync: BudgetSync,
   private val uuidGenerator: UuidGenerator,
 ) : PayeeRenameRules {
-  override suspend fun add(fromNames: Collection<String>, to: PayeeId) {
+  override suspend fun add(fromNames: Collection<String>, to: PayeeId): PayeeRename? {
     val names = fromNames.filter { it.isNotEmpty() }
-    if (names.isEmpty()) return
+    if (names.isEmpty()) return null
     val existing = rulesDao.getAll().map { it.toTransactionRule() }.firstOrNull { it.renamesTo(to) }
-    val changes = if (existing == null) newRule(names, to) else extend(existing, names)
-    budgetSync(changes)
-    log.i { "Added ${names.size} payee renames to $to" }
+    val rename = if (existing == null) create(names, to) else extend(existing, names)
+    if (rename != null) log.i { "Added ${names.size} payee renames to $to" }
+    return rename
   }
 
-  private fun extend(rule: TransactionRule, names: List<String>): List<LocalChange> {
+  override suspend fun undo(rename: PayeeRename) =
+    when (rename) {
+      is Created -> budgetSync(tombstone(RULES, rename.rule.value))
+      is Extended -> budgetSync(conditionsChange(rename.rule, rename.oldCondition))
+    }
+
+  private suspend fun create(names: List<String>, to: PayeeId): PayeeRename {
+    val id = uuidGenerator(::RuleId)
+    budgetSync(newRule(id.value, names, to))
+    return PayeeRename.Created(id)
+  }
+
+  private suspend fun extend(rule: TransactionRule, names: List<String>): PayeeRename? {
     val condition = rule.conditions.single()
     val values = (condition.value as? JsonArray).orEmpty().mapNotNull { it.stringOrNull() }
-    val merged = (values + names).distinct().map(::JsonPrimitive)
-    val updated = condition.copy(value = JsonArray(merged))
-    return listOf(
-      localChange(
-        RULES,
-        rule.id.value,
-        "conditions",
-        DbJson.encodeToString(RuleJson.conditions, listOf(updated)),
-      ),
-    )
+    val merged = (values + names).distinct()
+    if (merged.size == values.size) return null
+    val updated = condition.copy(value = JsonArray(merged.map(::JsonPrimitive)))
+    budgetSync(conditionsChange(rule.id, updated))
+    return PayeeRename.Extended(rule.id, oldCondition = condition)
   }
 
-  private fun newRule(names: List<String>, to: PayeeId): List<LocalChange> {
-    val row = uuidGenerator(::RuleId).value
+  private fun conditionsChange(rule: RuleId, condition: Condition): LocalChange =
+    localChange(
+      RULES,
+      rule.value,
+      "conditions",
+      DbJson.encodeToString(RuleJson.conditions, listOf(condition)),
+    )
+
+  private fun newRule(row: String, names: List<String>, to: PayeeId): List<LocalChange> {
     val condition =
       Condition(
         field = ImportedPayee,
