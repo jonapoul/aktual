@@ -2399,6 +2399,17 @@
   <string name="transaction_error_deleting">Couldn’t delete transaction</string>
   <string name="transaction_error_creating_tag">Couldn’t create tag</string>
   <string name="transaction_error_dismiss">OK</string>
+  <string name="transaction_error_merging_payees">Couldn’t merge payees</string>
+  <string name="transaction_unused_payee_title">Merge unused payee?</string>
+  <string name="transaction_unused_payees_title">Merge unused payees?</string>
+  <string name="transaction_unused_payee_message">The payee %1$s is not used by transactions any more. Would you like to merge it with %2$s?</string>
+  <string name="transaction_unused_payees_message">The following payees are not used by transactions any more. Would you like to merge them with %1$s?</string>
+  <string name="transaction_unused_payees_info">Merging will remove the payee and transfer any existing rules to the new payee.</string>
+  <string name="transaction_unused_payees_rename">Automatically rename these payees in the future</string>
+  <string name="transaction_unused_payees_merge">Merge</string>
+  <string name="transaction_unused_payees_keep">Do nothing</string>
+  <string name="transaction_unused_payees_merged">Merged into %1$s</string>
+  <string name="transaction_unused_payees_undo">Undo</string>
   <string name="transactions_create">Add transaction</string>
   <string name="transaction_create_title">New transaction</string>
   <string name="transaction_create_no_accounts_title">No accounts</string>

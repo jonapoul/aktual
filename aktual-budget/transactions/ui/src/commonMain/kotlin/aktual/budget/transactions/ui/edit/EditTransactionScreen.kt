@@ -15,6 +15,7 @@ import aktual.budget.transactions.ui.tabularFigures
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.edit.EditTransactionError
 import aktual.budget.transactions.vm.edit.EditTransactionEvent
+import aktual.budget.transactions.vm.edit.EditTransactionEvent.MergedPayees
 import aktual.budget.transactions.vm.edit.EditTransactionState
 import aktual.budget.transactions.vm.edit.EditTransactionTarget
 import aktual.budget.transactions.vm.edit.EditTransactionViewModel
@@ -32,6 +33,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Undo
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.transaction_error_merging_payees
 import aktual.core.l10n.transaction_location_already_saved
 import aktual.core.l10n.transaction_location_denied
 import aktual.core.l10n.transaction_location_none_nearby
@@ -39,6 +41,8 @@ import aktual.core.l10n.transaction_location_save_failed
 import aktual.core.l10n.transaction_location_saved
 import aktual.core.l10n.transaction_location_saved_view
 import aktual.core.l10n.transaction_location_unavailable
+import aktual.core.l10n.transaction_unused_payees_merged
+import aktual.core.l10n.transaction_unused_payees_undo
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListPayeeLocationsNavigator
 import aktual.core.ui.AktualButton
@@ -60,6 +64,7 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.Snackbars
 import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
@@ -118,22 +123,13 @@ internal fun EditTransactionScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val error by viewModel.error.collectAsStateWithLifecycle()
+  val unusedPayees by viewModel.unusedPayees.collectAsStateWithLifecycle()
   val fieldState = remember { EditFieldState() }
   val snackbars = LocalSnackbars.current
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
-      when (event) {
-        Deleted,
-        Saved,
-        Discarded -> back()
-        NearbyPayeesFound -> fieldState.edit(Payee)
-        NoNearbyPayees,
-        LocationUnavailable,
-        LocationSaveFailed,
-        is LocationSaved,
-        is LocationAlreadySaved -> snackbars.show { showLocationEvent(event, toLocations) }
-      }
+      onEvent(viewModel, event, back, fieldState, snackbars, toLocations)
     }
   }
 
@@ -171,6 +167,40 @@ internal fun EditTransactionScreen(
       }
     },
   )
+
+  unusedPayees?.let { unused ->
+    UnusedPayeesDialog(
+      unused = unused,
+      isWorking = (state as? Loaded)?.isWorking == true,
+      onMerge = viewModel::mergeUnusedPayees,
+      onKeep = viewModel::keepUnusedPayees,
+    )
+  }
+}
+
+private fun onEvent(
+  viewModel: EditTransactionViewModel,
+  event: EditTransactionEvent,
+  back: BackNavigator,
+  fieldState: EditFieldState,
+  snackbars: Snackbars,
+  toLocations: ListPayeeLocationsNavigator,
+) {
+  when (event) {
+    Deleted,
+    Saved,
+    Discarded -> back()
+    is MergedPayees -> {
+      snackbars.show { showMerged(event, onUndo = viewModel::undoMerge) }
+      back()
+    }
+    MergePayeesFailed -> {
+      snackbars.show { showErrorSnackbar(getString(Res.string.transaction_error_merging_payees)) }
+      back()
+    }
+    NearbyPayeesFound -> fieldState.edit(Payee)
+    is LocationEvent -> snackbars.show { showLocationEvent(event, toLocations) }
+  }
 }
 
 private fun EditTransactionViewModel.onFieldAction(action: FieldAction) =
@@ -201,7 +231,7 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
   }
 
 private suspend fun SnackbarHostState.showLocationEvent(
-  event: EditTransactionEvent,
+  event: EditTransactionEvent.LocationEvent,
   toLocations: ListPayeeLocationsNavigator,
 ) {
   when (event) {
@@ -220,11 +250,21 @@ private suspend fun SnackbarHostState.showLocationEvent(
     }
     is LocationAlreadySaved ->
       showSnackbar(getString(Res.string.transaction_location_already_saved, event.payee))
-    Deleted,
-    Saved,
-    Discarded,
     NearbyPayeesFound -> Unit
   }
+}
+
+private suspend fun SnackbarHostState.showMerged(
+  event: MergedPayees,
+  onUndo: (MergedPayees) -> Unit,
+) {
+  val result =
+    showSnackbar(
+      message = getString(Res.string.transaction_unused_payees_merged, event.payees.target.name),
+      actionLabel = getString(Res.string.transaction_unused_payees_undo),
+      duration = SnackbarDuration.Long,
+    )
+  if (result == ActionPerformed) onUndo(event)
 }
 
 @Composable

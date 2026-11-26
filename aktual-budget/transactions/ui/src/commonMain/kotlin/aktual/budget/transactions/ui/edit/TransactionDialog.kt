@@ -1,15 +1,40 @@
 package aktual.budget.transactions.ui.edit
 
+import aktual.budget.model.PayeeId
 import aktual.budget.transactions.vm.edit.EditTransactionError
+import aktual.budget.transactions.vm.edit.EntityOption
+import aktual.budget.transactions.vm.edit.UnusedPayees
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogButtonKind
 import aktual.core.ui.DialogTextButton
+import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
+import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.switch
+import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.util.fastForEach
+import kotlinx.collections.immutable.persistentListOf
 
 internal enum class TransactionDialog {
   ConfirmDelete,
@@ -193,4 +218,129 @@ internal fun EditTransactionErrorDialog(error: EditTransactionError, onDismiss: 
         },
       )
     },
+  )
+
+// As upstream's MergeUnusedPayeesModal, without its "Merge and edit rule" button
+@Composable
+internal fun UnusedPayeesDialog(
+  unused: UnusedPayees,
+  isWorking: Boolean,
+  onMerge: (addRenameRule: Boolean) -> Unit,
+  onKeep: () -> Unit,
+) {
+  var addRenameRule by rememberSaveable { mutableStateOf(true) }
+  AktualAlertDialog(onDismissRequest = { if (!isWorking) onKeep() }) {
+    UnusedPayeesDialogContent(
+      unused = unused,
+      isWorking = isWorking,
+      addRenameRule = addRenameRule,
+      onAddRenameRule = { addRenameRule = it },
+      onMerge = { onMerge(addRenameRule) },
+      onKeep = onKeep,
+    )
+  }
+}
+
+@Composable
+private fun UnusedPayeesDialogContent(
+  unused: UnusedPayees,
+  isWorking: Boolean,
+  addRenameRule: Boolean,
+  onAddRenameRule: (Boolean) -> Unit,
+  onMerge: () -> Unit,
+  onKeep: () -> Unit,
+) {
+  val single = unused.payees.singleOrNull()
+  val title =
+    if (single != null) {
+      Strings.transactionUnusedPayeeTitle
+    } else {
+      Strings.transactionUnusedPayeesTitle
+    }
+  AktualAlertDialogContent(
+    title = title,
+    buttons = {
+      DialogTextButton(
+        text = Strings.transactionUnusedPayeesKeep,
+        isEnabled = !isWorking,
+        onClick = onKeep,
+      )
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.transactionUnusedPayeesMerge,
+        isEnabled = !isWorking,
+        isLoading = isWorking,
+        onClick = onMerge,
+      )
+    },
+    content = {
+      Column(verticalArrangement = spacedBy(Dimens.Large)) {
+        if (single != null) {
+          Text(Strings.transactionUnusedPayeeMessage(single.name, unused.target.name))
+        } else {
+          Text(Strings.transactionUnusedPayeesMessage(unused.target.name))
+          Column(modifier = Modifier.fillMaxWidth()) {
+            unused.payees.fastForEach { payee ->
+              Text(text = payee.name, color = colors.pageTextPositive)
+            }
+          }
+        }
+        Text(
+          text = Strings.transactionUnusedPayeesInfo,
+          style = typography.bodySmall,
+          color = colors.pageTextSubdued,
+        )
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = CenterVertically,
+          horizontalArrangement = spacedBy(Dimens.Large),
+        ) {
+          Text(
+            modifier = Modifier.weight(1f),
+            text = Strings.transactionUnusedPayeesRename,
+            style = typography.bodyMedium,
+          )
+          Switch(
+            checked = addRenameRule,
+            onCheckedChange = onAddRenameRule,
+            enabled = !isWorking,
+            colors = colors.switch(),
+          )
+        }
+      }
+    },
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewUnusedPayeesDialog(
+  @PreviewParameter(UnusedPayeesProvider::class) params: ColorParams<UnusedPayees>,
+) =
+  PreviewWithColorParams(params) {
+    UnusedPayeesDialogContent(
+      unused = this,
+      isWorking = false,
+      addRenameRule = true,
+      onAddRenameRule = {},
+      onMerge = {},
+      onKeep = {},
+    )
+  }
+
+private class UnusedPayeesProvider :
+  ColorParamsProvider<UnusedPayees>(
+    UnusedPayees(
+      payees = persistentListOf(EntityOption(PayeeId("kroger-1"), "KROGER #123")),
+      target = EntityOption(PayeeId("kroger"), "Kroger"),
+    ),
+    UnusedPayees(
+      payees =
+        persistentListOf(
+          EntityOption(PayeeId("kroger-1"), "KROGER #123"),
+          EntityOption(PayeeId("kroger-2"), "KROGER #456"),
+          EntityOption(PayeeId("kroger-3"), "Kroger Fuel"),
+        ),
+      target = EntityOption(PayeeId("kroger"), "Kroger"),
+    ),
   )
