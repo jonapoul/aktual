@@ -262,6 +262,7 @@ internal class ChartDataLoader(
     }
 
   // A bug in the evaluator should show on the card, not crash the app
+  @Suppress("TooGenericExceptionCaught")
   private suspend fun evaluateFormulaSafely(
     meta: FormulaReportMeta,
     format: FormulaFormat,
@@ -270,9 +271,9 @@ internal class ChartDataLoader(
       evaluateFormula(meta, format)
     } catch (e: CancellationException) {
       throw e
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
       log.e { "Failed evaluating formula ${meta.formula}: ${e.stackTraceToString()}" }
-      val cause = generateSequence(e) { it.cause as? Exception }.last()
+      val cause = generateSequence(e) { it.cause }.last()
       val subject = "${cause::class.simpleName}: ${cause.message}"
       FormulaData(
         title = meta.name,
