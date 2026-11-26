@@ -942,7 +942,7 @@ internal constructor(
         onFailure = { e ->
           log.e(e) { "Failed merging unused payees into ${unused.target.id}" }
           mutableUnusedPayees.update { null }
-          mutableError.update { EditTransactionError.MergingPayees(e.requireMessage()) }
+          mutableEvents.tryEmit(MergePayeesFailed)
         },
         finally = { mutableIsWorking.update { false } },
       )

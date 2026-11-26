@@ -43,6 +43,8 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.payees.domain.PayeeLocationsImpl
+import aktual.budget.payees.domain.PayeeMerge
+import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.payees.domain.PayeeMergerImpl
 import aktual.budget.rules.domain.CategoryLearner
 import aktual.budget.rules.domain.PayeeRename
@@ -699,6 +701,43 @@ class EditTransactionViewModelTest {
       viewModel.mergeUnusedPayees(addRenameRule = false)
 
       assertThat(awaitItem()).isInstanceOf<MergedPayees>().prop(MergedPayees::rename).isNull()
+      assertThat(renames.added).isEmpty()
+    }
+  }
+
+  @Test
+  fun `A failed merge closes, as the edit was saved`() = runSyncedTest { scope, database ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val renames = FakePayeeRenameRules()
+    val failing =
+      object : PayeeMerger {
+        override suspend fun merge(target: PayeeId, ids: Collection<PayeeId>): PayeeMerge =
+          error("Failed")
+
+        override suspend fun undo(merge: PayeeMerge) = Unit
+      }
+    val viewModel =
+      createViewModel(
+        scope,
+        sync = FakeBudgetSync(appliedTo = database),
+        renames = renames,
+        merger = failing,
+      )
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setPayee(PayeeId("b"))
+      viewModel.save()
+      scope.advanceUntilIdle()
+      viewModel.mergeUnusedPayees(addRenameRule = true)
+
+      assertThatNextEmissionIsEqualTo(MergePayeesFailed)
+      assertThat(viewModel.unusedPayees.value).isNull()
+      assertThat(viewModel.error.value).isNull()
       assertThat(renames.added).isEmpty()
     }
   }
@@ -2091,6 +2130,7 @@ class EditTransactionViewModelTest {
     location: LocationProvider = FakeLocationProvider(),
     security: SecurityPreferences = FakeSecurityPreferences(),
     renames: PayeeRenameRules = FakePayeeRenameRules(),
+    merger: PayeeMerger? = null,
   ): EditTransactionViewModel {
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -2139,7 +2179,7 @@ class EditTransactionViewModelTest {
       securityPreferences = security,
       budgetScope = BudgetCoroutineScope(scope.backgroundScope),
       budgetSync = sync,
-      payeeMerger = PayeeMergerImpl(payeeDao, sync),
+      payeeMerger = merger ?: PayeeMergerImpl(payeeDao, sync),
       renameRules = renames,
       preferencesDao = PreferencesDao(this, contexts),
       budgetCalculator =

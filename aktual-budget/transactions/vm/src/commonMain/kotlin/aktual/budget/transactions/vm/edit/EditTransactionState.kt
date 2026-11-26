@@ -226,8 +226,6 @@ sealed interface EditTransactionError {
   @JvmInline value class Deleting(val reason: String) : EditTransactionError
 
   @JvmInline value class CreatingTag(val reason: String) : EditTransactionError
-
-  @JvmInline value class MergingPayees(val reason: String) : EditTransactionError
 }
 
 // Payees that a saved edit left without transactions, offered to merge into the one they were
@@ -251,17 +249,22 @@ sealed interface EditTransactionEvent {
     val rename: PayeeRename?,
   ) : EditTransactionEvent
 
+  // Saved, but merging the payees it left unused failed
+  data object MergePayeesFailed : EditTransactionEvent
+
   data object Discarded : EditTransactionEvent
 
-  data object NearbyPayeesFound : EditTransactionEvent
+  sealed interface LocationEvent : EditTransactionEvent
 
-  data object NoNearbyPayees : EditTransactionEvent
+  data object NearbyPayeesFound : LocationEvent
 
-  data object LocationUnavailable : EditTransactionEvent
+  data object NoNearbyPayees : LocationEvent
 
-  @JvmInline value class LocationSaved(val payee: String) : EditTransactionEvent
+  data object LocationUnavailable : LocationEvent
 
-  @JvmInline value class LocationAlreadySaved(val payee: String) : EditTransactionEvent
+  @JvmInline value class LocationSaved(val payee: String) : LocationEvent
 
-  data object LocationSaveFailed : EditTransactionEvent
+  @JvmInline value class LocationAlreadySaved(val payee: String) : LocationEvent
+
+  data object LocationSaveFailed : LocationEvent
 }

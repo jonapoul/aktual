@@ -196,7 +196,6 @@ internal fun EditTransactionErrorDialog(error: EditTransactionError, onDismiss: 
         is Saving -> Strings.transactionErrorSaving
         is Deleting -> Strings.transactionErrorDeleting
         is CreatingTag -> Strings.transactionErrorCreatingTag
-        is MergingPayees -> Strings.transactionErrorMergingPayees
       },
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
@@ -207,7 +206,6 @@ internal fun EditTransactionErrorDialog(error: EditTransactionError, onDismiss: 
           is Saving -> error.reason
           is Deleting -> error.reason
           is CreatingTag -> error.reason
-          is MergingPayees -> error.reason
         },
       )
     },

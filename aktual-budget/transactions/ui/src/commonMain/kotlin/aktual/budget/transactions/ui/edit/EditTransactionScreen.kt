@@ -33,6 +33,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Undo
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.transaction_error_merging_payees
 import aktual.core.l10n.transaction_location_already_saved
 import aktual.core.l10n.transaction_location_denied
 import aktual.core.l10n.transaction_location_none_nearby
@@ -128,7 +129,7 @@ internal fun EditTransactionScreen(
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
-      viewModel.onEvent(event, back, fieldState, snackbars, toLocations)
+      onEvent(viewModel, event, back, fieldState, snackbars, toLocations)
     }
   }
 
@@ -177,7 +178,8 @@ internal fun EditTransactionScreen(
   }
 }
 
-private fun EditTransactionViewModel.onEvent(
+private fun onEvent(
+  viewModel: EditTransactionViewModel,
   event: EditTransactionEvent,
   back: BackNavigator,
   fieldState: EditFieldState,
@@ -189,15 +191,15 @@ private fun EditTransactionViewModel.onEvent(
     Saved,
     Discarded -> back()
     is MergedPayees -> {
-      snackbars.show { showMerged(event, onUndo = ::undoMerge) }
+      snackbars.show { showMerged(event, onUndo = viewModel::undoMerge) }
+      back()
+    }
+    MergePayeesFailed -> {
+      snackbars.show { showErrorSnackbar(getString(Res.string.transaction_error_merging_payees)) }
       back()
     }
     NearbyPayeesFound -> fieldState.edit(Payee)
-    NoNearbyPayees,
-    LocationUnavailable,
-    LocationSaveFailed,
-    is LocationSaved,
-    is LocationAlreadySaved -> snackbars.show { showLocationEvent(event, toLocations) }
+    is LocationEvent -> snackbars.show { showLocationEvent(event, toLocations) }
   }
 }
 
@@ -229,7 +231,7 @@ private fun EditTransactionViewModel.onSplitAction(action: SplitAction) =
   }
 
 private suspend fun SnackbarHostState.showLocationEvent(
-  event: EditTransactionEvent,
+  event: EditTransactionEvent.LocationEvent,
   toLocations: ListPayeeLocationsNavigator,
 ) {
   when (event) {
@@ -248,10 +250,6 @@ private suspend fun SnackbarHostState.showLocationEvent(
     }
     is LocationAlreadySaved ->
       showSnackbar(getString(Res.string.transaction_location_already_saved, event.payee))
-    Deleted,
-    Saved,
-    is MergedPayees,
-    Discarded,
     NearbyPayeesFound -> Unit
   }
 }
