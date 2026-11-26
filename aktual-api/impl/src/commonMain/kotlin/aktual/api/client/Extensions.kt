@@ -2,7 +2,9 @@ package aktual.api.client
 
 import aktual.core.model.ServerUrl
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
 import io.ktor.http.path
 
 internal fun HttpRequestBuilder.url(server: ServerUrl, vararg path: String) = url {
@@ -16,3 +18,5 @@ private fun ServerUrl.protocol(): URLProtocol =
     Http -> HTTP
     Https -> HTTPS
   }
+
+internal fun HttpRequestBuilder.jsonContentType() = contentType(ContentType.Application.Json)

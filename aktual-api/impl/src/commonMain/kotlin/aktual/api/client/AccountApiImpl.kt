@@ -23,8 +23,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 
 @ContributesBinding(ServerChosenScope::class)
 class AccountApiImpl(
@@ -48,7 +46,7 @@ class AccountApiImpl(
     client
       .post {
         url(serverUrl, "/account/bootstrap")
-        contentType(ContentType.Application.Json)
+        jsonContentType()
         setBody(body)
       }
       .body<BootstrapResponse.Success>()
@@ -58,7 +56,7 @@ class AccountApiImpl(
       client
         .post {
           url(serverUrl, "/account/login")
-          contentType(ContentType.Application.Json)
+          jsonContentType()
           setBody(body)
         }
         .body<LoginResponse.Success>()
@@ -71,7 +69,7 @@ class AccountApiImpl(
       client
         .post {
           url(serverUrl, "/account/login")
-          contentType(ContentType.Application.Json)
+          jsonContentType()
           setBody(body)
         }
         .body<LoginResponse.Success>()
@@ -85,7 +83,7 @@ class AccountApiImpl(
         .post {
           url(serverUrl, "/account/login")
           header(AktualHeaders.PASSWORD, password.value)
-          contentType(ContentType.Application.Json)
+          jsonContentType()
           setBody(body)
         }
         .body<LoginResponse.Success>()
@@ -101,7 +99,7 @@ class AccountApiImpl(
       .post {
         url(serverUrl, "/account/change-password")
         header(AktualHeaders.TOKEN, token.value)
-        contentType(ContentType.Application.Json)
+        jsonContentType()
         setBody(body)
       }
       .body<ChangePasswordResponse.Success>()

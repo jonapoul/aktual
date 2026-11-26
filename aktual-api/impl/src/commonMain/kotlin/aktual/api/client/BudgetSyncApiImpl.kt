@@ -64,7 +64,7 @@ internal constructor(
     val remote = remote()
     client.post {
       url(remote.url, "/sync/update-user-filename")
-      contentType(ContentType.Application.Json)
+      jsonContentType()
       setBody(UpdateUserFileNameRequest(id, name, remote.token))
     }
   }

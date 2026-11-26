@@ -18,9 +18,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.prepareGet
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
 import io.ktor.http.contentLength
-import io.ktor.http.contentType
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readBuffer
@@ -91,7 +89,7 @@ class SyncApiImpl(
     client
       .post {
         url(serverUrl, "/sync/user-get-key")
-        contentType(ContentType.Application.Json)
+        jsonContentType()
         setBody(body)
       }
       .body<GetUserKeyResponse.Success>()
@@ -100,7 +98,7 @@ class SyncApiImpl(
     client
       .post {
         url(serverUrl, "/sync/delete-user-file")
-        contentType(ContentType.Application.Json)
+        jsonContentType()
         setBody(body)
       }
       .body<DeleteUserFileResponse.Success>()
