@@ -51,6 +51,7 @@ import aktual.core.ui.wiggle
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -237,25 +238,11 @@ internal fun ReportsDashboardScaffold(
         )
       }
 
-      val isExpanded = listState.isScrollingUp()
-      CornerFabs(
-        start = {
-          SearchFab(
-            contentDescription = Strings.reportsDashboardSearch,
-            isVisible = !reorder.isEditing,
-            isFaded = !isExpanded,
-            onClick = { onAction(OpenSearch) },
-          )
-        },
-        end = {
-          AktualFab(
-            text = Strings.reportsDashboardFabCreate,
-            icon = AktualIcons.Add,
-            isVisible = !reorder.isEditing && !items.isNullOrEmpty(),
-            isExpanded = isExpanded,
-            onClick = { onAction(CreateNewReport) },
-          )
-        },
+      DashboardFabs(
+        listState,
+        isVisible = !reorder.isEditing,
+        canCreate = !items.isNullOrEmpty(),
+        onAction,
       )
     }
   }
@@ -273,6 +260,35 @@ internal fun ReportsDashboardScaffold(
       onCancel = { showSavePrompt = false },
     )
   }
+}
+
+@Composable
+private fun BoxScope.DashboardFabs(
+  listState: LazyListState,
+  isVisible: Boolean,
+  canCreate: Boolean,
+  onAction: OnAction<Action>,
+) {
+  val isExpanded = listState.isScrollingUp()
+  CornerFabs(
+    start = {
+      SearchFab(
+        contentDescription = Strings.reportsDashboardSearch,
+        isVisible = isVisible,
+        isFaded = !isExpanded,
+        onClick = { onAction(OpenSearch) },
+      )
+    },
+    end = {
+      AktualFab(
+        text = Strings.reportsDashboardFabCreate,
+        icon = AktualIcons.Add,
+        isVisible = isVisible && canCreate,
+        isExpanded = isExpanded,
+        onClick = { onAction(CreateNewReport) },
+      )
+    },
+  )
 }
 
 @Composable

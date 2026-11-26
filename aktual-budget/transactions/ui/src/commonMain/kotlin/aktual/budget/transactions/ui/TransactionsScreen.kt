@@ -64,6 +64,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -477,17 +478,7 @@ internal fun TransactionsScaffold(
             )
           }
 
-          CornerFabs(
-            end = {
-              AktualFab(
-                text = Strings.transactionsCreate,
-                icon = AktualIcons.Add,
-                isVisible = !isSearching,
-                isExpanded = listState.isScrollingUp(),
-                onClick = { onAction(CreateTransaction) },
-              )
-            },
-          )
+          AddFab(isVisible = !isSearching, listState, onAction)
         }
       }
     }
@@ -506,6 +497,25 @@ internal fun TransactionsScaffold(
       onDismiss = { showViewOptions = false },
     )
   }
+}
+
+@Composable
+private fun BoxScope.AddFab(
+  isVisible: Boolean,
+  listState: LazyListState,
+  onAction: OnAction<Action>,
+) {
+  CornerFabs(
+    end = {
+      AktualFab(
+        text = Strings.transactionsCreate,
+        icon = AktualIcons.Add,
+        isVisible = isVisible,
+        isExpanded = listState.isScrollingUp(),
+        onClick = { onAction(CreateTransaction) },
+      )
+    },
+  )
 }
 
 // The year of the topmost transaction that isn't hidden behind the top bar. It's pinned under the
