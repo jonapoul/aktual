@@ -15,7 +15,7 @@ import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualButton
-import aktual.core.ui.AktualIconButton
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
@@ -23,7 +23,9 @@ import aktual.core.ui.CardRow
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
@@ -35,6 +37,7 @@ import aktual.core.ui.formatted
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -116,15 +119,6 @@ private fun ApiKeysScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
         title = { Text(text = Strings.apiKeysTitle) },
-        actions = {
-          if (state is Loaded || state is Empty) {
-            AktualIconButton(
-              imageVector = AktualIcons.Add,
-              contentDescription = Strings.apiKeysAdd,
-              onClick = { onAction(NewKey) },
-            )
-          }
-        },
       )
     },
   ) { innerPadding ->
@@ -137,6 +131,18 @@ private fun ApiKeysScaffold(
         scrollState = scrollState,
         contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         onAction = onAction,
+      )
+
+      CornerFabs(
+        end = {
+          AktualFab(
+            text = Strings.apiKeysFabAdd,
+            icon = AktualIcons.Add,
+            isVisible = state is Loaded,
+            isExpanded = scrollState.isScrollingUp(),
+            onClick = { onAction(NewKey) },
+          )
+        },
       )
     }
   }
@@ -215,6 +221,8 @@ private fun ApiKeysContent(
           repeat(times = 3) { ShimmerKeyItem() }
         }
 
+        // Room to scroll the last key out from under the add button
+        VerticalSpacer(FabClearance)
         BottomSpacing()
       }
     }

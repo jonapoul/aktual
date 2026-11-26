@@ -14,7 +14,6 @@ import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.LightBulb
 import aktual.core.icons.Location
 import aktual.core.icons.Refresh
-import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditPayeeNavigator
 import aktual.core.nav.EditRuleNavigator
@@ -29,8 +28,10 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.ListBottomSheet
@@ -40,12 +41,15 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SearchFab
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -155,11 +159,6 @@ private fun ListPayeesScaffold(
         title = { Text(text = Strings.payeesTitle) },
         actions = {
           if (state is Success) {
-            AktualIconButton(
-              imageVector = AktualIcons.SearchAlternate,
-              contentDescription = Strings.payeesSearch,
-              onClick = { onAction(OpenSearch) },
-            )
             ListPayeesMenu(onAction = handleAction)
           }
         },
@@ -182,6 +181,17 @@ private fun ListPayeesScaffold(
           padding = hazedTopBarContentPadding(hazeState, innerPadding),
         )
       }
+
+      CornerFabs(
+        start = {
+          SearchFab(
+            contentDescription = Strings.payeesSearch,
+            isVisible = state is Success,
+            isFaded = !listState.isScrollingUp(),
+            onClick = { onAction(OpenSearch) },
+          )
+        },
+      )
 
       confirmDelete?.let { payee ->
         DeletePayeeDialog(
@@ -383,7 +393,11 @@ private fun PayeesList(
       )
     }
 
-    item { BottomSpacing() }
+    item {
+      // Room to scroll the last payee out from under the search button
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
 

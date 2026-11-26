@@ -398,6 +398,7 @@
   <string name="api_keys_title">API keys</string>
   <string name="api_keys_message">API keys let other tools read and sync this budget without your password.</string>
   <string name="api_keys_add">Add key</string>
+  <string name="api_keys_fab_add">Add</string>
   <string name="api_keys_empty">No API keys found for this budget.</string>
   <string name="api_keys_failure">Failed to load API keys</string>
   <string name="api_keys_failure_default">Please try again.</string>
