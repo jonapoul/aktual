@@ -184,7 +184,6 @@ internal class BankSyncTestScope(
   suspend fun insertAccount(id: AccountId = ACCOUNT, offBudget: Boolean = false) =
     accountDao.insert(id = id, name = id.value, offBudget = offBudget)
 
-  @Suppress("LongParameterList")
   suspend fun insertLinkedAccount(
     id: AccountId,
     accountId: String = "provider-${id.value}",
@@ -291,7 +290,6 @@ internal fun runBankSyncTest(action: suspend BankSyncTestScope.() -> Unit) = run
  * A downloaded transaction's JSON with the fields providers send, plus any [extra] ones. JSON
  * rather than BankSyncTransaction, since value classes can't be varargs.
  */
-@Suppress("LongParameterList")
 internal fun bankTx(
   amount: String,
   date: String = "2026-09-30",

@@ -15,7 +15,6 @@ import kotlinx.serialization.json.Json
 
 // Inserts a schedule with its own payee, account and rule. The date condition's value is fixed to
 // the next date unless [date] passes other JSON, like a recurring config
-@Suppress("LongParameterList")
 suspend fun BudgetDatabase.insertSchedule(
   id: String,
   name: String?,
