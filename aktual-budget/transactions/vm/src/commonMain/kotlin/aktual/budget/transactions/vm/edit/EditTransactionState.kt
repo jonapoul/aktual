@@ -7,6 +7,8 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TransactionId
+import aktual.budget.payees.domain.PayeeMerge
+import aktual.budget.rules.domain.PayeeRename
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.tags.domain.TagLabel
 import aktual.budget.transactions.domain.SplitPart
@@ -224,13 +226,30 @@ sealed interface EditTransactionError {
   @JvmInline value class Deleting(val reason: String) : EditTransactionError
 
   @JvmInline value class CreatingTag(val reason: String) : EditTransactionError
+
+  @JvmInline value class MergingPayees(val reason: String) : EditTransactionError
 }
+
+// Payees that a saved edit left without transactions, offered to merge into the one they were
+// changed to. As upstream's merge-unused-payees modal
+@Immutable
+data class UnusedPayees(
+  val payees: ImmutableList<EntityOption<PayeeId>>,
+  val target: EntityOption<PayeeId>,
+)
 
 // Each of these closes the screen
 sealed interface EditTransactionEvent {
   data object Deleted : EditTransactionEvent
 
   data object Saved : EditTransactionEvent
+
+  // Saved, after merging the payees it left unused. Holds what undoMerge() needs
+  data class MergedPayees(
+    val payees: UnusedPayees,
+    val merge: PayeeMerge,
+    val rename: PayeeRename?,
+  ) : EditTransactionEvent
 
   data object Discarded : EditTransactionEvent
 

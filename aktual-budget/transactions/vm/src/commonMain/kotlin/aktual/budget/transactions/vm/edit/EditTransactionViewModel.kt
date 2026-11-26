@@ -18,7 +18,9 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.payees.domain.NearbyPayee
 import aktual.budget.payees.domain.PayeeLocations
+import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.rules.domain.LoadedRules
+import aktual.budget.rules.domain.PayeeRenameRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
 import aktual.budget.schedules.domain.Schedule
@@ -123,6 +125,8 @@ internal constructor(
   private val securityPreferences: SecurityPreferences,
   private val budgetScope: BudgetCoroutineScope,
   private val budgetSync: BudgetSync,
+  private val payeeMerger: PayeeMerger,
+  private val renameRules: PayeeRenameRules,
   preferencesDao: PreferencesDao,
   budgetCalculator: BudgetMonthCalculator,
   schedulesLoader: SchedulesLoader,
@@ -151,6 +155,7 @@ internal constructor(
   private val mutableNewPayees = MutableStateFlow<Map<PayeeId, String>>(emptyMap())
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableError = MutableStateFlow<EditTransactionError?>(null)
+  private val mutableUnusedPayees = MutableStateFlow<UnusedPayees?>(null)
   // Whether a saved transaction has gone, other than by deleting it here
   private val mutableIsGone = MutableStateFlow(false)
   // Whether what's saved changed under the draft in a way that saving it overwrites
@@ -249,6 +254,9 @@ internal constructor(
 
   // The reason the last save or delete failed, shown in a dialog
   val error: StateFlow<EditTransactionError?> = mutableError.asStateFlow()
+
+  // Set once a save leaves payees unused, until the user picks whether to merge them
+  val unusedPayees: StateFlow<UnusedPayees?> = mutableUnusedPayees.asStateFlow()
 
   val state: StateFlow<EditTransactionState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -848,13 +856,112 @@ internal constructor(
     // As upstream, only a date edit moves the other side, not one made before the pref was set
     val syncDates = syncTransferDate.value && draft.fields.date != saved.draft.fields.date
     launchSave {
+      var written = draft
       writer.write(runTransfers = true, syncTransferDates = syncDates, learnCategories = true) {
-        transactionDiff(id, saved.draft, withSavedPayees(draft))?.let { write(it) }
+        written = withSavedPayees(draft)
+        transactionDiff(id, saved.draft, written)?.let { write(it) }
       }
       loader.load(target.id)?.let { reloaded -> mutableSaved.update { reloaded.toSaved() } }
       closeDraft()
-      mutableEvents.tryEmit(EditTransactionEvent.Saved)
+      val unused = findUnusedPayees(before = saved.draft, after = written)
+      if (unused == null) {
+        mutableEvents.tryEmit(EditTransactionEvent.Saved)
+      } else {
+        mutableUnusedPayees.update { unused }
+      }
     }
+  }
+
+  // As upstream's detectOrphanPayees: the old payees with no transactions left, to merge into the
+  // first payee the edit changed to
+  private suspend fun findUnusedPayees(
+    before: TransactionDraft,
+    after: TransactionDraft,
+  ): UnusedPayees? =
+    runCatchingCancellable(
+      attempt = { unusedPayees(before, after) },
+      onFailure = { e ->
+        log.w(e) { "Failed finding unused payees" }
+        null
+      },
+    )
+
+  private suspend fun unusedPayees(before: TransactionDraft, after: TransactionDraft): UnusedPayees? {
+    val target = after.changedPayees(before).firstOrNull() ?: return null
+    if (target in mutableEntities.value?.transferAccounts.orEmpty()) return null
+    val old = before.payees() - after.payees()
+    if (old.isEmpty()) return null
+    val unused = payeeDao.unused()
+    val payees = old.filter { it in unused }.mapNotNull { id -> payeeOption(id) }
+    if (payees.isEmpty()) return null
+    val targetOption = payeeOption(target) ?: return null
+    return UnusedPayees(payees.toImmutableList(), targetOption)
+  }
+
+  private suspend fun payeeOption(id: PayeeId): EntityOption<PayeeId>? =
+    payeeDao.name(id)?.let { EntityOption(id, it) }
+
+  private fun TransactionDraft.payees(): Set<PayeeId> =
+    (listOf(fields.payee) + parts.map { it.payee }).filterNotNullTo(LinkedHashSet())
+
+  private fun TransactionDraft.changedPayees(before: TransactionDraft): List<PayeeId> {
+    val oldParts = before.parts.associate { it.id to it.payee }
+    val parent = fields.payee.takeIf { it != before.fields.payee }
+    val parts = parts.filter { it.payee != oldParts[it.id] }.map { it.payee }
+    return (listOf(parent) + parts).filterNotNull()
+  }
+
+  // Merges the unused payees, and if asked adds a rule renaming them when they're imported again
+  fun mergeUnusedPayees(addRenameRule: Boolean) {
+    val unused = mutableUnusedPayees.value ?: return
+    if (mutableIsWorking.value) return
+    mutableIsWorking.update { true }
+    viewModelScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          val merge = payeeMerger.merge(unused.target.id, unused.payees.map { it.id })
+          val rename =
+            if (merge != null && addRenameRule) {
+              renameRules.add(unused.payees.map { it.name }, unused.target.id)
+            } else {
+              null
+            }
+          mutableUnusedPayees.update { null }
+          val event =
+            if (merge == null) {
+              EditTransactionEvent.Saved
+            } else {
+              EditTransactionEvent.MergedPayees(unused, merge, rename)
+            }
+          mutableEvents.tryEmit(event)
+        },
+        onFailure = { e ->
+          log.e(e) { "Failed merging unused payees into ${unused.target.id}" }
+          mutableUnusedPayees.update { null }
+          mutableError.update { EditTransactionError.MergingPayees(e.requireMessage()) }
+        },
+        finally = { mutableIsWorking.update { false } },
+      )
+    }
+  }
+
+  // The undo snackbar outlives the screen, so this can't be tied to viewModelScope
+  fun undoMerge(event: EditTransactionEvent.MergedPayees) {
+    budgetScope.launch {
+      runCatchingCancellable(
+        attempt = {
+          event.rename?.let { renameRules.undo(it) }
+          payeeMerger.undo(event.merge)
+        },
+        onFailure = { e -> log.e(e) { "Failed undoing merge into ${event.payees.target.id}" } },
+      )
+    }
+  }
+
+  fun keepUnusedPayees() {
+    if (mutableUnusedPayees.value == null) return
+    mutableUnusedPayees.update { null }
+    mutableEvents.tryEmit(EditTransactionEvent.Saved)
   }
 
   private fun saveNew(draft: TransactionDraft) {

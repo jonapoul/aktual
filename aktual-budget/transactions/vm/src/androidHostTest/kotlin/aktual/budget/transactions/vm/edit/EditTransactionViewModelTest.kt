@@ -43,7 +43,10 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.localChange
 import aktual.budget.model.tombstone
 import aktual.budget.payees.domain.PayeeLocationsImpl
+import aktual.budget.payees.domain.PayeeMergerImpl
 import aktual.budget.rules.domain.CategoryLearner
+import aktual.budget.rules.domain.PayeeRename
+import aktual.budget.rules.domain.PayeeRenameRules
 import aktual.budget.rules.domain.TransactionRulesLoaderImpl
 import aktual.budget.schedules.domain.Schedule
 import aktual.budget.schedules.domain.SchedulesLoaderImpl
@@ -56,6 +59,7 @@ import aktual.budget.transactions.domain.TransactionDraft
 import aktual.budget.transactions.domain.TransactionFields
 import aktual.budget.transactions.domain.TransactionLoaderImpl
 import aktual.budget.transactions.domain.TransactionWriterImpl
+import aktual.budget.transactions.vm.edit.EditTransactionEvent.MergedPayees
 import aktual.budget.transactions.vm.edit.EditTransactionState.Loaded
 import aktual.budget.transactions.vm.edit.TransactionEditMode.Edit
 import aktual.budget.transactions.vm.test.DATE_1
@@ -89,8 +93,10 @@ import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.doesNotContain
 import assertk.assertions.each
 import assertk.assertions.extracting
 import assertk.assertions.isEmpty
@@ -105,6 +111,7 @@ import assertk.assertions.prop
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -630,6 +637,111 @@ class EditTransactionViewModelTest {
       viewModel.save()
 
       assertThatNextEmissionIsEqualTo(Saved)
+    }
+  }
+
+  @Test
+  fun `Changing from a payee that's now unused offers to merge it`() =
+    runSyncedTest { scope, database ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val sync = FakeBudgetSync(appliedTo = database)
+      val renames = FakePayeeRenameRules()
+      val viewModel = createViewModel(scope, id = "t", sync = sync, renames = renames)
+
+      viewModel.events.test {
+        viewModel.state.test {
+          awaitEdit()
+          cancelAndIgnoreRemainingEvents()
+        }
+        viewModel.setPayee(PayeeId("b"))
+        viewModel.save()
+        scope.advanceUntilIdle()
+        expectNoEvents()
+        val unused =
+          UnusedPayees(
+            payees = persistentListOf(EntityOption(PayeeId("a"), "Argos")),
+            target = EntityOption(PayeeId("b"), "B&Q"),
+          )
+        assertThat(viewModel.unusedPayees.value).isEqualTo(unused)
+
+        viewModel.mergeUnusedPayees(addRenameRule = true)
+        val merged = awaitItem()
+        assertThat(merged).isInstanceOf<MergedPayees>().prop(MergedPayees::payees).isEqualTo(unused)
+        assertThat(viewModel.unusedPayees.value).isNull()
+        assertThat(renames.added).containsExactly(listOf("Argos") to PayeeId("b"))
+        assertThat(PayeeDao(this@runSyncedTest).unused()).doesNotContain(PayeeId("a"))
+        assertThat(PayeeDao(this@runSyncedTest).get(PayeeId("a"))?.tombstone).isEqualTo(true)
+
+        viewModel.undoMerge(merged as MergedPayees)
+        scope.advanceUntilIdle()
+        assertThat(renames.undone).containsExactly(PayeeRename.Created(RuleId("rename")))
+        assertThat(PayeeDao(this@runSyncedTest).get(PayeeId("a"))?.tombstone).isEqualTo(false)
+      }
+    }
+
+  @Test
+  fun `Merging without the rename rule adds none`() = runSyncedTest { scope, database ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val renames = FakePayeeRenameRules()
+    val viewModel =
+      createViewModel(scope, sync = FakeBudgetSync(appliedTo = database), renames = renames)
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setPayee(PayeeId("b"))
+      viewModel.save()
+      scope.advanceUntilIdle()
+      viewModel.mergeUnusedPayees(addRenameRule = false)
+
+      assertThat(awaitItem()).isInstanceOf<MergedPayees>().prop(MergedPayees::rename).isNull()
+      assertThat(renames.added).isEmpty()
+    }
+  }
+
+  @Test
+  fun `Keeping unused payees closes without merging`() = runSyncedTest { scope, database ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    val viewModel = createViewModel(scope, sync = FakeBudgetSync(appliedTo = database))
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setPayee(PayeeId("b"))
+      viewModel.save()
+      scope.advanceUntilIdle()
+      viewModel.keepUnusedPayees()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+      assertThat(viewModel.unusedPayees.value).isNull()
+      assertThat(PayeeDao(this@runSyncedTest).unused()).contains(PayeeId("a"))
+    }
+  }
+
+  @Test
+  fun `A payee still in use isn't offered to merge`() = runSyncedTest { scope, database ->
+    insertEntities()
+    TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+    TransactionDao(this).insertTransaction("other", account = "a", category = "a", payee = "a")
+    val viewModel = createViewModel(scope, sync = FakeBudgetSync(appliedTo = database))
+
+    viewModel.events.test {
+      viewModel.state.test {
+        awaitEdit()
+        cancelAndIgnoreRemainingEvents()
+      }
+      viewModel.setPayee(PayeeId("b"))
+      viewModel.save()
+
+      assertThatNextEmissionIsEqualTo(Saved)
+      assertThat(viewModel.unusedPayees.value).isNull()
     }
   }
 
@@ -1978,6 +2090,7 @@ class EditTransactionViewModelTest {
     learner: CategoryLearner = CategoryLearner {},
     location: LocationProvider = FakeLocationProvider(),
     security: SecurityPreferences = FakeSecurityPreferences(),
+    renames: PayeeRenameRules = FakePayeeRenameRules(),
   ): EditTransactionViewModel {
     val contexts = TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler))
     val tags = tagsDao(scope)
@@ -2026,6 +2139,8 @@ class EditTransactionViewModelTest {
       securityPreferences = security,
       budgetScope = BudgetCoroutineScope(scope.backgroundScope),
       budgetSync = sync,
+      payeeMerger = PayeeMergerImpl(payeeDao, sync),
+      renameRules = renames,
       preferencesDao = PreferencesDao(this, contexts),
       budgetCalculator =
         BudgetMonthCalculatorImpl(
@@ -2045,6 +2160,20 @@ class EditTransactionViewModelTest {
       tagsDao = tags,
       viewModelContext = scope.viewModelContext,
     )
+  }
+
+  private class FakePayeeRenameRules : PayeeRenameRules {
+    val added = mutableListOf<Pair<Collection<String>, PayeeId>>()
+    val undone = mutableListOf<PayeeRename>()
+
+    override suspend fun add(fromNames: Collection<String>, to: PayeeId): PayeeRename {
+      added += fromNames to to
+      return PayeeRename.Created(RuleId("rename"))
+    }
+
+    override suspend fun undo(rename: PayeeRename) {
+      undone += rename
+    }
   }
 
   private class FakeLocationProvider(
