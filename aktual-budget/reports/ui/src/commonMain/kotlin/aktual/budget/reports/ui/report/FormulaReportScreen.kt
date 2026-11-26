@@ -360,7 +360,7 @@ internal fun FormulaReportScaffold(
         }
       }
 
-      // Discard stops editing, with a prompt if there are changes
+      // Discard asks, then stops editing. Back stops editing too, with nothing to discard
       Column(modifier = Modifier.align(BottomCenter)) {
         EditFabs(
           saveText = Strings.reportsFormulaEditorSave,
@@ -368,6 +368,7 @@ internal fun FormulaReportScaffold(
           onSave = { onAction(Save) },
           onDiscard = { onAction(StopEditing) },
           isSaveVisible = loaded?.isEditing == true,
+          isDiscardVisible = loaded?.isEditing == true && loaded.hasChanges,
           canSave = loaded?.hasChanges == true,
           isExpanded = scrollState.isScrollingUp(),
           saveModifier = Modifier.testTag(Tags.SaveReport),
