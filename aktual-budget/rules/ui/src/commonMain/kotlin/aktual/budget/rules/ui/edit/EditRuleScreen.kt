@@ -227,6 +227,7 @@ private fun EditRuleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         state = state,
         mode = mode,
+        onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavBack) },
         onShowMatches = { showMatches = true },
         onDelete = { showDeleteDialog = true },
         onAction = onAction,
@@ -329,6 +330,7 @@ private fun EditRuleScaffold(
 private fun EditRuleTopBar(
   state: EditRuleState,
   mode: Mode,
+  onBack: () -> Unit,
   onShowMatches: () -> Unit,
   onDelete: () -> Unit,
   onAction: OnAction<EditRuleAction>,
@@ -337,7 +339,7 @@ private fun EditRuleTopBar(
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton { onAction(NavBack) } },
+    navigationIcon = { NavBackIconButton(onClick = onBack) },
     title = {
       Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
     },

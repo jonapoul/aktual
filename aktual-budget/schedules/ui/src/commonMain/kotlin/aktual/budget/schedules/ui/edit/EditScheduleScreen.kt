@@ -218,7 +218,11 @@ private fun EditScheduleScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
+        navigationIcon = {
+          NavBackIconButton(
+            onClick = { if (hasChanges) dialog = Discard else onAction(NavigateBack) },
+          )
+        },
         title = {
           Text(
             if (loaded?.isNew == true) {

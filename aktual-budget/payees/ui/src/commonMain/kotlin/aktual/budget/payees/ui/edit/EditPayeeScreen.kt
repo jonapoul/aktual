@@ -243,7 +243,7 @@ private fun EditPayeeScaffold(
         editing = editing,
         hazeState = hazeState,
         scrollState = scrollState,
-        onAction = onAction,
+        onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavigateBack) },
       )
     },
   ) { innerPadding ->
@@ -326,12 +326,12 @@ private fun EditPayeeTopBar(
   editing: Editing?,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
-  onAction: OnAction<EditPayeeAction>,
+  onBack: () -> Unit,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
+    navigationIcon = { NavBackIconButton(onClick = onBack) },
     title = { if (editing != null) Text(text = Strings.payeesEditTitle) },
   )
 }

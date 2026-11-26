@@ -178,7 +178,7 @@ private fun EditTagScaffold(
         editing = editing,
         hazeState = hazeState,
         scrollState = scrollState,
-        onAction = onAction,
+        onBack = { if (hasChanges) showDiscardDialog = true else onAction(NavigateBack) },
       )
     },
   ) { innerPadding ->
@@ -256,12 +256,12 @@ private fun EditTagTopBar(
   editing: EditTagState.Editing?,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
-  onAction: OnAction<EditTagAction>,
+  onBack: () -> Unit,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
+    navigationIcon = { NavBackIconButton(onClick = onBack) },
     title = {
       editing?.let {
         Text(text = if (it.isNew) Strings.tagsCreateTitle else Strings.tagsEditTitle)
