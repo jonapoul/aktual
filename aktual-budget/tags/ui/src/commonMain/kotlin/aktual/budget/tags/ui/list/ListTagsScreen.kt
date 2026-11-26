@@ -13,7 +13,6 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Refresh
-import aktual.core.icons.SearchAlternate
 import aktual.core.icons.ViewHide
 import aktual.core.icons.ViewShow
 import aktual.core.icons.material.MaterialIcons
@@ -26,7 +25,13 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualFab
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.CornerFabs
+import aktual.core.ui.FabClearance
+import aktual.core.ui.SearchFab
+import aktual.core.ui.isScrollingUp
+import alakazam.compose.VerticalSpacer
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -161,18 +166,6 @@ private fun ListTagsScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.tagsTitle) },
         actions = {
-          if (successState != null) {
-            AktualIconButton(
-              imageVector = AktualIcons.SearchAlternate,
-              contentDescription = Strings.tagsSearch,
-              onClick = { onAction(OpenSearch) },
-            )
-          }
-          AktualIconButton(
-            imageVector = AktualIcons.Add,
-            contentDescription = Strings.tagsCreate,
-            onClick = { onAction(CreateTag) },
-          )
           // also shown when empty, since hiding every tag leaves the list empty
           if (successState != null || state == Empty) {
             ListTagsMenu(
@@ -202,6 +195,27 @@ private fun ListTagsScaffold(
           padding = hazedTopBarContentPadding(hazeState, innerPadding),
         )
       }
+
+      val isExpanded = listState.isScrollingUp()
+      CornerFabs(
+        start = {
+          SearchFab(
+            text = Strings.tagsSearch,
+            isVisible = successState != null,
+            isExpanded = isExpanded,
+            onClick = { onAction(OpenSearch) },
+          )
+        },
+        end = {
+          AktualFab(
+            text = Strings.tagsCreate,
+            icon = AktualIcons.Add,
+            isVisible = state != Empty,
+            isExpanded = isExpanded,
+            onClick = { onAction(CreateTag) },
+          )
+        },
+      )
     }
   }
 }
@@ -291,7 +305,11 @@ private fun TagsList(
       )
     }
 
-    item { BottomSpacing() }
+    item {
+      // Room to scroll the last tag out from under the FABs
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
 

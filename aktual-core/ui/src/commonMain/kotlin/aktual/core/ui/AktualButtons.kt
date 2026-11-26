@@ -16,7 +16,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,9 +47,9 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -114,7 +118,7 @@ fun AktualButton(
 }
 
 // Floating action button. Collapsing hides the text and fades it a little, e.g. while scrolling
-// down a list
+// down a list. Showing and hiding slides it in from and out to the bottom of the screen
 @Composable
 fun AktualFab(
   text: String,
@@ -122,6 +126,7 @@ fun AktualFab(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   kind: ButtonKind = Primary,
+  isVisible: Boolean = true,
   isExpanded: Boolean = true,
   isEnabled: Boolean = true,
   isLoading: Boolean = false,
@@ -130,18 +135,25 @@ fun AktualFab(
   val alpha by animateFloatAsState(if (isExpanded) 1f else FAB_COLLAPSED_ALPHA)
   val enabled = isEnabled && !isLoading
 
-  BasicTextButton(
-    text = text,
-    colors = { pressed -> themeColors.buttonColors(kind, pressed) },
-    onClick = onClick,
-    modifier = modifier.alpha(alpha),
-    isEnabled = enabled,
-    contentPadding = FabPadding,
-    shape = RounderCardShape,
-    border = themeColors.buttonBorder(kind, enabled),
+  AnimatedVisibility(
+    modifier = modifier,
+    visible = isVisible,
+    enter = slideInVertically { it } + scaleIn(initialScale = FAB_HIDDEN_SCALE) + fadeIn(),
+    exit = slideOutVertically { it } + scaleOut(targetScale = FAB_HIDDEN_SCALE) + fadeOut(),
   ) {
-    LoadingTextButtonContent(isLoading, themeColors.buttonColors(kind, false).contentColor) {
-      FabContent(text, icon, isExpanded)
+    BasicTextButton(
+      text = text,
+      colors = { pressed -> themeColors.buttonColors(kind, pressed) },
+      onClick = onClick,
+      modifier = Modifier.alpha(alpha),
+      isEnabled = enabled,
+      contentPadding = FabPadding,
+      shape = RounderCardShape,
+      border = themeColors.buttonBorder(kind, enabled),
+    ) {
+      LoadingTextButtonContent(isLoading, themeColors.buttonColors(kind, false).contentColor) {
+        FabContent(text, icon, isExpanded)
+      }
     }
   }
 }
@@ -170,6 +182,7 @@ private fun FabContent(text: String, icon: ImageVector, isExpanded: Boolean) {
 }
 
 private const val FAB_COLLAPSED_ALPHA = 0.6f
+private const val FAB_HIDDEN_SCALE = 0.8f
 private val FabPadding = PaddingValues(16.dp)
 private val FabContentHeight = 24.dp
 private val FabIconSize = 24.dp
