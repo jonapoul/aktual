@@ -14,7 +14,6 @@ import aktual.core.icons.Tuning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ZoomOut
 import aktual.core.l10n.Strings
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualProgressIndicator
 import aktual.core.ui.AktualTheme.colors
@@ -22,21 +21,26 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.EditFabs
+import aktual.core.ui.FabClearance
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -46,7 +50,6 @@ import androidx.compose.ui.unit.dp
 internal fun ReportEditorTopBar(
   title: String,
   hasChanges: Boolean,
-  canSave: Boolean,
   canEdit: Boolean,
   preview: ChartData?,
   zoom: ChartZoomState,
@@ -70,23 +73,6 @@ internal fun ReportEditorTopBar(
       }
     },
     actions = {
-      if (hasChanges) {
-        AktualButton(
-          modifier = Modifier.testTag(Tags.RevertReport),
-          kind = Bare,
-          text = Strings.reportsCustomEditorRevert,
-          onClick = { onAction(Revert) },
-        )
-      }
-      if (canSave) {
-        AktualButton(
-          kind = Primary,
-          modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
-          text = Strings.reportsFormulaEditorSave,
-          shape = CircleShape,
-          onClick = { onAction(Save) },
-        )
-      }
       if (zoom.isZoomed) {
         AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ResetZoom),
@@ -115,10 +101,32 @@ internal fun ReportEditorTopBar(
     },
   )
 
+// Revert keeps the screen open, unlike leaving with unsaved changes
+@Composable
+internal fun BoxScope.ReportEditorFabs(
+  hasChanges: Boolean,
+  canSave: Boolean,
+  onAction: (ReportEditorAction) -> Unit,
+) =
+  Column(modifier = Modifier.align(BottomCenter)) {
+    EditFabs(
+      saveText = Strings.reportsFormulaEditorSave,
+      discardText = Strings.reportsCustomEditorRevert,
+      onSave = { onAction(Save) },
+      onDiscard = { onAction(Revert) },
+      isSaveVisible = canSave,
+      isDiscardVisible = hasChanges,
+      saveModifier = Modifier.testTag(Tags.SaveReport),
+      discardModifier = Modifier.testTag(Tags.RevertReport),
+    )
+    BottomSpacing()
+  }
+
 @Composable
 internal fun ReportEditorContent(
   preview: ChartData?,
   zoom: ChartZoomState,
+  hasFabs: Boolean,
   modifier: Modifier = Modifier,
   onChartAction: OnAction<ChartAction> = OnAction<ChartAction> {},
   below: @Composable ColumnScope.() -> Unit = {},
@@ -131,8 +139,16 @@ internal fun ReportEditorContent(
       onAction = onChartAction,
     )
     below()
+    FabSpace(isVisible = hasFabs)
     BottomSpacing()
   }
+
+// Shrinks a chart that fills the screen while FABs show, so they don't cover it
+@Composable
+internal fun FabSpace(isVisible: Boolean) {
+  val height by animateDpAsState(if (isVisible) FabClearance else 0.dp)
+  VerticalSpacer(height)
+}
 
 @Composable
 private fun ChartCard(

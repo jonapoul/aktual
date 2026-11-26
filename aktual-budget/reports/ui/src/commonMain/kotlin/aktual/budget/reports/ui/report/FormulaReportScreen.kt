@@ -22,7 +22,6 @@ import aktual.budget.reports.vm.withoutQuery
 import aktual.budget.rules.components.label
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.Delete
 import aktual.core.icons.Pencil1
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -38,6 +37,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
+import aktual.core.ui.EditFabs
 import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
@@ -50,6 +50,7 @@ import aktual.core.ui.disambiguated
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.switch
 import aktual.core.ui.transparentTopAppBarColors
@@ -353,9 +354,26 @@ internal fun FormulaReportScaffold(
               isEditing = state.isEditing,
               onAction = onAction,
             )
+            FabSpace(isVisible = state.isEditing)
             BottomSpacing()
           }
         }
+      }
+
+      // Discard stops editing, with a prompt if there are changes
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.reportsFormulaEditorSave,
+          discardText = Strings.reportsFormulaEditorClose,
+          onSave = { onAction(Save) },
+          onDiscard = { onAction(StopEditing) },
+          isSaveVisible = loaded?.isEditing == true,
+          canSave = loaded?.hasChanges == true,
+          isExpanded = scrollState.isScrollingUp(),
+          saveModifier = Modifier.testTag(Tags.SaveReport),
+          discardModifier = Modifier.testTag(Tags.CloseEditor),
+        )
+        BottomSpacing()
       }
     }
   }
@@ -373,18 +391,7 @@ private fun FormulaReportTopBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
-      AnimatedContent(targetState = isEditing, transitionSpec = { swap() }) { editing ->
-        if (editing) {
-          AktualIconButton(
-            modifier = Modifier.testTag(Tags.CloseEditor),
-            imageVector = AktualIcons.Delete,
-            contentDescription = Strings.reportsFormulaEditorClose,
-            onClick = { onAction(StopEditing) },
-          )
-        } else {
-          NavBackIconButton(onClick = { onAction(Back) })
-        }
-      }
+      NavBackIconButton(onClick = { onAction(if (isEditing) StopEditing else Back) })
     },
     title = {
       val name = loaded?.draft?.name?.takeUnless { it.isBlank() }
@@ -403,16 +410,7 @@ private fun FormulaReportTopBar(
     },
     actions = {
       AnimatedContent(targetState = isEditing, transitionSpec = { swap() }) { editing ->
-        if (editing) {
-          AktualButton(
-            kind = Primary,
-            modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
-            text = Strings.reportsFormulaEditorSave,
-            shape = CircleShape,
-            isEnabled = loaded?.hasChanges == true,
-            onClick = { onAction(Save) },
-          )
-        } else if (loaded != null) {
+        if (!editing && loaded != null) {
           AktualIconButton(
             kind = Primary,
             modifier = Modifier.padding(horizontal = 8.dp).testTag(Tags.EditReport),

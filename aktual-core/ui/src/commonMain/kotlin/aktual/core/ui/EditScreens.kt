@@ -13,23 +13,6 @@ import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Modifier
 
-// Red toolbar button replacing the back button once a screen has unsaved changes. Edit screens
-// with room for FABs use the discard in [EditFabs] instead
-@Composable
-fun DiscardChangesButton(
-  contentDescription: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  BasicIconButton(
-    modifier = modifier,
-    imageVector = AktualIcons.Delete,
-    contentDescription = contentDescription,
-    colors = DiscardColors,
-    onClick = onClick,
-  )
-}
-
 @Composable
 fun DiscardChangesDialog(
   title: String,
@@ -70,13 +53,15 @@ fun EditFabs(
   canSave: Boolean = true,
   isSaving: Boolean = false,
   isExpanded: Boolean = true,
+  saveModifier: Modifier = Modifier,
+  discardModifier: Modifier = Modifier,
 ) {
   Box(
     modifier =
       modifier.fillMaxWidth().padding(start = Dimens.Huge, end = Dimens.Huge, bottom = Dimens.Huge),
   ) {
     AktualFab(
-      modifier = Modifier.align(BottomStart),
+      modifier = discardModifier.align(BottomStart),
       text = discardText,
       icon = AktualIcons.Delete,
       kind = Destructive,
@@ -88,7 +73,7 @@ fun EditFabs(
     )
 
     AktualFab(
-      modifier = Modifier.align(BottomEnd),
+      modifier = saveModifier.align(BottomEnd),
       text = saveText,
       icon = AktualIcons.Check,
       isVisible = isSaveVisible,
@@ -98,8 +83,4 @@ fun EditFabs(
       onClick = onSave,
     )
   }
-}
-
-private val DiscardColors = IconButtonColorProvider { colors, isPressed ->
-  colors.bareIconButton(isPressed).copy(contentColor = colors.errorText)
 }

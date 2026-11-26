@@ -43,7 +43,7 @@ In `AktualAlertDialog` button slots (and `AktualDatePickerDialog` confirm/dismis
 
 ## Edit screens
 
-Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`: `DiscardChangesButton` in place of the back button once there are changes, `DiscardChangesDialog` (pass the screen's own strings) when it or `BackHandler` fires, and `SaveFab` bottom-end above the snackbar host, passing `isExpanded = scrollState.isScrollingUp()`. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FAB. `EditRuleScreen` is the reference.
+Screens that edit an entity with unsaved-change tracking use the pieces in `EditScreens.kt`. Put `EditFabs` along the bottom of the screen's `Box` (above the snackbar host if it has one, then `BottomSpacing`): an icon-only discard FAB at the start and save at the end, both toggled with `isSaveVisible` / `isDiscardVisible` and passing `isExpanded = scrollState.isScrollingUp()`. Keep the plain back button in the toolbar, but make it, the discard FAB and `BackHandler` all open `DiscardChangesDialog` (pass the screen's own strings) when there are changes. End the scroll content with `FabClearance` + `BottomSpacing` so the last item can scroll out from under the FABs. `EditRuleScreen` is the reference.
 
 ## FABs
 
