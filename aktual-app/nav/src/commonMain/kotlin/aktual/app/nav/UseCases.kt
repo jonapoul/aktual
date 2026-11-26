@@ -1,5 +1,3 @@
-@file:Suppress("LongParameterList")
-
 package aktual.app.nav
 
 import aktual.budget.model.Currency

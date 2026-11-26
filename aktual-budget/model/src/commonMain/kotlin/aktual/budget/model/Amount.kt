@@ -64,7 +64,6 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     }
   }
 
-  @Suppress("MagicNumber")
   private fun StringBuilder.appendNumber(
     numberFormatConfig: NumberFormatConfig,
     currency: Currency,

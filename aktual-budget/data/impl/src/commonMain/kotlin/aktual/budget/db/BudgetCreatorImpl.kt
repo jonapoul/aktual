@@ -79,7 +79,6 @@ internal constructor(
   }
 
   // Migrations 1722804019000_create_dashboard_table and 1765518577215_multiple_dashboards
-  @Suppress("MagicNumber")
   private suspend fun SqlDriver.insertDashboard() {
     val pageId = uuids()
     execute(null, "INSERT INTO dashboard_pages (id, name, sort_order) VALUES (?, ?, ?)", 3) {

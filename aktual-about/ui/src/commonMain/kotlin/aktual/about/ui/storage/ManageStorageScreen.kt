@@ -386,7 +386,6 @@ private fun rememberSlices(
   colors: ImmutableList<Color>,
 ): ImmutableList<PieSlice> =
   remember(state, colors) {
-    @Suppress("BuildListAdds")
     buildList {
       state.budgets.forEachIndexed { index, budget ->
         +PieSlice(value = budget.size.numBytes.toFloat(), color = colors[index])
@@ -537,7 +536,6 @@ private fun percentTotalStorage(state: ManageStorageState.Loaded): String {
   return Strings.storagePercent(percentString)
 }
 
-@Suppress("MagicNumber")
 private val PreviewLoadedState =
   ManageStorageState.Loaded(
     totalSize = 52_428_800L.bytes,

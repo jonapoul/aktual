@@ -1,5 +1,8 @@
 <lint>
-    <!-- https://slackhq.github.io/compose-lints/rules/ -->
-    <issue id="ComposeCompositionLocalUsage" severity="ignore"/>
-    <issue id="ComposeM2Api" severity="error"/>
+  <!-- https://slackhq.github.io/compose-lints/rules/ -->
+  <issue id="ComposeCompositionLocalUsage" severity="ignore" />
+  <issue id="ComposeM2Api" severity="error" />
+
+  <!-- https://googlesamples.github.io/android-custom-lint-rules/checks/BuildListAdds.md.html -->
+  <issue id="BuildListAdds" severity="ignore" />
 </lint>

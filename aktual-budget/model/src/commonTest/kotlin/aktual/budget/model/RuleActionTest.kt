@@ -1,5 +1,3 @@
-@file:Suppress("JUnitMalformedDeclaration")
-
 package aktual.budget.model
 
 import app.cash.burst.Burst

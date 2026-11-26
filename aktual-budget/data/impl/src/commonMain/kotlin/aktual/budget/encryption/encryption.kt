@@ -119,7 +119,7 @@ internal fun encryptToSink(
   }
 
   // In GCM mode, the last AUTH_TAG_LENGTH bits are the authentication tag
-  @Suppress("MagicNumber") val authTagLengthBytes = AUTH_TAG_LENGTH / BITS_PER_BYTE
+  val authTagLengthBytes = AUTH_TAG_LENGTH / BITS_PER_BYTE
   val totalSize = encryptedWithTag.size
   val ciphertextSize = totalSize - authTagLengthBytes
 

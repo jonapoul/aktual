@@ -250,15 +250,18 @@ private data class BottomBarParams(
   val budgetName: String? = null,
 )
 
-@Suppress("StringLiteralDuplication")
 private class BottomBarProvider :
   ColorParamsProvider<BottomBarParams>(
-    BottomBarParams(state = Success, budgetName = "My Budget"),
-    BottomBarParams(state = Success, syncState = NoToken, budgetName = "My Budget"),
-    BottomBarParams(state = Success, syncState = SyncFailed("abc"), budgetName = "My Budget"),
-    BottomBarParams(state = Success, syncState = ClockDrift, budgetName = "My Budget"),
-    BottomBarParams(state = Success, syncState = FileNotFound, budgetName = "My Budget"),
-    BottomBarParams(state = Success, syncState = Syncing, budgetName = "My Budget"),
+    BottomBarParams(state = Success, budgetName = NAME),
+    BottomBarParams(state = Success, syncState = NoToken, budgetName = NAME),
+    BottomBarParams(state = Success, syncState = SyncFailed("abc"), budgetName = NAME),
+    BottomBarParams(state = Success, syncState = ClockDrift, budgetName = NAME),
+    BottomBarParams(state = Success, syncState = FileNotFound, budgetName = NAME),
+    BottomBarParams(state = Success, syncState = Syncing, budgetName = NAME),
     BottomBarParams(state = Failure),
     BottomBarParams(state = Unknown),
-  )
+  ) {
+  private companion object {
+    const val NAME = "My Budget"
+  }
+}

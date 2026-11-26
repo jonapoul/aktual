@@ -215,5 +215,4 @@ private val MODES = persistentListOf<SankeyMode>(Spent, Budgeted)
 
 private val SORTS = persistentListOf<CategorySort>(PerGroup, Global, BudgetOrder)
 
-@Suppress("MagicNumber")
 private val TOP_N_OPTIONS = persistentListOf(ALL_SANKEY_CATEGORIES, 10, 15, 20, 25, 30)

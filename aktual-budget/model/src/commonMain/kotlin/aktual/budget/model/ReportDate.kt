@@ -22,7 +22,6 @@ sealed interface ReportDate {
   companion object {
     private const val SEPARATOR = "-"
 
-    @Suppress("MagicNumber")
     fun parse(string: String): ReportDate =
       when (string.split(SEPARATOR).size) {
         2 -> Month(YearMonth.parse(string))

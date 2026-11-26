@@ -10,7 +10,6 @@ import app.cash.sqldelight.db.SqlDriver
  * Links a few demo accounts to made-up banks, so bank sync has something to sync through
  * [DemoBankSyncApi]. Two SimpleFIN accounts so syncing everything takes the batch path too.
  */
-@Suppress("MagicNumber")
 internal suspend fun SqlDriver.linkDemoBankAccounts(uuidGenerator: UuidGenerator) {
   DemoLinks.forEachIndexed { index, (account, bank, source) ->
     val bankId = uuidGenerator()

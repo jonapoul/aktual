@@ -30,7 +30,6 @@ internal class FileLogWriter(
       val logFile = logDirectory / LogFileFormat.fileName(localTime.date)
       fileSystem.appendingSink(logFile).buffer().use { sink -> sink.writeUtf8(logLine) }
 
-      @Suppress("MagicNumber")
       if (time.epochSeconds % 100 == 0L) {
         cleanOldLogs()
       }

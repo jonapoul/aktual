@@ -315,7 +315,6 @@ class BankSyncViewModelTest {
     database.banksQueries.insert(id = id, bank_id = BankId(id.toString()), name = name)
   }
 
-  @Suppress("LongParameterList")
   private suspend fun TestContext.insertAccount(
     id: String,
     name: String,

@@ -159,7 +159,6 @@ internal constructor(
     }
 
   // Hue in degrees from 0 to 360, with greys given -1 so they group together at the start
-  @Suppress("MagicNumber")
   private fun Color.hue(): Float {
     val max = maxOf(red, green, blue)
     val delta = max - minOf(red, green, blue)
