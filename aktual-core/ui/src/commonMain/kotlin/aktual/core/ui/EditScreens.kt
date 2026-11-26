@@ -4,12 +4,17 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.Delete
 import aktual.core.ui.AktualTheme.colors
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Modifier
 
-// Red toolbar button replacing the back button once an edit screen has unsaved changes
+// Red toolbar button replacing the back button once a screen has unsaved changes. Edit screens
+// with room for FABs use the discard in [EditFabs] instead
 @Composable
 fun DiscardChangesButton(
   contentDescription: String,
@@ -48,26 +53,51 @@ fun DiscardChangesDialog(
   )
 }
 
+/**
+ * Save and discard FABs along the bottom of an edit screen: an icon-only discard at the start and
+ * save at the end. Both collapse and fade while the content scrolls down, like [CornerFabs]. Pass
+ * the screen's own strings.
+ */
 @Composable
-fun SaveFab(
-  isVisible: Boolean,
-  text: String,
-  isEnabled: Boolean,
-  isLoading: Boolean,
-  onClick: () -> Unit,
+fun EditFabs(
+  saveText: String,
+  discardText: String,
+  onSave: () -> Unit,
+  onDiscard: () -> Unit,
   modifier: Modifier = Modifier,
+  isSaveVisible: Boolean = true,
+  isDiscardVisible: Boolean = isSaveVisible,
+  canSave: Boolean = true,
+  isSaving: Boolean = false,
   isExpanded: Boolean = true,
 ) {
-  AktualFab(
-    modifier = modifier.padding(end = Dimens.Huge, bottom = Dimens.Huge),
-    text = text,
-    icon = AktualIcons.Check,
-    isVisible = isVisible,
-    isExpanded = isExpanded,
-    isEnabled = isEnabled,
-    isLoading = isLoading,
-    onClick = onClick,
-  )
+  Box(
+    modifier =
+      modifier.fillMaxWidth().padding(start = Dimens.Huge, end = Dimens.Huge, bottom = Dimens.Huge),
+  ) {
+    AktualFab(
+      modifier = Modifier.align(BottomStart),
+      text = discardText,
+      icon = AktualIcons.Delete,
+      kind = Destructive,
+      isVisible = isDiscardVisible,
+      isExpanded = false,
+      isFaded = !isExpanded,
+      isEnabled = !isSaving,
+      onClick = onDiscard,
+    )
+
+    AktualFab(
+      modifier = Modifier.align(BottomEnd),
+      text = saveText,
+      icon = AktualIcons.Check,
+      isVisible = isSaveVisible,
+      isExpanded = isExpanded,
+      isEnabled = canSave,
+      isLoading = isSaving,
+      onClick = onSave,
+    )
+  }
 }
 
 private val DiscardColors = IconButtonColorProvider { colors, isPressed ->

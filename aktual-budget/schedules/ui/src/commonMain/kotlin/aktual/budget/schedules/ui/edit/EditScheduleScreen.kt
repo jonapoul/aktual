@@ -44,7 +44,7 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
-import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.EditFabs
 import aktual.core.ui.DiscardChangesDialog
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
@@ -55,7 +55,6 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.SaveFab
 import aktual.core.ui.SectionLabel
 import aktual.core.ui.SettingDivider
 import aktual.core.ui.SettingRow
@@ -219,16 +218,7 @@ private fun EditScheduleScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = {
-          if (hasChanges) {
-            DiscardChangesButton(
-              contentDescription = Strings.editScheduleDiscardConfirm,
-              onClick = { dialog = Discard },
-            )
-          } else {
-            NavBackIconButton(onClick = { onAction(NavigateBack) })
-          }
-        },
+        navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
         title = {
           Text(
             if (loaded?.isNew == true) {
@@ -285,7 +275,12 @@ private fun EditScheduleScaffold(
         modifier = Modifier.align(BottomEnd).fillMaxWidth(),
         horizontalAlignment = Alignment.End,
       ) {
-        SaveButton(state = loaded, scrollState = scrollState, onAction = onAction)
+        SaveDiscardFabs(
+          state = loaded,
+          scrollState = scrollState,
+          onDiscard = { dialog = Discard },
+          onAction = onAction,
+        )
         SnackbarHost(
           hostState = snackbarHostState,
           modifier = Modifier.align(CenterHorizontally),
@@ -303,19 +298,23 @@ private fun EditScheduleScaffold(
   }
 }
 
-// New schedules always show it, since there's nothing saved to compare against
+// New schedules always show save, since there's nothing saved to compare against
 @Composable
-private fun SaveButton(
+private fun SaveDiscardFabs(
   state: EditScheduleState.Loaded?,
   scrollState: ScrollState,
+  onDiscard: () -> Unit,
   onAction: OnAction<EditScheduleAction>,
 ) {
-  SaveFab(
-    isVisible = state != null && (state.isNew || state.hasChanges),
-    text = if (state?.isNew == true) Strings.editScheduleCreate else Strings.editScheduleSave,
-    isEnabled = state?.canSave == true,
-    isLoading = state?.isWorking == true,
-    onClick = { onAction(SaveSchedule) },
+  EditFabs(
+    saveText = if (state?.isNew == true) Strings.editScheduleCreate else Strings.editScheduleSave,
+    discardText = Strings.editScheduleDiscardConfirm,
+    onSave = { onAction(SaveSchedule) },
+    onDiscard = onDiscard,
+    isSaveVisible = state != null && (state.isNew || state.hasChanges),
+    isDiscardVisible = state?.hasChanges == true,
+    canSave = state?.canSave == true,
+    isSaving = state?.isWorking == true,
     isExpanded = scrollState.isScrollingUp(),
   )
 }

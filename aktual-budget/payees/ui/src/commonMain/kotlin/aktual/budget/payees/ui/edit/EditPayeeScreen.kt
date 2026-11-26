@@ -28,8 +28,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
 import aktual.core.icons.Delete
 import aktual.core.icons.Location
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Save
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.model.Coordinates
@@ -50,7 +48,9 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
-import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.EditFabs
+import aktual.core.ui.FabClearance
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.DiscardChangesDialog
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -72,6 +72,7 @@ import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -103,6 +104,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -239,12 +241,9 @@ private fun EditPayeeScaffold(
     topBar = {
       EditPayeeTopBar(
         editing = editing,
-        hasChanges = hasChanges,
-        saveEnabled = canSave,
         hazeState = hazeState,
         scrollState = scrollState,
         onAction = onAction,
-        onRequestDiscard = { showDiscardDialog = true },
       )
     },
   ) { innerPadding ->
@@ -287,6 +286,20 @@ private fun EditPayeeScaffold(
           )
       }
 
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.payeesEditSave,
+          discardText = Strings.payeesDiscardConfirm,
+          onSave = { onAction(SavePayee) },
+          onDiscard = { showDiscardDialog = true },
+          isSaveVisible = hasChanges && editing?.payee?.isTransfer == false,
+          isDiscardVisible = hasChanges,
+          canSave = canSave,
+          isExpanded = scrollState.isScrollingUp(),
+        )
+        BottomSpacing()
+      }
+
       if (showDiscardDialog) {
         DiscardChangesDialog(
           title = Strings.payeesDiscardTitle,
@@ -311,37 +324,15 @@ private fun EditPayeeScaffold(
 @Composable
 private fun EditPayeeTopBar(
   editing: Editing?,
-  hasChanges: Boolean,
-  saveEnabled: Boolean,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
   onAction: OnAction<EditPayeeAction>,
-  onRequestDiscard: () -> Unit,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = {
-      if (hasChanges) {
-        DiscardChangesButton(
-          contentDescription = Strings.payeesDiscardConfirm,
-          onClick = onRequestDiscard,
-        )
-      } else {
-        NavBackIconButton(onClick = { onAction(NavigateBack) })
-      }
-    },
+    navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
     title = { if (editing != null) Text(text = Strings.payeesEditTitle) },
-    actions = {
-      if (editing != null && !editing.payee.isTransfer) {
-        AktualIconButton(
-          imageVector = MaterialIcons.Save,
-          contentDescription = Strings.payeesEditSave,
-          isEnabled = saveEnabled,
-          onClick = { onAction(SavePayee) },
-        )
-      }
-    },
   )
 }
 
@@ -442,6 +433,8 @@ private fun EditPayeeContent(
       EditPayeeCard { LocationsField(locations, onAction) }
     }
 
+    // Room to scroll the last field out from under the save button
+    VerticalSpacer(FabClearance)
     BottomSpacing()
   }
 }

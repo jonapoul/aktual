@@ -45,8 +45,8 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
-import aktual.core.ui.DiscardChangesButton
 import aktual.core.ui.DiscardChangesDialog
+import aktual.core.ui.EditFabs
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HostedSheet
@@ -55,7 +55,6 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.SaveFab
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
@@ -228,7 +227,6 @@ private fun EditRuleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         state = state,
         mode = mode,
-        onDiscard = { showDiscardDialog = true },
         onShowMatches = { showMatches = true },
         onDelete = { showDeleteDialog = true },
         onAction = onAction,
@@ -277,7 +275,13 @@ private fun EditRuleScaffold(
       // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
       // when the button hides after saving
       Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
-        SaveButton(state = state, mode = mode, listState = listState, onAction = onAction)
+        SaveDiscardFabs(
+          state = state,
+          mode = mode,
+          listState = listState,
+          onDiscard = { showDiscardDialog = true },
+          onAction = onAction,
+        )
         SnackbarHost(
           hostState = snackbarHostState,
           modifier = Modifier.align(CenterHorizontally),
@@ -325,7 +329,6 @@ private fun EditRuleScaffold(
 private fun EditRuleTopBar(
   state: EditRuleState,
   mode: Mode,
-  onDiscard: () -> Unit,
   onShowMatches: () -> Unit,
   onDelete: () -> Unit,
   onAction: OnAction<EditRuleAction>,
@@ -334,16 +337,7 @@ private fun EditRuleTopBar(
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = {
-      if (state is Success && state.hasChanges) {
-        DiscardChangesButton(
-          contentDescription = Strings.editRuleDiscardConfirm,
-          onClick = onDiscard,
-        )
-      } else {
-        NavBackIconButton { onAction(NavBack) }
-      }
-    },
+    navigationIcon = { NavBackIconButton { onAction(NavBack) } },
     title = {
       Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
     },
@@ -359,19 +353,22 @@ private fun EditRuleTopBar(
 }
 
 @Composable
-private fun SaveButton(
+private fun SaveDiscardFabs(
   state: EditRuleState,
   mode: Mode,
   listState: LazyListState,
+  onDiscard: () -> Unit,
   onAction: OnAction<EditRuleAction>,
 ) {
   val success = state as? Success
-  SaveFab(
-    isVisible = success?.hasChanges == true,
-    text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-    isEnabled = success?.canSave == true,
-    isLoading = success?.isWorking == true,
-    onClick = { onAction(Save) },
+  EditFabs(
+    saveText = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+    discardText = Strings.editRuleDiscardConfirm,
+    onSave = { onAction(Save) },
+    onDiscard = onDiscard,
+    isSaveVisible = success?.hasChanges == true,
+    canSave = success?.canSave == true,
+    isSaving = success?.isWorking == true,
     isExpanded = listState.isScrollingUp(),
   )
 }
