@@ -51,7 +51,7 @@ class ModuleKotlin : ProjectPlugin {
       extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
         namespace = buildNamespace()
         minSdk = providers.intProperty("aktual.android.minSdk").get()
-        compileSdk = providers.intProperty("aktual.android.compileSdk").get()
+        compileSdk { fromProperties(providers) }
         packaging.resources.excludes.add("META-INF/*")
         lint.commonConfigure(this@applyTo)
         withHostTest {

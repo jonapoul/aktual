@@ -29,7 +29,7 @@ class ModuleAndroidLibrary : ProjectPlugin {
 
     extensions.configure(LibraryExtension::class) {
       namespace = buildNamespace()
-      compileSdk = providers.intProperty("aktual.android.compileSdk").get()
+      compileSdk { fromProperties(providers) }
       defaultConfig.minSdk = providers.intProperty("aktual.android.minSdk").get()
       packaging.resources.excludes.add("META-INF/*")
       lint.commonConfigure(this@applyTo)
