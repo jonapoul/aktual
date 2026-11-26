@@ -29,11 +29,11 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.Dimens
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.OnAction
@@ -42,7 +42,6 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.SheetHost
 import aktual.core.ui.StuckHeaders
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -83,7 +82,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -197,15 +195,11 @@ private fun TopBarActions(
 }
 
 @Composable
-private fun AddFab(listState: LazyListState?, onClick: () -> Unit, modifier: Modifier = Modifier) =
+private fun AddFab(isVisible: Boolean, listState: LazyListState?, onClick: () -> Unit) =
   AktualFab(
-    modifier =
-      modifier.padding(
-        end = Dimens.Huge,
-        bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
-      ),
     text = Strings.budgetingAdd,
     icon = AktualIcons.Add,
+    isVisible = isVisible,
     isExpanded = listState?.isScrollingUp() != false,
     onClick = onClick,
   )
@@ -331,13 +325,15 @@ private fun BudgetScaffold(
         )
       }
 
-      if (state is Loaded) {
-        AddFab(
-          modifier = Modifier.align(BottomEnd),
-          listState = if (isCompact) pageListStates[visibleMonth] else listState,
-          onClick = { handler(AddCategory) },
-        )
-      }
+      CornerFabs(
+        end = {
+          AddFab(
+            isVisible = state is Loaded,
+            listState = if (isCompact) pageListStates[visibleMonth] else listState,
+            onClick = { handler(AddCategory) },
+          )
+        },
+      )
     }
   }
 

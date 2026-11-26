@@ -26,7 +26,6 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cog
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Refresh
-import aktual.core.icons.SearchAlternate
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Sort
 import aktual.core.l10n.Strings
@@ -34,13 +33,16 @@ import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.SearchSchedulesNavigator
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParameters
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
@@ -49,15 +51,18 @@ import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.SearchFab
 import aktual.core.ui.Snackbars
 import aktual.core.ui.SortDialog
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.theme.Colors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -195,18 +200,6 @@ private fun ListSchedulesScaffold(
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(text = Strings.listSchedulesTitle) },
         actions = {
-          if (successState != null) {
-            AktualIconButton(
-              imageVector = AktualIcons.SearchAlternate,
-              contentDescription = Strings.listSchedulesSearch,
-              onClick = { onAction(OpenSearch) },
-            )
-          }
-          AktualIconButton(
-            imageVector = AktualIcons.Add,
-            contentDescription = Strings.listSchedulesCreate,
-            onClick = { onAction(CreateNew) },
-          )
           ListSchedulesMenu(
             showSort = successState != null,
             onSort = { showSortDialog = true },
@@ -232,6 +225,27 @@ private fun ListSchedulesScaffold(
           listState = listState,
         )
       }
+
+      val isExpanded = listState.isScrollingUp()
+      CornerFabs(
+        start = {
+          SearchFab(
+            contentDescription = Strings.listSchedulesSearch,
+            isVisible = successState != null,
+            isFaded = !isExpanded,
+            onClick = { onAction(OpenSearch) },
+          )
+        },
+        end = {
+          AktualFab(
+            text = Strings.listSchedulesCreate,
+            icon = AktualIcons.Add,
+            isVisible = state != Empty,
+            isExpanded = isExpanded,
+            onClick = { onAction(CreateNew) },
+          )
+        },
+      )
     }
   }
 }
@@ -329,7 +343,11 @@ private fun ContentSuccess(
         onAction = onAction,
       )
     }
-    item { BottomSpacing() }
+    item {
+      // Room to scroll the last schedule out from under the FABs
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
 

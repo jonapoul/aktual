@@ -4,7 +4,6 @@ import aktual.budget.model.AccountId
 import aktual.budget.transactions.vm.AccountChoice
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.ReconcileStart
-import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheckCircle1
 import aktual.core.icons.Delete
@@ -187,12 +186,6 @@ private fun TransactionsActions(
       onClick = onSearch,
     )
   }
-
-  AktualIconButton(
-    imageVector = AktualIcons.Add,
-    contentDescription = Strings.transactionsCreate,
-    onClick = { onAction(CreateTransaction) },
-  )
 
   AktualIconButton(
     imageVector = AktualIcons.Tuning,

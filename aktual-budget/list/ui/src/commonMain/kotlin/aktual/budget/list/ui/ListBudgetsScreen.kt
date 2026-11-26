@@ -26,16 +26,14 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
-import aktual.core.ui.Dimens
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedPullToRefreshBox
-import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.OnAction
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberFilePicker
@@ -289,20 +287,17 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: OnAction<Lis
       }
 
       // The empty state has its own create button
-      if (state is Success && state.budgets.isNotEmpty()) {
-        AktualFab(
-          modifier =
-            Modifier.align(BottomEnd)
-              .padding(
-                end = Dimens.Huge,
-                bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
-              ),
-          text = Strings.listBudgetsCreate,
-          icon = AktualIcons.Add,
-          isExpanded = listState.isScrollingUp(),
-          onClick = { onAction(CreateBudget) },
-        )
-      }
+      CornerFabs(
+        end = {
+          AktualFab(
+            text = Strings.listBudgetsCreate,
+            icon = AktualIcons.Add,
+            isVisible = state is Success && state.budgets.isNotEmpty(),
+            isExpanded = listState.isScrollingUp(),
+            onClick = { onAction(CreateBudget) },
+          )
+        },
+      )
     }
   }
 }

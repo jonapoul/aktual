@@ -15,29 +15,27 @@ import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Refresh
-import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.nav.SearchRulesNavigator
 import aktual.core.ui.AktualFab
-import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.Dimens
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.NoticeBanner
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SearchFab
 import aktual.core.ui.StuckHeaders
-import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
@@ -64,7 +62,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -130,15 +127,6 @@ private fun ListRulesScaffold(
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavDrawerIconButton() },
         title = { Text(Strings.rulesToolbar) },
-        actions = {
-          if (state is Success) {
-            AktualIconButton(
-              imageVector = AktualIcons.SearchAlternate,
-              contentDescription = Strings.rulesToolbarSearch,
-              onClick = { onAction(OpenSearch) },
-            )
-          }
-        },
       )
     },
   ) { innerPadding ->
@@ -158,20 +146,26 @@ private fun ListRulesScaffold(
         )
       }
 
-      if (state is Success) {
-        AktualFab(
-          modifier =
-            Modifier.align(BottomEnd)
-              .padding(
-                end = Dimens.Huge,
-                bottom = Dimens.Huge + bottomNavBarPadding() + LocalBottomSpacing.current,
-              ),
-          text = Strings.rulesCreate,
-          icon = AktualIcons.Add,
-          isExpanded = listState.isScrollingUp(),
-          onClick = { onAction(CreateNew) },
-        )
-      }
+      val isExpanded = listState.isScrollingUp()
+      CornerFabs(
+        start = {
+          SearchFab(
+            contentDescription = Strings.rulesToolbarSearch,
+            isVisible = state is Success,
+            isFaded = !isExpanded,
+            onClick = { onAction(OpenSearch) },
+          )
+        },
+        end = {
+          AktualFab(
+            text = Strings.rulesCreate,
+            icon = AktualIcons.Add,
+            isVisible = state is Success,
+            isExpanded = isExpanded,
+            onClick = { onAction(CreateNew) },
+          )
+        },
+      )
     }
   }
 }

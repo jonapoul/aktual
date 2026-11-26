@@ -15,7 +15,6 @@ import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
 import aktual.core.icons.Delete
-import aktual.core.icons.SearchAlternate
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CreateReportNavigator
@@ -23,22 +22,27 @@ import aktual.core.nav.ReportNavigator
 import aktual.core.nav.SearchReportsNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
+import aktual.core.ui.AktualFab
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.CornerFabs
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.FabClearance
 import aktual.core.ui.LocalSnackbars
 import aktual.core.ui.NavDrawerIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColorParams
+import aktual.core.ui.SearchFab
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.showSuccessSnackbar
@@ -47,6 +51,7 @@ import aktual.core.ui.wiggle
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -204,19 +209,6 @@ internal fun ReportsDashboardScaffold(
             )
             return@TopAppBar
           }
-
-          AktualIconButton(
-            imageVector = AktualIcons.SearchAlternate,
-            contentDescription = Strings.reportsDashboardSearch,
-            onClick = { onAction(OpenSearch) },
-          )
-          if (!items.isNullOrEmpty()) {
-            AktualIconButton(
-              imageVector = AktualIcons.Add,
-              contentDescription = Strings.reportsDashboardCreate,
-              onClick = { onAction(CreateNewReport) },
-            )
-          }
           DashboardMenu(
             page = selectedPage,
             canDelete = pages.size > 1,
@@ -245,6 +237,13 @@ internal fun ReportsDashboardScaffold(
           onAction = onAction,
         )
       }
+
+      DashboardFabs(
+        listState,
+        isVisible = !reorder.isEditing,
+        canCreate = !items.isNullOrEmpty(),
+        onAction,
+      )
     }
   }
 
@@ -261,6 +260,35 @@ internal fun ReportsDashboardScaffold(
       onCancel = { showSavePrompt = false },
     )
   }
+}
+
+@Composable
+private fun BoxScope.DashboardFabs(
+  listState: LazyListState,
+  isVisible: Boolean,
+  canCreate: Boolean,
+  onAction: OnAction<Action>,
+) {
+  val isExpanded = listState.isScrollingUp()
+  CornerFabs(
+    start = {
+      SearchFab(
+        contentDescription = Strings.reportsDashboardSearch,
+        isVisible = isVisible,
+        isFaded = !isExpanded,
+        onClick = { onAction(OpenSearch) },
+      )
+    },
+    end = {
+      AktualFab(
+        text = Strings.reportsDashboardFabCreate,
+        icon = AktualIcons.Add,
+        isVisible = isVisible && canCreate,
+        isExpanded = isExpanded,
+        onClick = { onAction(CreateNewReport) },
+      )
+    },
+  )
 }
 
 @Composable
@@ -456,7 +484,11 @@ private fun ContentList(
       )
     }
 
-    item { BottomSpacing() }
+    item {
+      // Room to scroll the last report out from under the FABs
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
 

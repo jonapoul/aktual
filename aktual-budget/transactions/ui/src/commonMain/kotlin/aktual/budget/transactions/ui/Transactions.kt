@@ -11,6 +11,7 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.OnAction
@@ -270,7 +271,11 @@ private fun TransactionsFilled(
       }
     }
 
-    item { BottomSpacing() }
+    item {
+      // Room to scroll the last transaction out from under the add button
+      VerticalSpacer(FabClearance)
+      BottomSpacing()
+    }
   }
 }
 
