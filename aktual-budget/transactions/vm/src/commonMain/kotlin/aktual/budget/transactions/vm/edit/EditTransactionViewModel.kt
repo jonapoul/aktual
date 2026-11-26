@@ -20,6 +20,7 @@ import aktual.budget.payees.domain.NearbyPayee
 import aktual.budget.payees.domain.PayeeLocations
 import aktual.budget.payees.domain.PayeeMerger
 import aktual.budget.rules.domain.LoadedRules
+import aktual.budget.rules.domain.PayeeRename
 import aktual.budget.rules.domain.PayeeRenameRules
 import aktual.budget.rules.domain.RuleTransaction
 import aktual.budget.rules.domain.TransactionRulesLoader
@@ -924,12 +925,7 @@ internal constructor(
       runCatchingCancellable(
         attempt = {
           val merge = payeeMerger.merge(unused.target.id, unused.payees.map { it.id })
-          val rename =
-            if (merge != null && addRenameRule) {
-              renameRules.add(unused.payees.map { it.name }, unused.target.id)
-            } else {
-              null
-            }
+          val rename = if (merge != null && addRenameRule) addRenameRule(unused) else null
           mutableUnusedPayees.update { null }
           val event =
             if (merge == null) {
@@ -948,6 +944,16 @@ internal constructor(
       )
     }
   }
+
+  // The merge's already done, so a rule that fails to save is only logged
+  private suspend fun addRenameRule(unused: UnusedPayees): PayeeRename? =
+    runCatchingCancellable(
+      attempt = { renameRules.add(unused.payees.map { it.name }, unused.target.id) },
+      onFailure = { e ->
+        log.w(e) { "Failed adding rename rule to ${unused.target.id}" }
+        null
+      },
+    )
 
   // The undo snackbar outlives the screen, so this can't be tied to viewModelScope
   fun undoMerge(event: EditTransactionEvent.MergedPayees) {

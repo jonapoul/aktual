@@ -706,6 +706,34 @@ class EditTransactionViewModelTest {
   }
 
   @Test
+  fun `A rename rule that fails to save still merges, with undo`() =
+    runSyncedTest { scope, database ->
+      insertEntities()
+      TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
+      val viewModel =
+        createViewModel(
+          scope,
+          sync = FakeBudgetSync(appliedTo = database),
+          renames = FakePayeeRenameRules(failure = IllegalStateException("Failed")),
+        )
+
+      viewModel.events.test {
+        viewModel.state.test {
+          awaitEdit()
+          cancelAndIgnoreRemainingEvents()
+        }
+        viewModel.setPayee(PayeeId("b"))
+        viewModel.save()
+        scope.advanceUntilIdle()
+        viewModel.mergeUnusedPayees(addRenameRule = true)
+
+        assertThat(awaitItem()).isInstanceOf<MergedPayees>().prop(MergedPayees::rename).isNull()
+        assertThat(viewModel.error.value).isNull()
+        assertThat(PayeeDao(this@runSyncedTest)[PayeeId("a")]?.tombstone).isEqualTo(true)
+      }
+    }
+
+  @Test
   fun `A failed merge closes, as the edit was saved`() = runSyncedTest { scope, database ->
     insertEntities()
     TransactionDao(this).insertTransaction("t", account = "a", category = "a", payee = "a")
@@ -2202,11 +2230,12 @@ class EditTransactionViewModelTest {
     )
   }
 
-  private class FakePayeeRenameRules : PayeeRenameRules {
+  private class FakePayeeRenameRules(private val failure: Exception? = null) : PayeeRenameRules {
     val added = mutableListOf<Pair<Collection<String>, PayeeId>>()
     val undone = mutableListOf<PayeeRename>()
 
     override suspend fun add(fromNames: Collection<String>, to: PayeeId): PayeeRename {
+      failure?.let { throw it }
       added += fromNames to to
       return PayeeRename.Created(RuleId("rename"))
     }
