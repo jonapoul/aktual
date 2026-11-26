@@ -225,9 +225,9 @@ private fun EditTagScaffold(
           discardText = Strings.tagsDiscardConfirm,
           onSave = { onAction(SaveTag) },
           onDiscard = {
-            editing?.let {
-              tagState.setTextAndPlaceCursorAtEnd(it.initialTag)
-              descriptionState.setTextAndPlaceCursorAtEnd(it.initialDescription)
+            editing?.let { tag ->
+              tagState.setTextAndPlaceCursorAtEnd(tag.initialTag)
+              descriptionState.setTextAndPlaceCursorAtEnd(tag.initialDescription)
             }
             onAction(RevertTag)
           },

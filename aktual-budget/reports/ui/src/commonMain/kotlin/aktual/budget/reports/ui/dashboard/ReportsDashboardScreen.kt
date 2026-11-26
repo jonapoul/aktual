@@ -137,7 +137,8 @@ fun ReportsDashboardScreen(
         // Chart and settings actions are only reachable from the report screen
         is Chart,
         is EditSettings,
-        SaveSettings -> Unit
+        SaveSettings,
+        RevertSettings -> Unit
         CreateNewReport -> viewModel.createReport()
         OpenSearch -> toSearch()
         is SelectPage -> viewModel.selectPage(action.id)

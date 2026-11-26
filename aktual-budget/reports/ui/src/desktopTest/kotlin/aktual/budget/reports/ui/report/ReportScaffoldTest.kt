@@ -215,8 +215,7 @@ class ReportScaffoldTest {
     onNodeWithTag(Tags.SaveReport).performClick()
 
     // then
-    assertThat(actions)
-      .containsExactly(Action.NavBack, Action.RevertSettings, Action.SaveSettings)
+    assertThat(actions).containsExactly(Action.NavBack, Action.RevertSettings, Action.SaveSettings)
   }
 
   @Test
