@@ -886,7 +886,10 @@ internal constructor(
       },
     )
 
-  private suspend fun unusedPayees(before: TransactionDraft, after: TransactionDraft): UnusedPayees? {
+  private suspend fun unusedPayees(
+    before: TransactionDraft,
+    after: TransactionDraft,
+  ): UnusedPayees? {
     val target = after.changedPayees(before).firstOrNull() ?: return null
     if (target in mutableEntities.value?.transferAccounts.orEmpty()) return null
     val old = before.payees() - after.payees()

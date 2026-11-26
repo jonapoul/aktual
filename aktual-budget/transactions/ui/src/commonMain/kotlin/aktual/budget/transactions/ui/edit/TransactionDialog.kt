@@ -1,15 +1,31 @@
 package aktual.budget.transactions.ui.edit
 
 import aktual.budget.transactions.vm.edit.EditTransactionError
+import aktual.budget.transactions.vm.edit.UnusedPayees
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.DialogButtonKind
 import aktual.core.ui.DialogTextButton
+import aktual.core.ui.Dimens
 import aktual.core.ui.OnAction
+import aktual.core.ui.switch
+import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.util.fastForEach
 
 internal enum class TransactionDialog {
   ConfirmDelete,
@@ -180,6 +196,7 @@ internal fun EditTransactionErrorDialog(error: EditTransactionError, onDismiss: 
         is Saving -> Strings.transactionErrorSaving
         is Deleting -> Strings.transactionErrorDeleting
         is CreatingTag -> Strings.transactionErrorCreatingTag
+        is MergingPayees -> Strings.transactionErrorMergingPayees
       },
     highlight = colors.errorText,
     onDismissRequest = onDismiss,
@@ -190,7 +207,76 @@ internal fun EditTransactionErrorDialog(error: EditTransactionError, onDismiss: 
           is Saving -> error.reason
           is Deleting -> error.reason
           is CreatingTag -> error.reason
+          is MergingPayees -> error.reason
         },
       )
     },
   )
+
+// As upstream's MergeUnusedPayeesModal, without its "Merge and edit rule" button
+@Composable
+internal fun UnusedPayeesDialog(
+  unused: UnusedPayees,
+  isWorking: Boolean,
+  onMerge: (addRenameRule: Boolean) -> Unit,
+  onKeep: () -> Unit,
+) {
+  var addRenameRule by rememberSaveable { mutableStateOf(true) }
+  val single = unused.payees.singleOrNull()
+  AktualAlertDialog(
+    title =
+      if (single != null) Strings.transactionUnusedPayeeTitle
+      else Strings.transactionUnusedPayeesTitle,
+    onDismissRequest = { if (!isWorking) onKeep() },
+    buttons = {
+      DialogTextButton(
+        text = Strings.transactionUnusedPayeesKeep,
+        isEnabled = !isWorking,
+        onClick = onKeep,
+      )
+      DialogTextButton(
+        kind = Primary,
+        text = Strings.transactionUnusedPayeesMerge,
+        isEnabled = !isWorking,
+        isLoading = isWorking,
+        onClick = { onMerge(addRenameRule) },
+      )
+    },
+    content = {
+      Column(verticalArrangement = spacedBy(Dimens.Large)) {
+        if (single != null) {
+          Text(Strings.transactionUnusedPayeeMessage(single.name, unused.target.name))
+        } else {
+          Text(Strings.transactionUnusedPayeesMessage(unused.target.name))
+          Column {
+            unused.payees.fastForEach { payee ->
+              Text(text = payee.name, color = colors.pageTextPositive)
+            }
+          }
+        }
+        Text(
+          text = Strings.transactionUnusedPayeesInfo,
+          style = typography.bodySmall,
+          color = colors.pageTextSubdued,
+        )
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = CenterVertically,
+          horizontalArrangement = spacedBy(Dimens.Large),
+        ) {
+          Text(
+            modifier = Modifier.weight(1f),
+            text = Strings.transactionUnusedPayeesRename,
+            style = typography.bodyMedium,
+          )
+          Switch(
+            checked = addRenameRule,
+            onCheckedChange = { addRenameRule = it },
+            enabled = !isWorking,
+            colors = colors.switch(),
+          )
+        }
+      }
+    },
+  )
+}

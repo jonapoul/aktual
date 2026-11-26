@@ -107,6 +107,5 @@ internal constructor(
       condition.field.toRuleField() == ImportedPayee
   }
 
-  private fun JsonElement.stringOrNull(): String? =
-    (this as? JsonPrimitive)?.contentOrNull
+  private fun JsonElement.stringOrNull(): String? = (this as? JsonPrimitive)?.contentOrNull
 }
