@@ -117,6 +117,8 @@ internal fun CustomReportScaffold(
   }
 
   val draft = loaded?.draft
+  val hasChanges = loaded?.hasChanges == true
+  val canSave = loaded?.draft != null && (hasChanges || loaded.isNew)
   if (loaded?.isEditing == true && draft != null) {
     SheetHost(onDismiss = { onAction(ReportEditorAction.StopEditing) }) { host ->
       CustomReportSettings(
@@ -140,8 +142,7 @@ internal fun CustomReportScaffold(
             loaded?.isNew == true -> Strings.reportsCustomEditorNew
             else -> WidgetType.Custom.string()
           },
-        hasChanges = loaded?.hasChanges == true,
-        canSave = loaded?.draft != null && (loaded.hasChanges || loaded.isNew),
+        hasChanges = hasChanges,
         canEdit = loaded?.draft != null,
         preview = preview,
         zoom = zoom,
@@ -176,10 +177,13 @@ internal fun CustomReportScaffold(
             modifier = contentModifier,
             state = state,
             zoom = zoom,
+            hasFabs = canSave,
             onAction = onAction,
           )
         }
       }
+
+      ReportEditorFabs(hasChanges = hasChanges, canSave = canSave, onAction = onAction)
     }
   }
 }
@@ -188,6 +192,7 @@ internal fun CustomReportScaffold(
 private fun CustomReportContent(
   state: CustomReportState.Loaded,
   zoom: ChartZoomState,
+  hasFabs: Boolean,
   onAction: (CustomReportAction) -> Unit,
   modifier: Modifier = Modifier,
 ) =
@@ -195,6 +200,7 @@ private fun CustomReportContent(
     modifier = modifier,
     preview = state.preview,
     zoom = zoom,
+    hasFabs = hasFabs,
     onChartAction = { action ->
       if (action is DrillDown) onAction(CustomReportAction.DrillDown(action.drilldown))
     },

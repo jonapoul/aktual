@@ -29,8 +29,6 @@ import aktual.core.icons.CheveronLeft
 import aktual.core.icons.CheveronRight
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.Trash
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Undo
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.transaction_error_merging_payees
@@ -45,7 +43,6 @@ import aktual.core.l10n.transaction_unused_payees_merged
 import aktual.core.l10n.transaction_unused_payees_undo
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListPayeeLocationsNavigator
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
@@ -53,13 +50,15 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.letterSpacings
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardRow
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.EditFabs
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -69,21 +68,20 @@ import aktual.core.ui.formattedText
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.showWarningSnackbar
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -310,24 +308,23 @@ private fun EditTransactionScaffold(
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
 
+  fun onSave() {
+    val confirm =
+      if (loaded?.changedElsewhere == Conflicting) {
+        ConfirmOverwrite
+      } else {
+        saveDialog(form, loaded?.saved)
+      }
+    if (confirm == null) onAction(SaveTransaction) else dialog = confirm
+  }
+
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       EditTransactionTopBar(
         modifier = Modifier.hazedTopBar(hazeState, scrollState),
         state = state,
-        canSave = loaded?.canSave == true && isAmountValid,
         onBack = { onBack() },
-        onRevert = { onAction(RevertChanges) },
-        onSave = {
-          val confirm =
-            if (loaded?.changedElsewhere == Conflicting) {
-              ConfirmOverwrite
-            } else {
-              saveDialog(form, loaded?.saved)
-            }
-          if (confirm == null) onAction(SaveTransaction) else dialog = confirm
-        },
         onDelete = { dialog = deleteDialog(loaded?.saved) },
       )
     },
@@ -354,6 +351,18 @@ private fun EditTransactionScaffold(
             scrollState = scrollState,
             contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           )
+      }
+
+      if (loaded != null) {
+        SaveRevertFabs(
+          state = loaded,
+          canSave = loaded.canSave && isAmountValid,
+          // The keypad covers the bottom of the screen while typing an amount
+          isVisible = !fieldState.isTypingAmount,
+          scrollState = scrollState,
+          onSave = { onSave() },
+          onRevert = { onAction(RevertChanges) },
+        )
       }
 
       if (form != null) {
@@ -383,10 +392,7 @@ private fun EditTransactionScaffold(
 @Composable
 private fun EditTransactionTopBar(
   state: EditTransactionState,
-  canSave: Boolean,
   onBack: () -> Unit,
-  onRevert: () -> Unit,
-  onSave: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -395,18 +401,17 @@ private fun EditTransactionTopBar(
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton(onClick = onBack) },
+    navigationIcon = {
+      BackOrDiscardButton(
+        hasChanges = loaded?.mode?.form?.hasChanges == true,
+        discardText = Strings.transactionDiscardConfirm,
+        onBack = onBack,
+        onDiscard = onBack,
+      )
+    },
     title = { if (isCreating) Text(text = Strings.transactionCreateTitle) },
     actions = {
-      if (loaded != null) {
-        TopBarActions(
-          state = loaded,
-          canSave = canSave,
-          onRevert = onRevert,
-          onSave = onSave,
-          onDelete = onDelete,
-        )
-      }
+      if (loaded != null) TopBarActions(state = loaded, onDelete = onDelete)
     },
   )
 }
@@ -427,66 +432,59 @@ private fun deleteDialog(saved: TransactionDetails?): TransactionDialog =
     else -> ConfirmDelete
   }
 
+// A transaction deleted elsewhere can only have its draft thrown away, from the toolbar
+@Composable
+private fun BoxScope.SaveRevertFabs(
+  state: EditTransactionState.Loaded,
+  canSave: Boolean,
+  isVisible: Boolean,
+  scrollState: ScrollState,
+  onSave: () -> Unit,
+  onRevert: () -> Unit,
+) =
+  Column(modifier = Modifier.align(BottomCenter)) {
+    val mode = state.mode
+    val hasChanges = mode.form.hasChanges
+    val isGone = state.changedElsewhere == Deleted
+    EditFabs(
+      saveText = Strings.transactionSave,
+      discardText = Strings.transactionRevert,
+      onSave = onSave,
+      onDiscard = onRevert,
+      // A saved transaction only offers saving once it's been changed
+      isSaveVisible = isVisible && (mode is Create || hasChanges && !isGone),
+      isDiscardVisible = isVisible && mode is Edit && hasChanges && !isGone,
+      canSave = canSave,
+      isSaving = state.isWorking,
+      isExpanded = scrollState.isScrollingUp(),
+    )
+    BottomSpacing()
+  }
+
 @Composable
 private fun TopBarActions(
   state: EditTransactionState.Loaded,
-  canSave: Boolean,
-  onRevert: () -> Unit,
-  onSave: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val mode = state.mode
-  val hasChanges = mode.form.hasChanges
-  // A transaction deleted elsewhere can only have its draft thrown away
-  val isGone = state.changedElsewhere == Deleted
-  Row(modifier = modifier, verticalAlignment = CenterVertically) {
-    // A saved transaction only offers saving once it's been changed
-    AnimatedVisibility(
-      visible = mode is Create || hasChanges && !isGone,
-      enter = fadeIn(),
-      exit = fadeOut(),
-    ) {
-      AktualButton(
-        kind = Primary,
-        modifier = Modifier.padding(end = SaveInset),
-        text = Strings.transactionSave,
-        isEnabled = canSave,
-        shape = SaveShape,
-        onClick = onSave,
+  if (state.mode !is Edit || state.changedElsewhere == Deleted) return
+  Box(modifier = modifier) {
+    var expanded by remember { mutableStateOf(false) }
+    AktualIconButton(
+      imageVector = AktualIcons.DotsHorizontalTriple,
+      contentDescription = Strings.transactionMore,
+      isEnabled = !state.isWorking,
+      onClick = { expanded = true },
+    )
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+      AktualDropdownMenuItem(
+        text = Strings.transactionDelete,
+        leadingIcon = AktualIcons.Trash,
+        onClick = {
+          expanded = false
+          onDelete()
+        },
       )
-    }
-
-    if (mode is Edit && !isGone) {
-      Box {
-        var expanded by remember { mutableStateOf(false) }
-        AktualIconButton(
-          imageVector = AktualIcons.DotsHorizontalTriple,
-          contentDescription = Strings.transactionMore,
-          isEnabled = !state.isWorking,
-          onClick = { expanded = true },
-        )
-        AktualDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-          if (hasChanges) {
-            AktualDropdownMenuItem(
-              text = Strings.transactionRevert,
-              leadingIcon = MaterialIcons.Undo,
-              onClick = {
-                expanded = false
-                onRevert()
-              },
-            )
-          }
-          AktualDropdownMenuItem(
-            text = Strings.transactionDelete,
-            leadingIcon = AktualIcons.Trash,
-            onClick = {
-              expanded = false
-              onDelete()
-            },
-          )
-        }
-      }
     }
   }
 }
@@ -585,8 +583,6 @@ internal val DetailCardShape = RoundedCornerShape(10.dp)
 internal val HeroAmountSize = textSizes.hero
 internal val HeroAmountTracking = letterSpacings.tight
 private val DateSize = textSizes.medium
-private val SaveShape = RoundedCornerShape(percent = 50)
-private val SaveInset = 8.dp
 internal val ValueSize = textSizes.mediumPlus
 private val BalancePadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
 internal val SplitHeaderPadding = PaddingValues(start = 4.dp, bottom = 8.dp)

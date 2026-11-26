@@ -41,21 +41,20 @@ import aktual.core.ui.AktualSnackbar
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.Dimens
-import aktual.core.ui.DiscardChangesButton
 import aktual.core.ui.DiscardChangesDialog
+import aktual.core.ui.EditFabs
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HostedSheet
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
-import aktual.core.ui.SaveFab
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerLine
 import aktual.core.ui.WarningBanner
@@ -70,6 +69,7 @@ import aktual.core.ui.showSuccessSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -174,6 +174,7 @@ private fun EditRuleViewModel.handle(action: ViewModelAction) {
   when (action) {
     Delete -> delete()
     Save -> save()
+    Revert -> revert()
     is SetStage -> setStage(action.value)
     is SetConditionsOp -> setConditionsOp(action.value)
     is SetCondition -> setCondition(action.key, action.condition)
@@ -228,10 +229,10 @@ private fun EditRuleScaffold(
         modifier = Modifier.hazedTopBar(hazeState, listState),
         state = state,
         mode = mode,
+        onBack = { onAction(NavBack) },
         onDiscard = { showDiscardDialog = true },
         onShowMatches = { showMatches = true },
         onDelete = { showDeleteDialog = true },
-        onAction = onAction,
       )
     },
   ) { innerPadding ->
@@ -274,17 +275,13 @@ private fun EditRuleScaffold(
           )
       }
 
-      // Not in the scaffold's slots, which put the snackbar above the save button so it jumps down
-      // when the button hides after saving
-      Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
-        SaveButton(state = state, mode = mode, listState = listState, onAction = onAction)
-        SnackbarHost(
-          hostState = snackbarHostState,
-          modifier = Modifier.align(CenterHorizontally),
-          snackbar = ::AktualSnackbar,
-        )
-        BottomSpacing()
-      }
+      BottomBar(
+        state = state,
+        mode = mode,
+        listState = listState,
+        snackbarHostState = snackbarHostState,
+        onAction = onAction,
+      )
     }
   }
 
@@ -325,24 +322,22 @@ private fun EditRuleScaffold(
 private fun EditRuleTopBar(
   state: EditRuleState,
   mode: Mode,
+  onBack: () -> Unit,
   onDiscard: () -> Unit,
   onShowMatches: () -> Unit,
   onDelete: () -> Unit,
-  onAction: OnAction<EditRuleAction>,
   modifier: Modifier = Modifier,
 ) {
   TopAppBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
-      if (state is Success && state.hasChanges) {
-        DiscardChangesButton(
-          contentDescription = Strings.editRuleDiscardConfirm,
-          onClick = onDiscard,
-        )
-      } else {
-        NavBackIconButton { onAction(NavBack) }
-      }
+      BackOrDiscardButton(
+        hasChanges = state is Success && state.hasChanges,
+        discardText = Strings.editRuleDiscardConfirm,
+        onBack = onBack,
+        onDiscard = onDiscard,
+      )
     },
     title = {
       Text(if (mode == Create) Strings.editRuleToolbarCreate else Strings.editRuleToolbarEdit)
@@ -358,23 +353,35 @@ private fun EditRuleTopBar(
   )
 }
 
+// Not in the scaffold's slots, which put the snackbar above the save button so it jumps down when
+// the button hides after saving
 @Composable
-private fun SaveButton(
+private fun BoxScope.BottomBar(
   state: EditRuleState,
   mode: Mode,
   listState: LazyListState,
+  snackbarHostState: SnackbarHostState,
   onAction: OnAction<EditRuleAction>,
-) {
-  val success = state as? Success
-  SaveFab(
-    isVisible = success?.hasChanges == true,
-    text = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
-    isEnabled = success?.canSave == true,
-    isLoading = success?.isWorking == true,
-    onClick = { onAction(Save) },
-    isExpanded = listState.isScrollingUp(),
-  )
-}
+) =
+  Column(modifier = Modifier.align(BottomEnd).fillMaxWidth(), horizontalAlignment = End) {
+    val success = state as? Success
+    EditFabs(
+      saveText = if (mode == Create) Strings.editRuleCreate else Strings.editRuleSave,
+      discardText = Strings.editRuleDiscardConfirm,
+      onSave = { onAction(Save) },
+      onDiscard = { onAction(Revert) },
+      isSaveVisible = success?.hasChanges == true,
+      canSave = success?.canSave == true,
+      isSaving = success?.isWorking == true,
+      isExpanded = listState.isScrollingUp(),
+    )
+    SnackbarHost(
+      hostState = snackbarHostState,
+      modifier = Modifier.align(CenterHorizontally),
+      snackbar = ::AktualSnackbar,
+    )
+    BottomSpacing()
+  }
 
 @Composable
 private fun MoreMenu(

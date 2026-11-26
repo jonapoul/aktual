@@ -6,17 +6,15 @@ import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronLeft
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Save
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
@@ -24,12 +22,12 @@ import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
-import aktual.core.ui.DiscardChangesButton
 import aktual.core.ui.DiscardChangesDialog
+import aktual.core.ui.EditFabs
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedTopBarState
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -38,8 +36,10 @@ import aktual.core.ui.TextFieldShape
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -71,6 +71,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -116,6 +117,7 @@ fun EditTagScreen(
     onAction = { action ->
       when (action) {
         SaveTag -> viewModel.save()
+        RevertTag -> viewModel.revert()
         is SetTag -> viewModel.setTag(action.tag)
         is SetDescription -> viewModel.setDescription(action.description)
         is SetColor -> viewModel.setColor(action.color)
@@ -175,12 +177,11 @@ private fun EditTagScaffold(
     topBar = {
       EditTagTopBar(
         editing = editing,
-        hasChanges = hasChanges,
-        saveEnabled = canSave,
         hazeState = hazeState,
         scrollState = scrollState,
-        onAction = onAction,
-        onRequestDiscard = { showDiscardDialog = true },
+        hasChanges = hasChanges,
+        onBack = { onAction(NavigateBack) },
+        onDiscard = { showDiscardDialog = true },
       )
     },
   ) { innerPadding ->
@@ -217,6 +218,27 @@ private fun EditTagScaffold(
           )
       }
 
+      // New tags always show save, since there's nothing saved to compare against
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.tagsCreateSave,
+          discardText = Strings.tagsDiscardConfirm,
+          onSave = { onAction(SaveTag) },
+          onDiscard = {
+            editing?.let { tag ->
+              tagState.setTextAndPlaceCursorAtEnd(tag.initialTag)
+              descriptionState.setTextAndPlaceCursorAtEnd(tag.initialDescription)
+            }
+            onAction(RevertTag)
+          },
+          isSaveVisible = editing != null && (editing.isNew || hasChanges),
+          isDiscardVisible = hasChanges,
+          canSave = canSave,
+          isExpanded = scrollState.isScrollingUp(),
+        )
+        BottomSpacing()
+      }
+
       if (showDiscardDialog) {
         DiscardChangesDialog(
           title = Strings.tagsDiscardTitle,
@@ -241,34 +263,26 @@ private fun EditTagScaffold(
 @Composable
 private fun EditTagTopBar(
   editing: EditTagState.Editing?,
-  hasChanges: Boolean,
-  saveEnabled: Boolean,
   hazeState: HazedTopBarState,
   scrollState: ScrollState,
-  onAction: OnAction<EditTagAction>,
-  onRequestDiscard: () -> Unit,
+  hasChanges: Boolean,
+  onBack: () -> Unit,
+  onDiscard: () -> Unit,
 ) {
   TopAppBar(
     modifier = Modifier.hazedTopBar(hazeState, scrollState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
-      if (hasChanges) {
-        DiscardChangesButton(
-          contentDescription = Strings.tagsDiscardConfirm,
-          onClick = onRequestDiscard,
-        )
-      } else {
-        NavBackIconButton(onClick = { onAction(NavigateBack) })
-      }
+      BackOrDiscardButton(
+        hasChanges = hasChanges,
+        discardText = Strings.tagsDiscardConfirm,
+        onBack = onBack,
+        onDiscard = onDiscard,
+      )
     },
     title = {
       editing?.let {
         Text(text = if (it.isNew) Strings.tagsCreateTitle else Strings.tagsEditTitle)
-      }
-    },
-    actions = {
-      if (editing != null) {
-        SaveButton(onAction = onAction, enabled = saveEnabled)
       }
     },
   )
@@ -349,6 +363,8 @@ private fun EditTagContent(
       }
     }
 
+    // Room to scroll the colour picker out from under the save button
+    VerticalSpacer(FabClearance)
     BottomSpacing()
   }
 }
@@ -398,21 +414,6 @@ private fun ShimmerEditTag(modifier: Modifier = Modifier) {
       }
     }
   }
-}
-
-@Composable
-private fun SaveButton(
-  onAction: OnAction<EditTagAction>,
-  enabled: Boolean,
-  modifier: Modifier = Modifier,
-) {
-  AktualIconButton(
-    modifier = modifier,
-    imageVector = MaterialIcons.Save,
-    contentDescription = Strings.tagsCreateSave,
-    isEnabled = enabled,
-    onClick = { onAction(SaveTag) },
-  )
 }
 
 @Composable

@@ -156,6 +156,24 @@ class BankSyncSettingsViewModelTest {
   }
 
   @Test
+  fun `Reverting restores the saved settings without saving`() = runSettingsTest {
+    val viewModel = createViewModel()
+
+    viewModel.state.test {
+      assertThat(awaitEditing().updateDates).isFalse()
+      viewModel.set(UpdateDates, true)
+      assertThat(awaitEditing().hasChanges).isTrue()
+
+      viewModel.revert()
+      val reverted = awaitEditing()
+      assertThat(reverted.hasChanges).isFalse()
+      assertThat(reverted.updateDates).isFalse()
+    }
+
+    assertThat(syncCalls).hasSize(0)
+  }
+
+  @Test
   fun `Toggles change their settings`() = runSettingsTest {
     val viewModel = createViewModel()
 

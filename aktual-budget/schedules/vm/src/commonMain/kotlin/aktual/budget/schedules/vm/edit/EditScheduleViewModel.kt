@@ -228,6 +228,9 @@ internal constructor(
 
   fun setPostsTransaction(posts: Boolean) = updateForm { it.copy(postsTransaction = posts) }
 
+  // Throws away unsaved edits
+  fun revert() = mutableForm.update { form -> mutableSaved.value?.form ?: form }
+
   fun dismissError() = mutableError.update { null }
 
   private fun updateForm(makeCopy: (ScheduleForm) -> ScheduleForm) = mutableForm.update { form ->

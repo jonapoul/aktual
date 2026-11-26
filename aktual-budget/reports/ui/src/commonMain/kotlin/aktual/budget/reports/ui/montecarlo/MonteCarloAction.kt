@@ -12,6 +12,8 @@ internal sealed interface MonteCarloAction {
 
   data object Save : MonteCarloAction
 
+  data object Revert : MonteCarloAction
+
   data class Rename(val name: String) : MonteCarloAction
 
   data class Edit(val transform: (McConfig) -> McConfig) : MonteCarloAction

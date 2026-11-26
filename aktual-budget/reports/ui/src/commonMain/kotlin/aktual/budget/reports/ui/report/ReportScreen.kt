@@ -34,19 +34,18 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
-import aktual.core.ui.DiscardChangesButton
+import aktual.core.ui.EditFabs
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -64,7 +63,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -119,6 +117,7 @@ fun ReportScreen(
         is Rename -> viewModel.rename(action.name)
         is EditSettings -> viewModel.edit(action.transform)
         SaveSettings -> viewModel.save()
+        RevertSettings -> viewModel.discard()
         is Chart ->
           when (val chart = action.action) {
             is SetUnsavedText -> hasUnsavedText = chart.hasUnsavedText
@@ -245,10 +244,6 @@ internal fun ReportScaffold(
         hasInfo = info.isNotEmpty(),
         onShowInfo = { showInfo = true },
         onShowSettings = { showSettings = true },
-        onSave = {
-          showSettings = false
-          onAction(SaveSettings)
-        },
         onAction = onAction,
       )
     },
@@ -262,11 +257,27 @@ internal fun ReportScaffold(
         zoom = zoom,
         onAction = onAction,
       )
+
+      val hasChanges = loaded?.hasChanges == true
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.reportsFormulaEditorSave,
+          discardText = Strings.reportsTextDiscard,
+          onSave = {
+            showSettings = false
+            onAction(SaveSettings)
+          },
+          onDiscard = { onAction(RevertSettings) },
+          isSaveVisible = hasChanges,
+          saveModifier = Modifier.testTag(Tags.SaveReport),
+          discardModifier = Modifier.testTag(Tags.RevertReport),
+        )
+        BottomSpacing()
+      }
     }
   }
 }
 
-// Unsaved changes swap back for discard, and show save
 @Composable
 private fun ReportTopBar(
   loaded: ReportState.Loaded?,
@@ -274,7 +285,6 @@ private fun ReportTopBar(
   hasInfo: Boolean,
   onShowInfo: () -> Unit,
   onShowSettings: () -> Unit,
-  onSave: () -> Unit,
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) {
@@ -284,15 +294,13 @@ private fun ReportTopBar(
     modifier = modifier,
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
-      if (hasChanges) {
-        DiscardChangesButton(
-          modifier = Modifier.testTag(Tags.DiscardReport),
-          contentDescription = Strings.reportsTextDiscard,
-          onClick = { onAction(NavBack) },
-        )
-      } else {
-        NavBackIconButton(onClick = { onAction(NavBack) })
-      }
+      BackOrDiscardButton(
+        modifier = Modifier.testTag(Tags.DiscardReport),
+        hasChanges = hasChanges,
+        discardText = Strings.reportsTextDiscard,
+        onBack = { onAction(NavBack) },
+        onDiscard = { onAction(NavBack) },
+      )
     },
     title = {
       Column {
@@ -314,15 +322,6 @@ private fun ReportTopBar(
       }
     },
     actions = {
-      if (hasChanges) {
-        AktualButton(
-          kind = Primary,
-          modifier = Modifier.padding(end = 8.dp).testTag(Tags.SaveReport),
-          text = Strings.reportsFormulaEditorSave,
-          shape = CircleShape,
-          onClick = onSave,
-        )
-      }
       if (zoom.isZoomed) {
         AktualIconButton(
           modifier = Modifier.testTag(ChartTags.ResetZoom),
@@ -388,6 +387,7 @@ private fun ReportContent(
           zoom = zoom,
         )
     }
+    FabSpace(isVisible = (state as? Loaded)?.hasChanges == true)
     BottomSpacing()
   }
 }

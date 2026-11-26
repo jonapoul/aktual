@@ -15,27 +15,29 @@ import aktual.core.icons.Refresh
 import aktual.core.icons.Reports
 import aktual.core.icons.material.Badge
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Save
 import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualExposedDropDownMenu
-import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.DiscardChangesDialog
+import aktual.core.ui.EditFabs
+import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalSnackbars
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -45,6 +47,7 @@ import aktual.core.ui.ShimmerLine
 import aktual.core.ui.hazedTopBar
 import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -61,6 +64,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -77,6 +81,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -119,6 +124,7 @@ internal fun BankSyncSettingsScreen(
       when (action) {
         NavigateBack -> back()
         SaveSettings -> viewModel.save()
+        RevertSettings -> viewModel.revert()
         UnlinkAccount -> viewModel.unlink()
         is SetToggle -> viewModel.set(action.toggle, action.value)
         is SetDirection -> viewModel.setDirection(action.direction)
@@ -144,6 +150,9 @@ private fun BankSyncSettingsScaffold(
 ) {
   val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
+  val hasChanges = state is Editing && state.hasChanges
+  var showDiscardDialog by remember { mutableStateOf(false) }
+  BackHandler(enabled = hasChanges) { showDiscardDialog = true }
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
@@ -151,7 +160,14 @@ private fun BankSyncSettingsScaffold(
       TopAppBar(
         modifier = Modifier.hazedTopBar(hazeState, scrollState),
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = { onAction(NavigateBack) }) },
+        navigationIcon = {
+          BackOrDiscardButton(
+            hasChanges = hasChanges,
+            discardText = Strings.bankSyncSettingsDiscardConfirm,
+            onBack = { onAction(NavigateBack) },
+            onDiscard = { showDiscardDialog = true },
+          )
+        },
         title = {
           Column {
             Text(text = Strings.bankSyncSettingsTitle)
@@ -164,16 +180,6 @@ private fun BankSyncSettingsScaffold(
                 overflow = Ellipsis,
               )
             }
-          }
-        },
-        actions = {
-          if (state is Editing) {
-            AktualIconButton(
-              imageVector = MaterialIcons.Save,
-              contentDescription = Strings.bankSyncSettingsSave,
-              isEnabled = state.hasChanges,
-              onClick = { onAction(SaveSettings) },
-            )
           }
         },
       )
@@ -207,7 +213,33 @@ private fun BankSyncSettingsScaffold(
           )
         }
       }
+
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.bankSyncSettingsSave,
+          discardText = Strings.bankSyncSettingsDiscardConfirm,
+          onSave = { onAction(SaveSettings) },
+          onDiscard = { onAction(RevertSettings) },
+          isSaveVisible = hasChanges,
+          isExpanded = scrollState.isScrollingUp(),
+        )
+        BottomSpacing()
+      }
     }
+  }
+
+  if (showDiscardDialog) {
+    DiscardChangesDialog(
+      title = Strings.bankSyncSettingsDiscardTitle,
+      message = Strings.bankSyncSettingsDiscardMessage,
+      confirm = Strings.bankSyncSettingsDiscardConfirm,
+      cancel = Strings.bankSyncSettingsDiscardCancel,
+      onDiscard = {
+        showDiscardDialog = false
+        onAction(NavigateBack)
+      },
+      onCancel = { showDiscardDialog = false },
+    )
   }
 }
 
@@ -242,6 +274,7 @@ private fun BankSyncSettingsContent(
 
     UnlinkButton(accountName = state.accountName, onConfirm = { onAction(UnlinkAccount) })
 
+    Spacer(Modifier.height(FabClearance))
     BottomSpacing()
   }
 }

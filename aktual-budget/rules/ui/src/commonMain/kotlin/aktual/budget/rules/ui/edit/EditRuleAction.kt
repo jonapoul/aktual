@@ -20,6 +20,8 @@ internal data object Delete : ViewModelAction
 
 internal data object Save : ViewModelAction
 
+internal data object Revert : ViewModelAction
+
 @JvmInline internal value class SetStage(val value: RuleStage) : ViewModelAction
 
 @JvmInline internal value class SetConditionsOp(val value: ConditionOp) : ViewModelAction

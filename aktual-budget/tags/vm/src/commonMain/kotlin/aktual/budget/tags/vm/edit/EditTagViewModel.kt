@@ -202,6 +202,9 @@ internal constructor(
 
   fun setColorError(isError: Boolean) = mutableColorError.update { isError }
 
+  // Throws away unsaved edits. The screen resets its text fields too, since it owns the text
+  fun revert() = mutableLoaded.value?.let(::reset)
+
   fun dismissSaveError() = mutableSaveError.update { null }
 
   fun save() {

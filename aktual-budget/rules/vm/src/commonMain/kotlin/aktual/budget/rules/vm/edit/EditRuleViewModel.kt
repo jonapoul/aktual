@@ -293,6 +293,9 @@ internal constructor(
       },
     )
 
+  // Throws away unsaved edits
+  fun revert() = mutableDraft.update { draft -> draft?.let { draft(it.saved, it.schedule) } }
+
   fun setStage(stage: RuleStage) = updateRule { r -> r.copy(stage = stage) }
 
   fun setConditionsOp(op: ConditionOp) = updateRule { r -> r.copy(conditionsOp = op) }

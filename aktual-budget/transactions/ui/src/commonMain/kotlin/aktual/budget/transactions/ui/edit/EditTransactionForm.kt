@@ -24,6 +24,7 @@ import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AmountKeypad
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ButtonShape
+import aktual.core.ui.FabClearance
 import aktual.core.ui.OnAction
 import aktual.core.ui.RootOverlayContent
 import aktual.core.ui.ShimmerBlock
@@ -222,8 +223,13 @@ internal fun EditTransactionForm(
         balance?.let { BalanceAfter(it) }
       }
 
-      // Leaves room to scroll the fields clear of the keypad
-      if (isTyping) Spacer(Modifier.height(keypadHeight)) else BottomSpacing()
+      // Leaves room to scroll the fields clear of the keypad, or of the FABs
+      if (isTyping) {
+        Spacer(Modifier.height(keypadHeight))
+      } else {
+        Spacer(Modifier.height(FabClearance))
+        BottomSpacing()
+      }
     }
 
     if (isInPreview()) {

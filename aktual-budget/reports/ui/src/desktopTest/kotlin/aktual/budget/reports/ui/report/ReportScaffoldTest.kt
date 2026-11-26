@@ -203,7 +203,7 @@ class ReportScaffoldTest {
   private fun ComposeUiTest.back() = onNodeWithTag(CoreTags.SheetBack)
 
   @Test
-  fun `Unsaved changes swap back for discard and show save`() = runComposeUiTest {
+  fun `Unsaved changes swap back for discard and show revert and save`() = runComposeUiTest {
     // given
     val actions = mutableListOf<Action>()
     setPreviewContent { ReportScaffold(state = CHANGED, onAction = { actions += it }) }
@@ -211,19 +211,20 @@ class ReportScaffoldTest {
 
     // when
     onNodeWithTag(Tags.DiscardReport).performClick()
+    onNodeWithTag(Tags.RevertReport).performClick()
     onNodeWithTag(Tags.SaveReport).performClick()
 
     // then
-    assertThat(actions).containsExactly(Action.NavBack, Action.SaveSettings)
+    assertThat(actions).containsExactly(Action.NavBack, Action.RevertSettings, Action.SaveSettings)
   }
 
   @Test
-  fun `No discard or save without changes`() = runComposeUiTest {
+  fun `No revert or save without changes`() = runComposeUiTest {
     // when
     setPreviewContent { ReportScaffold(state = STATE, onAction = {}) }
 
     // then
-    onNodeWithTag(Tags.DiscardReport).assertDoesNotExist()
+    onNodeWithTag(Tags.RevertReport).assertDoesNotExist()
     onNodeWithTag(Tags.SaveReport).assertDoesNotExist()
   }
 

@@ -11,32 +11,36 @@ import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BackOrDiscardButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
+import aktual.core.ui.EditFabs
+import aktual.core.ui.FabClearance
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.OnAction
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.checkbox
+import aktual.core.ui.isScrollingUp
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -132,12 +136,20 @@ internal fun MonteCarloScaffold(
   modifier: Modifier = Modifier,
 ) {
   val focusManager = LocalFocusManager.current
+  val scrollState = rememberScrollState()
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
         colors = colors.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton(onClick = { onAction(NavBack) }) },
+        navigationIcon = {
+          BackOrDiscardButton(
+            hasChanges = (state as? Loaded)?.hasChanges == true,
+            discardText = Strings.monteCarloDiscardConfirm,
+            onBack = { onAction(NavBack) },
+            onDiscard = { onAction(NavBack) },
+          )
+        },
         title = {
           Text(
             text =
@@ -147,13 +159,6 @@ internal fun MonteCarloScaffold(
         },
         actions = {
           if (state is Loaded) {
-            if (state.hasChanges) {
-              AktualButton(
-                kind = Primary,
-                text = Strings.monteCarloSave,
-                onClick = { onAction(Save) },
-              )
-            }
             MonteCarloMenu(
               title = state.title.orEmpty(),
               showTodaysMoney = state.showTodaysMoney,
@@ -183,7 +188,7 @@ internal fun MonteCarloScaffold(
           Column(
             modifier =
               Modifier.padding(innerPadding)
-                .verticalScrollWithBar()
+                .verticalScrollWithBar(scrollState)
                 // Tapping away from a field ends its edit
                 .pointerInput(Unit) { detectTapGestures { focusManager.clearFocus() } }
                 .padding(horizontal = Dimens.ScreenPadding),
@@ -191,8 +196,22 @@ internal fun MonteCarloScaffold(
           ) {
             MonteCarloConfiguration(state = state, onAction = onAction)
             MonteCarloResults(state = state, onAction = onAction)
+            // Room to scroll the results out from under the save button
+            VerticalSpacer(FabClearance)
             BottomSpacing()
           }
+      }
+
+      Column(modifier = Modifier.align(BottomCenter)) {
+        EditFabs(
+          saveText = Strings.monteCarloSave,
+          discardText = Strings.monteCarloDiscardConfirm,
+          onSave = { onAction(Save) },
+          onDiscard = { onAction(Revert) },
+          isSaveVisible = (state as? Loaded)?.hasChanges == true,
+          isExpanded = scrollState.isScrollingUp(),
+        )
+        BottomSpacing()
       }
     }
   }
@@ -280,6 +299,7 @@ private fun MonteCarloViewModel.onAction(
   when (action) {
     NavBack -> afterCommit(onNavBack)
     Save -> afterCommit { save() }
+    Revert -> afterCommit { reset() }
     is ToggleSection -> afterCommit { toggleSection(action.section) }
     is Rename -> rename(action.name)
     is Edit -> edit(action.transform)
