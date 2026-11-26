@@ -24,6 +24,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,7 +32,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +55,7 @@ internal fun ListSchedulesItem(
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
   val textColor = if (schedule.isCompleted) colors.pageTextSubdued else colors.pageText
 
-  Row(
+  Column(
     modifier =
       modifier
         .fillMaxWidth()
@@ -64,15 +64,14 @@ internal fun ListSchedulesItem(
         .border(Hairline, colors.tableBorder, RowShape)
         .clickable(onClick = onClick)
         .padding(ListSchedulesDS.itemCardPadding),
-    horizontalArrangement =
-      Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing, Alignment.Start),
-    verticalAlignment = Alignment.Top,
+    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
   ) {
-    Column(
-      modifier = Modifier.weight(1f),
-      verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing),
+      verticalAlignment = CenterVertically,
     ) {
       Text(
+        modifier = Modifier.weight(1f),
         text =
           schedule.name?.let { rememberHighlighted(it, query) }
             ?: AnnotatedString(Strings.listSchedulesUnnamedSchedule),
@@ -83,48 +82,48 @@ internal fun ListSchedulesItem(
         overflow = Ellipsis,
       )
 
-      AnimatedFlowRow {
-        item {
-          LabelValue(
-            label = Strings.listSchedulesLabelPayee,
-            value = schedule.payeeName,
-            valueColor = textColor,
-            query = query,
-          )
-        }
-        item {
-          LabelValue(
-            label = Strings.listSchedulesLabelAccount,
-            value = schedule.accountName,
-            valueColor = textColor,
-            query = query,
-          )
-        }
-
-        item {
-          LabelValue(
-            label = Strings.listSchedulesLabelAmount,
-            value = amountStr,
-            valueColor =
-              when {
-                schedule.isCompleted -> textColor
-                schedule.amount.isPositive() -> colors.budgetNumberPositive
-                else -> colors.budgetNumberNegative
-              },
-          )
-        }
-
-        item {
-          LabelValue(
-            label = Strings.listSchedulesLabelNext,
-            value = schedule.nextDate.formatted(),
-            valueColor = textColor,
-          )
-        }
-      }
+      ScheduleStatusBadge(schedule.status)
     }
 
-    ScheduleStatusBadge(schedule.status)
+    AnimatedFlowRow {
+      item {
+        LabelValue(
+          label = Strings.listSchedulesLabelPayee,
+          value = schedule.payeeName,
+          valueColor = textColor,
+          query = query,
+        )
+      }
+      item {
+        LabelValue(
+          label = Strings.listSchedulesLabelAccount,
+          value = schedule.accountName,
+          valueColor = textColor,
+          query = query,
+        )
+      }
+
+      item {
+        LabelValue(
+          label = Strings.listSchedulesLabelAmount,
+          value = amountStr,
+          valueColor =
+            when {
+              schedule.isCompleted -> textColor
+              schedule.amount.isPositive() -> colors.budgetNumberPositive
+              else -> colors.budgetNumberNegative
+            },
+        )
+      }
+
+      item {
+        LabelValue(
+          label = Strings.listSchedulesLabelNext,
+          value = schedule.nextDate.formatted(),
+          valueColor = textColor,
+        )
+      }
+    }
   }
 }
 
@@ -154,7 +153,7 @@ private fun LabelValue(
 @Composable
 internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(Window)
-  Row(
+  Column(
     modifier =
       modifier
         .fillMaxWidth()
@@ -163,24 +162,23 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
         .border(Hairline, colors.tableBorder, RowShape)
         .padding(ListSchedulesDS.itemCardPadding)
         .shimmer(shimmer),
-    horizontalArrangement =
-      Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing, Alignment.Start),
-    verticalAlignment = Alignment.Top,
+    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
   ) {
-    Column(
-      modifier = Modifier.weight(1f),
-      verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing),
+      verticalAlignment = CenterVertically,
     ) {
-      ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.45f))
-
-      // The label/value pairs usually wrap onto two lines
-      Column {
-        ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.85f))
-        ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.75f))
+      Box(Modifier.weight(1f)) {
+        ShimmerLine(typography.bodyMedium, Modifier.fillMaxWidth(fraction = 0.45f))
       }
+      ShimmerChip(typography.labelSmall, Modifier.width(56.dp), size = Small)
     }
 
-    ShimmerChip(typography.labelSmall, Modifier.width(56.dp), size = Small)
+    // The label/value pairs usually wrap onto two lines
+    Column {
+      ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.85f))
+      ShimmerLine(typography.bodySmall, Modifier.fillMaxWidth(fraction = 0.75f))
+    }
   }
 }
 
