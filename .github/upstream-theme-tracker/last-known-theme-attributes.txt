@@ -11,6 +11,7 @@ backgroundPage
 backgroundRaised
 backgroundSelected
 border
+borderStrong
 budgetCurrentMonth
 budgetHeaderCurrentMonth
 budgetHeaderOtherMonth

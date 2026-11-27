@@ -34,6 +34,26 @@ class JsonCustomColorsTest {
     }
   }
 
+  @Test
+  fun `Themes saved without base colours take them from older colours`() {
+    val theme =
+      DarkColors.toCustomColors(
+        name = "Old",
+        repo = CustomThemeRepo.local("old"),
+        overrides = mapOf("tableBackground" to Blue, "pageText" to Blue),
+      )
+    val encoded = ThemeJson.encodeToJsonElement(JsonCustomColors.serializer(), theme).jsonObject
+    val saved = JsonObject(encoded - "base")
+
+    val decoded = ThemeJson.decodeFromJsonElement(JsonCustomColors.serializer(), saved)
+
+    assertThat(decoded).all {
+      prop(JsonCustomColors::background).isEqualTo(Blue)
+      prop(JsonCustomColors::text).isEqualTo(Blue)
+      prop(JsonCustomColors::border).isEqualTo(DarkColors.tableBorder)
+    }
+  }
+
   private companion object {
     val Blue = Color(0xFF2B8FED)
   }

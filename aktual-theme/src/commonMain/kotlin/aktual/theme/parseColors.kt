@@ -29,8 +29,8 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   }
 
   val pageBackground =
-    requireNotNull(attributes["pageBackground"]) {
-      "Key 'pageBackground' not found in CSS attributes: $attributes"
+    requireNotNull(attributes["pageBackground"] ?: attributes["backgroundPage"]) {
+      "Neither 'pageBackground' nor 'backgroundPage' found in CSS attributes: $attributes"
     }
 
   val theme =
@@ -92,9 +92,6 @@ private fun buildCustomColors(
         default
       }
 
-  // A theme without its own alternate row colour leaves rows unshaded, as the built-in themes do
-  val tableBackground = "tableBackground".attr(fallback.tableBackground)
-
   // Themes from before upstream's accent colours set the colours that used to play their part, so
   // take the accent from those. Colours a theme leaves out then follow its accent, as upstream's do
   fun String.attrOr(legacy: String, default: Color): Color = attr(attributes[legacy] ?: default)
@@ -107,6 +104,22 @@ private fun buildCustomColors(
   val accentSubtle = "accentSubtle".attrOr("tableRowBackgroundHighlight", fallback.accentSubtle)
   val accentSubtleText = "accentSubtleText".attrOr("pillTextSelected", fallback.accentSubtleText)
 
+  // Likewise the base colours, taken from the colours that now follow them
+  val backgroundPage = "backgroundPage".attrOr("pageBackground", fallback.backgroundPage)
+  val background = "background".attrOr("tableBackground", fallback.background)
+  val backgroundRaised = "backgroundRaised".attrOr("menuBackground", fallback.backgroundRaised)
+  val backgroundHover =
+    "backgroundHover".attrOr("tableRowBackgroundHover", fallback.backgroundHover)
+  val backgroundSelected = "backgroundSelected".attrOr("tableRowBackgroundHighlight", accentSubtle)
+  val border = "border".attrOr("tableBorder", fallback.border)
+  val borderStrong = "borderStrong".attrOr("tableBorderSeparator", fallback.borderStrong)
+  val text = "text".attrOr("pageText", fallback.text)
+  val textSecondary = "textSecondary".attrOr("pageTextLight", fallback.textSecondary)
+  val textTertiary = "textTertiary".attrOr("pageTextSubdued", fallback.textTertiary)
+
+  // A theme without its own alternate row colour leaves rows unshaded, as the built-in themes do
+  val tableBackground = "tableBackground".attr(background)
+
   val themeName = name
   val themeRepo = repo
   val themeIsLight = isLight
@@ -117,23 +130,23 @@ private fun buildCustomColors(
       isLight = themeIsLight,
       page =
         PageColors(
-          pageBackground = "pageBackground".attr(pageBackground),
+          pageBackground = "pageBackground".attr(backgroundPage),
           pageBackgroundTopLeft = "pageBackgroundTopLeft".attr(pageBackgroundTopLeft),
           pageBackgroundBottomRight = "pageBackgroundBottomRight".attr(pageBackgroundBottomRight),
           pageBackgroundLineTop = "pageBackgroundLineTop".attr(pageBackgroundLineTop),
           pageBackgroundLineMid = "pageBackgroundLineMid".attr(pageBackgroundLineMid),
           pageBackgroundLineBottom = "pageBackgroundLineBottom".attr(pageBackgroundLineBottom),
-          pageText = "pageText".attr(pageText),
-          pageTextLight = "pageTextLight".attr(pageTextLight),
-          pageTextSubdued = "pageTextSubdued".attr(pageTextSubdued),
-          pageTextDark = "pageTextDark".attr(pageTextDark),
+          pageText = "pageText".attr(text),
+          pageTextLight = "pageTextLight".attr(textSecondary),
+          pageTextSubdued = "pageTextSubdued".attr(textTertiary),
+          pageTextDark = "pageTextDark".attr(text),
           pageTextPositive = "pageTextPositive".attr(accentText),
           pageTextLink = "pageTextLink".attr(accentText),
           pageTextLinkLight = "pageTextLinkLight".attr(accentText),
           numberPositive = "numberPositive".attr(numberPositive),
           numberNegative = "numberNegative".attr(numberNegative),
-          numberNeutral = "numberNeutral".attr(numberNeutral),
-          cardBackground = "cardBackground".attr(cardBackground),
+          numberNeutral = "numberNeutral".attr(textSecondary),
+          cardBackground = "cardBackground".attr(background),
           cardBorder = "cardBorder".attr(accentBorder),
           cardShadow = "cardShadow".attr(cardShadow),
         ),
@@ -141,24 +154,24 @@ private fun buildCustomColors(
         TableColors(
           tableBackground = tableBackground,
           tableRowBackgroundAlternate = "tableRowBackgroundAlternate".attr(tableBackground),
-          tableRowBackgroundHover = "tableRowBackgroundHover".attr(tableRowBackgroundHover),
-          tableText = "tableText".attr(tableText),
+          tableRowBackgroundHover = "tableRowBackgroundHover".attr(backgroundHover),
+          tableText = "tableText".attr(text),
           tableTextItemAdded = "tableTextItemAdded".attr(tableTextItemAdded),
           tableTextLight = "tableTextLight".attr(tableTextLight),
-          tableTextSubdued = "tableTextSubdued".attr(tableTextSubdued),
+          tableTextSubdued = "tableTextSubdued".attr(textSecondary),
           tableTextSelected = "tableTextSelected".attr(tableTextSelected),
           tableTextInactive = "tableTextInactive".attr(tableTextInactive),
           tableHeaderText = "tableHeaderText".attr(tableHeaderText),
           tableHeaderBackground = "tableHeaderBackground".attr(tableHeaderBackground),
-          tableBorder = "tableBorder".attr(tableBorder),
+          tableBorder = "tableBorder".attr(border),
           tableBorderSelected = "tableBorderSelected".attr(accentBorder),
           tableBorderHover = "tableBorderHover".attr(accentBorder),
-          tableBorderSeparator = "tableBorderSeparator".attr(tableBorderSeparator),
-          tableRowBackgroundHighlight = "tableRowBackgroundHighlight".attr(accentSubtle),
+          tableBorderSeparator = "tableBorderSeparator".attr(borderStrong),
+          tableRowBackgroundHighlight = "tableRowBackgroundHighlight".attr(backgroundSelected),
           tableRowBackgroundHighlightText =
             "tableRowBackgroundHighlightText".attr(tableRowBackgroundHighlightText),
           tableRowHeaderBackground = "tableRowHeaderBackground".attr(tableRowHeaderBackground),
-          tableRowHeaderText = "tableRowHeaderText".attr(tableRowHeaderText),
+          tableRowHeaderText = "tableRowHeaderText".attr(text),
         ),
       navigation =
         NavigationColors(
@@ -206,13 +219,13 @@ private fun buildCustomColors(
           sidebarRedesignTextMuted = "sidebarRedesignTextMuted".attr(sidebarRedesignTextMuted),
           sidebarRedesignRightBorder =
             "sidebarRedesignRightBorder".attr(sidebarRedesignRightBorder),
-          menuBackground = "menuBackground".attr(menuBackground),
+          menuBackground = "menuBackground".attr(backgroundRaised),
           menuItemBackgroundHover = "menuItemBackgroundHover".attr(menuItemBackgroundHover),
-          menuItemText = "menuItemText".attr(menuItemText),
-          menuItemTextHover = "menuItemTextHover".attr(menuItemTextHover),
+          menuItemText = "menuItemText".attr(text),
+          menuItemTextHover = "menuItemTextHover".attr(text),
           menuItemTextSelected = "menuItemTextSelected".attr(accentText),
           menuItemTextHeader = "menuItemTextHeader".attr(menuItemTextHeader),
-          menuBorder = "menuBorder".attr(menuBorder),
+          menuBorder = "menuBorder".attr(border),
           menuKeybindingText = "menuKeybindingText".attr(menuKeybindingText),
           menuAutoCompleteBackground =
             "menuAutoCompleteBackground".attr(menuAutoCompleteBackground),
@@ -228,15 +241,15 @@ private fun buildCustomColors(
         ),
       modalMobile =
         ModalMobileColors(
-          modalBackground = "modalBackground".attr(modalBackground),
+          modalBackground = "modalBackground".attr(backgroundRaised),
           modalBorder = "modalBorder".attr(modalBorder),
           mobileHeaderBackground = "mobileHeaderBackground".attr(accent),
           mobileHeaderText = "mobileHeaderText".attr(accentContrast),
           mobileHeaderTextSubdued = "mobileHeaderTextSubdued".attr(mobileHeaderTextSubdued),
           mobileHeaderTextHover = "mobileHeaderTextHover".attr(mobileHeaderTextHover),
           mobilePageBackground = "mobilePageBackground".attr(mobilePageBackground),
-          mobileNavBackground = "mobileNavBackground".attr(mobileNavBackground),
-          mobileNavItem = "mobileNavItem".attr(mobileNavItem),
+          mobileNavBackground = "mobileNavBackground".attr(backgroundRaised),
+          mobileNavItem = "mobileNavItem".attr(text),
           mobileNavItemSelected = "mobileNavItemSelected".attr(accentText),
           mobileAccountText = "mobileAccountText".attr(mobileAccountText),
           mobileTransactionSelected = "mobileTransactionSelected".attr(accentBorder),
@@ -272,18 +285,16 @@ private fun buildCustomColors(
             "buttonPrimaryDisabledBackground".attr(buttonPrimaryDisabledBackground),
           buttonPrimaryDisabledBorder =
             "buttonPrimaryDisabledBorder".attr(buttonPrimaryDisabledBorder),
-          buttonNormalText = "buttonNormalText".attr(buttonNormalText),
-          buttonNormalTextHover = "buttonNormalTextHover".attr(buttonNormalTextHover),
-          buttonNormalBackground = "buttonNormalBackground".attr(buttonNormalBackground),
-          buttonNormalBackgroundHover =
-            "buttonNormalBackgroundHover".attr(buttonNormalBackgroundHover),
-          buttonNormalBorder = "buttonNormalBorder".attr(buttonNormalBorder),
+          buttonNormalText = "buttonNormalText".attr(text),
+          buttonNormalTextHover = "buttonNormalTextHover".attr(text),
+          buttonNormalBackground = "buttonNormalBackground".attr(backgroundRaised),
+          buttonNormalBackgroundHover = "buttonNormalBackgroundHover".attr(backgroundHover),
+          buttonNormalBorder = "buttonNormalBorder".attr(borderStrong),
           buttonNormalShadow = "buttonNormalShadow".attr(buttonNormalShadow),
           buttonNormalSelectedText = "buttonNormalSelectedText".attr(accentContrast),
           buttonNormalSelectedBackground = "buttonNormalSelectedBackground".attr(accent),
           buttonNormalDisabledText = "buttonNormalDisabledText".attr(buttonNormalDisabledText),
-          buttonNormalDisabledBackground =
-            "buttonNormalDisabledBackground".attr(buttonNormalDisabledBackground),
+          buttonNormalDisabledBackground = "buttonNormalDisabledBackground".attr(backgroundRaised),
           buttonNormalDisabledBorder =
             "buttonNormalDisabledBorder".attr(buttonNormalDisabledBorder),
           calendarText = "calendarText".attr(calendarText),
@@ -330,16 +341,16 @@ private fun buildCustomColors(
         FormColors(
           formLabelText = "formLabelText".attr(accentText),
           formLabelBackground = "formLabelBackground".attr(formLabelBackground),
-          formInputBackground = "formInputBackground".attr(formInputBackground),
+          formInputBackground = "formInputBackground".attr(background),
           formInputBackgroundSelected =
             "formInputBackgroundSelected".attr(formInputBackgroundSelected),
           formInputBackgroundSelection = "formInputBackgroundSelection".attr(accent),
-          formInputBorder = "formInputBorder".attr(formInputBorder),
+          formInputBorder = "formInputBorder".attr(border),
           formInputTextReadOnlySelection =
             "formInputTextReadOnlySelection".attr(formInputTextReadOnlySelection),
           formInputBorderSelected = "formInputBorderSelected".attr(accentBorder),
-          formInputText = "formInputText".attr(formInputText),
-          formInputTextPlaceholder = "formInputTextPlaceholder".attr(formInputTextPlaceholder),
+          formInputText = "formInputText".attr(text),
+          formInputTextPlaceholder = "formInputTextPlaceholder".attr(textTertiary),
           formInputTextPlaceholderSelected =
             "formInputTextPlaceholderSelected".attr(formInputTextPlaceholderSelected),
           formInputShadowSelected = "formInputShadowSelected".attr(accentBorder),
@@ -356,10 +367,10 @@ private fun buildCustomColors(
         MiscColors(
           pillBackground = "pillBackground".attr(pillBackground),
           pillBackgroundLight = "pillBackgroundLight".attr(pillBackgroundLight),
-          pillText = "pillText".attr(pillText),
+          pillText = "pillText".attr(text),
           pillTextHighlighted = "pillTextHighlighted".attr(pillTextHighlighted),
           pillBorder = "pillBorder".attr(pillBorder),
-          pillBorderDark = "pillBorderDark".attr(pillBorderDark),
+          pillBorderDark = "pillBorderDark".attr(borderStrong),
           pillBackgroundSelected = "pillBackgroundSelected".attr(accentSubtle),
           pillTextSelected = "pillTextSelected".attr(accentSubtleText),
           pillBorderSelected = "pillBorderSelected".attr(accentBorder),
@@ -367,7 +378,7 @@ private fun buildCustomColors(
           reportsBlue = "reportsBlue".attr(reportsBlue),
           reportsGreen = "reportsGreen".attr(reportsGreen),
           reportsGray = "reportsGray".attr(reportsGray),
-          reportsLabel = "reportsLabel".attr(reportsLabel),
+          reportsLabel = "reportsLabel".attr(text),
           reportsInnerLabel = "reportsInnerLabel".attr(reportsInnerLabel),
           reportsNumberPositive = "reportsNumberPositive".attr(reportsNumberPositive),
           reportsNumberNegative = "reportsNumberNegative".attr(reportsNumberNegative),
@@ -392,9 +403,9 @@ private fun buildCustomColors(
           floatingActionBarBackground = "floatingActionBarBackground".attr(accent),
           floatingActionBarBorder = "floatingActionBarBorder".attr(floatingActionBarBorder),
           floatingActionBarText = "floatingActionBarText".attr(accentContrast),
-          tooltipText = "tooltipText".attr(tooltipText),
-          tooltipBackground = "tooltipBackground".attr(tooltipBackground),
-          tooltipBorder = "tooltipBorder".attr(tooltipBorder),
+          tooltipText = "tooltipText".attr(text),
+          tooltipBackground = "tooltipBackground".attr(backgroundRaised),
+          tooltipBorder = "tooltipBorder".attr(border),
           overlayBackground = "overlayBackground".attr(overlayBackground),
         ),
       settings =
@@ -402,7 +413,7 @@ private fun buildCustomColors(
           settingsCardBackground = "settingsCardBackground".attr(settingsCardBackground),
           settingsCardBorder = "settingsCardBorder".attr(settingsCardBorder),
           settingsCardText = "settingsCardText".attr(settingsCardText),
-          settingsCardTextSubdued = "settingsCardTextSubdued".attr(settingsCardTextSubdued),
+          settingsCardTextSubdued = "settingsCardTextSubdued".attr(textSecondary),
           settingsNavItemAccentSelected = "settingsNavItemAccentSelected".attr(accentSubtleText),
           settingsNavItemBackgroundHover =
             "settingsNavItemBackgroundHover".attr(settingsNavItemBackgroundHover),
@@ -421,6 +432,19 @@ private fun buildCustomColors(
           accentBorder = accentBorder,
           accentSubtle = accentSubtle,
           accentSubtleText = accentSubtleText,
+        ),
+      baseColors =
+        BaseColors(
+          backgroundPage = backgroundPage,
+          background = background,
+          backgroundRaised = backgroundRaised,
+          backgroundHover = backgroundHover,
+          backgroundSelected = backgroundSelected,
+          border = border,
+          borderStrong = borderStrong,
+          text = text,
+          textSecondary = textSecondary,
+          textTertiary = textTertiary,
         ),
       chartQual =
         ChartQualColors(
