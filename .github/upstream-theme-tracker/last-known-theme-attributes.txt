@@ -5,6 +5,12 @@ accentHover
 accentSubtle
 accentSubtleText
 accentText
+background
+backgroundHover
+backgroundPage
+backgroundRaised
+backgroundSelected
+border
 budgetCurrentMonth
 budgetHeaderCurrentMonth
 budgetHeaderOtherMonth
@@ -238,6 +244,9 @@ tableTextSelected
 tableTextSubdued
 templateNumberFunded
 templateNumberUnderFunded
+text
+textSecondary
+textTertiary
 toBudgetNegative
 toBudgetPositive
 toBudgetZero
