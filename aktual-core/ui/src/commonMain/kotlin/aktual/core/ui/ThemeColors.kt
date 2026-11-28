@@ -97,7 +97,7 @@ fun Colors.textField(
     errorTextColor = text,
     errorPlaceholderColor = textPlaceholder,
     errorLabelColor = errorText,
-    errorIndicatorColor = errorBorder,
+    errorIndicatorColor = error,
     errorContainerColor = focusedContainer,
     errorCursorColor = text,
     errorLeadingIconColor = icon,
@@ -192,7 +192,7 @@ fun Colors.tonalButton(isPressed: Boolean): ButtonColors =
 @Composable
 fun Colors.errorButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
-    containerColor = if (isPressed) errorBorder else errorBackground,
+    containerColor = if (isPressed) error else errorBackground,
     contentColor = if (isPressed) errorBackground else errorText,
   )
 
@@ -245,7 +245,7 @@ fun Colors.tonalIconButton(isPressed: Boolean): IconButtonColors =
 fun Colors.errorIconButton(isPressed: Boolean): IconButtonColors =
   normalIconButton(isPressed)
     .copy(
-      containerColor = if (isPressed) errorBorder else errorBackground,
+      containerColor = if (isPressed) error else errorBackground,
       disabledContainerColor = errorBackground.disabled,
       contentColor = if (isPressed) errorBackground else errorText,
     )

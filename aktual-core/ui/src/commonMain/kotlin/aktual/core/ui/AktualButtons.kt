@@ -281,7 +281,7 @@ private fun Colors.buttonBorder(kind: ButtonKind, isEnabled: Boolean): BorderStr
       Normal -> Dp.Hairline to buttonNormalBorder
       Bare -> return null
       Tonal -> TonalButtonBorder to buttonPrimaryBorder
-      Destructive -> Dp.Hairline to errorBorder
+      Destructive -> Dp.Hairline to error
     }
   return BorderStroke(width, color.disabledIf(!isEnabled))
 }
