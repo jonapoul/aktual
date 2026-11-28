@@ -3,6 +3,7 @@
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
 import aktual.gradle.ExportMinSdkTask
 import aktual.gradle.dsl.commonConfigure
+import aktual.gradle.fromProperties
 import blueprint.core.getOptional
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionDate
@@ -31,7 +32,7 @@ val gitVersionName = gitVersionDate()
 
 android {
   namespace = "aktual.app.android"
-  compileSdk = providers.intProperty(key = "aktual.android.compileSdk").get()
+  compileSdk { fromProperties(providers) }
 
   defaultConfig {
     applicationId = "dev.jonpoulton.aktual.app"

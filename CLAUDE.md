@@ -128,7 +128,7 @@ Default new code to `commonMain`. Code that only needs JDK APIs (`java.text`, `j
 
 - **Config cache + git versions**: `gitVersionHash()` / `gitVersionCode()` are cached so builds stay sub-second - they do **not** refresh on commit. Use `./gradlew --rerun-tasks` when you need fresh values.
 - **Java version**: single source of truth is `.java-version` at repo root (read by `JavaVersionValueSource` and CI's `setup-java`). Don't hardcode it anywhere.
-- **SDK**: min 28, target/compile 37.
+- **SDK**: min 28, target 37, compile 37.2 (`aktual.android.compileSdk` + `compileSdkMinor` in `gradle.properties`).
 - **Desktop release** goes through Proguard - mapping at `aktual-app/desktop/build/outputs/mapping.txt`. Android goes through R8.
 - **Cloud sessions**: `.claude/hooks/session-start.sh` (Claude Code on the web only) points Gradle at Google's Maven Central mirror via `~/.gradle/init.d`, since Maven Central rate-limits those sessions with 429s, and installs an Android SDK at `~/android-sdk`. The environment must allow `dl.google.com`.
 - **Android manifest lock**: `aktual-app/android` locks its merged manifest (`AndroidManifest.lock.yaml`) via the manifest-lock plugin with `failOnLockChange = true`, so adding/changing an Android dependency that touches the manifest (permissions, components) fails the build until the lock is regenerated. Run `./gradlew :aktual-app:android:androidManifestLock` to update it, then commit the change. The `ci` build type (the APK PR CI uploads) only exists when `-Paktual.android.ciBuildType` is passed, so it isn't part of the lock.
