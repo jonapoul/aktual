@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui.montecarlo
 
+import aktual.budget.model.Amount
 import aktual.budget.reports.vm.montecarlo.MonteCarloRun
 import aktual.budget.reports.vm.montecarlo.RunPercentile
 import aktual.core.l10n.Strings
@@ -8,6 +9,9 @@ import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedFlowRow
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.redacted
 import androidx.compose.foundation.background
@@ -32,9 +36,12 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 private enum class SortOrder {
@@ -163,7 +170,7 @@ private fun RunRow(
   isHighlighted: Boolean,
   onClick: (Int) -> Unit,
 ) {
-  val background = if (isHighlighted) colors.tableRowBackgroundHighlight else Color.Transparent
+  val background = if (isHighlighted) colors.backgroundSelected else Color.Transparent
   Row(
     modifier =
       Modifier.fillMaxWidth()
@@ -199,7 +206,7 @@ private fun RunRow(
 private fun Cell(
   text: String,
   modifier: Modifier = Modifier,
-  color: Color = colors.pageText,
+  color: Color = colors.text,
   textAlign: TextAlign? = null,
 ) =
   Text(
@@ -208,6 +215,33 @@ private fun Cell(
     style = typography.bodyMedium,
     color = color,
     textAlign = textAlign,
+  )
+
+@Preview
+@Composable
+private fun PreviewRunsTable(
+  @PreviewParameter(RunsTableProvider::class) params: ColorParams<ImmutableList<MonteCarloRun>>,
+) =
+  PreviewWithColorParams(params) {
+    RunsTable(runs = this, onSelectRun = {}, modifier = Modifier.padding(16.dp))
+  }
+
+private val PREVIEW_RUNS =
+  List(25) { index ->
+      val ranOut = index < 4
+      MonteCarloRun(
+        index = index,
+        depletionAge = if (ranOut) 78 + index * 3 else null,
+        endingBalance = if (ranOut) Amount.Zero else Amount(40_000.0 + index * 12_500.0),
+        totalWithdrawn = Amount(600_000.0 + index * 8_000.0),
+      )
+    }
+    .toImmutableList()
+
+private class RunsTableProvider :
+  ColorParamsProvider<ImmutableList<MonteCarloRun>>(
+    PREVIEW_RUNS,
+    persistentListOf(PREVIEW_RUNS.last()),
   )
 
 private const val PAGE_SIZE = 20
