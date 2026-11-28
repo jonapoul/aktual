@@ -19,6 +19,7 @@ import aktual.core.icons.Split
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AnimatedIcon
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.ExpandChevron
@@ -29,6 +30,7 @@ import aktual.core.ui.formattedString
 import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
 import aktual.core.ui.stringShort
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +51,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -158,17 +161,20 @@ private fun ClearedToggle(
     modifier = modifier.clickable(onClickLabel = description, onClick = onToggle),
     contentAlignment = Center,
   ) {
-    Icon(
-      modifier = Modifier.size(16.dp),
-      imageVector =
-        if (transaction.reconciled) AktualIcons.LockClosed else AktualIcons.CheckCircle1,
-      contentDescription = description,
-      tint =
+    val tint by
+      animateColorAsState(
         if (transaction.reconciled || transaction.cleared) {
           colors.noticeTextLight
         } else {
           colors.textTertiary
         },
+      )
+    AnimatedIcon(
+      modifier = Modifier.size(16.dp),
+      imageVector =
+        if (transaction.reconciled) AktualIcons.LockClosed else AktualIcons.CheckCircle1,
+      contentDescription = description,
+      tint = tint,
     )
   }
 }
