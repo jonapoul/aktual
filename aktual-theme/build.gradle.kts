@@ -10,4 +10,9 @@ kotlin {
     compileOnly(libs.compose.runtime)
     implementation(project(":aktual-logging"))
   }
+
+  // UpstreamColorsTest reads the upstream theme tracker's resolved colours
+  sourceSets.named("desktopTest") {
+    resources.srcDir(isolated.rootProject.projectDirectory.dir(".github/upstream-theme-tracker"))
+  }
 }
