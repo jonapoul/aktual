@@ -18,6 +18,17 @@ sealed interface Colors {
   val accentSubtle: Color
   val accentSubtleText: Color
 
+  val backgroundPage: Color
+  val background: Color
+  val backgroundRaised: Color
+  val backgroundHover: Color
+  val backgroundSelected: Color
+  val border: Color
+  val borderStrong: Color
+  val text: Color
+  val textSecondary: Color
+  val textTertiary: Color
+
   val pageBackground: Color
   val pageBackgroundTopLeft: Color
   val pageBackgroundBottomRight: Color

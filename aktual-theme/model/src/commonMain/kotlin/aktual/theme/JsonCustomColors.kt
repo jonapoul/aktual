@@ -40,6 +40,21 @@ data class JsonCustomColors(
       accentSubtle = table.tableRowBackgroundHighlight,
       accentSubtleText = misc.pillTextSelected,
     ),
+  // Themes saved before the base colours existed take them from the colours that now follow them
+  @SerialName("base")
+  val baseColors: BaseColors =
+    BaseColors(
+      backgroundPage = page.pageBackground,
+      background = table.tableBackground,
+      backgroundRaised = navigation.menuBackground,
+      backgroundHover = table.tableRowBackgroundHover,
+      backgroundSelected = table.tableRowBackgroundHighlight,
+      border = table.tableBorder,
+      borderStrong = table.tableBorderSeparator,
+      text = page.pageText,
+      textSecondary = page.pageTextLight,
+      textTertiary = page.pageTextSubdued,
+    ),
   @SerialName("isLight") override val isLight: Boolean,
 ) : CustomColors {
 
@@ -64,6 +79,37 @@ data class JsonCustomColors(
 
   override val accentSubtleText: Color
     get() = accentColors.accentSubtleText
+
+  // Base
+  override val backgroundPage: Color
+    get() = baseColors.backgroundPage
+
+  override val background: Color
+    get() = baseColors.background
+
+  override val backgroundRaised: Color
+    get() = baseColors.backgroundRaised
+
+  override val backgroundHover: Color
+    get() = baseColors.backgroundHover
+
+  override val backgroundSelected: Color
+    get() = baseColors.backgroundSelected
+
+  override val border: Color
+    get() = baseColors.border
+
+  override val borderStrong: Color
+    get() = baseColors.borderStrong
+
+  override val text: Color
+    get() = baseColors.text
+
+  override val textSecondary: Color
+    get() = baseColors.textSecondary
+
+  override val textTertiary: Color
+    get() = baseColors.textTertiary
 
   // Page
   override val pageBackground: Color
@@ -1104,4 +1150,18 @@ data class AccentColors(
   @SerialName("accentBorder") val accentBorder: Color,
   @SerialName("accentSubtle") val accentSubtle: Color,
   @SerialName("accentSubtleText") val accentSubtleText: Color,
+)
+
+@Serializable
+data class BaseColors(
+  @SerialName("backgroundPage") val backgroundPage: Color,
+  @SerialName("background") val background: Color,
+  @SerialName("backgroundRaised") val backgroundRaised: Color,
+  @SerialName("backgroundHover") val backgroundHover: Color,
+  @SerialName("backgroundSelected") val backgroundSelected: Color,
+  @SerialName("border") val border: Color,
+  @SerialName("borderStrong") val borderStrong: Color,
+  @SerialName("text") val text: Color,
+  @SerialName("textSecondary") val textSecondary: Color,
+  @SerialName("textTertiary") val textTertiary: Color,
 )

@@ -97,6 +97,55 @@ class ParseColorsTest {
   }
 
   @Test
+  fun `Colours a theme leaves out follow its base colours`() {
+    val css =
+      """
+      :root {
+        --color-backgroundPage: #1b1c1d;
+        --color-background: #222324;
+        --color-border: #333435;
+        --color-text: #e9eaeb;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css)
+
+    assertThat(colors).all {
+      prop(CustomColors::pageBackground).isEqualTo(Color(0xFF1b1c1d))
+      prop(CustomColors::tableBackground).isEqualTo(Color(0xFF222324))
+      prop(CustomColors::formInputBackground).isEqualTo(Color(0xFF222324))
+      prop(CustomColors::menuBorder).isEqualTo(Color(0xFF333435))
+      prop(CustomColors::tableText).isEqualTo(Color(0xFFe9eaeb))
+      prop(CustomColors::buttonNormalText).isEqualTo(Color(0xFFe9eaeb))
+      prop(CustomColors::textSecondary).isEqualTo(DarkColors.textSecondary)
+    }
+  }
+
+  @Test
+  fun `Take the base colours from older themes' colours`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1b1c1d;
+        --color-tableBackground: #222324;
+        --color-pageText: #e9eaeb;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css)
+
+    assertThat(colors).all {
+      prop(CustomColors::backgroundPage).isEqualTo(Color(0xFF1b1c1d))
+      prop(CustomColors::background).isEqualTo(Color(0xFF222324))
+      prop(CustomColors::text).isEqualTo(Color(0xFFe9eaeb))
+      prop(CustomColors::cardBackground).isEqualTo(Color(0xFF222324))
+      prop(CustomColors::menuItemText).isEqualTo(Color(0xFFe9eaeb))
+    }
+  }
+
+  @Test
   fun `Ignore comments`() {
     val css =
       """

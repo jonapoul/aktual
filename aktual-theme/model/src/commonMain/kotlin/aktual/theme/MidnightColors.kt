@@ -15,47 +15,58 @@ data object MidnightColors : DefaultColors {
   override val accentSubtle = Color(color = 0xFF342553)
   override val accentSubtleText = Color(color = 0xFFBB91FF)
 
-  override val pageBackground = ColorPalette.gray600
+  override val backgroundPage = ColorPalette.gray600
+  override val background = ColorPalette.gray800
+  override val backgroundRaised = ColorPalette.gray700
+  override val backgroundHover = ColorPalette.gray500
+  override val backgroundSelected = accentSubtle
+  override val border = ColorPalette.gray600
+  override val borderStrong = ColorPalette.gray400
+  override val text = ColorPalette.gray100
+  override val textSecondary = ColorPalette.gray200
+  override val textTertiary = ColorPalette.gray300
+
+  override val pageBackground = backgroundPage
   override val pageBackgroundTopLeft = ColorPalette.gray800
   override val pageBackgroundBottomRight = ColorPalette.gray700
   override val pageBackgroundLineTop = ColorPalette.purple300
   override val pageBackgroundLineMid = ColorPalette.gray900
   override val pageBackgroundLineBottom = ColorPalette.gray150
-  override val pageText = ColorPalette.gray100
-  override val pageTextLight = ColorPalette.gray200
-  override val pageTextSubdued = ColorPalette.gray400
-  override val pageTextDark = ColorPalette.gray100
+  override val pageText = text
+  override val pageTextLight = textSecondary
+  override val pageTextSubdued = textTertiary
+  override val pageTextDark = text
   override val pageTextPositive = accentText
   override val pageTextLink = accentText
   override val pageTextLinkLight = accentText
 
-  override val cardBackground = ColorPalette.gray800
+  override val cardBackground = background
   override val cardBorder = accentBorder
   override val cardShadow = ColorPalette.gray900
 
-  override val tableBackground = ColorPalette.gray800
+  override val tableBackground = background
   override val tableRowBackgroundAlternate = tableBackground
-  override val tableRowBackgroundHover = ColorPalette.gray500
-  override val tableText = ColorPalette.gray150
+  override val tableRowBackgroundHover = backgroundHover
+  override val tableText = text
   override val tableTextItemAdded = tableText
   override val tableTextLight = tableText
-  override val tableTextSubdued = ColorPalette.gray300
+  override val tableTextSubdued = textSecondary
   override val tableTextSelected = tableText
   override val tableTextInactive = ColorPalette.gray400
   override val tableHeaderText = ColorPalette.gray200
   override val tableHeaderBackground = ColorPalette.gray900
-  override val tableBorder = ColorPalette.gray600
+  override val tableBorder = border
   override val tableBorderSelected = accentBorder
   override val tableBorderHover = accentBorder
-  override val tableBorderSeparator = ColorPalette.gray400
-  override val tableRowBackgroundHighlight = accentSubtle
+  override val tableBorderSeparator = borderStrong
+  override val tableRowBackgroundHighlight = backgroundSelected
   override val tableRowBackgroundHighlightText = tableText
   override val tableRowHeaderBackground = ColorPalette.gray700
-  override val tableRowHeaderText = ColorPalette.gray150
+  override val tableRowHeaderText = text
 
   override val numberPositive = ColorPalette.green300
   override val numberNegative = ColorPalette.red200
-  override val numberNeutral = ColorPalette.gray300
+  override val numberNeutral = textSecondary
   override val budgetNumberNegative = numberNegative
   override val budgetNumberZero = tableTextSubdued
   override val budgetNumberNeutral = tableText
@@ -69,7 +80,7 @@ data object MidnightColors : DefaultColors {
   override val settingsCardBackground = tableBackground
   override val settingsCardBorder = tableBorder
   override val settingsCardText = tableText
-  override val settingsCardTextSubdued = ColorPalette.gray200
+  override val settingsCardTextSubdued = textSecondary
   override val settingsNavItemText = pageText
   override val settingsNavItemAccentSelected = accentSubtleText
   override val settingsNavItemTextSelected = settingsNavItemAccentSelected
@@ -109,13 +120,13 @@ data object MidnightColors : DefaultColors {
   override val sidebarRedesignTextMuted = sidebarTextMuted
   override val sidebarRedesignRightBorder = sidebarBorder
 
-  override val menuBackground = ColorPalette.gray700
+  override val menuBackground = backgroundRaised
   override val menuItemBackgroundHover = ColorPalette.gray500
-  override val menuItemText = ColorPalette.gray100
-  override val menuItemTextHover = ColorPalette.gray50
+  override val menuItemText = text
+  override val menuItemTextHover = text
   override val menuItemTextSelected = accentText
   override val menuItemTextHeader = Color(color = 0xFFAC6EFF)
-  override val menuBorder = ColorPalette.gray800
+  override val menuBorder = border
   override val menuKeybindingText = Color(color = 0xFFAC6EFF)
   override val menuAutoCompleteBackground = ColorPalette.gray600
   override val menuAutoCompleteBackgroundHover = ColorPalette.gray500
@@ -125,15 +136,15 @@ data object MidnightColors : DefaultColors {
   override val menuAutoCompleteItemTextHover = ColorPalette.gray50
   override val menuAutoCompleteItemText = menuItemText
 
-  override val modalBackground = ColorPalette.gray700
+  override val modalBackground = backgroundRaised
   override val modalBorder = ColorPalette.gray200
   override val mobileHeaderBackground = accent
   override val mobileHeaderText = accentContrast
   override val mobileHeaderTextSubdued = mobileHeaderText.withOpacity(0.75)
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
   override val mobilePageBackground = ColorPalette.gray900
-  override val mobileNavBackground = ColorPalette.gray600
-  override val mobileNavItem = ColorPalette.gray150
+  override val mobileNavBackground = backgroundRaised
+  override val mobileNavItem = text
   override val mobileNavItemSelected = accentText
   override val mobileAccountText = ColorPalette.blue800
   override val mobileTransactionSelected = accentBorder
@@ -168,16 +179,16 @@ data object MidnightColors : DefaultColors {
   override val buttonPrimaryDisabledBackground = ColorPalette.gray700
   override val buttonPrimaryDisabledBorder = buttonPrimaryDisabledBackground
 
-  override val buttonNormalText = ColorPalette.gray150
-  override val buttonNormalTextHover = ColorPalette.gray150
-  override val buttonNormalBackground = ColorPalette.gray600
-  override val buttonNormalBackgroundHover = ColorPalette.gray400
-  override val buttonNormalBorder = ColorPalette.gray300
+  override val buttonNormalText = text
+  override val buttonNormalTextHover = text
+  override val buttonNormalBackground = backgroundRaised
+  override val buttonNormalBackgroundHover = backgroundHover
+  override val buttonNormalBorder = borderStrong
   override val buttonNormalShadow = Color(color = 0x66000000)
   override val buttonNormalSelectedText = ColorPalette.white
   override val buttonNormalSelectedBackground = accent
   override val buttonNormalDisabledText = ColorPalette.gray400
-  override val buttonNormalDisabledBackground = ColorPalette.gray700
+  override val buttonNormalDisabledBackground = backgroundRaised
   override val buttonNormalDisabledBorder = ColorPalette.gray500
 
   override val calendarText = ColorPalette.gray50
@@ -219,13 +230,13 @@ data object MidnightColors : DefaultColors {
 
   override val formLabelText = accentText
   override val formLabelBackground = tableBackground
-  override val formInputBackground = ColorPalette.gray800
+  override val formInputBackground = background
   override val formInputBackgroundSelected = ColorPalette.gray700
   override val formInputBackgroundSelection = ColorPalette.purple400
-  override val formInputBorder = ColorPalette.gray600
+  override val formInputBorder = border
   override val formInputBorderSelected = accentBorder
-  override val formInputText = ColorPalette.gray150
-  override val formInputTextPlaceholder = ColorPalette.gray400
+  override val formInputText = text
+  override val formInputTextPlaceholder = textTertiary
   override val formInputTextPlaceholderSelected = ColorPalette.gray100
   override val formInputTextReadOnlySelection = ColorPalette.gray800
   override val formInputShadowSelected = accentBorder
@@ -240,10 +251,10 @@ data object MidnightColors : DefaultColors {
 
   override val pillBackground = ColorPalette.gray500
   override val pillBackgroundLight = ColorPalette.gray900
-  override val pillText = ColorPalette.gray200
+  override val pillText = text
   override val pillTextHighlighted = Color(color = 0xFFB380FF)
   override val pillBorder = ColorPalette.gray500
-  override val pillBorderDark = pillBorder
+  override val pillBorderDark = borderStrong
   override val pillBackgroundSelected = accentSubtle
   override val pillTextSelected = accentSubtleText
   override val pillBorderSelected = accentBorder
@@ -252,7 +263,7 @@ data object MidnightColors : DefaultColors {
   override val reportsBlue = ColorPalette.blue400
   override val reportsGreen = ColorPalette.green400
   override val reportsGray = ColorPalette.gray400
-  override val reportsLabel = pageText
+  override val reportsLabel = text
   override val reportsInnerLabel = ColorPalette.navy800
   override val reportsNumberPositive = numberPositive
   override val reportsNumberNegative = numberNegative
@@ -272,9 +283,9 @@ data object MidnightColors : DefaultColors {
   override val floatingActionBarBorder = floatingActionBarBackground
   override val floatingActionBarText = accentContrast
 
-  override val tooltipText = ColorPalette.gray100
-  override val tooltipBackground = ColorPalette.gray800
-  override val tooltipBorder = ColorPalette.gray600
+  override val tooltipText = text
+  override val tooltipBackground = backgroundRaised
+  override val tooltipBorder = border
 
   override val overlayBackground = Color(color = 0x4D000000)
 
