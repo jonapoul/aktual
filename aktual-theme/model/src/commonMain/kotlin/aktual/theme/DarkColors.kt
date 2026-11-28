@@ -54,8 +54,8 @@ data object DarkColors : DefaultColors {
   override val tableTextLight = tableText
   override val tableTextSubdued = textSecondary
   override val tableTextSelected = tableText
-  override val tableTextInactive = ColorPalette.navy500
-  override val tableHeaderText = ColorPalette.navy300
+  override val tableTextInactive = ColorPalette.navy400
+  override val tableHeaderText = ColorPalette.navy200
   override val tableHeaderBackground = ColorPalette.navy700
   override val tableBorder = border
   override val tableBorderSelected = accentBorder
@@ -123,7 +123,7 @@ data object DarkColors : DefaultColors {
   override val sidebarRedesignRightBorder = sidebarBorder
 
   override val menuBackground = backgroundRaised
-  override val menuItemBackgroundHover = ColorPalette.navy500
+  override val menuItemBackgroundHover = ColorPalette.navy600
   override val menuItemText = text
   override val menuItemTextHover = text
   override val menuItemTextSelected = accentText

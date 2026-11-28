@@ -49,7 +49,7 @@ data object LightColors : DefaultColors {
   override val tableRowBackgroundHover = backgroundHover
   override val tableText = text
   override val tableTextItemAdded = tableText
-  override val tableTextLight = ColorPalette.navy400
+  override val tableTextLight = ColorPalette.navy500
   override val tableTextSubdued = textSecondary
   override val tableTextSelected = tableText
   override val tableTextInactive = ColorPalette.navy500
@@ -203,8 +203,8 @@ data object LightColors : DefaultColors {
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText
   override val buttonBareBackground = Color.Transparent
-  override val buttonBareBackgroundHover = Color(color = 0xFFE7E1E8)
-  override val buttonBareBackgroundActive = Color(color = 0xFFD8D2D8)
+  override val buttonBareBackgroundHover = Color(color = 0x26646464)
+  override val buttonBareBackgroundActive = Color(color = 0x40646464)
   override val buttonBareDisabledText = buttonNormalDisabledText
   override val buttonBareDisabledBackground = buttonBareBackground
 

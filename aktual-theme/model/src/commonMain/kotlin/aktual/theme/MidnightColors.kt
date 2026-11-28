@@ -52,7 +52,7 @@ data object MidnightColors : DefaultColors {
   override val tableTextLight = tableText
   override val tableTextSubdued = textSecondary
   override val tableTextSelected = tableText
-  override val tableTextInactive = ColorPalette.gray400
+  override val tableTextInactive = ColorPalette.gray300
   override val tableHeaderText = ColorPalette.gray200
   override val tableHeaderBackground = ColorPalette.gray900
   override val tableBorder = border
@@ -131,7 +131,7 @@ data object MidnightColors : DefaultColors {
   override val menuAutoCompleteBackground = ColorPalette.gray600
   override val menuAutoCompleteBackgroundHover = ColorPalette.gray500
   override val menuAutoCompleteText = ColorPalette.gray100
-  override val menuAutoCompleteTextHover = ColorPalette.green900
+  override val menuAutoCompleteTextHover = ColorPalette.green150
   override val menuAutoCompleteTextHeader = Color(color = 0xFFD9C5FF)
   override val menuAutoCompleteItemTextHover = ColorPalette.gray50
   override val menuAutoCompleteItemText = menuItemText
