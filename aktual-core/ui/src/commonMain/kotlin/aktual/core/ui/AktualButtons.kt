@@ -377,8 +377,8 @@ private fun RowScope.DefaultTextButtonContent(
   AnimatedContent(
     targetState = icon,
     transitionSpec = {
-      (fadeIn() + scaleIn(initialScale = BUTTON_ICON_HIDDEN_SCALE)) togetherWith
-        (fadeOut() + scaleOut(targetScale = BUTTON_ICON_HIDDEN_SCALE))
+      fadeIn() + scaleIn(initialScale = BUTTON_ICON_HIDDEN_SCALE) togetherWith
+        fadeOut() + scaleOut(targetScale = BUTTON_ICON_HIDDEN_SCALE)
     },
     label = "ButtonIcon",
   ) { shown ->
