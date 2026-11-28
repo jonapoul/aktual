@@ -22,6 +22,7 @@ import aktual.core.ui.BasicTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.Chip
 import aktual.core.ui.ChipColors
+import aktual.core.ui.ExpandChevron
 import aktual.core.ui.OnAction
 import aktual.core.ui.ShimmerBlock
 import aktual.core.ui.ShimmerChip
@@ -32,7 +33,6 @@ import aktual.core.ui.formattedText
 import aktual.core.ui.redacted
 import aktual.core.ui.stringLong
 import aktual.core.ui.stuckHeader
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,7 +68,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.semantics
@@ -527,15 +526,12 @@ internal fun GroupHeaderRow(
       Strings.budgetingGroupCollapse(group.name)
     }
 
-  val rotation = animateFloatAsState(if (group.isCollapsed) COLLAPSED_ROTATION else 0f)
-
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider()
     Box {
       GroupHeaderContent(
         group = group,
         label = label,
-        rotation = { rotation.value },
         nameWidth = nameWidth,
         onAction = onAction,
         onOpenMenu = openMenu,
@@ -565,7 +561,6 @@ internal fun GroupHeaderRow(
 private fun GroupHeaderContent(
   group: GroupRow,
   label: String,
-  rotation: () -> Float,
   nameWidth: Dp?,
   onAction: OnAction<BudgetAction>,
   onOpenMenu: () -> Unit,
@@ -590,9 +585,9 @@ private fun GroupHeaderContent(
       horizontalArrangement = Arrangement.spacedBy(4.dp),
       verticalAlignment = CenterVertically,
     ) {
-      Icon(
-        modifier = Modifier.size(16.dp).graphicsLayer { rotationZ = rotation() },
-        imageVector = AktualIcons.CheveronDown,
+      ExpandChevron(
+        modifier = Modifier.size(16.dp),
+        isExpanded = !group.isCollapsed,
         contentDescription = null,
         tint = colors.tableRowHeaderText,
       )
@@ -923,4 +918,3 @@ internal val TabularFigures = TextStyle(fontFeatureSettings = "tnum")
 internal val TopShape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
 private val CategoryInset = BudgetDS.categoryIndent - BudgetDS.rowPadding
 internal const val HIDDEN_ALPHA = 0.5f
-internal const val COLLAPSED_ROTATION = -90f

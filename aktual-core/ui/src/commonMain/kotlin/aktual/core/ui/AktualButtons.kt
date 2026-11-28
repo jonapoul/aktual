@@ -11,7 +11,9 @@ import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -21,6 +23,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,8 +52,11 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -66,6 +72,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 
 @Composable
 fun AktualButton(
@@ -162,7 +171,7 @@ fun AktualFab(
 @Composable
 private fun FabContent(text: String, icon: ImageVector, isExpanded: Boolean) {
   Row(modifier = Modifier.height(FabContentHeight), verticalAlignment = CenterVertically) {
-    Icon(
+    AnimatedIcon(
       imageVector = icon,
       contentDescription = text.takeUnless { isExpanded },
       modifier = Modifier.size(FabIconSize),
@@ -364,13 +373,30 @@ private fun RowScope.DefaultTextButtonContent(
   fontSize: TextUnit,
   icon: ImageVector?,
 ) {
-  if (icon != null) {
-    Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(ButtonIconSize))
-    HorizontalSpacer(ButtonIconSpacing)
+  // Also animates the width when the icon comes or goes
+  AnimatedContent(
+    targetState = icon,
+    transitionSpec = {
+      fadeIn() + scaleIn(initialScale = BUTTON_ICON_HIDDEN_SCALE) togetherWith
+        fadeOut() + scaleOut(targetScale = BUTTON_ICON_HIDDEN_SCALE)
+    },
+    label = "ButtonIcon",
+  ) { shown ->
+    if (shown != null) {
+      Row(verticalAlignment = CenterVertically) {
+        Icon(
+          imageVector = shown,
+          contentDescription = null,
+          modifier = Modifier.size(ButtonIconSize),
+        )
+        HorizontalSpacer(ButtonIconSpacing)
+      }
+    }
   }
   Text(text = text, style = style, fontSize = fontSize, textAlign = Center)
 }
 
+private const val BUTTON_ICON_HIDDEN_SCALE = 0.6f
 private val ButtonIconSize = 18.dp
 private val ButtonIconSpacing = 8.dp
 
@@ -443,10 +469,15 @@ fun BasicIconButton(
 ) {
   val isPressed by interactionSource.collectIsPressedAsState()
   val buttonColors = colors(AktualTheme.colors, isPressed)
-  val background =
-    if (isEnabled) buttonColors.containerColor else buttonColors.disabledContainerColor
+  val background by
+    animateColorAsState(
+      if (isEnabled) buttonColors.containerColor else buttonColors.disabledContainerColor,
+    )
 
-  val contentColor = if (isEnabled) buttonColors.contentColor else buttonColors.disabledContentColor
+  val contentColor by
+    animateColorAsState(
+      if (isEnabled) buttonColors.contentColor else buttonColors.disabledContentColor,
+    )
 
   Box(
     modifier =
@@ -492,7 +523,7 @@ private fun DefaultIconButtonContent(
   size: Dp?,
   modifier: Modifier = Modifier,
 ) {
-  Icon(
+  AnimatedIcon(
     modifier = if (size == null) modifier else modifier.size(size),
     imageVector = imageVector,
     contentDescription = contentDescription,
@@ -622,3 +653,21 @@ private fun PreviewDialogTextButtons(@PreviewParameter(ColorParameters::class) c
       }
     }
   }
+
+@Preview
+@Composable
+private fun PreviewButtonIconChanges(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    var index by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+      while (true) {
+        delay(PreviewIconDelay)
+        index = (index + 1) % PreviewIcons.size
+      }
+    }
+
+    AktualButton(text = "Confirm", kind = Primary, icon = PreviewIcons[index], onClick = {})
+  }
+
+private val PreviewIcons = persistentListOf(null, AktualIcons.Add, AktualIcons.Check)
+private val PreviewIconDelay = 1.seconds

@@ -6,6 +6,7 @@ import aktual.core.icons.Tuning
 import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.AnimatedIcon
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorParams
 import aktual.core.ui.ColorParamsProvider
@@ -33,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -108,7 +108,7 @@ fun BasicPreferenceItem(
     verticalAlignment = CenterVertically,
   ) {
     if (icon != null) {
-      Icon(
+      AnimatedIcon(
         modifier = Modifier.size(50.dp).padding(10.dp),
         imageVector = icon,
         contentDescription = title,

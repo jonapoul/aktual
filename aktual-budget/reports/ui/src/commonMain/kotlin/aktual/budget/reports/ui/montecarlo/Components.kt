@@ -1,9 +1,6 @@
 package aktual.budget.reports.ui.montecarlo
 
 import aktual.budget.reports.vm.montecarlo.MonteCarloSection
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.CheveronDown
-import aktual.core.icons.CheveronRight
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.letterSpacings
@@ -11,6 +8,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardColumn
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.ExpandChevron
 import aktual.core.ui.OnAction
 import aktual.core.ui.ProvideSurfaceColor
 import aktual.core.ui.padding
@@ -20,7 +18,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -68,10 +65,7 @@ internal fun CollapsibleSectionCard(
           ),
       verticalAlignment = CenterVertically,
     ) {
-      Icon(
-        imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
-        contentDescription = null,
-      )
+      ExpandChevron(isExpanded = isExpanded, contentDescription = null)
       SectionTitle(modifier = Modifier.weight(1f), text = title)
     }
     if (isExpanded) content()

@@ -31,7 +31,6 @@ import aktual.budget.reports.vm.withVolatility
 import aktual.core.icons.Add
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CheveronDown
-import aktual.core.icons.CheveronRight
 import aktual.core.icons.Trash
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualButton
@@ -40,6 +39,7 @@ import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.OnAction
+import aktual.core.ui.animateExpandRotation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -132,8 +132,10 @@ private fun PotCard(
   ItemCard(
     title = label,
     leading = {
+      val rotation by animateExpandRotation(isExpanded)
       AktualIconButton(
-        imageVector = if (isExpanded) AktualIcons.CheveronDown else AktualIcons.CheveronRight,
+        modifier = Modifier.rotate(rotation),
+        imageVector = AktualIcons.CheveronDown,
         contentDescription =
           if (isExpanded) Strings.monteCarloPotHideMore else Strings.monteCarloPotShowMore,
         onClick = { isExpanded = !isExpanded },
