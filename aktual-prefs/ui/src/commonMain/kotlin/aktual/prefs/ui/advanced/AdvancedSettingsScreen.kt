@@ -1,7 +1,5 @@
 package aktual.prefs.ui.advanced
 
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.CheveronDown
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
@@ -10,6 +8,7 @@ import aktual.core.ui.AktualButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.ExpandChevron
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formatted
@@ -32,7 +31,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -206,9 +203,9 @@ private fun RepairDetails() {
       horizontalArrangement = Arrangement.spacedBy(4.dp),
       verticalAlignment = CenterVertically,
     ) {
-      Icon(
-        modifier = Modifier.size(16.dp).rotate(if (isExpanded) 0f else COLLAPSED_ROTATION),
-        imageVector = AktualIcons.CheveronDown,
+      ExpandChevron(
+        modifier = Modifier.size(16.dp),
+        isExpanded = isExpanded,
         contentDescription = null,
         tint = colors.settingsCardText,
       )
@@ -288,7 +285,6 @@ private fun RepairState.Done.summary(): String {
 }
 
 // The details chevron points right while they are hidden
-private const val COLLAPSED_ROTATION = -90f
 
 @PortraitPreview
 @Composable

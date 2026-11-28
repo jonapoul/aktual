@@ -60,6 +60,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.ChipSize
 import aktual.core.ui.ColorParameters
+import aktual.core.ui.ExpandChevron
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NoticeBanner
@@ -77,7 +78,6 @@ import aktual.theme.Colors
 import aktual.theme.LocalColors
 import aktual.theme.sidebarColors
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -121,7 +121,6 @@ import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -469,7 +468,6 @@ private fun AccountGroupBucket(
   onToggle: (SidebarSection) -> Unit,
 ) {
   val isExpanded = state.isOpen(section)
-  val rotation by animateFloatAsState(if (isExpanded) 0f else COLLAPSED_ROTATION)
   val toggleDescription =
     if (isExpanded) {
       Strings.budgetNavAccountsCollapse(group.name)
@@ -487,9 +485,9 @@ private fun AccountGroupBucket(
     horizontalArrangement = spacedBy(HeaderGap),
     verticalAlignment = CenterVertically,
   ) {
-    Icon(
-      modifier = Modifier.size(GroupChevronSize).rotate(rotation),
-      imageVector = AktualIcons.CheveronDown,
+    ExpandChevron(
+      modifier = Modifier.size(GroupChevronSize),
+      isExpanded = isExpanded,
       contentDescription = null,
       tint = colors.sidebarTextSubdued,
     )
@@ -567,7 +565,6 @@ private fun AccountSectionHeader(
       isMuted -> colors.sidebarTextMuted
       else -> colors.sidebarItemText
     }
-  val rotation by animateFloatAsState(if (isExpanded) 0f else COLLAPSED_ROTATION)
 
   Row(
     modifier =
@@ -595,11 +592,7 @@ private fun AccountSectionHeader(
         },
       onClick = onToggle,
     ) {
-      Icon(
-        modifier = Modifier.rotate(rotation),
-        imageVector = AktualIcons.CheveronDown,
-        contentDescription = toggleDescription,
-      )
+      ExpandChevron(isExpanded = isExpanded, contentDescription = toggleDescription)
     }
 
     HeaderTitle(
@@ -775,8 +768,6 @@ private fun AccountGroup.label(): String =
     OffBudget -> Strings.budgetNavAccountsOffBudget
     Closed -> Strings.budgetNavAccountsClosed
   }
-
-private const val COLLAPSED_ROTATION = -90f
 
 private val AccountItemHeight = 30.dp
 

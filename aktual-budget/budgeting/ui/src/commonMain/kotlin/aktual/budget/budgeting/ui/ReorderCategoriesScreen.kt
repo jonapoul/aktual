@@ -6,8 +6,6 @@ import aktual.budget.budgeting.vm.ReorderCategory
 import aktual.budget.budgeting.vm.ReorderGroup
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.CheveronDown
 import aktual.core.icons.material.DragIndicator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.UnfoldLess
@@ -27,6 +25,7 @@ import aktual.core.ui.ColorParamsProvider
 import aktual.core.ui.DialogTextButton
 import aktual.core.ui.Dimens
 import aktual.core.ui.EditFabs
+import aktual.core.ui.ExpandChevron
 import aktual.core.ui.FabClearance
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
@@ -42,7 +41,6 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.showErrorSnackbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -80,7 +78,6 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -365,7 +362,6 @@ private fun ReorderHeader(
     } else {
       Strings.budgetingGroupCollapse(group.name)
     }
-  val rotation by animateFloatAsState(if (row.isCollapsed) COLLAPSED_ROTATION else 0f)
 
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
     HorizontalDivider()
@@ -378,9 +374,9 @@ private fun ReorderHeader(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = CenterVertically,
       ) {
-        Icon(
-          modifier = Modifier.size(16.dp).rotate(rotation),
-          imageVector = AktualIcons.CheveronDown,
+        ExpandChevron(
+          modifier = Modifier.size(16.dp),
+          isExpanded = !row.isCollapsed,
           contentDescription = null,
           tint = colors.tableRowHeaderText,
         )

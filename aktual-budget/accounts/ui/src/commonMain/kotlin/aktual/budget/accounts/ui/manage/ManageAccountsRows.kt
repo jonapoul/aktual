@@ -6,7 +6,6 @@ import aktual.budget.accounts.vm.manage.ManagedGroup
 import aktual.budget.model.Amount
 import aktual.budget.model.Amount.Companion.Zero
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.CheveronDown
 import aktual.core.icons.DotsHorizontalTriple
 import aktual.core.icons.material.Description
 import aktual.core.icons.material.DragIndicator
@@ -20,9 +19,9 @@ import aktual.core.ui.AktualIconButton
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.Dimens
+import aktual.core.ui.ExpandChevron
 import aktual.core.ui.OnAction
 import aktual.core.ui.formattedText
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +48,6 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.font.FontWeight.Companion.Medium
@@ -256,7 +254,6 @@ internal fun ClosedHeader(
   onToggle: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val rotation by animateFloatAsState(if (isExpanded) 0f else COLLAPSED_ROTATION)
   val label =
     if (isExpanded) Strings.accountsManageClosedCollapse else Strings.accountsManageClosedExpand
   Row(
@@ -270,9 +267,9 @@ internal fun ClosedHeader(
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    Icon(
-      modifier = Modifier.size(16.dp).rotate(rotation),
-      imageVector = AktualIcons.CheveronDown,
+    ExpandChevron(
+      modifier = Modifier.size(16.dp),
+      isExpanded = isExpanded,
       contentDescription = null,
       tint = colors.tableTextSubdued,
     )
@@ -340,5 +337,4 @@ internal fun ManagedGroup.displayName(): String =
 @ReadOnlyComposable
 private fun Amount.color(default: Color) = if (this < Zero) colors.numberNegative else default
 
-private const val COLLAPSED_ROTATION = -90f
 private const val CLOSED_ALPHA = 0.7f
