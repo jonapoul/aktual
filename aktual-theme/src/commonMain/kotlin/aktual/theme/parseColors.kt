@@ -117,6 +117,13 @@ private fun buildCustomColors(
   val textSecondary = "textSecondary".attrOr("pageTextLight", fallback.textSecondary)
   val textTertiary = "textTertiary".attrOr("pageTextSubdued", fallback.textTertiary)
 
+  // And the status colours, from the borders that now follow them
+  val success = "success".attrOr("noticeBorder", fallback.success)
+  val warning = "warning".attrOr("warningBorder", fallback.warning)
+  val error = "error".attrOr("errorBorder", fallback.error)
+  val info = "info".attr(fallback.info)
+  val errorTextDark = "errorTextDark".attr(fallback.errorTextDark)
+
   // A theme without its own alternate row colour leaves rows unshaded, as the built-in themes do
   val tableBackground = "tableBackground".attr(background)
 
@@ -323,17 +330,17 @@ private fun buildCustomColors(
           noticeTextLight = "noticeTextLight".attr(noticeTextLight),
           noticeTextDark = "noticeTextDark".attr(noticeTextDark),
           noticeTextMenu = "noticeTextMenu".attr(noticeTextMenu),
-          noticeBorder = "noticeBorder".attr(noticeBorder),
+          noticeBorder = "noticeBorder".attr(success),
           warningBackground = "warningBackground".attr(warningBackground),
           warningText = "warningText".attr(warningText),
           warningTextDark = "warningTextDark".attr(warningTextDark),
-          warningBorder = "warningBorder".attr(warningBorder),
+          warningBorder = "warningBorder".attr(warning),
           errorBackground = "errorBackground".attr(errorBackground),
           errorText = "errorText".attr(errorText),
-          errorTextDark = "errorTextDark".attr(errorTextDark),
-          errorTextDarker = "errorTextDarker".attr(errorTextDarker),
+          errorTextDark = errorTextDark,
+          errorTextDarker = "errorTextDarker".attr(errorTextDark),
           errorTextMenu = "errorTextMenu".attr(errorTextMenu),
-          errorBorder = "errorBorder".attr(errorBorder),
+          errorBorder = "errorBorder".attr(error),
           upcomingBackground = "upcomingBackground".attr(accentSubtle),
           upcomingText = "upcomingText".attr(accentSubtleText),
         ),
@@ -445,6 +452,15 @@ private fun buildCustomColors(
           text = text,
           textSecondary = textSecondary,
           textTertiary = textTertiary,
+        ),
+      statusBaseColors =
+        StatusBaseColors(
+          success = success,
+          warning = warning,
+          error = error,
+          info = info,
+          infoBackground = "infoBackground".attr(infoBackground),
+          infoText = "infoText".attr(infoText),
         ),
       chartQual =
         ChartQualColors(

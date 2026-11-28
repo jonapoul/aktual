@@ -29,6 +29,11 @@ sealed interface Colors {
   val textSecondary: Color
   val textTertiary: Color
 
+  val success: Color
+  val warning: Color
+  val error: Color
+  val info: Color
+
   val pageBackground: Color
   val pageBackgroundTopLeft: Color
   val pageBackgroundBottomRight: Color
@@ -228,6 +233,8 @@ sealed interface Colors {
   val errorTextDarker: Color
   val errorTextMenu: Color
   val errorBorder: Color
+  val infoBackground: Color
+  val infoText: Color
   val upcomingBackground: Color
   val upcomingText: Color
 

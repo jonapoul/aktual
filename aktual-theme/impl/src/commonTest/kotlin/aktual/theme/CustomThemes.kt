@@ -25,6 +25,15 @@ internal val ShadesOfCoffeeTheme =
     name = ShadesOfCoffeeThemeSummary.name,
     repo = ShadesOfCoffeeThemeSummary.repo,
     isLight = true,
+    statusBaseColors =
+      StatusBaseColors(
+        success = Color(0xFF27AB83),
+        warning = Color(0xFFE6BB20),
+        error = Color(0xFFE12D39),
+        info = LightColors.info,
+        infoBackground = LightColors.infoBackground,
+        infoText = LightColors.infoText,
+      ),
     page =
       PageColors(
         pageBackground = Color(0xFFe2d8cf),

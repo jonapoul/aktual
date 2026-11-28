@@ -55,6 +55,18 @@ data class JsonCustomColors(
       textSecondary = page.pageTextLight,
       textTertiary = page.pageTextSubdued,
     ),
+  // Themes saved before the status colours existed take them from the colours that now follow them,
+  // and the info colours from the pill colours upstream used before
+  @SerialName("statusBase")
+  val statusBaseColors: StatusBaseColors =
+    StatusBaseColors(
+      success = status.noticeBorder,
+      warning = status.warningBorder,
+      error = status.errorBorder,
+      info = misc.pillTextSelected,
+      infoBackground = misc.pillBackgroundSelected,
+      infoText = misc.pillTextSelected,
+    ),
   @SerialName("isLight") override val isLight: Boolean,
 ) : CustomColors {
 
@@ -110,6 +122,19 @@ data class JsonCustomColors(
 
   override val textTertiary: Color
     get() = baseColors.textTertiary
+
+  // Status base
+  override val success: Color
+    get() = statusBaseColors.success
+
+  override val warning: Color
+    get() = statusBaseColors.warning
+
+  override val error: Color
+    get() = statusBaseColors.error
+
+  override val info: Color
+    get() = statusBaseColors.info
 
   // Page
   override val pageBackground: Color
@@ -605,6 +630,12 @@ data class JsonCustomColors(
 
   override val errorBorder: Color
     get() = status.errorBorder
+
+  override val infoBackground: Color
+    get() = statusBaseColors.infoBackground
+
+  override val infoText: Color
+    get() = statusBaseColors.infoText
 
   override val upcomingBackground: Color
     get() = status.upcomingBackground
@@ -1164,4 +1195,14 @@ data class BaseColors(
   @SerialName("text") val text: Color,
   @SerialName("textSecondary") val textSecondary: Color,
   @SerialName("textTertiary") val textTertiary: Color,
+)
+
+@Serializable
+data class StatusBaseColors(
+  @SerialName("success") val success: Color,
+  @SerialName("warning") val warning: Color,
+  @SerialName("error") val error: Color,
+  @SerialName("info") val info: Color,
+  @SerialName("infoBackground") val infoBackground: Color,
+  @SerialName("infoText") val infoText: Color,
 )
