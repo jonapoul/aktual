@@ -60,3 +60,7 @@ Use `AktualTooltip` (`AktualTooltip.kt`) for an icon button that shows text when
 ## Action handlers
 
 Screens take a single `onAction: OnAction<FooAction>` for their sealed action type. Don't declare a per-screen `fun interface FooActionHandler`.
+
+## Icon changes
+
+When an icon depends on state, use `AnimatedIcon` (`AnimatedIcon.kt`) rather than `Icon`, so the swap fades and scales. `AktualIconButton`, `BasicIconButton`'s default content, `AktualButton` and `AktualFab` already do this. For expand/collapse chevrons use `ExpandChevron` (`ExpandChevron.kt`) instead of rotating a `CheveronDown` yourself, passing `style = DownToUp` for ones that flip rather than turn. Animate a state-dependent tint with `animateColorAsState`.

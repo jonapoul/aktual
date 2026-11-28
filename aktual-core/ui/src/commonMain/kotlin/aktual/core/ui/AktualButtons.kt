@@ -52,8 +52,11 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -69,6 +72,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 
 @Composable
 fun AktualButton(
@@ -647,3 +653,21 @@ private fun PreviewDialogTextButtons(@PreviewParameter(ColorParameters::class) c
       }
     }
   }
+
+@Preview
+@Composable
+private fun PreviewButtonIconChanges(@PreviewParameter(ColorParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    var index by remember { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+      while (true) {
+        delay(PreviewIconDelay)
+        index = (index + 1) % PreviewIcons.size
+      }
+    }
+
+    AktualButton(text = "Confirm", kind = Primary, icon = PreviewIcons[index], onClick = {})
+  }
+
+private val PreviewIcons = persistentListOf(null, AktualIcons.Add, AktualIcons.Check)
+private val PreviewIconDelay = 1.seconds

@@ -24,10 +24,10 @@ fun AnimatedIcon(
   AnimatedContent(
     modifier = modifier,
     targetState = IconState(imageVector, contentDescription),
-    contentKey = { it.imageVector },
+    contentKey = IconState::imageVector,
     transitionSpec = {
-      (fadeIn() + scaleIn(initialScale = HIDDEN_SCALE)) togetherWith
-        (fadeOut() + scaleOut(targetScale = HIDDEN_SCALE))
+      fadeIn() + scaleIn(initialScale = HIDDEN_SCALE) togetherWith
+        fadeOut() + scaleOut(targetScale = HIDDEN_SCALE)
     },
     label = "AnimatedIcon",
   ) { state ->
