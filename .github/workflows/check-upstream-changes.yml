@@ -30,13 +30,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # A PAT rather than GITHUB_TOKEN, so the PR's pushes run CI and UpstreamColorsTest can fail
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          token: ${{ secrets.UPSTREAM_TRACKER_TOKEN }}
 
       - run: chmod +x .github/upstream-theme-tracker/check-theme-attributes.sh
 
       - run: .github/upstream-theme-tracker/check-theme-attributes.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.UPSTREAM_TRACKER_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
