@@ -118,7 +118,7 @@ class DeriveColorsTest {
         name = "Test",
         repo = CustomThemeRepo(userName = "user", repoName = "test"),
         colors = emptyList(),
-        mode = ThemeMode.Dark,
+        mode = Dark,
       )
   }
 }

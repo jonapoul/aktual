@@ -30,7 +30,7 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   }
 
   val pageBackground =
-    requireNotNull(attributes["pageBackground"] ?: attributes["backgroundPage"]) {
+    requireNotNull(attributes[PAGE_BACKGROUND] ?: attributes["backgroundPage"]) {
       "Neither 'pageBackground' nor 'backgroundPage' found in CSS attributes: $attributes"
     }
 
@@ -98,7 +98,7 @@ private fun buildCustomColors(
   fun String.attrOr(legacy: String, default: Color): Color = attr(attributes[legacy] ?: default)
 
   // Likewise the base colours, taken from the colours that now follow them
-  val backgroundPage = "backgroundPage".attrOr("pageBackground", fallback.backgroundPage)
+  val backgroundPage = "backgroundPage".attrOr(PAGE_BACKGROUND, fallback.backgroundPage)
   val background = "background".attrOr("tableBackground", fallback.background)
   val backgroundRaised = "backgroundRaised".attrOr("menuBackground", fallback.backgroundRaised)
   val backgroundHover =
@@ -114,8 +114,8 @@ private fun buildCustomColors(
 
   // Like upstream, the accent and status colours a theme leaves out are worked out from one colour
   // each, so they keep their contrast against the theme's own surfaces
-  fun surface(name: String, default: Color, builtIn: Color): Color =
-    (attributes[name] ?: default).let { if (it.alpha < 1f) it.compositeOver(builtIn) else it }
+  fun surface(token: String, default: Color, builtIn: Color): Color =
+    (attributes[token] ?: default).let { if (it.alpha < 1f) it.compositeOver(builtIn) else it }
 
   val surfaces =
     Surfaces(
@@ -123,7 +123,7 @@ private fun buildCustomColors(
         tableBackground.let {
           if (it.alpha < 1f) it.compositeOver(fallback.tableBackground) else it
         },
-      page = surface("pageBackground", backgroundPage, fallback.pageBackground),
+      page = surface(PAGE_BACKGROUND, backgroundPage, fallback.pageBackground),
       mobilePage =
         surface(
           "mobilePageBackground",
@@ -148,8 +148,8 @@ private fun buildCustomColors(
     "accentSubtleText".attrOr("pillTextSelected", derivedAccent.accentSubtleText)
   val backgroundSelected = "backgroundSelected".attrOr("tableRowBackgroundHighlight", accentSubtle)
 
-  fun accentTextOn(name: String, default: Color, builtIn: Color, contrast: Double): Color =
-    nearestWithContrast(derivedAccent.accent, listOf(surface(name, default, builtIn)), contrast)
+  fun accentTextOn(token: String, default: Color, builtIn: Color, contrast: Double): Color =
+    nearestWithContrast(derivedAccent.accent, listOf(surface(token, default, builtIn)), contrast)
 
   // And the status colours, from the borders that now follow them
   val success = "success".attrOr("noticeBorder", fallback.success)
@@ -207,7 +207,7 @@ private fun buildCustomColors(
       isLight = themeIsLight,
       page =
         PageColors(
-          pageBackground = "pageBackground".attr(backgroundPage),
+          pageBackground = PAGE_BACKGROUND.attr(backgroundPage),
           pageBackgroundTopLeft = "pageBackgroundTopLeft".attr(pageBackgroundTopLeft),
           pageBackgroundBottomRight = "pageBackgroundBottomRight".attr(pageBackgroundBottomRight),
           pageBackgroundLineTop = "pageBackgroundLineTop".attr(pageBackgroundLineTop),
@@ -548,6 +548,8 @@ private fun buildCustomColors(
 }
 
 private const val TAG = "parseTheme"
+
+private const val PAGE_BACKGROUND = "pageBackground"
 
 private const val COLOR_PREFIX = "color-"
 

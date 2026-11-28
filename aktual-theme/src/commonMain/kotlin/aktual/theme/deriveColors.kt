@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber", "StringLiteralDuplication")
+
 package aktual.theme
 
 import androidx.compose.ui.graphics.Color
@@ -105,9 +107,9 @@ internal fun nearestWithContrast(color: Color, backgrounds: List<Color>, target:
 
 /** White, or black when white doesn't reach text contrast and black does better. */
 internal fun pickContrast(fill: Color): Color {
-  val onWhite = contrast(Color.White, fill)
-  if (onWhite >= TEXT_CONTRAST) return Color.White
-  return if (onWhite >= contrast(Color.Black, fill)) Color.White else Color.Black
+  val onWhite = contrast(White, fill)
+  if (onWhite >= TEXT_CONTRAST) return White
+  return if (onWhite >= contrast(Black, fill)) White else Black
 }
 
 private data class ContrastGoal(val backgrounds: List<Color>, val target: Double)
@@ -158,7 +160,7 @@ private fun nearestWithContrasts(color: Color, goals: List<ContrastGoal>): List<
 
 private fun hoverFill(fill: Color, contrast: Color): Color {
   val color = fill.toOklch()
-  val direction = if (contrast == Color.White) -1 else 1
+  val direction = if (contrast == White) -1 else 1
   val away = color.atLightness(color.l + direction * HOVER_STEP)
   return if (away == fill) color.atLightness(color.l - direction * HOVER_STEP) else away
 }
@@ -274,8 +276,11 @@ private fun Color.toOklch(): Oklch {
 
 private fun toLinear(c: Double): Double {
   val abs = abs(c)
-  return if (abs <= 0.04045) c / 12.92
-  else (sign(c).takeIf { it != 0.0 } ?: 1.0) * ((abs + 0.055) / 1.055).pow(2.4)
+  return if (abs <= 0.04045) {
+    c / 12.92
+  } else {
+    (sign(c).takeIf { it != 0.0 } ?: 1.0) * ((abs + 0.055) / 1.055).pow(2.4)
+  }
 }
 
 private fun toGamma(c: Double): Double {

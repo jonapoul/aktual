@@ -15,8 +15,11 @@ class UpstreamColorsTest {
     val mismatches =
       upstream().mapNotNull { (theme, token, expected) ->
         val actual = Themes.getValue(theme).attributes()[token]?.toHex() ?: return@mapNotNull null
-        if (actual == expected || (theme to token) in Allowed) null
-        else "$theme $token: aktual $actual, upstream $expected"
+        if (actual == expected || theme to token in Allowed) {
+          null
+        } else {
+          "$theme $token: aktual $actual, upstream $expected"
+        }
       }
     assertThat(mismatches).isEmpty()
   }
