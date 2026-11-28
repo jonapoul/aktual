@@ -32,7 +32,7 @@ internal val ShadesOfCoffeeTheme =
         error = Color(0xFFE12D39),
         info = LightColors.info,
         infoBackground = LightColors.infoBackground,
-        infoText = LightColors.infoText,
+        infoText = Color(0xFF004E8D),
       ),
     page =
       PageColors(
@@ -185,6 +185,7 @@ internal val ShadesOfCoffeeTheme =
         calendarItemText = Color(0xFFD9E2EC),
         calendarItemBackground = Color(0xFF243B53),
         calendarSelectedBackground = Color(0xFF627d98),
+        calendarSelectedText = Color.Black,
         calendarCellBackground = Color(0xFFe8ecf0),
         datePickerRangeBackground = Color(0xFFb3d9ff),
         buttonBareText = Color(0xFF102A43),

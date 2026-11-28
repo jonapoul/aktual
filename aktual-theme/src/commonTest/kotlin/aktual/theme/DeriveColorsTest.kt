@@ -1,5 +1,6 @@
 package aktual.theme
 
+import androidx.compose.ui.graphics.Color
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -73,12 +74,51 @@ class DeriveColorsTest {
     }
   }
 
-  private fun textOn(theme: Colors, surface: androidx.compose.ui.graphics.Color, contrast: Double) =
+  @Test
+  fun `Work out the accent and status colours a theme leaves out from its surfaces`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1b1c1d;
+        --color-tableBackground: #222324;
+        --color-mobilePageBackground: #1b1c1d;
+        --color-accent: #4466ff;
+        --color-success: #11aa11;
+        --color-noticeText: #00ff00;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(Summary, css)
+
+    val surfaces = Surfaces(Color(0xFF222324), Color(0xFF1b1c1d), Color(0xFF1b1c1d))
+    val accent = deriveAccent(Color(0xFF4466ff), surfaces)
+    val success = deriveStatus(Color(0xFF11aa11), surfaces)
+    val error = deriveStatus(DarkColors.error, surfaces)
+    assertThat(colors).all {
+      prop(CustomColors::accentText).isEqualTo(accent.accentText)
+      prop(CustomColors::accentHover).isEqualTo(accent.accentHover)
+      prop(CustomColors::noticeBackground).isEqualTo(success.fill)
+      prop(CustomColors::noticeTextDark).isEqualTo(success.textStrong)
+      prop(CustomColors::noticeText).isEqualTo(Color(0xFF00ff00))
+      prop(CustomColors::errorText).isEqualTo(error.text)
+    }
+  }
+
+  private fun textOn(theme: Colors, surface: Color, contrast: Double) =
     nearestWithContrast(theme.accent, listOf(surface), contrast)
 
   private fun Colors.surfaces() = Surfaces(tableBackground, pageBackground, mobilePageBackground)
 
   private companion object {
     val BuiltIn = listOf(LightColors, DarkColors, MidnightColors)
+
+    val Summary =
+      CustomThemeSummary(
+        name = "Test",
+        repo = CustomThemeRepo(userName = "user", repoName = "test"),
+        colors = emptyList(),
+        mode = ThemeMode.Dark,
+      )
   }
 }

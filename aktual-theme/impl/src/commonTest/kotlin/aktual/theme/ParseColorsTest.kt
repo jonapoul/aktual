@@ -70,7 +70,7 @@ class ParseColorsTest {
       prop(CustomColors::checkboxBackgroundSelected).isEqualTo(Color(0xFF2b8fed))
       prop(CustomColors::calendarSelectedBackground).isEqualTo(Color(0xFF2b8fed))
       prop(CustomColors::pageTextLink).isEqualTo(Color(0xFF66b5fa))
-      prop(CustomColors::accentHover).isEqualTo(DarkColors.accentHover)
+      prop(CustomColors::accentHover).isEqualTo(Color(0xFF46A2FF))
     }
   }
 
