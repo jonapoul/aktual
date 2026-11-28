@@ -183,13 +183,13 @@ private fun Modifier.outline(
   if (!showBorder) return this
   val borderColor =
     when {
-      isError -> colors.errorBorder
+      isError -> colors.error
       isFocused -> colors.formInputBorderSelected
       else -> colors.formInputBackgroundSelected
     }
   val bordered = border(1.dp, borderColor, shape)
   if (!isFocused) return bordered
-  val shadowColor = if (isError) colors.errorBorder else colors.formInputShadowSelected
+  val shadowColor = if (isError) colors.error else colors.formInputShadowSelected
   return bordered.shadow(4.dp, shape, ambientColor = shadowColor)
 }
 

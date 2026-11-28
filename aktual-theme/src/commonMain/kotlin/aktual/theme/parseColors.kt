@@ -4,6 +4,7 @@ package aktual.theme
 
 import aktual.log
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 
 fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   val properties: Map<String, String> =
@@ -29,7 +30,7 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
   }
 
   val pageBackground =
-    requireNotNull(attributes["pageBackground"] ?: attributes["backgroundPage"]) {
+    requireNotNull(attributes[PAGE_BACKGROUND] ?: attributes["backgroundPage"]) {
       "Neither 'pageBackground' nor 'backgroundPage' found in CSS attributes: $attributes"
     }
 
@@ -96,21 +97,12 @@ private fun buildCustomColors(
   // take the accent from those. Colours a theme leaves out then follow its accent, as upstream's do
   fun String.attrOr(legacy: String, default: Color): Color = attr(attributes[legacy] ?: default)
 
-  val accent = "accent".attrOr("buttonPrimaryBackground", fallback.accent)
-  val accentContrast = "accentContrast".attrOr("buttonPrimaryText", fallback.accentContrast)
-  val accentHover = "accentHover".attrOr("buttonPrimaryBackgroundHover", fallback.accentHover)
-  val accentText = "accentText".attrOr("pageTextLink", fallback.accentText)
-  val accentBorder = "accentBorder".attrOr("formInputBorderSelected", fallback.accentBorder)
-  val accentSubtle = "accentSubtle".attrOr("tableRowBackgroundHighlight", fallback.accentSubtle)
-  val accentSubtleText = "accentSubtleText".attrOr("pillTextSelected", fallback.accentSubtleText)
-
   // Likewise the base colours, taken from the colours that now follow them
-  val backgroundPage = "backgroundPage".attrOr("pageBackground", fallback.backgroundPage)
+  val backgroundPage = "backgroundPage".attrOr(PAGE_BACKGROUND, fallback.backgroundPage)
   val background = "background".attrOr("tableBackground", fallback.background)
   val backgroundRaised = "backgroundRaised".attrOr("menuBackground", fallback.backgroundRaised)
   val backgroundHover =
     "backgroundHover".attrOr("tableRowBackgroundHover", fallback.backgroundHover)
-  val backgroundSelected = "backgroundSelected".attrOr("tableRowBackgroundHighlight", accentSubtle)
   val border = "border".attrOr("tableBorder", fallback.border)
   val borderStrong = "borderStrong".attrOr("tableBorderSeparator", fallback.borderStrong)
   val text = "text".attrOr("pageText", fallback.text)
@@ -119,6 +111,91 @@ private fun buildCustomColors(
 
   // A theme without its own alternate row colour leaves rows unshaded, as the built-in themes do
   val tableBackground = "tableBackground".attr(background)
+
+  // Like upstream, the accent and status colours a theme leaves out are worked out from one colour
+  // each, so they keep their contrast against the theme's own surfaces
+  fun surface(token: String, default: Color, builtIn: Color): Color =
+    (attributes[token] ?: default).let { if (it.alpha < 1f) it.compositeOver(builtIn) else it }
+
+  val surfaces =
+    Surfaces(
+      surface =
+        tableBackground.let {
+          if (it.alpha < 1f) it.compositeOver(fallback.tableBackground) else it
+        },
+      page = surface(PAGE_BACKGROUND, backgroundPage, fallback.pageBackground),
+      mobilePage =
+        surface(
+          "mobilePageBackground",
+          fallback.mobilePageBackground,
+          fallback.mobilePageBackground,
+        ),
+    )
+
+  val accent = "accent".attrOr("buttonPrimaryBackground", fallback.accent)
+  val derivedAccent =
+    deriveAccent(
+      if (accent.alpha < 1f) accent.compositeOver(surfaces.surface) else accent,
+      surfaces,
+    )
+  val accentContrast = "accentContrast".attrOr("buttonPrimaryText", derivedAccent.accentContrast)
+  val accentHover = "accentHover".attrOr("buttonPrimaryBackgroundHover", derivedAccent.accentHover)
+  val accentText = "accentText".attrOr("pageTextLink", derivedAccent.accentText)
+  val accentBorder = "accentBorder".attrOr("formInputBorderSelected", derivedAccent.accentBorder)
+  val accentSubtle =
+    "accentSubtle".attrOr("tableRowBackgroundHighlight", derivedAccent.accentSubtle)
+  val accentSubtleText =
+    "accentSubtleText".attrOr("pillTextSelected", derivedAccent.accentSubtleText)
+  val backgroundSelected = "backgroundSelected".attrOr("tableRowBackgroundHighlight", accentSubtle)
+
+  fun accentTextOn(token: String, default: Color, builtIn: Color, contrast: Double): Color =
+    nearestWithContrast(derivedAccent.accent, listOf(surface(token, default, builtIn)), contrast)
+
+  // And the status colours, from the borders that now follow them
+  val success = "success".attrOr("noticeBorder", fallback.success)
+  val warning = "warning".attrOr("warningBorder", fallback.warning)
+  val error = "error".attrOr("errorBorder", fallback.error)
+  val info = "info".attr(fallback.info)
+
+  fun Color.derived(): StatusSet =
+    deriveStatus(if (alpha < 1f) compositeOver(surfaces.surface) else this, surfaces)
+
+  val successSet = success.derived()
+  val warningSet = warning.derived()
+  val errorSet = error.derived()
+  val infoSet = info.derived()
+  val errorTextDark = "errorTextDark".attr(errorSet.textStrong)
+
+  // Worked out before the attributes they read are used up below
+  val derivedSidebarAccent =
+    accentTextOn(
+      "sidebarBackground",
+      fallback.sidebarBackground,
+      fallback.sidebarBackground,
+      ENHANCED_TEXT_CONTRAST,
+    )
+  val derivedMenuHeader =
+    accentTextOn("menuBackground", backgroundRaised, fallback.menuBackground, TEXT_CONTRAST)
+  val derivedAutoCompleteHeader =
+    accentTextOn(
+      "menuAutoCompleteBackground",
+      fallback.menuAutoCompleteBackground,
+      fallback.menuAutoCompleteBackground,
+      ENHANCED_TEXT_CONTRAST,
+    )
+  val derivedPillHighlight =
+    accentTextOn(
+      "pillBackgroundLight",
+      fallback.pillBackgroundLight,
+      fallback.pillBackgroundLight,
+      ENHANCED_TEXT_CONTRAST,
+    )
+  val calendarSurface =
+    surface("calendarBackground", fallback.calendarBackground, fallback.calendarBackground)
+  val derivedCalendarSelectedText =
+    pickContrast(
+      (attributes["calendarSelectedBackground"] ?: accent).compositeOver(calendarSurface),
+    )
 
   val themeName = name
   val themeRepo = repo
@@ -130,7 +207,7 @@ private fun buildCustomColors(
       isLight = themeIsLight,
       page =
         PageColors(
-          pageBackground = "pageBackground".attr(backgroundPage),
+          pageBackground = PAGE_BACKGROUND.attr(backgroundPage),
           pageBackgroundTopLeft = "pageBackgroundTopLeft".attr(pageBackgroundTopLeft),
           pageBackgroundBottomRight = "pageBackgroundBottomRight".attr(pageBackgroundBottomRight),
           pageBackgroundLineTop = "pageBackgroundLineTop".attr(pageBackgroundLineTop),
@@ -182,7 +259,7 @@ private fun buildCustomColors(
             "sidebarItemBackgroundPositive".attr(sidebarItemBackgroundPositive),
           sidebarItemBackgroundFailed =
             "sidebarItemBackgroundFailed".attr(sidebarItemBackgroundFailed),
-          sidebarItemAccentSelected = "sidebarItemAccentSelected".attr(sidebarItemAccentSelected),
+          sidebarItemAccentSelected = "sidebarItemAccentSelected".attr(derivedSidebarAccent),
           sidebarItemBackgroundHover =
             "sidebarItemBackgroundHover".attr(sidebarItemBackgroundHover),
           sidebarItemText = "sidebarItemText".attr(sidebarItemText),
@@ -224,17 +301,16 @@ private fun buildCustomColors(
           menuItemText = "menuItemText".attr(text),
           menuItemTextHover = "menuItemTextHover".attr(text),
           menuItemTextSelected = "menuItemTextSelected".attr(accentText),
-          menuItemTextHeader = "menuItemTextHeader".attr(menuItemTextHeader),
+          menuItemTextHeader = "menuItemTextHeader".attr(derivedMenuHeader),
           menuBorder = "menuBorder".attr(border),
-          menuKeybindingText = "menuKeybindingText".attr(menuKeybindingText),
+          menuKeybindingText = "menuKeybindingText".attr(derivedMenuHeader),
           menuAutoCompleteBackground =
             "menuAutoCompleteBackground".attr(menuAutoCompleteBackground),
           menuAutoCompleteBackgroundHover =
             "menuAutoCompleteBackgroundHover".attr(menuAutoCompleteBackgroundHover),
           menuAutoCompleteText = "menuAutoCompleteText".attr(menuAutoCompleteText),
           menuAutoCompleteTextHover = "menuAutoCompleteTextHover".attr(menuAutoCompleteTextHover),
-          menuAutoCompleteTextHeader =
-            "menuAutoCompleteTextHeader".attr(menuAutoCompleteTextHeader),
+          menuAutoCompleteTextHeader = "menuAutoCompleteTextHeader".attr(derivedAutoCompleteHeader),
           menuAutoCompleteItemTextHover =
             "menuAutoCompleteItemTextHover".attr(menuAutoCompleteItemTextHover),
           menuAutoCompleteItemText = "menuAutoCompleteItemText".attr(menuAutoCompleteItemText),
@@ -302,7 +378,7 @@ private fun buildCustomColors(
           calendarItemText = "calendarItemText".attr(calendarItemText),
           calendarItemBackground = "calendarItemBackground".attr(calendarItemBackground),
           calendarSelectedBackground = "calendarSelectedBackground".attr(accent),
-          calendarSelectedText = "calendarSelectedText".attr(accentContrast),
+          calendarSelectedText = "calendarSelectedText".attr(derivedCalendarSelectedText),
           calendarCellBackground = "calendarCellBackground".attr(calendarCellBackground),
           datePickerRangeBackground = "datePickerRangeBackground".attr(accentSubtle),
           buttonBareText = "buttonBareText".attr(buttonBareText),
@@ -317,23 +393,23 @@ private fun buildCustomColors(
         ),
       status =
         StatusColors(
-          noticeBackground = "noticeBackground".attr(noticeBackground),
-          noticeBackgroundLight = "noticeBackgroundLight".attr(noticeBackgroundLight),
-          noticeText = "noticeText".attr(noticeText),
-          noticeTextLight = "noticeTextLight".attr(noticeTextLight),
-          noticeTextDark = "noticeTextDark".attr(noticeTextDark),
+          noticeBackground = "noticeBackground".attr(successSet.fill),
+          noticeBackgroundLight = "noticeBackgroundLight".attr(successSet.fillSubtle),
+          noticeText = "noticeText".attr(successSet.text),
+          noticeTextLight = "noticeTextLight".attr(successSet.textOnSubtle),
+          noticeTextDark = "noticeTextDark".attr(successSet.textStrong),
           noticeTextMenu = "noticeTextMenu".attr(noticeTextMenu),
-          noticeBorder = "noticeBorder".attr(noticeBorder),
-          warningBackground = "warningBackground".attr(warningBackground),
-          warningText = "warningText".attr(warningText),
-          warningTextDark = "warningTextDark".attr(warningTextDark),
-          warningBorder = "warningBorder".attr(warningBorder),
-          errorBackground = "errorBackground".attr(errorBackground),
-          errorText = "errorText".attr(errorText),
-          errorTextDark = "errorTextDark".attr(errorTextDark),
-          errorTextDarker = "errorTextDarker".attr(errorTextDarker),
+          noticeBorder = "noticeBorder".attr(success),
+          warningBackground = "warningBackground".attr(warningSet.fill),
+          warningText = "warningText".attr(warningSet.text),
+          warningTextDark = "warningTextDark".attr(warningSet.textStrong),
+          warningBorder = "warningBorder".attr(warning),
+          errorBackground = "errorBackground".attr(errorSet.fill),
+          errorText = "errorText".attr(errorSet.text),
+          errorTextDark = errorTextDark,
+          errorTextDarker = "errorTextDarker".attr(errorTextDark),
           errorTextMenu = "errorTextMenu".attr(errorTextMenu),
-          errorBorder = "errorBorder".attr(errorBorder),
+          errorBorder = "errorBorder".attr(error),
           upcomingBackground = "upcomingBackground".attr(accentSubtle),
           upcomingText = "upcomingText".attr(accentSubtleText),
         ),
@@ -368,7 +444,7 @@ private fun buildCustomColors(
           pillBackground = "pillBackground".attr(pillBackground),
           pillBackgroundLight = "pillBackgroundLight".attr(pillBackgroundLight),
           pillText = "pillText".attr(text),
-          pillTextHighlighted = "pillTextHighlighted".attr(pillTextHighlighted),
+          pillTextHighlighted = "pillTextHighlighted".attr(derivedPillHighlight),
           pillBorder = "pillBorder".attr(pillBorder),
           pillBorderDark = "pillBorderDark".attr(borderStrong),
           pillBackgroundSelected = "pillBackgroundSelected".attr(accentSubtle),
@@ -446,6 +522,15 @@ private fun buildCustomColors(
           textSecondary = textSecondary,
           textTertiary = textTertiary,
         ),
+      statusBaseColors =
+        StatusBaseColors(
+          success = success,
+          warning = warning,
+          error = error,
+          info = info,
+          infoBackground = "infoBackground".attr(infoSet.fill),
+          infoText = "infoText".attr(infoSet.textStrong),
+        ),
       chartQual =
         ChartQualColors(
           chartQual1 = "chartQual1".attr(chartQual1),
@@ -463,6 +548,8 @@ private fun buildCustomColors(
 }
 
 private const val TAG = "parseTheme"
+
+private const val PAGE_BACKGROUND = "pageBackground"
 
 private const val COLOR_PREFIX = "color-"
 

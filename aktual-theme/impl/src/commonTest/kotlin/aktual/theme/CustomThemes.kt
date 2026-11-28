@@ -25,6 +25,15 @@ internal val ShadesOfCoffeeTheme =
     name = ShadesOfCoffeeThemeSummary.name,
     repo = ShadesOfCoffeeThemeSummary.repo,
     isLight = true,
+    statusBaseColors =
+      StatusBaseColors(
+        success = Color(0xFF27AB83),
+        warning = Color(0xFFE6BB20),
+        error = Color(0xFFE12D39),
+        info = LightColors.info,
+        infoBackground = LightColors.infoBackground,
+        infoText = Color(0xFF004E8D),
+      ),
     page =
       PageColors(
         pageBackground = Color(0xFFe2d8cf),
@@ -176,6 +185,7 @@ internal val ShadesOfCoffeeTheme =
         calendarItemText = Color(0xFFD9E2EC),
         calendarItemBackground = Color(0xFF243B53),
         calendarSelectedBackground = Color(0xFF627d98),
+        calendarSelectedText = Black,
         calendarCellBackground = Color(0xFFe8ecf0),
         datePickerRangeBackground = Color(0xFFb3d9ff),
         buttonBareText = Color(0xFF102A43),

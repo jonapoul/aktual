@@ -84,6 +84,7 @@ checkboxToggleBackground
 checkboxToggleBackgroundSelected
 checkboxToggleDisabled
 datePickerRangeBackground
+error
 errorBackground
 errorBorder
 errorText
@@ -106,6 +107,9 @@ formInputTextPlaceholderSelected
 formInputTextReadOnlySelection
 formLabelBackground
 formLabelText
+info
+infoBackground
+infoText
 markdownDark
 markdownLight
 markdownNormal
@@ -224,6 +228,7 @@ sidebarTextFailed
 sidebarTextMuted
 sidebarTextPositive
 sidebarTextSubdued
+success
 tableBackground
 tableBorder
 tableBorderHover
@@ -256,6 +261,7 @@ tooltipBorder
 tooltipText
 upcomingBackground
 upcomingText
+warning
 warningBackground
 warningBorder
 warningText

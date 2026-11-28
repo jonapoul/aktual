@@ -128,10 +128,9 @@ fun AktualSnackbar(data: SnackbarData, modifier: Modifier = Modifier) {
   val (border, background, content) =
     with(colors) {
       when (visuals.severity) {
-        Success ->
-          Triple(noticeBorder, noticeBackground, legibleOn(noticeBackground, noticeTextDark))
-        Danger -> Triple(errorBorder, errorBackground, errorTextDark)
-        Warning -> Triple(warningBorder, warningBackground, warningTextDark)
+        Success -> Triple(success, noticeBackground, legibleOn(noticeBackground, noticeTextDark))
+        Danger -> Triple(error, errorBackground, errorTextDark)
+        Warning -> Triple(warning, warningBackground, warningTextDark)
       }
     }
   // Material's Snackbar(snackbarData) pads outside the given modifier, which would leave the border

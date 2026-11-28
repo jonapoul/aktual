@@ -170,7 +170,7 @@ internal fun AccountStatusChip(
     when (status) {
       Ok -> colors.noticeBackgroundLight to colors.noticeText
       Pending,
-      SyncRequested -> colors.upcomingBackground to colors.upcomingText
+      SyncRequested -> colors.infoBackground to colors.infoText
       RateLimited,
       TimedOut,
       AttentionRequired -> colors.warningBackground to colors.warningTextDark

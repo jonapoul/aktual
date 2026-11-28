@@ -54,6 +54,26 @@ class JsonCustomColorsTest {
     }
   }
 
+  @Test
+  fun `Themes saved without status colours take them from older colours`() {
+    val theme =
+      DarkColors.toCustomColors(
+        name = "Old",
+        repo = CustomThemeRepo.local("old"),
+        overrides = mapOf("noticeBorder" to Blue, "pillBackgroundSelected" to Blue),
+      )
+    val encoded = ThemeJson.encodeToJsonElement(JsonCustomColors.serializer(), theme).jsonObject
+    val saved = JsonObject(encoded - "statusBase")
+
+    val decoded = ThemeJson.decodeFromJsonElement(JsonCustomColors.serializer(), saved)
+
+    assertThat(decoded).all {
+      prop(JsonCustomColors::success).isEqualTo(Blue)
+      prop(JsonCustomColors::infoBackground).isEqualTo(Blue)
+      prop(JsonCustomColors::error).isEqualTo(DarkColors.errorBorder)
+    }
+  }
+
   private companion object {
     val Blue = Color(0xFF2B8FED)
   }

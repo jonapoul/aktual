@@ -70,7 +70,7 @@ class ParseColorsTest {
       prop(CustomColors::checkboxBackgroundSelected).isEqualTo(Color(0xFF2b8fed))
       prop(CustomColors::calendarSelectedBackground).isEqualTo(Color(0xFF2b8fed))
       prop(CustomColors::pageTextLink).isEqualTo(Color(0xFF66b5fa))
-      prop(CustomColors::accentHover).isEqualTo(DarkColors.accentHover)
+      prop(CustomColors::accentHover).isEqualTo(Color(0xFF46A2FF))
     }
   }
 
@@ -142,6 +142,51 @@ class ParseColorsTest {
       prop(CustomColors::text).isEqualTo(Color(0xFFe9eaeb))
       prop(CustomColors::cardBackground).isEqualTo(Color(0xFF222324))
       prop(CustomColors::menuItemText).isEqualTo(Color(0xFFe9eaeb))
+    }
+  }
+
+  @Test
+  fun `Status borders a theme leaves out follow its status colours`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1b1c1d;
+        --color-success: #11aa11;
+        --color-warning: #aaaa11;
+        --color-error: #aa1111;
+        --color-info: #1111aa;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css)
+
+    assertThat(colors).all {
+      prop(CustomColors::noticeBorder).isEqualTo(Color(0xFF11aa11))
+      prop(CustomColors::warningBorder).isEqualTo(Color(0xFFaaaa11))
+      prop(CustomColors::errorBorder).isEqualTo(Color(0xFFaa1111))
+      prop(CustomColors::info).isEqualTo(Color(0xFF1111aa))
+    }
+  }
+
+  @Test
+  fun `Take the status colours from older themes' borders`() {
+    val css =
+      """
+      :root {
+        --color-pageBackground: #1b1c1d;
+        --color-noticeBorder: #11aa11;
+        --color-errorTextDark: #aa1111;
+      }
+      """
+        .trimIndent()
+
+    val colors = parseColors(ThyriumThemeSummary, css)
+
+    assertThat(colors).all {
+      prop(CustomColors::success).isEqualTo(Color(0xFF11aa11))
+      prop(CustomColors::warning).isEqualTo(DarkColors.warning)
+      prop(CustomColors::errorTextDarker).isEqualTo(Color(0xFFaa1111))
     }
   }
 

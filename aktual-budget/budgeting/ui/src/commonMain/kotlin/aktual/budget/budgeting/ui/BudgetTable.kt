@@ -310,7 +310,7 @@ internal fun BannerRow(
 ) {
   val isWarning = banner is Uncategorised
   val background = if (isWarning) colors.warningBackground else colors.errorBackground
-  val border = if (isWarning) colors.warningBorder else colors.errorBorder
+  val border = if (isWarning) colors.warning else colors.error
   val text = if (isWarning) colors.warningText else colors.errorText
 
   Row(

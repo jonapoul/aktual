@@ -26,6 +26,11 @@ data object MidnightColors : DefaultColors {
   override val textSecondary = ColorPalette.gray200
   override val textTertiary = ColorPalette.gray300
 
+  override val success = ColorPalette.green400
+  override val warning = ColorPalette.orange300
+  override val error = ColorPalette.red500
+  override val info = ColorPalette.blue400
+
   override val pageBackground = backgroundPage
   override val pageBackgroundTopLeft = ColorPalette.gray800
   override val pageBackgroundBottomRight = ColorPalette.gray700
@@ -52,7 +57,7 @@ data object MidnightColors : DefaultColors {
   override val tableTextLight = tableText
   override val tableTextSubdued = textSecondary
   override val tableTextSelected = tableText
-  override val tableTextInactive = ColorPalette.gray400
+  override val tableTextInactive = ColorPalette.gray300
   override val tableHeaderText = ColorPalette.gray200
   override val tableHeaderBackground = ColorPalette.gray900
   override val tableBorder = border
@@ -131,7 +136,7 @@ data object MidnightColors : DefaultColors {
   override val menuAutoCompleteBackground = ColorPalette.gray600
   override val menuAutoCompleteBackgroundHover = ColorPalette.gray500
   override val menuAutoCompleteText = ColorPalette.gray100
-  override val menuAutoCompleteTextHover = ColorPalette.green900
+  override val menuAutoCompleteTextHover = ColorPalette.green150
   override val menuAutoCompleteTextHeader = Color(color = 0xFFD9C5FF)
   override val menuAutoCompleteItemTextHover = ColorPalette.gray50
   override val menuAutoCompleteItemText = menuItemText
@@ -208,23 +213,25 @@ data object MidnightColors : DefaultColors {
   override val buttonBareDisabledText = buttonNormalDisabledText
   override val buttonBareDisabledBackground = buttonBareBackground
 
-  override val noticeBackground = ColorPalette.green600
-  override val noticeBackgroundLight = ColorPalette.green900
-  override val noticeText = ColorPalette.green300
-  override val noticeTextLight = ColorPalette.green400
-  override val noticeTextDark = ColorPalette.green150
+  override val noticeBackground = Color(color = 0xFF00684D)
+  override val noticeBackgroundLight = Color(color = 0xFF004C37)
+  override val noticeText = Color(color = 0xFF6FE8BC)
+  override val noticeTextLight = Color(color = 0xFF45C298)
+  override val noticeTextDark = Color(color = 0xFFBFFFE4)
   override val noticeTextMenu = ColorPalette.green400
-  override val noticeBorder = ColorPalette.green800
-  override val warningBackground = ColorPalette.orange800
-  override val warningText = ColorPalette.orange200
-  override val warningTextDark = ColorPalette.orange100
-  override val warningBorder = ColorPalette.orange500
-  override val errorBackground = ColorPalette.red800
-  override val errorText = ColorPalette.red200
-  override val errorTextDark = ColorPalette.red150
+  override val noticeBorder = success
+  override val warningBackground = Color(color = 0xFF635900)
+  override val warningText = warning
+  override val warningTextDark = Color(color = 0xFFFFF082)
+  override val warningBorder = warning
+  override val errorBackground = Color(color = 0xFFA7001D)
+  override val errorText = Color(color = 0xFFFFB2AC)
+  override val errorTextDark = Color(color = 0xFFFFD8D5)
   override val errorTextDarker = errorTextDark
   override val errorTextMenu = ColorPalette.red200
-  override val errorBorder = ColorPalette.red500
+  override val errorBorder = error
+  override val infoBackground = Color(color = 0xFF005C97)
+  override val infoText = Color(color = 0xFFDFEFFF)
   override val upcomingBackground = accentSubtle
   override val upcomingText = accentSubtleText
 
