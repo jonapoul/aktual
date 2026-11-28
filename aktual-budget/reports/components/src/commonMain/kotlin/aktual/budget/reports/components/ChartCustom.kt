@@ -92,7 +92,7 @@ internal fun CustomChart(
         Message(Strings.reportsCustomGraphUnsupported, colors.warningText, chartModifier)
 
       bars.isEmpty() || data.intervals.isEmpty() ->
-        Message(Strings.reportsCustomEmpty, colors.pageTextSubdued, chartModifier)
+        Message(Strings.reportsCustomEmpty, colors.textTertiary, chartModifier)
 
       graphType == BarGraph -> CustomBarChart(data, bars, chartModifier, drilldown)
 
@@ -166,7 +166,7 @@ private fun RegularHeader(
     DateRangeText(
       modifier = Modifier.weight(1f),
       text = dateRange(data.config.dates),
-      color = colors.pageText,
+      color = colors.text,
     )
 
     Text(
@@ -225,7 +225,7 @@ private fun PreviewCustomChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       CustomChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .height(if (compact) 300.dp else 500.dp)
             .padding(5.dp),

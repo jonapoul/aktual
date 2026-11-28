@@ -175,7 +175,7 @@ internal fun BudgetCategoryScaffold(
               Text(
                 text = subtitle,
                 fontSize = textSizes.smallPlus,
-                color = colors.pageTextSubdued,
+                color = colors.textTertiary,
                 maxLines = 1,
                 overflow = Ellipsis,
               )
@@ -316,7 +316,7 @@ private fun MonthCard(
         Text(
           text = Strings.budgetingColumnBalance,
           fontSize = textSizes.smallPlus,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
         BalancePill(balance = month.balance, carryover = month.carryover)
       }
@@ -327,7 +327,7 @@ private fun MonthCard(
 @Composable
 private fun Figure(label: String, amount: Amount, modifier: Modifier = Modifier) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-    Text(text = label, fontSize = textSizes.smallPlus, color = colors.pageTextSubdued)
+    Text(text = label, fontSize = textSizes.smallPlus, color = colors.textTertiary)
     Text(
       text = amount.formattedText(),
       fontSize = textSizes.large,
@@ -382,7 +382,7 @@ private fun HistoryCard(
           text = point.month.stringShort().take(MONTH_LABEL_LENGTH),
           fontSize = textSizes.extraSmall,
           fontWeight = if (isSelected) SemiBold else Normal,
-          color = if (isSelected) colors.pageText else colors.pageTextSubdued,
+          color = if (isSelected) colors.text else colors.textTertiary,
           textAlign = Center,
           maxLines = 1,
         )
@@ -400,7 +400,7 @@ private fun Legend(isIncome: Boolean, modifier: Modifier = Modifier) {
   ) {
     LegendItem(color = colors.accentText, label = Strings.budgetingBudgeted)
     LegendItem(
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       label = if (isIncome) Strings.budgetingColumnReceived else Strings.budgetingSpent,
     )
     LegendItem(color = colors.noticeText, label = Strings.budgetingColumnBalance)
@@ -411,7 +411,7 @@ private fun Legend(isIncome: Boolean, modifier: Modifier = Modifier) {
 private fun LegendItem(color: Color, label: String) {
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = CenterVertically) {
     Spacer(modifier = Modifier.size(8.dp).background(color, CircleShape))
-    Text(text = label, fontSize = textSizes.small, color = colors.pageTextSubdued)
+    Text(text = label, fontSize = textSizes.small, color = colors.textTertiary)
   }
 }
 
@@ -423,9 +423,9 @@ private fun HistoryChart(
   modifier: Modifier = Modifier,
 ) {
   val budgetedColor = colors.accentText
-  val spentColor = colors.pageTextSubdued
-  val highlight = colors.tableRowBackgroundHover
-  val axis = colors.tableBorder
+  val spentColor = colors.textTertiary
+  val highlight = colors.backgroundHover
+  val axis = colors.border
   val positive = colors.noticeText
   val negative = colors.errorText
 

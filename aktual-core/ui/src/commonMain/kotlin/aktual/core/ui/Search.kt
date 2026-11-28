@@ -179,11 +179,11 @@ fun SearchMessage(
         modifier = Modifier.size(48.dp),
         imageVector = icon,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
       Text(
         text = text,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         style = typography.bodyLarge,
         textAlign = Center,
       )
@@ -198,7 +198,7 @@ fun Modifier.searchResultCard(
 ): Modifier =
   fillMaxWidth()
     .clip(CardShape)
-    .background(colors.tableBackground)
+    .background(colors.background)
     .clickable(enabled = enabled, onClick = onClick)
     .padding(padding)
 

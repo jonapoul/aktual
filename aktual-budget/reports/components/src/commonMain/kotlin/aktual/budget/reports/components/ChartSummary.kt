@@ -193,7 +193,7 @@ private fun RegularPerMonth(
           FilterDisplay(data.filter)
         }
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -219,7 +219,7 @@ private fun RegularPerMonth(
           textAlign = Center,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -261,7 +261,7 @@ private fun RegularPerYear(
           FilterDisplay(data.filter)
         }
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -287,7 +287,7 @@ private fun RegularPerYear(
           textAlign = Center,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -329,7 +329,7 @@ private fun RegularPerTransaction(
           FilterDisplay(data.filter)
         }
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -355,7 +355,7 @@ private fun RegularPerTransaction(
           textAlign = Center,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -398,7 +398,7 @@ private fun RegularPercent(
           FilterDisplay(data.filter)
         }
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -426,7 +426,7 @@ private fun RegularPercent(
           textAlign = Center,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.text)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
@@ -500,7 +500,7 @@ private fun ShowAs(
       }
 
     // Summary charts are always drawn on a table card
-    ProvideSurfaceColor(colors.tableBackground) {
+    ProvideSurfaceColor(colors.background) {
       AktualExposedDropDownMenu(
         modifier = Modifier.wrapContentSize(),
         value = currentType.label(),
@@ -519,7 +519,7 @@ private fun SumColumn(range: DateRange) =
     modifier = Modifier.wrapContentSize(),
     horizontalAlignment = CenterHorizontally,
   ) {
-    range.start?.let { Text(text = string(it), color = colors.pageTextSubdued) }
+    range.start?.let { Text(text = string(it), color = colors.textTertiary) }
 
     Icon(
       modifier = Modifier.size(50.dp),
@@ -527,7 +527,7 @@ private fun SumColumn(range: DateRange) =
       contentDescription = null,
     )
 
-    range.end?.let { Text(text = string(it), color = colors.pageTextSubdued) }
+    range.end?.let { Text(text = string(it), color = colors.textTertiary) }
   }
 
 @Composable
@@ -586,7 +586,7 @@ private fun FilterDisplay(filter: SummaryFilter) =
                 Strings.reportsFormulaQueryMatchAll
               },
             style = typography.bodySmall,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
         conditions.fastForEach { condition ->
@@ -637,7 +637,7 @@ private fun PreviewSummaryChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       SummaryChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

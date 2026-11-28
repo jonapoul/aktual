@@ -42,7 +42,7 @@ internal fun ReconcilingBanner(
   onAction: OnAction<Action>,
   modifier: Modifier = Modifier,
 ) =
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
     Column(
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp),

@@ -175,7 +175,7 @@ private fun BankSyncSettingsScaffold(
               Text(
                 text = state.accountName ?: Strings.bankSyncUnnamedAccount,
                 style = typography.bodySmall,
-                color = colors.pageTextSubdued,
+                color = colors.textTertiary,
                 maxLines = 1,
                 overflow = Ellipsis,
               )

@@ -88,14 +88,14 @@ private fun SampleRow(transaction: SampleTransaction, color: Color, expanded: Bo
       Text(
         text = transaction.payee.label(),
         style = typography.bodyMedium,
-        color = colors.pageText,
+        color = colors.text,
         maxLines = 1,
       )
       if (transaction.parts.isEmpty()) {
         Text(
           text = transaction.date.formatted(),
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
         )
       } else {
@@ -114,20 +114,20 @@ private fun SplitLabel(expanded: Boolean) {
       modifier = Modifier.size(SplitIconSize),
       imageVector = AktualIcons.Split,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
     Text(
       text = Strings.transactionsSplit,
       style = typography.bodySmall,
       fontStyle = Italic,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
     )
     Icon(
       modifier = Modifier.size(SplitIconSize).rotate(rotation),
       imageVector = AktualIcons.CheveronDown,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
   }
 }
@@ -142,7 +142,7 @@ private fun SamplePartRow(part: SamplePart) {
       modifier = Modifier.weight(1f),
       text = part.category.label(),
       style = typography.bodySmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
     )
     AmountText(part.amount, typography.bodySmall)

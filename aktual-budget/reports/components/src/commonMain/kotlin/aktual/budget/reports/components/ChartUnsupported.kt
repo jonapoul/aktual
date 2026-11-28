@@ -39,7 +39,7 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
     val type = data.type.string()
     Text(text = data.name ?: type, overflow = Ellipsis, maxLines = 1)
     if (data.name != null) {
-      Text(text = type, color = colors.pageTextSubdued, overflow = Ellipsis, maxLines = 1)
+      Text(text = type, color = colors.textTertiary, overflow = Ellipsis, maxLines = 1)
     }
 
     Box(
@@ -55,7 +55,7 @@ internal fun UnsupportedChart(data: UnsupportedData, modifier: Modifier = Modifi
             MissingReport -> Strings.reportsUnsupportedMissing
             ReportType -> Strings.reportsUnsupportedType
           },
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         textAlign = Center,
       )
     }

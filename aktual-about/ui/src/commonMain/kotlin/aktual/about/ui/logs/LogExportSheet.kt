@@ -81,7 +81,7 @@ private fun LogExportSheetContent(
       Text(
         text = Strings.logsExportInclude,
         style = typography.labelMedium,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
       AnimatedFlowRow {
         for (scope in scopes) {

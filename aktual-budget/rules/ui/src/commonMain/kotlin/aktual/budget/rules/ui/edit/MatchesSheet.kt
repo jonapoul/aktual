@@ -151,7 +151,7 @@ private fun MatchesTitle(state: RuleMatchesState) =
         Text(
           text = Plurals.editRuleMatchesCount(state.total, state.total),
           style = typography.titleMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
       }
   }
@@ -162,7 +162,7 @@ private fun SubduedText(text: String, modifier: Modifier = Modifier) =
     modifier = modifier,
     text = text,
     style = typography.bodyMedium,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 
 @Composable
@@ -194,17 +194,17 @@ private fun MatchCard(
         modifier = Modifier.weight(1f),
         text = row.payee.orEmpty(),
         style = typography.bodyLarge,
-        color = colors.pageText,
+        color = colors.text,
         maxLines = 1,
         overflow = Ellipsis,
       )
       Text(
         text = row.amount.formattedString(),
         style = typography.bodyLarge,
-        color = colors.pageText,
+        color = colors.text,
       )
     }
-    Text(text = row.date.formatted(), style = typography.labelSmall, color = colors.pageTextSubdued)
+    Text(text = row.date.formatted(), style = typography.labelSmall, color = colors.textTertiary)
 
     if (row.changes.isEmpty()) {
       SubduedText(Strings.editRuleMatchesNoChanges)

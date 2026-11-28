@@ -164,7 +164,7 @@ internal fun MonthHeader(
       modifier = Modifier.weight(1f),
       text = month.month.stringLong(),
       fontWeight = Bold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
 
     if (compact) {
@@ -379,7 +379,7 @@ internal fun CalendarMonth(
   Column(
     modifier =
       modifier
-        .background(colors.tableBackground, CardShape)
+        .background(colors.background, CardShape)
         .widthIn(min = minSize)
         .heightIn(min = minSize)
         .padding(if (compact) CalendarMonthCompactPadding else CalendarMonthRegularPadding),
@@ -398,7 +398,7 @@ internal fun CalendarMonth(
           modifier = Modifier.weight(1f),
           text = day.stringShort(),
           textAlign = Center,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       }
     }
@@ -507,7 +507,7 @@ private fun PreviewCalendarChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       CalendarChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .height(HEIGHT.dp)
             .padding(5.dp),

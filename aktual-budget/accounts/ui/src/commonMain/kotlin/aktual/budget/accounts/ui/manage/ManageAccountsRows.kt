@@ -72,13 +72,13 @@ internal fun SectionHeader(title: String, total: Amount, modifier: Modifier = Mo
       text = title.uppercase(),
       fontSize = textSizes.small,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     Text(
       text = total.formattedText(),
       fontSize = textSizes.small,
       fontWeight = Medium,
-      color = total.color(colors.pageTextSubdued),
+      color = total.color(colors.textTertiary),
     )
   }
 }
@@ -93,7 +93,7 @@ internal fun GroupHeader(
   val id = group.id
   val name = group.displayName()
   Column(modifier = modifier.fillMaxWidth().background(colors.tableRowHeaderBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+    HorizontalDivider(color = colors.border)
     Row(
       modifier =
         Modifier.fillMaxWidth()
@@ -164,8 +164,8 @@ private fun GroupMenu(name: String, onRename: () -> Unit, onDelete: () -> Unit) 
 
 @Composable
 internal fun EmptyGroupRow(modifier: Modifier = Modifier) {
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
+    HorizontalDivider(color = colors.border)
     Text(
       modifier = Modifier.fillMaxWidth().padding(ManageAccountsDS.rowPadding),
       text = Strings.accountsManageGroupEmpty,
@@ -182,8 +182,8 @@ internal fun AccountRow(
   modifier: Modifier = Modifier,
   handleModifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
+    HorizontalDivider(color = colors.border)
     Row(
       modifier = Modifier.fillMaxWidth().height(ManageAccountsDS.rowHeight),
       verticalAlignment = CenterVertically,
@@ -293,8 +293,8 @@ internal fun ClosedAccountRow(
   onReopen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
+    HorizontalDivider(color = colors.border)
     Row(
       modifier =
         Modifier.fillMaxWidth()

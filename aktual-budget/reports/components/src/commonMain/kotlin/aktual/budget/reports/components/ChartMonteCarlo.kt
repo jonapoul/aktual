@@ -109,7 +109,7 @@ private fun Header(
         text = Strings.reportsMonteCarloSuccessToAge(data.targetAge),
         textAlign = End,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
   }
@@ -118,7 +118,7 @@ private fun Header(
 private fun MonteCarloSummary(data: MonteCarloData, modifier: Modifier = Modifier) =
   Column(modifier = modifier) {
     val style = typography.bodySmall
-    val color = colors.pageTextSubdued
+    val color = colors.textTertiary
     Text(
       text =
         Strings.reportsMonteCarloMedianEnding(data.medianEndingBalance.formattedString())
@@ -344,7 +344,7 @@ private fun PreviewMonteCarloChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       MonteCarloChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m.height(600.dp) }
             .padding(5.dp),

@@ -44,7 +44,7 @@ internal fun Section(label: String, content: @Composable ColumnScope.() -> Unit)
     SectionLabel(text)
   }
   Column(
-    modifier = Modifier.fillMaxWidth().clip(CardShape).background(colors.tableBackground),
+    modifier = Modifier.fillMaxWidth().clip(CardShape).background(colors.background),
     content = content,
   )
 }

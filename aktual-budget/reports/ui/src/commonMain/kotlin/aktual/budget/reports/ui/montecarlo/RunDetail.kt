@@ -295,8 +295,7 @@ private fun YearRow(
     // A year that couldn't be fully paid for stands out
     AmountCell(
       row.spent.money(),
-      color =
-        if (row.spent < row.plannedSpending) colors.reportsNumberNegative else colors.pageText,
+      color = if (row.spent < row.plannedSpending) colors.reportsNumberNegative else colors.text,
     )
     val growthColor =
       if (row.growth >= 0) colors.reportsNumberPositive else colors.reportsNumberNegative
@@ -321,14 +320,14 @@ private fun YearRow(
   }
 
 @Composable
-private fun AmountCell(text: String, color: Color = colors.pageText) =
+private fun AmountCell(text: String, color: Color = colors.text) =
   TableCell(text, Modifier.width(AMOUNT_WIDTH), color = color)
 
 @Composable
 private fun TableCell(
   text: String,
   modifier: Modifier = Modifier,
-  color: Color = colors.pageText,
+  color: Color = colors.text,
   textAlign: TextAlign = End,
 ) =
   Text(
@@ -373,7 +372,7 @@ private fun YearBreakdown(
           Strings.monteCarloDetailShowWorking
         },
       style = typography.bodySmall,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       textDecoration = Underline,
     )
 
@@ -591,7 +590,7 @@ private fun PotTable(
           Modifier.width(RATE_WIDTH),
           color =
             when {
-              potReturn == null -> colors.pageText
+              potReturn == null -> colors.text
               potReturn >= 0 -> colors.reportsNumberPositive
               else -> colors.reportsNumberNegative
             },

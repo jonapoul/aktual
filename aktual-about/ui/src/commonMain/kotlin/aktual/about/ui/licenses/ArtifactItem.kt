@@ -115,7 +115,7 @@ internal fun ArtifactItem(
         modifier = Modifier.padding(start = Dimens.Large).size(ChevronSize),
         imageVector = AktualIcons.CheveronRight,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
     }
   }
@@ -124,7 +124,7 @@ internal fun ArtifactItem(
 /** Keep in sync with [ArtifactItem] */
 @Composable
 internal fun ShimmerArtifactItem(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, CardShape)
+  val bar = Modifier.background(colors.text, CardShape)
 
   Row(
     modifier =
@@ -210,7 +210,7 @@ private fun LibraryTableRow(
       modifier = Modifier.width(headerWidth),
       text = title,
       textAlign = Start,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       lineHeight = LineHeight,
       style = headerStyle,
     )

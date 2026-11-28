@@ -378,7 +378,7 @@ private fun SplitHeader(
       text =
         if (split.index == 0) Strings.editRuleApplyToAll else Strings.editRuleSplit(split.index),
       style = typography.titleSmall,
-      color = colors.pageText,
+      color = colors.text,
     )
     val summary = split.amount?.value?.splitSummary()
     if (summary != null) {
@@ -386,7 +386,7 @@ private fun SplitHeader(
         modifier = Modifier.weight(1f),
         text = summary,
         style = typography.bodyMedium,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -422,7 +422,7 @@ private fun RuleCard(
     Text(
       text = title.uppercase(),
       style = typography.labelSmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -432,7 +432,7 @@ private fun RuleCard(
       Text(
         text = value,
         style = typography.bodyLarge,
-        color = colors.pageText,
+        color = colors.text,
         maxLines = 2,
         overflow = Ellipsis,
       )
@@ -440,7 +440,7 @@ private fun RuleCard(
       Text(
         text = Strings.editRuleValueEmpty,
         style = typography.bodyLarge,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         fontStyle = Italic,
       )
     }
@@ -504,7 +504,7 @@ private fun ScheduleCard(
         modifier = Modifier.weight(1f),
         text = Strings.editRuleOpLinkSchedule.uppercase(),
         style = typography.labelSmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -526,7 +526,7 @@ private fun ScheduleCard(
         Text(
           text = Strings.editRuleScheduleMissing,
           style = typography.bodyLarge,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
 
       else -> ScheduleSummary(schedule)
@@ -539,7 +539,7 @@ private fun ScheduleSummary(schedule: Schedule, modifier: Modifier = Modifier) =
     Text(
       text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
       style = typography.bodyLarge,
-      color = if (schedule.name == null) colors.pageTextSubdued else colors.pageText,
+      color = if (schedule.name == null) colors.textTertiary else colors.text,
       maxLines = 2,
       overflow = Ellipsis,
     )
@@ -557,7 +557,7 @@ private fun ScheduleSummary(schedule: Schedule, modifier: Modifier = Modifier) =
   }
 
 @Composable
-private fun ScheduleDetail(text: String, color: Color = colors.pageTextSubdued) =
+private fun ScheduleDetail(text: String, color: Color = colors.textTertiary) =
   Text(text = text, style = typography.bodySmall, color = color, maxLines = 1)
 
 @Composable

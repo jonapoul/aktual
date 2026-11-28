@@ -126,7 +126,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
       text = Strings.appLockMessage,
       fontSize = textSizes.mediumPlus,
       textAlign = Center,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
 
     Spacer(Modifier.weight(1f))
@@ -147,7 +147,7 @@ private fun LockedContent(onUnlock: () -> Unit) {
       text = Strings.appLockPromptSubtitle,
       fontSize = textSizes.smallPlus,
       textAlign = Center,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
 
     VerticalSpacer(24.dp)

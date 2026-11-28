@@ -84,7 +84,7 @@ private fun RecentHeader(onSeeAll: () -> Unit, modifier: Modifier = Modifier) {
       text = Strings.homeRecentTitle,
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -122,7 +122,7 @@ private fun RecentRow(
       Text(
         text = transaction.detail(),
         style = typography.bodySmall,
-        color = if (transaction.needsCategory) colors.warningText else colors.pageTextSubdued,
+        color = if (transaction.needsCategory) colors.warningText else colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -131,7 +131,7 @@ private fun RecentRow(
     AmountText(
       amount = transaction.amount,
       style = typography.bodyLarge,
-      color = if (transaction.amount < Zero) colors.numberNegative else colors.pageText,
+      color = if (transaction.amount < Zero) colors.numberNegative else colors.text,
     )
   }
 }

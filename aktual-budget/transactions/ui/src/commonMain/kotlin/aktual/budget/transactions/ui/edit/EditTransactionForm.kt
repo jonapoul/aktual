@@ -423,7 +423,7 @@ private fun LocationButton(
 ) =
   Box(modifier = Modifier.size(LocationButtonSize), contentAlignment = Center) {
     if (isLocating) {
-      AktualProgressIndicator(size = LocationProgressSize, color = colors.pageTextSubdued)
+      AktualProgressIndicator(size = LocationProgressSize, color = colors.textTertiary)
     } else {
       AktualIconButton(
         imageVector = AktualIcons.Location,
@@ -472,7 +472,7 @@ private fun NotesRow(notes: String?, tags: ImmutableList<TagLabel>, onClick: () 
             notes = str,
             tags = tags,
             fontSize = ValueSize,
-            color = colors.pageText,
+            color = colors.text,
             maxLines = 2,
           )
         }
@@ -525,7 +525,7 @@ internal fun ShimmerTransaction(modifier: Modifier = Modifier) {
         ShimmerBlock(modifier = Modifier.matchParentSize(), shape = ButtonShape)
       }
 
-      val lineColor = colors.tableBorder
+      val lineColor = colors.border
       Box(
         modifier =
           Modifier.drawBehind { underline(lineColor, UnderlineWidth.toPx()) }
@@ -589,7 +589,7 @@ private fun ShimmerFieldRow(shimmer: Shimmer, valueWidth: Float, showChevron: Bo
         modifier = Modifier.size(ChevronSize).rotate(degrees = -90f),
         imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
     }
   }
@@ -614,7 +614,7 @@ internal fun HeroAmount(
   fontSize: TextUnit = HeroAmountSize,
   cursorHeight: Dp = CursorHeight,
 ) {
-  val lineColor = if (isTyping) colors.accent else colors.tableBorder
+  val lineColor = if (isTyping) colors.accent else colors.border
   val textColor =
     when {
       isTyping && !isValid -> colors.errorText
@@ -687,7 +687,7 @@ internal fun FieldRow(
       modifier = Modifier.width(labelWidth),
       text = label,
       fontSize = FieldLabelSize,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     if (valueContent != null) {
       valueContent(Modifier.weight(1f))
@@ -696,7 +696,7 @@ internal fun FieldRow(
         modifier = Modifier.weight(1f),
         text = value ?: Strings.transactionNone,
         fontSize = ValueSize,
-        color = if (value == null || !enabled) colors.pageTextSubdued else colors.pageText,
+        color = if (value == null || !enabled) colors.textTertiary else colors.text,
         fontStyle = if (value == null) Italic else null,
         maxLines = 2,
         overflow = Ellipsis,
@@ -708,7 +708,7 @@ internal fun FieldRow(
         modifier = Modifier.size(ChevronSize).rotate(degrees = -90f),
         imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
     }
   }
@@ -724,7 +724,7 @@ private fun SwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
       modifier = Modifier.weight(1f),
       text = label,
       fontSize = FieldLabelSize,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
 
     Switch(checked = checked, onCheckedChange = onChange, colors = colors.switch())

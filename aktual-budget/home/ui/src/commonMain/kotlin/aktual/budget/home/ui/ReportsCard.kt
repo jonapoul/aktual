@@ -146,7 +146,7 @@ private fun ReportsHeader(onManage: (() -> Unit)?, modifier: Modifier = Modifier
       text = Strings.homeCardReports,
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -293,7 +293,7 @@ private fun PickerContent(
           text = page.page.name,
           style = typography.titleSmall,
           fontWeight = SemiBold,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       }
 
@@ -320,7 +320,7 @@ private fun SheetTitle(title: String, message: String?, modifier: Modifier = Mod
     )
 
     if (message != null) {
-      Text(text = message, style = typography.bodyMedium, color = colors.pageTextSubdued)
+      Text(text = message, style = typography.bodyMedium, color = colors.textTertiary)
     }
   }
 }

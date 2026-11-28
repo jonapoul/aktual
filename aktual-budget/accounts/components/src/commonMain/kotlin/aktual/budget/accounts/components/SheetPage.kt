@@ -51,7 +51,7 @@ fun SheetPage(
 @Composable
 fun SheetLoading(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxWidth().height(160.dp), contentAlignment = Center) {
-    AktualProgressIndicator(color = colors.pageTextSubdued)
+    AktualProgressIndicator(color = colors.textTertiary)
   }
 }
 
@@ -61,7 +61,7 @@ fun FieldLabel(text: String, modifier: Modifier = Modifier) {
     modifier = modifier.padding(bottom = 4.dp),
     text = text,
     style = typography.labelLarge,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 }
 

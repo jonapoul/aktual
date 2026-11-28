@@ -288,7 +288,7 @@ private fun UnusedPayeesDialogContent(
         Text(
           text = Strings.transactionUnusedPayeesInfo,
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
         Row(
           modifier = Modifier.fillMaxWidth(),

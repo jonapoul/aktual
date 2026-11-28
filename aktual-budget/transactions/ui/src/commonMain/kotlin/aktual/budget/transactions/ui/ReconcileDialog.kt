@@ -93,7 +93,7 @@ private fun ReconcileDialogContent(
           Text(
             text = Strings.transactionsReconcileLastSynced(lastSynced.formattedString()),
             style = typography.bodySmall,
-            color = colors.pageTextLight,
+            color = colors.textSecondary,
           )
           AktualButton(
             modifier = Modifier.fillMaxWidth(),
@@ -105,7 +105,7 @@ private fun ReconcileDialogContent(
         Text(
           text = lastReconciledText(start.lastReconciled),
           style = typography.bodySmall,
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
         )
       }
     },

@@ -338,7 +338,7 @@ private fun LazyListScope.nearbyPayeeItems(
         Text(
           text = payee.distance.formatted(),
           fontSize = DistanceSize,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       },
       onClick = {
@@ -372,7 +372,7 @@ private fun GroupHeader(name: String, modifier: Modifier = Modifier) =
     text = name,
     fontSize = GroupHeaderSize,
     fontWeight = SemiBold,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 
 // Closed accounts are listed after the rest once they're shown, which they are from the start if
@@ -449,7 +449,7 @@ private fun LazyListScope.accountItems(
       modifier = Modifier.animateItem(),
       label = account.name,
       isSelected = account.id == selected,
-      labelColor = if (isClosed) colors.pageTextSubdued else Unspecified,
+      labelColor = if (isClosed) colors.textTertiary else Unspecified,
       onClick = {
         onSelect(account.id)
         onDismiss()
@@ -578,7 +578,7 @@ private fun CategorySheet(
                 category.name
               },
             isSelected = category.id == selected,
-            labelColor = if (category.isHidden) colors.pageTextSubdued else Unspecified,
+            labelColor = if (category.isHidden) colors.textTertiary else Unspecified,
             trailingContent = category.balance?.let { balance -> { CategoryBalance(balance) } },
             onClick = {
               onSelect(category.id)
@@ -606,7 +606,7 @@ private fun CategoryBalance(balance: Amount) =
       when {
         balance < Zero -> colors.numberNegative
         balance > Zero -> colors.numberPositive
-        else -> colors.pageTextSubdued
+        else -> colors.textTertiary
       },
     maxLines = 1,
   )
@@ -661,7 +661,7 @@ private fun DateDialog(
           horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
           Checkbox(checked = syncTransferDate, onCheckedChange = null, colors = colors.checkbox())
-          Text(text = Strings.transactionSyncTransferDate, color = colors.pageText)
+          Text(text = Strings.transactionSyncTransferDate, color = colors.text)
         }
       }
     },

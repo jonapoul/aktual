@@ -79,7 +79,7 @@ fun RecurConfigFields(
       Text(
         text = Strings.editSchedulePatternsNote(config.frequencyDescription()),
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
 

@@ -105,7 +105,7 @@ fun axisLabelComponent() =
     null
   } else {
     rememberAxisLabelComponent(
-      style = TextStyle(color = colors.pageText, fontSize = textSizes.small),
+      style = TextStyle(color = colors.text, fontSize = textSizes.small),
     )
   }
 
@@ -191,7 +191,7 @@ fun rememberMarker(
   val labelBackground =
     if (labelPosition == AroundPoint) {
       rememberShapeComponent(
-        fill = Fill(colors.tableBackground.copy(alpha = MARKER_BACKGROUND_ALPHA)),
+        fill = Fill(colors.background.copy(alpha = MARKER_BACKGROUND_ALPHA)),
         shape = RoundedCornerShape(8.dp),
       )
     } else {
@@ -199,14 +199,14 @@ fun rememberMarker(
     }
   val label =
     rememberTextComponent(
-      style = TextStyle(color = colors.pageText, textAlign = Center),
+      style = TextStyle(color = colors.text, textAlign = Center),
       lineCount = lineCount,
       padding = Insets(8.dp, 4.dp),
       background = labelBackground,
       minWidth = TextComponent.MinWidth.fixed(40.dp),
     )
   val indicatorFrontComponent =
-    rememberShapeComponent(fill = Fill(color = colors.pageBackground), shape = markerShape)
+    rememberShapeComponent(fill = Fill(color = colors.backgroundPage), shape = markerShape)
   val guideline = rememberAxisGuidelineComponent()
   return rememberDefaultCartesianMarker(
     label = label,
@@ -320,7 +320,7 @@ internal fun dateRange(months: ImmutableCollection<YearMonth>): String =
 internal fun DateRangeText(
   text: String,
   modifier: Modifier = Modifier,
-  color: Color = colors.pageTextSubdued,
+  color: Color = colors.textTertiary,
 ) =
   Text(
     modifier = modifier,
@@ -338,7 +338,7 @@ internal fun DateRangeText(
   zoom: ChartZoomState,
   toMonth: (Double) -> YearMonth?,
   modifier: Modifier = Modifier,
-  color: Color = colors.pageTextSubdued,
+  color: Color = colors.textTertiary,
 ) {
   val zoomed =
     zoom.range?.let { range ->

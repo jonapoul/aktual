@@ -165,7 +165,7 @@ private fun ChartCard(
   onAction: OnAction<ChartAction>,
   modifier: Modifier = Modifier,
 ) =
-  Box(modifier = modifier.background(colors.tableBackground, CardShape).padding(8.dp)) {
+  Box(modifier = modifier.background(colors.background, CardShape).padding(8.dp)) {
     if (preview == null) {
       AktualProgressIndicator(Modifier.align(Center))
     } else {

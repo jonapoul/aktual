@@ -27,7 +27,7 @@ fun WavyBackground(modifier: Modifier = Modifier) =
 
 @Composable
 fun PageBackground(modifier: Modifier = Modifier) =
-  Box(modifier = modifier.fillMaxSize().background(colors.pageBackground))
+  Box(modifier = modifier.fillMaxSize().background(colors.backgroundPage))
 
 @Composable
 private fun backgroundImage(colors: Colors) =

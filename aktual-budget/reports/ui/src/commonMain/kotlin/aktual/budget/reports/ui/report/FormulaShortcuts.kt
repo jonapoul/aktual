@@ -103,10 +103,9 @@ private fun ShortcutChip(
     text = text,
     colors =
       ChipDefaults.colors(
-        background =
-          if (highlight) accent.copy(alpha = HIGHLIGHT_ALPHA) else colors.tableBackground,
+        background = if (highlight) accent.copy(alpha = HIGHLIGHT_ALPHA) else colors.background,
         content = tint ?: colors.tableText,
-        border = if (highlight) accent else colors.tableBorder,
+        border = if (highlight) accent else colors.border,
       ),
     textStyle = typography.labelMedium.disambiguated(),
     onClick = onClick,

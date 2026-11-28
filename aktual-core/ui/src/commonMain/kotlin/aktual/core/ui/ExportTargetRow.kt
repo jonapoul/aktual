@@ -31,12 +31,12 @@ fun ExportTargetRow(
         .fillMaxWidth()
         .height(52.dp)
         .clip(RowShape)
-        .background(colors.tableBackground)
+        .background(colors.background)
         .clickable(onClick = onClick)
         .padding(horizontal = Dimens.VeryLarge),
     verticalAlignment = CenterVertically,
     horizontalArrangement = spacedBy(14.dp),
   ) {
-    Icon(imageVector = icon, contentDescription = null, tint = colors.pageTextLight)
+    Icon(imageVector = icon, contentDescription = null, tint = colors.textSecondary)
     Text(text = text, style = typography.bodyLarge, color = colors.tableText)
   }

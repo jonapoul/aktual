@@ -350,7 +350,7 @@ private fun InspectThemeContent(
               modifier = Modifier.padding(bottom = Dimens.Medium),
               text = Strings.settingsThemeInspectEditHint,
               style = typography.bodySmall,
-              color = colors.pageTextSubdued,
+              color = colors.textTertiary,
             )
           }
         }
@@ -387,7 +387,7 @@ internal fun ThemePropertyRow(
     horizontalArrangement = SpaceBetween,
     verticalAlignment = CenterVertically,
   ) {
-    val textColor = property.color.contrastingTextColor(colors.pageBackground)
+    val textColor = property.color.contrastingTextColor(colors.backgroundPage)
     Text(
       modifier = Modifier.weight(1f),
       text = rememberHighlighted(property.name, query),

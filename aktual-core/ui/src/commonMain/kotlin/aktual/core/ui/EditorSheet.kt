@@ -45,7 +45,7 @@ fun EditorSheet(
           Text(
             text = subtitle.redacted(),
             style = typography.bodyMedium,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
       }

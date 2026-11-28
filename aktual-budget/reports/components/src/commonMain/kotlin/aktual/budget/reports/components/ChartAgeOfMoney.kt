@@ -130,7 +130,7 @@ private fun Header(
           text = data.trend.string(),
           textAlign = End,
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       }
 
@@ -336,7 +336,7 @@ private fun PreviewAgeOfMoneyChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       AgeOfMoneyChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

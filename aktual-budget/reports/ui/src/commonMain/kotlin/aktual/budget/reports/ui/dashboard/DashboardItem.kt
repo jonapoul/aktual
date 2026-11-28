@@ -204,7 +204,7 @@ private fun SwipeableReportCard(
             SwipeAction(
               text = pinText,
               icon = AktualIcons.Pin,
-              background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+              background = lerp(colors.background, Black, fraction = 0.2f),
               foreground = colors.tableText,
               onClick = {
                 currentOnOpenChange(false)
@@ -218,7 +218,7 @@ private fun SwipeableReportCard(
             SwipeAction(
               text = renameText,
               icon = AktualIcons.Pencil1,
-              background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+              background = lerp(colors.background, Black, fraction = 0.1f),
               foreground = colors.tableText,
               onClick = { currentOnRename() },
             ),

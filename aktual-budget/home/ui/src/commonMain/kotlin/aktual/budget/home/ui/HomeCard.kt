@@ -75,7 +75,7 @@ internal fun HiddenCard(message: String, modifier: Modifier = Modifier) {
       modifier = Modifier.padding(horizontal = CardPadding),
       text = message,
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 }
@@ -85,7 +85,7 @@ internal fun HiddenCard(message: String, modifier: Modifier = Modifier) {
 internal fun Modifier.hoverClickable(role: Role? = null, onClick: () -> Unit): Modifier {
   val interactionSource = remember { MutableInteractionSource() }
   val isHovered by interactionSource.collectIsHoveredAsState()
-  return background(if (isHovered) colors.tableRowBackgroundHover else Transparent)
+  return background(if (isHovered) colors.backgroundHover else Transparent)
     .clickable(
       interactionSource = interactionSource,
       indication = ripple(),

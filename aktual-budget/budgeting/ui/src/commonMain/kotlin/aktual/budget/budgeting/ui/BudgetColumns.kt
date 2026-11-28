@@ -227,7 +227,7 @@ private fun LazyListScope.budgetColumns(
             )
             AmountCell(
               amount = month.spent,
-              color = if (month.spent == Zero) colors.pageTextSubdued else colors.tableText,
+              color = if (month.spent == Zero) colors.textTertiary else colors.tableText,
             )
             BalanceCell(
               month = column.month,
@@ -367,10 +367,10 @@ private fun SummaryCard(
   Column(
     modifier =
       modifier
-        .background(colors.tableBackground, CardShape)
+        .background(colors.background, CardShape)
         .border(
           width = if (isCurrent) 2.dp else 1.dp,
-          color = if (isCurrent) colors.accentBorder else colors.tableBorder,
+          color = if (isCurrent) colors.accentBorder else colors.border,
           shape = CardShape,
         )
         .clip(CardShape)
@@ -406,14 +406,14 @@ private fun SummaryCard(
         Text(
           text = label,
           fontSize = textSizes.smallPlus,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
         )
         SummaryAmount(
           amount = amount,
           includeSign = false,
           fontSize = textSizes.smallPlus,
-          color = colors.pageText,
+          color = colors.text,
         )
       }
     }
@@ -425,7 +425,7 @@ private fun SummaryCard(
       Text(
         text = headline.label,
         fontSize = textSizes.smallPlus,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
       )
       SummaryAmount(

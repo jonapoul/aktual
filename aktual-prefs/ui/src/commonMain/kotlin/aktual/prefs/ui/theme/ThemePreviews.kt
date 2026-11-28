@@ -113,7 +113,7 @@ private fun Thumbnail(swatch: ThemeSwatch) {
       Modifier.fillMaxWidth()
         .height(ThumbnailHeight)
         .clip(ThumbnailShape)
-        .border(1.dp, colors.pageTextSubdued, ThumbnailShape)
+        .border(1.dp, colors.textTertiary, ThumbnailShape)
         .background(background),
   ) {
     Box(Modifier.fillMaxWidth().height(16.dp).background(header))
@@ -151,13 +151,13 @@ private fun Label(name: String, mode: ThemePreviewMode) {
         modifier = Modifier.size(14.dp),
         imageVector = icon,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
     }
     Text(
       text = name,
       style = typography.bodyMedium,
-      color = colors.pageText,
+      color = colors.text,
       maxLines = 1,
       overflow = Ellipsis,
     )

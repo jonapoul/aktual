@@ -38,7 +38,7 @@ internal fun DialogsPreview(config: HazeConfig, modifier: Modifier = Modifier) {
     contentAlignment = Center,
   ) {
     SampleTransactionList(
-      modifier = Modifier.matchParentSize().hazeSource(hazeState).background(colors.pageBackground),
+      modifier = Modifier.matchParentSize().hazeSource(hazeState).background(colors.backgroundPage),
     )
 
     if (config.dialogs) {

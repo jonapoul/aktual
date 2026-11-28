@@ -258,7 +258,7 @@ private fun PreviewNetWorthChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       NetWorthChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

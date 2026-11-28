@@ -202,12 +202,12 @@ private fun SharedBankSyncRow(
       Text(
         text = Strings.apiKeysSharedBankSync,
         style = typography.bodyMedium,
-        color = colors.pageText.disabledIf(!enabled),
+        color = colors.text.disabledIf(!enabled),
       )
       Text(
         text = Strings.apiKeysSharedBankSyncMessage,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued.disabledIf(!enabled),
+        color = colors.textTertiary.disabledIf(!enabled),
       )
     }
 

@@ -12,6 +12,9 @@ import aktual.budget.reports.vm.metric
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.ColorParams
+import aktual.core.ui.ColorParamsProvider
+import aktual.core.ui.PreviewWithColorParams
 import aktual.core.ui.formattedText
 import aktual.core.ui.horizontalScrollWithBar
 import aktual.core.ui.scrollbar
@@ -36,6 +39,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -44,6 +48,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -152,8 +158,8 @@ private fun AmountsRow(
   showScrollbar: Boolean = false,
 ) {
   val isHeader = isTotals || row.isGroupHeader
-  val background = if (isHeader) colors.tableRowHeaderBackground else colors.tableBackground
-  val textColor = if (isHeader) colors.tableRowHeaderText else colors.tableText
+  val background = if (isHeader) colors.tableRowHeaderBackground else colors.background
+  val textColor = if (isHeader) colors.tableRowHeaderText else colors.text
   val boldFrom = row.amounts.size - BOLD_COLUMNS
   TableRow(
     name = row.name,
@@ -401,6 +407,35 @@ private fun Interval.unitName(): String =
     Quarterly -> Strings.reportsCustomTableQuarter
     Yearly -> Strings.reportsCustomTableYear
   }
+
+@Preview
+@Composable
+private fun PreviewCustomTable(
+  @PreviewParameter(CustomTableProvider::class) params: ColorParams<CustomTableParams>,
+) =
+  PreviewWithColorParams(params) {
+    CompositionLocalProvider(LocalCompactChart provides compact) {
+      CustomTable(
+        modifier =
+          Modifier.background(colors.background)
+            .width(if (compact) 400.dp else WIDTH.dp)
+            .height(if (compact) 250.dp else 400.dp),
+        data = data,
+        onDrilldown = {},
+      )
+    }
+  }
+
+private data class CustomTableParams(val data: CustomData, val compact: Boolean = false)
+
+private class CustomTableProvider :
+  ColorParamsProvider<CustomTableParams>(
+    CustomTableParams(previewCustomData(TableGraph, Category, Payment)),
+    CustomTableParams(previewCustomData(TableGraph, Category, Payment), compact = true),
+    CustomTableParams(previewCustomData(TableGraph, Payee, Net)),
+    CustomTableParams(previewCustomData(TableGraph, GroupBy.Interval, Net)),
+    CustomTableParams(previewCustomData(TableGraph, Category, Payment, mode = Time)),
+  )
 
 private val NAME_WIDTH = 125.dp
 private val COMPACT_NAME_WIDTH = 80.dp

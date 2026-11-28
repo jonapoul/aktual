@@ -67,8 +67,7 @@ fun FormulaChart(
     }
 
     val text = data.output.displayString()
-    val color =
-      data.resolveColor() ?: if (data.output is Failure) colors.errorText else colors.pageText
+    val color = data.resolveColor() ?: if (data.output is Failure) colors.errorText else colors.text
     val style = typography.displayLarge.copy(textAlign = Center, lineHeight = 1.em)
     Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(8.dp), contentAlignment = Center) {
       if (data.fontSizeMode == Static) {
@@ -91,7 +90,7 @@ fun FormulaChart(
     data.warnings.fastForEach { warning ->
       val message = warning.message()
       if (message != null) {
-        Text(text = message, color = colors.pageTextSubdued, style = typography.bodySmall)
+        Text(text = message, color = colors.textTertiary, style = typography.bodySmall)
       }
     }
   }
@@ -185,7 +184,7 @@ private fun PreviewFormulaChart(
     CompositionLocalProvider(LocalCompactChart provides true) {
       FormulaChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .height(160.dp)
             .padding(5.dp),

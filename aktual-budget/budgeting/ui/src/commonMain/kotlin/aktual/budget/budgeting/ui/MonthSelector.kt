@@ -265,7 +265,7 @@ private fun MonthCell(
     when {
       !isEnabled -> colors.buttonNormalDisabledText
       isSelected -> colors.accentContrast
-      else -> colors.pageText
+      else -> colors.text
     }
 
   Box(
@@ -273,8 +273,8 @@ private fun MonthCell(
       modifier
         .height(44.dp)
         .clip(CardShape)
-        .background(if (isSelected) colors.accent else colors.tableBackground)
-        .border(1.dp, if (isCurrent) colors.accentBorder else colors.tableBorder, CardShape)
+        .background(if (isSelected) colors.accent else colors.background)
+        .border(1.dp, if (isCurrent) colors.accentBorder else colors.border, CardShape)
         .clickable(enabled = isEnabled, role = Button, onClick = onClick)
         .semantics { selected = isSelected },
     contentAlignment = Center,

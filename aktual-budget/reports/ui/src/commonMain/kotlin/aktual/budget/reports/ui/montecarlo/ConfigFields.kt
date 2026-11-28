@@ -59,7 +59,7 @@ internal fun ItemCard(
         .fillMaxWidth()
         .clip(CardShape)
         .background(colors.tableHeaderBackground, CardShape)
-        .border(1.dp, colors.tableBorder, CardShape)
+        .border(1.dp, colors.border, CardShape)
         .padding(ITEM_PADDING),
     verticalArrangement = Arrangement.spacedBy(FIELD_SPACING),
   ) {
@@ -115,7 +115,7 @@ internal fun LabeledField(
       verticalAlignment = CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(LABEL_SPACING),
     ) {
-      Text(text = label, style = typography.labelMedium, color = colors.pageTextSubdued)
+      Text(text = label, style = typography.labelMedium, color = colors.textTertiary)
       help?.let { AktualHelpTooltip(it) }
     }
     content()

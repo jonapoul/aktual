@@ -56,12 +56,12 @@ private fun ImportBudgetDialogContent(
         Text(
           text = Strings.budgetImportDescription,
           style = typography.bodyMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
         Text(
           text = Strings.budgetImportSelectHint,
           style = typography.bodyMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
 
         AktualButton(

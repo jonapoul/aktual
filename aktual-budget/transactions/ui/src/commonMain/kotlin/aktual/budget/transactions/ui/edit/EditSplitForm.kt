@@ -88,7 +88,7 @@ internal fun SplitTotal(
       text =
         if (isIncome) Strings.transactionSplitTotalIncome else Strings.transactionSplitTotalExpense,
       fontSize = TotalLabelSize,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 
@@ -141,7 +141,7 @@ private fun CompactField(
     Text(
       text = value ?: Strings.transactionNone,
       fontSize = CompactValueSize,
-      color = if (value == null) colors.pageTextSubdued else colors.pageText,
+      color = if (value == null) colors.textTertiary else colors.text,
       fontStyle = if (value == null) Italic else null,
       maxLines = 2,
       overflow = Ellipsis,
@@ -169,7 +169,7 @@ internal fun SplitParts(
         fontSize = SplitHeaderSize,
         fontWeight = SemiBold,
         letterSpacing = SplitHeaderTracking,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
       AddSplitButton(onClick = { onAction(AddSplit) })
     }
@@ -315,14 +315,14 @@ private fun PartText(
       notes = text,
       tags = tags,
       fontSize = fontSize,
-      color = if (enabled) colors.pageText else colors.pageTextSubdued,
+      color = if (enabled) colors.text else colors.textTertiary,
     )
   } else {
     Text(
       modifier = textModifier,
       text = text ?: placeholder,
       fontSize = fontSize,
-      color = if (text == null || !enabled) colors.pageTextSubdued else colors.pageText,
+      color = if (text == null || !enabled) colors.textTertiary else colors.text,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -344,7 +344,7 @@ private fun PartAmount(
   val textColor =
     when {
       isTyping && !isValid -> colors.errorText
-      amount == Zero -> colors.pageTextSubdued
+      amount == Zero -> colors.textTertiary
       amount > Zero -> colors.numberPositive
       else -> colors.numberNegative
     }

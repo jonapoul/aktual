@@ -84,14 +84,14 @@ private fun MissingBudgetDialogContent(
         Text(
           text = Strings.budgetMissingDescription(serverHost),
           style = typography.bodyMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
 
         if (!state.canReupload) {
           Text(
             text = Strings.budgetMissingEncrypted,
             style = typography.bodyMedium,
-            color = colors.pageText,
+            color = colors.text,
           )
         }
 

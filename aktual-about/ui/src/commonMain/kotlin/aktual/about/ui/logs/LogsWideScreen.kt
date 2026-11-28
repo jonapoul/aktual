@@ -91,7 +91,7 @@ internal fun LogsWideScaffold(
   var showExport by remember { mutableStateOf(false) }
   val loaded = entries as? Loaded
 
-  Column(modifier = modifier.fillMaxSize().background(colors.pageBackground)) {
+  Column(modifier = modifier.fillMaxSize().background(colors.backgroundPage)) {
     WideToolbar(
       initialQuery = filters.query,
       live = loaded?.live ?: None,
@@ -166,11 +166,11 @@ private fun WideToolbar(
           modifier =
             Modifier.size(8.dp)
               .background(
-                if (isFollowing) colors.numberPositive else colors.pageTextSubdued,
+                if (isFollowing) colors.numberPositive else colors.textTertiary,
                 CircleShape,
               ),
         )
-        Text(text = Strings.logsLive, style = typography.labelLarge, color = colors.pageTextLight)
+        Text(text = Strings.logsLive, style = typography.labelLarge, color = colors.textSecondary)
       }
       LiveButton(isFollowing, onAction)
     }
@@ -224,7 +224,7 @@ private fun WideSidebar(
           modifier = Modifier.padding(horizontal = 8.dp),
           text = Strings.logsTagsHint,
           style = typography.labelMedium,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       } else {
         AnimatedFlowRow(modifier = Modifier.padding(horizontal = 4.dp)) {
@@ -252,7 +252,7 @@ private fun SidebarSection(title: String, content: @Composable () -> Unit) =
       text = title,
       style = typography.labelMedium,
       fontWeight = SemiBold,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
     content()
   }
@@ -269,7 +269,7 @@ private fun SidebarFile(
       Modifier.fillMaxWidth()
         .height(36.dp)
         .background(
-          if (isSelected) colors.tableRowBackgroundHighlight else Transparent,
+          if (isSelected) colors.backgroundSelected else Transparent,
           ButtonShape,
         )
         .clickable { onAction(OpenDay(file.date)) }
@@ -280,12 +280,12 @@ private fun SidebarFile(
       modifier = Modifier.weight(1f),
       text = file.date.dayLabel(today),
       style = typography.bodyMedium,
-      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.pageText,
+      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.text,
     )
     Text(
       text = file.size.toString(),
       style = typography.labelSmall,
-      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.pageTextLight,
+      color = if (isSelected) colors.tableRowBackgroundHighlightText else colors.textSecondary,
     )
   }
 
@@ -349,7 +349,7 @@ private fun WideRows(
     reversedLogLines(state.lines) { index, line ->
       val background: Color =
         when {
-          line == selected -> colors.tableRowBackgroundHighlight
+          line == selected -> colors.backgroundSelected
           index % 2 == 1 -> colors.cardBackground
           else -> Transparent
         }
@@ -363,7 +363,7 @@ private fun WideRows(
             .padding(horizontal = 16.dp),
         verticalAlignment = CenterVertically,
       ) {
-        MonoCell(line.timestamp.time.timeString(), TimeWidth, colors.pageTextLight)
+        MonoCell(line.timestamp.time.timeString(), TimeWidth, colors.textSecondary)
         Box(modifier = Modifier.width(LevelWidth)) { LogLabelBadge(line.priority) }
         val tag = line.tag.orEmpty()
         MonoCell(
@@ -413,7 +413,7 @@ private fun DetailPane(line: LogLine?) {
         modifier = Modifier.padding(16.dp),
         text = Strings.logsSelectLine,
         style = typography.labelMedium,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
       return@Column
     }
@@ -432,14 +432,14 @@ private fun DetailPane(line: LogLine?) {
             Text(
               text = line.timestamp.time.timeString(),
               style = typography.labelMedium.tabular(),
-              color = colors.pageTextLight,
+              color = colors.textSecondary,
             )
             LogLabelBadge(line.priority)
             line.tag?.let { tag ->
               Text(
                 text = tag,
                 style = typography.labelMedium,
-                color = colors.pageTextLight,
+                color = colors.textSecondary,
                 maxLines = 1,
                 overflow = Ellipsis,
               )

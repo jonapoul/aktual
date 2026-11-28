@@ -312,7 +312,7 @@ private fun AccountsPanel(
   Column(
     modifier =
       modifier
-        .background(colors.tableBackground)
+        .background(colors.background)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(Top))
         .verticalScrollWithBar(rememberScrollState()),
   ) {
@@ -371,7 +371,7 @@ private fun HomeTitle(budgetName: String?, modifier: Modifier = Modifier) {
       Text(
         text = budgetName,
         style = MaterialTheme.typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )

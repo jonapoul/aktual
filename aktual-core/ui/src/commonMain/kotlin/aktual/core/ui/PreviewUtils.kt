@@ -105,7 +105,7 @@ fun PreviewWithColors(
 ) =
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(colors) {
-      Surface(modifier = modifier, color = colors.pageBackground, content = content)
+      Surface(modifier = modifier, color = colors.backgroundPage, content = content)
     }
   }
 
@@ -118,7 +118,7 @@ fun <T> PreviewWithColorParams(
 ) {
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(params.colors) {
-      Surface(modifier = modifier, color = params.colors.pageBackground) {
+      Surface(modifier = modifier, color = params.colors.backgroundPage) {
         with(params.data) { content() }
       }
     }

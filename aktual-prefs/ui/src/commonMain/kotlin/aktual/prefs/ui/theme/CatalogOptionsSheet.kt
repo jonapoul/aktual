@@ -81,7 +81,7 @@ private fun CatalogOptionsContent(
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) =
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text(text = title, fontSize = textSizes.smallPlus, color = colors.pageTextLight)
+    Text(text = title, fontSize = textSizes.smallPlus, color = colors.textSecondary)
     content()
   }
 

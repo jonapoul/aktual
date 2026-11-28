@@ -63,7 +63,7 @@ internal fun TagItem(
         SwipeAction(
           text = if (tag.hidden) Strings.tagsUnhide else Strings.tagsHide,
           icon = if (tag.hidden) AktualIcons.ViewShow else AktualIcons.ViewHide,
-          background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+          background = lerp(colors.background, Black, fraction = 0.1f),
           foreground = colors.tableText,
           onClick = {
             onOpenChange(false)
@@ -95,8 +95,8 @@ internal fun ShimmerTagItem(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(ListTagsDS.itemPadding)
         .shimmer(rememberShimmer(Window)),
     verticalArrangement = Arrangement.spacedBy(ListTagsDS.itemContentSpacing),
@@ -118,8 +118,8 @@ private fun TagItemRow(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .clickable { onAction(EditTag(tag.id)) }
         .padding(ListTagsDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(ListTagsDS.itemHorizontalSpacing),

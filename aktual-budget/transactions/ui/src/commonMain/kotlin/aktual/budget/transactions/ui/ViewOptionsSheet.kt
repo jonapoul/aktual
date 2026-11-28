@@ -119,7 +119,7 @@ private fun ViewOptionsContent(
         Text(
           text = Strings.transactionsViewThisAccount,
           fontSize = textSizes.smallPlus,
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
         )
 
         AccountSwitchRow(
@@ -182,13 +182,13 @@ private fun SwitchRow(
       Text(
         text = text,
         style = typography.bodyLarge,
-        color = colors.pageTextLight.disabledIf(!enabled),
+        color = colors.textSecondary.disabledIf(!enabled),
       )
       if (subtitle != null) {
         Text(
           text = subtitle,
           fontSize = textSizes.small,
-          color = colors.pageTextSubdued.disabledIf(!enabled),
+          color = colors.textTertiary.disabledIf(!enabled),
         )
       }
     }

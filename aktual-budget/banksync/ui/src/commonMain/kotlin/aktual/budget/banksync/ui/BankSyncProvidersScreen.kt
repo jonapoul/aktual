@@ -181,7 +181,7 @@ private fun BankSyncProvidersContent(
     Text(
       text = Strings.bankSyncProvidersMessage,
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
 
     for (item in state.providers) {

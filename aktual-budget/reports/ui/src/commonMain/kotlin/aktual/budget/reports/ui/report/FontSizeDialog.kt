@@ -130,7 +130,7 @@ private fun FontSizeDialogContent(
             modifier = Modifier.weight(1f),
             text = Strings.reportsFormulaEditorStaticSize,
             style = typography.bodyMedium,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
           AktualTextField(
             modifier = Modifier.width(SIZE_FIELD_WIDTH).testTag(Tags.FontSizeField),
@@ -157,7 +157,7 @@ private fun FontSizeDialogContent(
           Modifier.fillMaxWidth()
             .height(PREVIEW_HEIGHT)
             .clipToBounds()
-            .background(colors.tableBackground, CardShape),
+            .background(colors.background, CardShape),
       ) {
         FormulaChart(
           data = preview.copy(fontSizeMode = mode, staticFontSize = size),

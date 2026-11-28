@@ -70,7 +70,7 @@ private fun CrashExportSheetContent(
       Text(
         text = Strings.crashesExportInclude,
         style = typography.labelMedium,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
       AnimatedFlowRow {
         item {

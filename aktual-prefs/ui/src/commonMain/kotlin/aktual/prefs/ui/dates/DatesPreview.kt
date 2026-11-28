@@ -56,12 +56,12 @@ internal fun DatesPreview(
     Text(
       text = dateFormat.formatter().format(today),
       style = typography.headlineSmall.tabular(),
-      color = colors.pageText,
+      color = colors.text,
     )
     Text(
       text = "${today.month.stringLong()} ${today.year}",
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     MonthGrid(today = today, firstDay = firstDayOfWeek.toDayOfWeek())
   }
@@ -83,7 +83,7 @@ private fun MonthGrid(today: LocalDate, firstDay: DayOfWeek) {
           Text(
             text = day.stringInitial(),
             style = typography.labelMedium,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
             fontWeight = Medium,
           )
         }
@@ -98,7 +98,7 @@ private fun MonthGrid(today: LocalDate, firstDay: DayOfWeek) {
               Text(
                 text = day.toString(),
                 style = typography.bodySmall.tabular(),
-                color = if (day == today.day) colors.accentContrast else colors.pageText,
+                color = if (day == today.day) colors.accentContrast else colors.text,
               )
             }
           }

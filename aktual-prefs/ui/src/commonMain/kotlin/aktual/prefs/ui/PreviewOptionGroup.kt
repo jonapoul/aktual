@@ -101,9 +101,9 @@ private fun PreviewOptionRow(
     )
   val contentColor =
     when {
-      !enabled -> colors.pageTextSubdued
+      !enabled -> colors.textTertiary
       isSelected -> colors.accentSubtleText
-      else -> colors.pageText
+      else -> colors.text
     }
   CompositionLocalProvider(LocalContentColor provides contentColor) {
     Row(

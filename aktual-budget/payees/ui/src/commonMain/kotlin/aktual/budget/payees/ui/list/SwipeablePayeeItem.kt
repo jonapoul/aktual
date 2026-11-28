@@ -50,7 +50,7 @@ internal fun SwipeablePayeeItem(
         SwipeAction(
           text = if (payee.isFavorite) Strings.payeesUnfavorite else Strings.payeesFavorite,
           icon = AktualIcons.Bookmark,
-          background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+          background = lerp(colors.background, Black, fraction = 0.1f),
           foreground = colors.tableText,
           onClick = {
             onOpenChange(false)
@@ -60,7 +60,7 @@ internal fun SwipeablePayeeItem(
         SwipeAction(
           text = Strings.payeesMerge,
           icon = AktualIcons.Merge,
-          background = lerp(colors.tableBackground, Black, fraction = 0.2f),
+          background = lerp(colors.background, Black, fraction = 0.2f),
           foreground = colors.tableText,
           onClick = {
             onOpenChange(false)

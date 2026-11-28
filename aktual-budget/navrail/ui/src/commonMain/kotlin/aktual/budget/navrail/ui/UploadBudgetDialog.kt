@@ -75,7 +75,7 @@ private fun UploadBudgetDialogContent(
         Text(
           text = Strings.budgetUploadDescription(serverHost),
           style = typography.bodyMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
 
         if (state is Failed) {

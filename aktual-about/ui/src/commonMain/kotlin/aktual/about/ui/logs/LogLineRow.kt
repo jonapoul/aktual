@@ -37,7 +37,7 @@ internal fun LogLineRow(
   ) {
     Text(
       text = line.timestamp.time.timeString().take(TIME_LENGTH),
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       style = LocalTextStyle.current.tabular(),
       fontSize = LineFontSize,
       lineHeight = LineHeight,

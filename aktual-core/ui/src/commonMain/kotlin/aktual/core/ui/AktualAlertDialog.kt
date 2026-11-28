@@ -130,7 +130,7 @@ fun AktualAlertDialogContent(
       }
 
       CompositionLocalProvider(
-        LocalContentColor provides colors.pageText,
+        LocalContentColor provides colors.text,
         LocalSurfaceColor provides colors.modalBackground,
       ) {
         ProvideTextStyle(typography.bodyMedium) {

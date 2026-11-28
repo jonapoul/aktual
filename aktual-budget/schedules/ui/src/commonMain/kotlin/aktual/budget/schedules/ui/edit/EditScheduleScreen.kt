@@ -621,7 +621,7 @@ private fun StatusRow(
       Text(
         text = Strings.editScheduleNextDue(date.formatted()),
         style = typography.bodyMedium,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
   }
@@ -637,7 +637,7 @@ private fun Section(label: String, content: @Composable ColumnScope.() -> Unit) 
 @Composable
 private fun Card(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) =
   Column(
-    modifier = modifier.fillMaxWidth().clip(CardShape).background(colors.tableBackground),
+    modifier = modifier.fillMaxWidth().clip(CardShape).background(colors.background),
     content = content,
   )
 

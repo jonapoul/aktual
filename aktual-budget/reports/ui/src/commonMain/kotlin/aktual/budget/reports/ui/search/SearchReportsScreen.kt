@@ -182,13 +182,13 @@ private fun GroupHeader(page: DashboardPage, count: Int, modifier: Modifier = Mo
     modifier =
       modifier
         .fillMaxWidth()
-        .background(colors.pageBackground)
+        .background(colors.backgroundPage)
         .padding(start = Large + 12.dp, end = Large, top = 12.dp, bottom = Medium),
     horizontalArrangement = Arrangement.spacedBy(Large),
     verticalAlignment = CenterVertically,
   ) {
-    Text(text = page.displayName(), color = colors.pageTextSubdued, style = typography.labelLarge)
-    Text(text = count.toString(), color = colors.pageTextSubdued, style = typography.labelSmall)
+    Text(text = page.displayName(), color = colors.textTertiary, style = typography.labelLarge)
+    Text(text = count.toString(), color = colors.textTertiary, style = typography.labelSmall)
     HorizontalDivider(modifier = Modifier.weight(1f))
   }
 
@@ -217,7 +217,7 @@ private fun ResultItem(
     if (subtitle != null) {
       Text(
         text = rememberHighlighted(subtitle, query),
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         style = typography.bodySmall,
         maxLines = 2,
         overflow = Ellipsis,

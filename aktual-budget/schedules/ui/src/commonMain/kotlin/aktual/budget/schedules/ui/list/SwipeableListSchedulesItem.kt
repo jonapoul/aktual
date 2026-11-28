@@ -84,7 +84,7 @@ private fun swipeActions(
     SwipeAction(
       text = Strings.listSchedulesPost,
       icon = MaterialIcons.PostAdd,
-      background = lerp(colors.tableBackground, Black, fraction = 0.1f),
+      background = lerp(colors.background, Black, fraction = 0.1f),
       foreground = colors.tableText,
       onClick = action(Post(schedule)),
     ),

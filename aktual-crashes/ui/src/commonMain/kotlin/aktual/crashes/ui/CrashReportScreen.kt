@@ -204,7 +204,7 @@ private fun CrashReportContent(report: CrashReport) =
       modifier = Modifier.padding(horizontal = Dimens.Medium),
       text = Strings.crashesStackTrace,
       style = typography.labelLarge,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
 
     CardColumn(modifier = Modifier.fillMaxWidth()) {
@@ -230,7 +230,7 @@ private fun CrashDetail(label: String, value: String) =
       modifier = Modifier.width(LabelWidth),
       text = label,
       style = typography.labelMedium,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
     SelectionContainer(modifier = Modifier.weight(1f)) {
       Text(text = value, style = typography.labelMedium)

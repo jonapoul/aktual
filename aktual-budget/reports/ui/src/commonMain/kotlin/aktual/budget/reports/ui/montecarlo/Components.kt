@@ -40,7 +40,7 @@ internal fun SectionCard(
     modifier = modifier.fillMaxWidth(),
     contentPadding = Dimens.Huge.padding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
-    content = { ProvideSurfaceColor(colors.tableBackground) { content() } },
+    content = { ProvideSurfaceColor(colors.background) { content() } },
   )
 
 // A SectionCard that expands and collapses from its title

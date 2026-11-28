@@ -53,7 +53,7 @@ fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
       LocalIndication provides ripple(),
       LocalShimmerTheme provides aktualShimmerTheme(c),
       LocalOverscrollFactory provides releasingOverscrollFactory(),
-      LocalContentColor provides c.pageText,
+      LocalContentColor provides c.text,
       LocalTextSelectionColors provides
         TextSelectionColors(
           handleColor = c.accent,
@@ -86,9 +86,9 @@ private fun aktualShimmerTheme(colors: Colors): ShimmerTheme =
       rotation = 15.0f,
       shaderColors =
         persistentListOf(
-          colors.pageText.copy(alpha = 0.1f),
-          colors.pageText.copy(alpha = 0.3f),
-          colors.pageText.copy(alpha = 0.1f),
+          colors.text.copy(alpha = 0.1f),
+          colors.text.copy(alpha = 0.3f),
+          colors.text.copy(alpha = 0.1f),
         ),
       shaderColorStops = persistentListOf(0.0f, 0.5f, 1.0f),
       shimmerWidth = 400.dp,
@@ -105,13 +105,13 @@ private fun aktualColorScheme(colors: Colors): ColorScheme =
       onPrimary = colors.accentContrast,
       primaryContainer = colors.accentSubtle,
       onPrimaryContainer = colors.accentSubtleText,
-      secondaryContainer = colors.tableBorder,
-      background = colors.pageBackground,
-      onBackground = colors.pageText,
-      surface = colors.pageBackground,
-      onSurface = colors.pageText,
-      surfaceVariant = colors.tableBackground,
-      onSurfaceVariant = colors.pageTextSubdued,
+      secondaryContainer = colors.border,
+      background = colors.backgroundPage,
+      onBackground = colors.text,
+      surface = colors.backgroundPage,
+      onSurface = colors.text,
+      surfaceVariant = colors.background,
+      onSurfaceVariant = colors.textTertiary,
       surfaceContainerLowest = colors.cardBackground,
       surfaceContainerLow = colors.cardBackground,
       surfaceContainer = colors.cardBackground,
@@ -123,7 +123,7 @@ private fun aktualColorScheme(colors: Colors): ColorScheme =
       errorContainer = colors.errorBackground,
       onErrorContainer = colors.errorText,
       outline = colors.formInputBorder,
-      outlineVariant = colors.tableBorder,
+      outlineVariant = colors.border,
       scrim = colors.overlayBackground,
     )
   }

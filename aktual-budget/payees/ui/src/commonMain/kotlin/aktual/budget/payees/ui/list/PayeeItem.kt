@@ -58,8 +58,8 @@ internal fun PayeeItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .clickable(onClick = onClick)
         .padding(ListPayeesDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(ListPayeesDS.itemHorizontalSpacing),
@@ -84,7 +84,7 @@ internal fun PayeeItem(
             query = query,
           ),
         style = typography.bodyLarge,
-        color = if (payee.isTransfer) colors.pageTextLight else colors.pageText,
+        color = if (payee.isTransfer) colors.textSecondary else colors.text,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -92,7 +92,7 @@ internal fun PayeeItem(
       Text(
         text = Plurals.payeesNumTransactions(payee.numTransactions, payee.numTransactions),
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
 
@@ -139,8 +139,8 @@ internal fun ShimmerPayeeItem(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(ListPayeesDS.itemPadding)
         .shimmer(rememberShimmer(Window)),
     horizontalArrangement = Arrangement.spacedBy(ListPayeesDS.itemHorizontalSpacing),

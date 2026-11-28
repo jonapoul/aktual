@@ -152,7 +152,7 @@ private fun ColumnScope.ActionContent(
     Text(
       text = Strings.editRuleUnsupportedAction(summary),
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   } else {
     Column {

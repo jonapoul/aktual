@@ -105,7 +105,7 @@ private fun ColumnScope.ConditionContent(
     Text(
       text = Strings.reportsFormulaQueryUnsupportedCondition(summary),
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   } else {
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

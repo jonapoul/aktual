@@ -330,7 +330,7 @@ private fun BudgetsSummary(
     Text(
       text = Strings.storageBudgets,
       style = typography.bodyLarge,
-      color = AktualTheme.colors.pageText,
+      color = AktualTheme.colors.text,
       fontWeight = Bold,
       modifier = Modifier.padding(bottom = Dimens.Medium),
     )
@@ -339,7 +339,7 @@ private fun BudgetsSummary(
       Text(
         text = "No budgets",
         style = typography.bodyMedium,
-        color = AktualTheme.colors.pageTextSubdued,
+        color = AktualTheme.colors.textTertiary,
       )
     } else {
       state.budgets.forEachIndexed { index, budget ->
@@ -363,7 +363,7 @@ private fun TotalStorageText(state: ManageStorageState.Loaded) {
     Text(
       text = percentTotalStorage(state),
       style = typography.labelMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 }
@@ -419,7 +419,7 @@ private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> U
     Text(
       text = budget.size.toString(),
       style = typography.labelMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     BasicIconButton(
       modifier = Modifier.size(32.dp),
@@ -447,7 +447,7 @@ private fun LegendRow(label: String, size: String, color: Color) {
       style = typography.bodyMedium,
       modifier = Modifier.weight(1f),
     )
-    Text(text = size, style = typography.labelMedium, color = colors.pageTextSubdued)
+    Text(text = size, style = typography.labelMedium, color = colors.textTertiary)
   }
 }
 

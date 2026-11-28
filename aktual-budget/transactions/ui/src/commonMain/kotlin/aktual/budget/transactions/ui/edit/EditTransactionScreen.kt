@@ -551,7 +551,7 @@ private fun NothingToCreateWith(
 @Composable
 internal inline fun DetailCard(content: @Composable ColumnScope.() -> Unit) =
   Column(
-    modifier = Modifier.fillMaxWidth().background(colors.tableBackground, DetailCardShape),
+    modifier = Modifier.fillMaxWidth().background(colors.background, DetailCardShape),
     content = content,
   )
 
@@ -566,7 +566,7 @@ internal fun BalanceAfter(balance: Amount, modifier: Modifier = Modifier) =
     Text(
       text = Strings.transactionBalanceAfter,
       fontSize = DateSize,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
     Text(
       text = balance.formattedText(),

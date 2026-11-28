@@ -78,8 +78,8 @@ internal fun BankSyncAccountItem(
         .fillMaxWidth()
         .clip(RowShape)
         .then(clickModifier)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(BankSyncDS.itemCardPadding),
     horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing),
     verticalAlignment = CenterVertically,
@@ -92,7 +92,7 @@ internal fun BankSyncAccountItem(
         text = account.name ?: Strings.bankSyncUnnamedAccount,
         style = typography.bodyMedium,
         fontWeight = SemiBold,
-        color = if (account.name != null) colors.tableText else colors.pageTextSubdued,
+        color = if (account.name != null) colors.tableText else colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -101,7 +101,7 @@ internal fun BankSyncAccountItem(
         Text(
           text = account.bankName ?: Strings.bankSyncUnknownBank,
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
           overflow = Ellipsis,
         )
@@ -109,7 +109,7 @@ internal fun BankSyncAccountItem(
         Text(
           text = lastSyncText(account.lastSync),
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
           overflow = Ellipsis,
         )
@@ -253,7 +253,7 @@ internal fun ProviderHeader(
       text = providerName(source),
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -268,12 +268,12 @@ internal fun UnlinkedHeader(canLink: Boolean, modifier: Modifier = Modifier) {
       text = Strings.bankSyncUnlinkedTitle,
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
     Text(
       text = if (canLink) Strings.bankSyncUnlinkedMessage else Strings.bankSyncUnlinkedNoServer,
       style = typography.bodySmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 }
@@ -300,8 +300,8 @@ internal fun ShimmerBankSyncAccountItem(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(BankSyncDS.itemCardPadding)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing),

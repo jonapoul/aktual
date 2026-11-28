@@ -194,7 +194,7 @@ private fun LogMatchCount(count: Int) =
     modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
     text = Plurals.logsMatches(count, count),
     style = typography.labelMedium,
-    color = colors.pageTextLight,
+    color = colors.textSecondary,
   )
 
 @Composable
@@ -364,7 +364,7 @@ private fun LiveBar(live: LiveState, onAction: OnAction<LogsAction>) =
         modifier =
           Modifier.size(8.dp)
             .background(
-              if (isFollowing) colors.numberPositive else colors.pageTextSubdued,
+              if (isFollowing) colors.numberPositive else colors.textTertiary,
               CircleShape,
             ),
       )
@@ -377,7 +377,7 @@ private fun LiveBar(live: LiveState, onAction: OnAction<LogsAction>) =
             Following -> Strings.logsLiveFollowing
           },
         style = typography.labelLarge,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
       LiveButton(isFollowing, onAction)
     }

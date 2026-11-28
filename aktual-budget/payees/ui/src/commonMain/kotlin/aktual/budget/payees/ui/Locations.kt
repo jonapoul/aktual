@@ -84,7 +84,7 @@ internal fun AddressText(
         modifier = modifier,
         text = address.address.text(),
         style = style,
-        color = colors.pageText,
+        color = colors.text,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -101,7 +101,7 @@ internal fun OpenStreetMapAttribution(modifier: Modifier = Modifier) {
     modifier = modifier.clickable { uriHandler.openUri(OSM_COPYRIGHT_URL) },
     text = Strings.payeesLocationsAttribution,
     style = typography.bodySmall,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 }
 

@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 fun AktualProgressIndicator(
   modifier: Modifier = Modifier,
   size: Dp = ProgressIndicatorSize,
-  color: Color = colors.pageText,
+  color: Color = colors.text,
   strokeWidth: Dp = size / STROKE_RATIO,
 ) =
   CircularProgressIndicator(
@@ -34,7 +34,7 @@ fun AktualProgressIndicator(
   progress: () -> Float,
   modifier: Modifier = Modifier,
   size: Dp = ProgressIndicatorSize,
-  color: Color = colors.pageText,
+  color: Color = colors.text,
   strokeWidth: Dp = size / STROKE_RATIO,
 ) =
   CircularProgressIndicator(
@@ -45,7 +45,7 @@ fun AktualProgressIndicator(
   )
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier, color: Color = colors.pageText) {
+fun LoadingScreen(modifier: Modifier = Modifier, color: Color = colors.text) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
     AktualProgressIndicator(color = color)
   }

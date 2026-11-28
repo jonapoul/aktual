@@ -284,7 +284,7 @@ private fun CurrencySymbol(string: String, modifier: Modifier = Modifier) {
     modifier = modifier,
     text = string,
     style = typography.bodyLarge,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 }
 

@@ -113,7 +113,7 @@ internal fun LedgerRow(
           notes = notes,
           tags = tags,
           fontSize = dimens.secondLineSize,
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
           onTagClick = onTagClick,
         )
       }
@@ -168,7 +168,7 @@ private fun ClearedToggle(
         if (transaction.reconciled || transaction.cleared) {
           colors.noticeTextLight
         } else {
-          colors.pageTextSubdued
+          colors.textTertiary
         },
     )
   }
@@ -190,7 +190,7 @@ private fun DateRail(date: LocalDate, dimens: LedgerDimens) =
       text = date.month.stringShort().take(LABEL_LENGTH).uppercase(),
       fontSize = dimens.weekdaySize,
       fontWeight = SemiBold,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       maxLines = 1,
     )
   }
@@ -229,7 +229,7 @@ private fun CategoryLine(
         modifier = Modifier.size(SplitIconSize),
         imageVector = AktualIcons.Split,
         contentDescription = null,
-        tint = if (transaction.splitRemaining == null) colors.pageTextLight else colors.warningText,
+        tint = if (transaction.splitRemaining == null) colors.textSecondary else colors.warningText,
       )
     }
 
@@ -237,7 +237,7 @@ private fun CategoryLine(
       modifier = Modifier.weight(1f, fill = false),
       text = text,
       fontSize = dimens.secondLineSize,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       overflow = Ellipsis,
       maxLines = 1,
     )
@@ -247,7 +247,7 @@ private fun CategoryLine(
         modifier = Modifier.size(ChevronSize).rotate(if (parts == Expanded) HALF_TURN else 0f),
         imageVector = AktualIcons.CheveronDown,
         contentDescription = null,
-        tint = colors.pageTextLight,
+        tint = colors.textSecondary,
       )
     }
   }
@@ -338,7 +338,7 @@ private fun PayeeText(
       fontSize = dimens.payeeSize,
       fontWeight = dimens.payeeWeight,
       fontStyle = if (noPayee) Italic else null,
-      color = if (noPayee) colors.pageTextLight else colors.pageTextDark,
+      color = if (noPayee) colors.textSecondary else colors.pageTextDark,
       overflow = Ellipsis,
       maxLines = 1,
     )
@@ -413,7 +413,7 @@ internal fun LedgerTableRow(
       modifier = Modifier.width(DenseColumns.date),
       text = transaction.date.dayAndMonth(),
       fontSize = dimens.secondLineSize,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       style = tabularFigures(),
       maxLines = 1,
     )
@@ -510,7 +510,7 @@ private fun SplitChildRow(
           append(category)
         },
       fontSize = dimens.secondLineSize,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       overflow = Ellipsis,
       maxLines = 1,
     )
@@ -549,7 +549,7 @@ private fun SplitChildTableRow(
       modifier = Modifier.weight(DenseColumns.CATEGORY_WEIGHT),
       text = categoryText(child, parts = Collapsed, needsCategory = Strings.transactionsNoCategory),
       fontSize = dimens.secondLineSize,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       overflow = Ellipsis,
       maxLines = 1,
     )
@@ -595,7 +595,7 @@ private fun BalanceText(balance: Amount?, dimens: LedgerDimens, modifier: Modifi
     modifier = modifier,
     text = balance?.formattedText() ?: AnnotatedString(""),
     fontSize = dimens.balanceSize,
-    color = colors.pageTextLight,
+    color = colors.textSecondary,
     textAlign = End,
     style = tabularFigures(),
     overflow = Ellipsis,

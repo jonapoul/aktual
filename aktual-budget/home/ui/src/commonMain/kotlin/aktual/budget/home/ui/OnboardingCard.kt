@@ -42,7 +42,7 @@ internal fun OnboardingCard(onAction: OnAction<HomeAction>, modifier: Modifier =
       Text(
         text = Strings.homeOnboardingMessage,
         style = typography.bodyMedium,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         textAlign = Center,
       )
 
