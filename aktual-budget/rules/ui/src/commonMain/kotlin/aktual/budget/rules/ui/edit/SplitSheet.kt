@@ -75,11 +75,11 @@ private fun ColumnScope.SplitContent(action: RuleAction, onChange: (RuleAction) 
     Text(
       text = Strings.editRuleSplitReadOnly,
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     val formula = action.options?.formula
     if (formula != null) {
-      Text(text = formula, style = typography.bodyMedium, color = colors.pageText)
+      Text(text = formula, style = typography.bodyMedium, color = colors.text)
     }
   } else {
     Column {
@@ -153,7 +153,7 @@ private fun PercentSlider(
       modifier = Modifier.widthIn(min = 48.dp),
       text = "${value.roundToInt()}%",
       style = typography.bodyLarge,
-      color = colors.pageText,
+      color = colors.text,
       textAlign = End,
     )
   }

@@ -105,7 +105,7 @@ private fun BudgetListItemRow(
         modifier = Modifier.padding(top = 4.dp),
         text = description,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         fontSize = textSizes.tiny,
         lineHeight = lineHeights.small,
       )

@@ -154,7 +154,7 @@ private fun UpcomingHeader(
       text = Strings.homeUpcomingTitle(length.windowString()),
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -206,7 +206,7 @@ private fun UpcomingRow(
       Text(
         text = Strings.homeUpcomingRowDetail(schedule.accountName, schedule.dueString(today)),
         style = typography.bodySmall,
-        color = if (isOverdue) colors.numberNegative else colors.pageTextSubdued,
+        color = if (isOverdue) colors.numberNegative else colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -216,7 +216,7 @@ private fun UpcomingRow(
       amount = schedule.amount,
       prefix = schedule.amountOp.amountPrefix(),
       style = typography.bodyLarge,
-      color = if (schedule.amount < Zero) colors.numberNegative else colors.pageText,
+      color = if (schedule.amount < Zero) colors.numberNegative else colors.text,
     )
   }
 }
@@ -237,7 +237,7 @@ internal fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
     Text(
       text = date.dayOfWeek.stringLong().take(WEEKDAY_LENGTH).uppercase(),
       style = typography.labelSmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
     )
 
@@ -255,10 +255,7 @@ internal fun DateBadge(date: LocalDate, modifier: Modifier = Modifier) {
 private fun ShimmerDateBadge(modifier: Modifier = Modifier) {
   Column(
     modifier =
-      modifier
-        .width(DateBadgeWidth)
-        .background(colors.pageText, CardShape)
-        .padding(vertical = 4.dp),
+      modifier.width(DateBadgeWidth).background(colors.text, CardShape).padding(vertical = 4.dp),
   ) {
     Text(text = "", style = typography.labelSmall, maxLines = 1)
     Text(text = "", style = typography.titleMedium, maxLines = 1)
@@ -290,7 +287,7 @@ private fun MoreRow(count: Int, onClick: () -> Unit, modifier: Modifier = Modifi
     Text(
       text = Strings.homeUpcomingMore(count),
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 }
@@ -307,12 +304,12 @@ private fun TotalRow(total: Amount, modifier: Modifier = Modifier) {
       text = Strings.homeUpcomingTotal,
       style = typography.labelLarge,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
 
-    AmountText(amount = total, style = typography.labelLarge, color = colors.pageTextSubdued)
+    AmountText(amount = total, style = typography.labelLarge, color = colors.textTertiary)
   }
 }
 

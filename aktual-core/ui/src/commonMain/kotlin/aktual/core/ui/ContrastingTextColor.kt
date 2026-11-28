@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.compositeOver
 // pick black or white text for legibility on [this] drawn over the page background
 @Composable
 @ReadOnlyComposable
-fun Color.contrastingTextColor(): Color = contrastingTextColor(background = colors.pageBackground)
+fun Color.contrastingTextColor(): Color = contrastingTextColor(background = colors.backgroundPage)
 
 // pick black or white text for legibility on [this] drawn over [background], using the brightness
 // formula from https://www.w3.org/TR/AERT/#color-contrast - adapted from upstream's getTagCSSColors

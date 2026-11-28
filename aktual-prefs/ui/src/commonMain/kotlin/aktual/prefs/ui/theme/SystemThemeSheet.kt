@@ -76,7 +76,7 @@ private fun SystemThemeSheetContent(
       modifier = Modifier.padding(horizontal = 20.dp).padding(bottom = 8.dp),
       text = type.title(),
       style = typography.titleMedium,
-      color = colors.pageText,
+      color = colors.text,
     )
 
     LazyColumn(
@@ -150,9 +150,9 @@ private fun OptionItem(
           overflow = Ellipsis,
           color =
             when {
-              !enabled -> colors.pageText.disabled
+              !enabled -> colors.text.disabled
               isSelected -> colors.accentSubtleText
-              else -> colors.pageText
+              else -> colors.text
             },
         )
 

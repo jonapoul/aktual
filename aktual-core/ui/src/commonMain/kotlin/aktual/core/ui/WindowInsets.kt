@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SetStatusBarColors(colors: Colors) =
-  SetStatusBarColors(statusBarColor = colors.pageBackground, navigationBarColor = Transparent)
+  SetStatusBarColors(statusBarColor = colors.backgroundPage, navigationBarColor = Transparent)
 
 @Composable internal expect fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color)
 

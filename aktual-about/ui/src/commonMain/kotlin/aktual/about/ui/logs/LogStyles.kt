@@ -37,8 +37,8 @@ internal fun LogPriority.label(): String =
 
 internal fun LogPriority.foreground(colors: Colors): Color =
   when (this) {
-    VERBOSE -> colors.pageTextSubdued
-    DEBUG -> colors.pageTextLight
+    VERBOSE -> colors.textTertiary
+    DEBUG -> colors.textSecondary
     INFO -> colors.noticeText
     WARN -> colors.warningText
     ERROR,
@@ -59,7 +59,7 @@ internal fun LogPriority.messageColor(colors: Colors): Color =
   when (this) {
     VERBOSE,
     DEBUG,
-    INFO -> colors.pageText
+    INFO -> colors.text
     WARN -> colors.warningText
     ERROR,
     ASSERT -> colors.errorText

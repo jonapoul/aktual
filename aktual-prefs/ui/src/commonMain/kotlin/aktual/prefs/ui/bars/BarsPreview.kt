@@ -53,12 +53,12 @@ internal fun BarsPreview(config: HazeConfig, modifier: Modifier = Modifier) =
         modifier = Modifier.padding(horizontal = 12.dp).size(20.dp),
         imageVector = AktualIcons.CheveronLeft,
         contentDescription = null,
-        tint = colors.pageText,
+        tint = colors.text,
       )
       Text(
         text = Strings.transactionsTitleAll,
         style = typography.titleMedium,
-        color = colors.pageText,
+        color = colors.text,
         maxLines = 1,
       )
     },
@@ -67,12 +67,12 @@ internal fun BarsPreview(config: HazeConfig, modifier: Modifier = Modifier) =
         modifier = Modifier.padding(horizontal = 12.dp).size(16.dp),
         imageVector = AktualIcons.CloudCheck,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
       Text(
         text = Strings.connectionConnected,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
       )
     },
@@ -97,7 +97,7 @@ private fun HazedBars(
   val topPadding = if (config.appBarEffect == None) barHeight else 0.dp
   Box(modifier = modifier.clip(CardShape)) {
     Box(
-      modifier = Modifier.matchParentSize().hazeSource(hazeState).background(colors.pageBackground),
+      modifier = Modifier.matchParentSize().hazeSource(hazeState).background(colors.backgroundPage),
     ) {
       content(topPadding)
     }

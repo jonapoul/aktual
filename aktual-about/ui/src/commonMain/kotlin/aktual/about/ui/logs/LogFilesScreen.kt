@@ -197,7 +197,7 @@ private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Mo
     Text(
       text = Strings.logsSummaryTitle,
       style = typography.labelMedium,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
     Row(verticalAlignment = Bottom, horizontalArrangement = spacedBy(8.dp)) {
       val count = state.files.size
@@ -208,13 +208,13 @@ private fun LogFilesSummary(state: LogFilesState.Loaded, modifier: Modifier = Mo
       Text(
         text = state.totalSize.toString(),
         style = typography.bodyMedium,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
     }
     Text(
       text = Strings.logsSummaryRetention,
       style = typography.labelMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 
@@ -264,7 +264,7 @@ private fun LogFileItem(
     Icon(
       imageVector = MaterialIcons.Description,
       contentDescription = null,
-      tint = colors.pageTextLight,
+      tint = colors.textSecondary,
     )
 
     Column(modifier = Modifier.weight(1f), verticalArrangement = spacedBy(2.dp)) {
@@ -277,12 +277,12 @@ private fun LogFileItem(
         Text(
           text = LogFileFormat.fileName(file.date),
           style = typography.labelSmall.tabular(),
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
         )
         Text(
           text = file.size.toString(),
           style = typography.labelSmall.tabular(),
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       }
     }
@@ -301,7 +301,7 @@ private fun LogFileItem(
     Icon(
       imageVector = AktualIcons.CheveronRight,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
   }
 
@@ -311,7 +311,7 @@ private fun LogFilesDailyHeader() =
     modifier = Modifier.padding(horizontal = Dimens.Medium, vertical = Dimens.Medium),
     text = Strings.logsDailyHeader,
     style = typography.labelLarge,
-    color = colors.pageTextLight,
+    color = colors.textSecondary,
   )
 
 @Composable

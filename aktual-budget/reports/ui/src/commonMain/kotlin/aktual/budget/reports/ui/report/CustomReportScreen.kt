@@ -210,7 +210,7 @@ private fun CustomReportContent(
         modifier = Modifier.padding(8.dp),
         text = Strings.reportsCustomEditorUnreadable,
         style = typography.bodyMedium,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
   }

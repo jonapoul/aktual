@@ -75,9 +75,9 @@ internal fun <T> OptionSheet(
             style = typography.bodyLarge,
             color =
               when {
-                !enabled -> colors.pageTextSubdued
+                !enabled -> colors.textTertiary
                 isChosen -> colors.accentSubtleText
-                else -> colors.pageText
+                else -> colors.text
               },
             fontWeight = if (isChosen) Medium else null,
           )

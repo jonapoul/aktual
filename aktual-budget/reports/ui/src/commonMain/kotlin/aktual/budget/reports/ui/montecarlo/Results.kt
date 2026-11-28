@@ -123,7 +123,7 @@ private fun Stat(
   heading: String,
   value: String,
   modifier: Modifier = Modifier,
-  color: Color = colors.pageText,
+  color: Color = colors.text,
   isLarge: Boolean = false,
 ) =
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {

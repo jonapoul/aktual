@@ -105,7 +105,7 @@ internal fun LazyListScope.bankLogin(
             modifier = Modifier.padding(BankSyncDS.headerPadding),
             text = Strings.bankSyncLinkLoginNoBanks,
             style = typography.bodyMedium,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
       }
@@ -138,14 +138,14 @@ private fun LoginHeader(
           Strings.bankSyncLinkGocardlessIntro
         },
       style = typography.bodySmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
 
     Column(verticalArrangement = Arrangement.spacedBy(BankSyncDS.settingsLabelSpacing)) {
       Text(
         text = Strings.bankSyncLinkLoginCountry,
         style = typography.titleSmall,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
       CountryPicker(
         country = login.country,
@@ -160,7 +160,7 @@ private fun LoginHeader(
         Text(
           text = Strings.bankSyncLinkLoginAccountType,
           style = typography.titleSmall,
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
         )
         AktualSlidingToggleButton(
           modifier = Modifier.fillMaxWidth(),
@@ -251,7 +251,7 @@ private fun LoginWaiting(
       horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing),
       verticalAlignment = CenterVertically,
     ) {
-      AktualProgressIndicator(size = BankSyncDS.progressSize, color = colors.pageTextSubdued)
+      AktualProgressIndicator(size = BankSyncDS.progressSize, color = colors.textTertiary)
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.bankSyncLinkLoginWaiting(status.bank),
@@ -294,7 +294,7 @@ private fun LoginFailed(status: BankLoginStatus.Failed, modifier: Modifier = Mod
           status.cause ?: Strings.bankSyncFailureMessage
         },
       style = typography.bodySmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 }
@@ -307,8 +307,8 @@ private fun BankRow(bank: LoginBankItem, onClick: () -> Unit, modifier: Modifier
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .clickable(onClick = onClick)
         .padding(BankSyncDS.itemCardPadding),
     text = if (bank.isBeta) Strings.bankSyncLinkLoginBeta(bank.name) else bank.name,
@@ -327,8 +327,8 @@ private fun ShimmerBankRow(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(BankSyncDS.itemCardPadding)
         .shimmer(rememberShimmer(Window)),
   ) {

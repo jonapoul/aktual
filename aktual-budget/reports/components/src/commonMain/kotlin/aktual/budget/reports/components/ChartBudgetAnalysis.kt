@@ -115,11 +115,11 @@ private fun RegularHeader(
       text = dateRange(data.items.keys),
       zoom = zoom,
       toMonth = { x -> YearMonth.fromMonthNumber(x.roundToLong()) },
-      color = colors.pageText,
+      color = colors.text,
     )
 
     val padding = PaddingValues(horizontal = 2.dp)
-    val normalStyle = typography.labelMedium.copy(textAlign = Start, color = colors.pageText)
+    val normalStyle = typography.labelMedium.copy(textAlign = Start, color = colors.text)
     val boldStyle = normalStyle.copy(textAlign = End, fontWeight = W600)
 
     WrapWidthTable(
@@ -351,7 +351,7 @@ private fun PreviewBudgetAnalysisChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       BudgetAnalysisChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

@@ -24,11 +24,7 @@ internal fun TransactionsPreview(
 ) =
   SampleTransactionList(
     modifier =
-      modifier
-        .fillMaxWidth()
-        .height(PreviewHeight)
-        .clip(CardShape)
-        .background(colors.tableBackground),
+      modifier.fillMaxWidth().height(PreviewHeight).clip(CardShape).background(colors.background),
     alternateRowColours = alternateRowColours,
     expandSplits = expandSplits,
   )

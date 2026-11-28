@@ -133,9 +133,9 @@ fun BottomSheetListItem(
   val isChosen = isSelected == true && enabled
   val contentColor =
     when {
-      !enabled -> colors.pageText.disabled
+      !enabled -> colors.text.disabled
       isChosen -> colors.accentSubtleText
-      else -> colors.pageText
+      else -> colors.text
     }
   val background by animateColorAsState(if (isChosen) colors.accentSubtle else Transparent)
   CompositionLocalProvider(LocalContentColor provides contentColor) {
@@ -200,7 +200,7 @@ fun BottomSheetMessage(text: String, modifier: Modifier = Modifier) =
   Text(
     modifier = modifier.fillMaxWidth().padding(16.dp),
     text = text,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
     textAlign = Center,
   )
 

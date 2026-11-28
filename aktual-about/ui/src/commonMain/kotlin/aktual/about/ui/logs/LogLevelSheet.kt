@@ -119,7 +119,7 @@ internal fun LogLevelRow(
       text = priority.label(),
       style = typography.bodyMedium,
     )
-    Text(text = count.toString(), style = typography.labelSmall, color = colors.pageTextLight)
+    Text(text = count.toString(), style = typography.labelSmall, color = colors.textSecondary)
   }
 
 @Preview

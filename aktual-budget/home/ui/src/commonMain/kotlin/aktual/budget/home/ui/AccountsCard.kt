@@ -149,7 +149,7 @@ private fun ExpandRow(text: String, onClick: () -> Unit, modifier: Modifier = Mo
         .padding(horizontal = CardPadding),
     verticalAlignment = CenterVertically,
   ) {
-    Text(text = text, style = typography.bodyMedium, color = colors.pageTextSubdued)
+    Text(text = text, style = typography.bodyMedium, color = colors.textTertiary)
   }
 }
 
@@ -206,13 +206,13 @@ private fun HeaderRow(
       text = title,
       style = style,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
 
     if (amount != null) {
-      AmountText(amount = amount, style = style, color = colors.pageTextSubdued)
+      AmountText(amount = amount, style = style, color = colors.textTertiary)
     }
   }
 }
@@ -261,7 +261,7 @@ private fun AccountRow(
       AmountText(
         amount = account.balance,
         style = typography.bodyLarge,
-        color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
+        color = if (account.balance < Zero) colors.numberNegative else colors.text,
       )
     }
 
@@ -323,7 +323,7 @@ private fun AccountsEmpty(onAction: OnAction<HomeAction>, modifier: Modifier = M
     Text(
       text = Strings.homeAccountsEmpty,
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
 
     AktualButton(

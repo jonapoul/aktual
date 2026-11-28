@@ -209,7 +209,7 @@ private fun ColumnScope.SyncBudgetDialogContent(
     Text(
       text = activeStep.label(),
       style = MaterialTheme.typography.labelSmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       textAlign = Center,
       modifier = Modifier.fillMaxWidth(),
     )

@@ -314,7 +314,7 @@ private fun ReorderBar(
       modifier = Modifier.weight(1f),
       text = label,
       style = typography.titleSmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )

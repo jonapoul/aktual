@@ -390,7 +390,7 @@ private fun EditPayeeContent(
       Field(label = Strings.payeesEditNameLabel, required = !payee.isTransfer) {
         val supporting =
           when {
-            payee.isTransfer -> Strings.payeesEditTransferHelp to colors.pageTextSubdued
+            payee.isTransfer -> Strings.payeesEditTransferHelp to colors.textTertiary
             nameState.text.isBlank() -> Strings.payeesEditNameRequired to colors.errorText
             isDuplicateName -> Strings.payeesEditNameDuplicate to colors.warningText
             else -> null
@@ -463,12 +463,12 @@ private fun LocationsField(
     Text(
       text = Strings.payeesEditLocationsLabel,
       style = typography.labelLarge,
-      color = colors.pageText,
+      color = colors.text,
     )
     Text(
       text = Strings.payeesEditLocationsHelp,
       style = typography.bodySmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     locations.fastForEach { location -> LocationRow(location, onAction) }
     if (locations.fastAny { it.address != null }) {
@@ -491,7 +491,7 @@ private fun LocationRow(location: SavedLocation, onAction: OnAction<EditPayeeAct
     Icon(
       imageVector = AktualIcons.Location,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
       val date = location.date
@@ -504,7 +504,7 @@ private fun LocationRow(location: SavedLocation, onAction: OnAction<EditPayeeAct
         onRequest = { onAction(RequestAddress(it)) },
         style = typography.bodySmall,
       )
-      Text(text = coordinatesText, style = typography.bodySmall, color = colors.pageTextSubdued)
+      Text(text = coordinatesText, style = typography.bodySmall, color = colors.textTertiary)
     }
     AktualIconButton(
       imageVector = AktualIcons.Delete,
@@ -530,8 +530,8 @@ private fun SwitchRow(
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.spacedBy(EditPayeeDS.labelSpacing),
     ) {
-      Text(text = label, style = typography.labelLarge, color = colors.pageText)
-      Text(text = help, style = typography.bodySmall, color = colors.pageTextSubdued)
+      Text(text = label, style = typography.labelLarge, color = colors.text)
+      Text(text = help, style = typography.bodySmall, color = colors.textTertiary)
     }
     Switch(
       checked = checked,
@@ -545,7 +545,7 @@ private fun SwitchRow(
 /** Keep in sync with [EditPayeeContent] */
 @Composable
 private fun ShimmerEditPayee(numLocations: Int, modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, CardShape)
+  val bar = Modifier.background(colors.text, CardShape)
   val label =
     bar.size(width = EditPayeeDS.shimmerLabelWidth, height = EditPayeeDS.shimmerLabelHeight)
   val chip = bar.size(width = EditPayeeDS.shimmerChipWidth, height = EditPayeeDS.shimmerChipHeight)
@@ -561,7 +561,7 @@ private fun ShimmerEditPayee(numLocations: Int, modifier: Modifier = Modifier) {
     ) {
       Box(label)
       Box(
-        Modifier.background(colors.pageText, TextFieldShape)
+        Modifier.background(colors.text, TextFieldShape)
           .fillMaxWidth()
           .height(EditPayeeDS.shimmerFieldHeight),
       )
@@ -596,7 +596,7 @@ private fun ShimmerEditPayee(numLocations: Int, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ShimmerLocationRow() {
-  val bar = Modifier.background(colors.pageText, CardShape)
+  val bar = Modifier.background(colors.text, CardShape)
   Row(
     modifier = Modifier.fillMaxWidth().height(EditPayeeDS.shimmerLocationHeight),
     horizontalArrangement = Arrangement.spacedBy(EditPayeeDS.locationSpacing),
@@ -647,7 +647,7 @@ private inline fun Field(
       } else {
         AnnotatedString(label)
       }
-    Text(text = labelText, style = typography.labelLarge, color = colors.pageText)
+    Text(text = labelText, style = typography.labelLarge, color = colors.text)
     content()
   }
 }

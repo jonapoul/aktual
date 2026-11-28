@@ -135,7 +135,7 @@ private fun UploadFailedDialogContent(failure: UploadResult.Failure, onOpen: () 
         Text(
           text = Strings.budgetCreateUploadFailed,
           style = typography.bodyMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
         Text(text = failure.message(), style = typography.bodyMedium, color = colors.errorText)
       }
@@ -163,7 +163,7 @@ private fun SyncWithServerRow(checked: Boolean, onCheckedChange: (Boolean) -> Un
       Text(
         text = Strings.budgetCreateSyncHint,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
     Switch(checked = checked, onCheckedChange = onCheckedChange, colors = colors.switch())

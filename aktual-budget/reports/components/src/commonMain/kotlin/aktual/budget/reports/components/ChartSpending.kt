@@ -296,7 +296,7 @@ private fun PreviewSpendingChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       SpendingChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

@@ -373,8 +373,8 @@ private fun EditTagContent(
 /** Keep in sync with [EditTagContent] */
 @Composable
 private fun ShimmerEditTag(modifier: Modifier = Modifier) {
-  val bar = Modifier.background(colors.pageText, CardShape)
-  val field = Modifier.background(colors.pageText, TextFieldShape)
+  val bar = Modifier.background(colors.text, CardShape)
+  val field = Modifier.background(colors.text, TextFieldShape)
   val label = bar.size(width = EditTagDS.shimmerLabelWidth, height = EditTagDS.shimmerLabelHeight)
 
   Column(

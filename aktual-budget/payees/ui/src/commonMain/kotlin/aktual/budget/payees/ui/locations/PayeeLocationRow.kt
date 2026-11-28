@@ -101,8 +101,8 @@ private fun PayeeLocationRow(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .clickable(onClickLabel = Strings.payeesEditLocationOpen, onClick = onClick)
         .padding(PayeeLocationsDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(PayeeLocationsDS.itemHorizontalSpacing),
@@ -111,7 +111,7 @@ private fun PayeeLocationRow(
     Icon(
       imageVector = AktualIcons.Location,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
 
     Column(
@@ -121,7 +121,7 @@ private fun PayeeLocationRow(
       Text(
         text = rememberHighlighted(text = location.payeeName, query = query),
         style = typography.bodyLarge,
-        color = colors.pageText,
+        color = colors.text,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -140,7 +140,7 @@ private fun PayeeLocationRow(
             modifier = Modifier.wrapContentWidth(),
             text = LocalDateFormatter.current.format(date),
             style = typography.bodySmall,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
             overflow = Ellipsis,
           )
         }
@@ -149,7 +149,7 @@ private fun PayeeLocationRow(
           modifier = Modifier.weight(1f),
           text = location.coordinates.text(),
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           textAlign = End,
           overflow = Ellipsis,
         )
@@ -160,7 +160,7 @@ private fun PayeeLocationRow(
       modifier = Modifier.size(PayeeLocationsDS.chevronSize),
       imageVector = AktualIcons.CheveronRight,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
   }
 }
@@ -173,15 +173,15 @@ internal fun ShimmerPayeeLocationRow(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(PayeeLocationsDS.itemPadding)
         .shimmer(rememberShimmer(Window)),
     horizontalArrangement = Arrangement.spacedBy(PayeeLocationsDS.itemHorizontalSpacing),
     verticalAlignment = CenterVertically,
   ) {
     Box(
-      Modifier.size(PayeeLocationsDS.shimmerIconSize).background(colors.pageText, RowShape),
+      Modifier.size(PayeeLocationsDS.shimmerIconSize).background(colors.text, RowShape),
     )
 
     Column(

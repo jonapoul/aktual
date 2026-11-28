@@ -105,7 +105,7 @@ internal fun SliderPreferenceItem(
           maxLines = 1,
           overflow = Ellipsis,
           style = style,
-          color = colors.pageText.disabledIf(!enabled),
+          color = colors.text.disabledIf(!enabled),
         )
       }
     },

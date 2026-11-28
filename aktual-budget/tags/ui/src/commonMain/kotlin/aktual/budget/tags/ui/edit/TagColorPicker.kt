@@ -201,7 +201,7 @@ internal fun TagColorPicker(
                 .width(EditTagDS.colorWheelSize)
                 .height(EditTagDS.brightnessSliderHeight)
                 .clip(CardShape)
-                .border(1.dp, colors.pageText, CardShape),
+                .border(1.dp, colors.text, CardShape),
             controller = controller,
           )
         }
@@ -275,7 +275,7 @@ private fun PresetSwatch(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val borderColor = if (selected) colors.pageText else colors.pillBorderDark
+  val borderColor = if (selected) colors.text else colors.pillBorderDark
   val borderWidth =
     if (selected) EditTagDS.colorPresetBorderSelected else EditTagDS.colorPresetBorder
   Box(

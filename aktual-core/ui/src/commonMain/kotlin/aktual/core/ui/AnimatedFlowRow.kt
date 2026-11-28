@@ -176,6 +176,6 @@ private fun PreviewAnimatedFlowRow(@PreviewParameter(ColorParameters::class) col
       chips.fastForEach { chip ->
         item(key = chip) { Chip(text = chip, onClick = { chips.remove(chip) }) }
       }
-      item(key = "count") { Text(text = "Count: ${chips.size}", color = colors.pageText) }
+      item(key = "count") { Text(text = "Count: ${chips.size}", color = colors.text) }
     }
   }

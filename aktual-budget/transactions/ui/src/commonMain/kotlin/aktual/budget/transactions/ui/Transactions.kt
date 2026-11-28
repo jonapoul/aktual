@@ -114,7 +114,7 @@ private fun TransactionsLoading(innerPadding: PaddingValues, modifier: Modifier 
     // Stands in for the year pinned under the top bar once rows load
     YearDividerShimmer()
 
-    Column(modifier = Modifier.fillMaxWidth().background(colors.tableBackground)) {
+    Column(modifier = Modifier.fillMaxWidth().background(colors.background)) {
       repeat(times = NUM_SHIMMER_ROWS) { index ->
         if (index > 0 && (shimmerShowsDate(index) || density == Dense)) HorizontalDivider()
         LedgerShimmerRow(index)
@@ -192,7 +192,7 @@ private fun TransactionsFilled(
           if (dimens.shadeRows && index % 2 == 1) {
             colors.tableRowBackgroundAlternate
           } else {
-            colors.tableBackground
+            colors.background
           }
 
         Column(modifier = Modifier.fillMaxWidth().animateItem().background(background)) {

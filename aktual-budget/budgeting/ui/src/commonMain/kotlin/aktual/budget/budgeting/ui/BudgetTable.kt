@@ -194,8 +194,8 @@ private fun SummaryCard(
       modifier
         .fillMaxWidth()
         .clip(CardShape)
-        .background(colors.tableBackground, CardShape)
-        .border(1.dp, colors.tableBorder, CardShape)
+        .background(colors.background, CardShape)
+        .border(1.dp, colors.border, CardShape)
         .clickable(onClickLabel = label, role = Button, onClick = onClick)
         .padding(12.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -236,7 +236,7 @@ internal fun BudgetSummary.headline(): SummaryHeadline =
           when {
             isProjected -> colors.warningText
             saved < Zero -> colors.errorTextDark
-            else -> colors.pageText
+            else -> colors.text
           },
       )
   }
@@ -260,7 +260,7 @@ private fun Headline(headline: SummaryHeadline, modifier: Modifier = Modifier) {
     Text(
       text = headline.label,
       fontSize = textSizes.smallPlus,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
     Text(
       text = headline.amount.formattedText(includeSign = true),
@@ -287,7 +287,7 @@ private fun Breakdown(lines: ImmutableList<Pair<String, Amount>>, modifier: Modi
         Text(
           text = label,
           fontSize = textSizes.smallPlus,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
         Text(
           text = amount.formattedText(),
@@ -696,7 +696,7 @@ internal fun CategoryRowLayout(
   amounts: @Composable RowScope.() -> Unit,
 ) {
   val openLabel = Strings.budgetingCategoryOpen(category.name)
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
     HorizontalDivider()
     TableRow(
       modifier =
@@ -845,8 +845,8 @@ private fun ShimmerSummaryCard(shimmer: Shimmer, modifier: Modifier = Modifier) 
     modifier =
       modifier
         .fillMaxWidth()
-        .background(colors.tableBackground, CardShape)
-        .border(1.dp, colors.tableBorder, CardShape)
+        .background(colors.background, CardShape)
+        .border(1.dp, colors.border, CardShape)
         .padding(12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -875,7 +875,7 @@ private fun ShimmerGroupRow(shimmer: Shimmer, style: TextStyle, nameWidth: Dp) =
 
 @Composable
 private fun ShimmerCategoryRow(shimmer: Shimmer, content: @Composable RowScope.() -> Unit) =
-  Column(modifier = Modifier.fillMaxWidth().background(colors.tableBackground)) {
+  Column(modifier = Modifier.fillMaxWidth().background(colors.background)) {
     HorizontalDivider()
     TableRow(
       modifier = Modifier.padding(start = CategoryInset).shimmer(shimmer),

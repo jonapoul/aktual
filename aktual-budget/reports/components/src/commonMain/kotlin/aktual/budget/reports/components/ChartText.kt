@@ -175,7 +175,7 @@ private fun CompactMarkdown(data: TextData, modifier: Modifier = Modifier) =
           Modifier.align(BottomCenter)
             .fillMaxWidth()
             .height(FadeHeight)
-            .background(Brush.verticalGradient(listOf(Transparent, colors.tableBackground))),
+            .background(Brush.verticalGradient(listOf(Transparent, colors.background))),
       )
     }
   }
@@ -246,8 +246,8 @@ private val FadeHeight = 40.dp
 private fun textChartMarkdownColors() =
   markdownColor(
     text = colors.tableText,
-    codeBackground = colors.tableRowBackgroundHover,
-    dividerColor = colors.tableBorder,
+    codeBackground = colors.backgroundHover,
+    dividerColor = colors.border,
     tableBackground = colors.tableBackground,
   )
 
@@ -289,7 +289,7 @@ private fun PreviewTextChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       TextChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

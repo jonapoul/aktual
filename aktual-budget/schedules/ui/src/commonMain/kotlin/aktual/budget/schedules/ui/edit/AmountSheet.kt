@@ -109,7 +109,7 @@ internal fun AmountSheet(
           Between -> Strings.editScheduleAmountHintBetween
         },
       style = typography.bodySmall,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 }

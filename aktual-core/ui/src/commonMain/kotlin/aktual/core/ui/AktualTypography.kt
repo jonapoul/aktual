@@ -81,9 +81,9 @@ internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
       bodyLarge = textStyle(size = textSizes.large, height = lineHeights.bodyLarge),
       bodyMedium = textStyle(size = textSizes.mediumPlus, height = lineHeights.bodyMedium),
       bodySmall = textStyle(size = textSizes.medium, height = lineHeights.bodySmall),
-      labelLarge = textStyle(size = textSizes.medium, color = colors.pageTextSubdued),
-      labelMedium = textStyle(size = textSizes.smallPlus, color = colors.pageTextSubdued),
-      labelSmall = textStyle(size = textSizes.small, color = colors.pageTextSubdued),
+      labelLarge = textStyle(size = textSizes.medium, color = colors.textTertiary),
+      labelMedium = textStyle(size = textSizes.smallPlus, color = colors.textTertiary),
+      labelSmall = textStyle(size = textSizes.small, color = colors.textTertiary),
     )
   }
 }

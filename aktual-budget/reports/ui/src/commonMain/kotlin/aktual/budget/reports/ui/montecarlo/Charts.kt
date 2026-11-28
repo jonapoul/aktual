@@ -315,7 +315,7 @@ internal fun PotBalancesAreas(
             fill = LineCartesianLayer.LineFill.single(Fill(color)),
             areaFill =
               LineCartesianLayer.AreaFill.single(
-                Fill(lerp(theme.tableBackground, color, AREA_FILL_OPACITY)),
+                Fill(lerp(theme.background, color, AREA_FILL_OPACITY)),
               ),
             stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 1.dp),
           )
@@ -434,7 +434,7 @@ private fun ageFormatter() = remember {
 // Marks the selected age with a guideline, leaving the details to the panel under the chart
 @Composable
 private fun rememberGuidelineMarker(): CartesianMarker {
-  val line = rememberLineComponent(fill = Fill(colors.pageTextSubdued), thickness = 1.dp)
+  val line = rememberLineComponent(fill = Fill(colors.textTertiary), thickness = 1.dp)
   return remember(line) { GuidelineMarker(line) }
 }
 

@@ -225,7 +225,7 @@ private fun PreviewSwipeToReveal(@PreviewParameter(ColorParameters::class) color
     SwipeToReveal(
       actions =
         persistentListOf(
-          SwipeAction("Rename", AktualIcons.Pencil1, colors.tableBackground, colors.tableText) {},
+          SwipeAction("Rename", AktualIcons.Pencil1, colors.background, colors.tableText) {},
           SwipeAction(
             "Delete",
             AktualIcons.Trash,
@@ -236,6 +236,6 @@ private fun PreviewSwipeToReveal(@PreviewParameter(ColorParameters::class) color
       isOpen = false,
       onOpenChange = {},
     ) {
-      Box(Modifier.fillMaxWidth().height(64.dp).background(colors.tableBackground))
+      Box(Modifier.fillMaxWidth().height(64.dp).background(colors.background))
     }
   }

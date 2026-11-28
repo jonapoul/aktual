@@ -66,7 +66,7 @@ private fun NightlyUpdateDialogContent(
           Text(
             text = Plurals.updatesNightlyCommits(state.commitsAhead, state.commitsAhead),
             style = typography.bodySmall,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
       }
@@ -81,7 +81,7 @@ private fun NightlyUpdateDialogContent(
 @Composable
 private fun VersionRow(label: String, version: Version, modifier: Modifier = Modifier) {
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = spacedBy(8.dp)) {
-    Text(modifier = Modifier.weight(1f), text = label, color = colors.pageTextSubdued)
+    Text(modifier = Modifier.weight(1f), text = label, color = colors.textTertiary)
     Text(text = Strings.updatesNightlyVersion(version.name, version.gitHash))
   }
 }

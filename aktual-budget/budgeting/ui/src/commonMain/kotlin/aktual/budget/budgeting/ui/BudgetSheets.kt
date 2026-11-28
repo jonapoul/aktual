@@ -593,7 +593,7 @@ private fun BudgetSummary.rows(): List<Pair<String, Amount>> =
 @Composable
 private fun SummaryRow(label: String, amount: Amount, bold: Boolean = false) {
   Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-    Text(text = label, fontSize = textSizes.medium, color = colors.pageTextSubdued)
+    Text(text = label, fontSize = textSizes.medium, color = colors.textTertiary)
     Text(
       text = amount.formattedText(includeSign = true),
       fontSize = textSizes.medium,
@@ -609,7 +609,7 @@ private fun AmountLabel(text: String) =
     text = text.redacted(),
     fontSize = textSizes.smallPlus,
     style = TabularFigures,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 
 private object SheetsDS {

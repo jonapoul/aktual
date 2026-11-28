@@ -162,7 +162,7 @@ private fun ManageAccountsScaffold(
       Box(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
         val padding = hazedTopBarContentPadding(hazeState, innerPadding)
         when (state) {
-          Loading -> LoadingScreen(Modifier.padding(padding), colors.pageTextSubdued)
+          Loading -> LoadingScreen(Modifier.padding(padding), colors.textTertiary)
 
           is Failure ->
             FailureScreen(

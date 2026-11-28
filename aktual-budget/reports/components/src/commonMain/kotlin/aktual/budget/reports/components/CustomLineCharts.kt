@@ -225,7 +225,7 @@ internal fun CustomBarLineChart(
           lineProvider =
             LineProvider.series(
               LineCartesianLayer.rememberLine(
-                fill = LineFill.single(Fill(colors.pageTextLight)),
+                fill = LineFill.single(Fill(colors.textSecondary)),
                 stroke = LineStroke.Continuous(thickness = LINE_THICKNESS),
               ),
             ),

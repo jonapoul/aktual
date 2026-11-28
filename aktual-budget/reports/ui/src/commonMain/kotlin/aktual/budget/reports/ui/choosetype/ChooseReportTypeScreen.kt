@@ -161,7 +161,7 @@ private fun ChooseReportTypeContent(
     LazyColumn(
       modifier =
         Modifier.fillMaxWidth()
-          .background(colors.pageBackground)
+          .background(colors.backgroundPage)
           .scrollbar(lazyListState)
           .padding(horizontal = Dimens.ScreenPadding),
       state = lazyListState,
@@ -194,7 +194,7 @@ private fun WidgetType(
     modifier =
       modifier
         .clip(CardShape)
-        .background(colors.tableBackground.disabledIf(!enabled), CardShape)
+        .background(colors.background.disabledIf(!enabled), CardShape)
         .border(Hairline, colors.pillBorderDark, CardShape)
         .clickable(enabled) { onAction(Create(type)) }
         .padding(8.dp),
@@ -203,7 +203,7 @@ private fun WidgetType(
       Text(
         modifier = Modifier.weight(1f),
         text = type.string(),
-        color = colors.pageText.disabledIf(!enabled),
+        color = colors.text.disabledIf(!enabled),
         style = typography.titleLarge,
       )
 

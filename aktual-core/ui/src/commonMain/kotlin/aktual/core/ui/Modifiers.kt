@@ -12,7 +12,7 @@ fun Modifier.card(colors: Colors, shape: Shape = CardShape): Modifier =
   clip(shape).background(colors.cardBackground, shape).border(Hairline, colors.cardShadow, shape)
 
 fun Modifier.tableRow(colors: Colors, shape: Shape = RowShape): Modifier =
-  clip(shape).background(colors.tableBackground, shape).border(Hairline, colors.tableBorder, shape)
+  clip(shape).background(colors.background, shape).border(Hairline, colors.border, shape)
 
 fun Modifier.normalButton(colors: Colors, shape: Shape = CardShape): Modifier =
   clip(shape)

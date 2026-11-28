@@ -172,7 +172,7 @@ private fun ListRulesItemActions(
       modifier = Modifier.padding(top = 3.dp).size(16.dp),
       imageVector = MaterialIcons.SubdirectoryArrowRight,
       contentDescription = null,
-      tint = colors.pageTextLight,
+      tint = colors.textSecondary,
     )
 
     Column(
@@ -218,7 +218,7 @@ private fun ShimmerPill(fraction: Float) =
   Box(
     modifier =
       Modifier.fillMaxWidth(fraction)
-        .background(colors.pageText, CardShape)
+        .background(colors.text, CardShape)
         .padding(horizontal = 6.dp, vertical = 3.dp),
   ) {
     Text(text = "", maxLines = 1)

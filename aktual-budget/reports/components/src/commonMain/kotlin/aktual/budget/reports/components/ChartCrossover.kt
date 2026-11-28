@@ -102,7 +102,7 @@ private fun Header(
         text = Strings.reportsCrossoverYearsToRetire,
         textAlign = End,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
   }
@@ -220,7 +220,7 @@ private fun PreviewCrossoverChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       CrossoverChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

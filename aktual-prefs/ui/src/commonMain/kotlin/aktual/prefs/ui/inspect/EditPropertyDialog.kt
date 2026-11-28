@@ -142,9 +142,7 @@ private fun EditPropertyDialogContent(
 private fun Swatch(color: Color) =
   Box(
     modifier =
-      Modifier.size(SWATCH_SIZE)
-        .background(color, CardShape)
-        .border(1.dp, colors.pageText, CardShape),
+      Modifier.size(SWATCH_SIZE).background(color, CardShape).border(1.dp, colors.text, CardShape),
   )
 
 private val PICKER_SIZE = 200.dp

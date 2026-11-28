@@ -139,7 +139,7 @@ private fun BreakdownRow(
   alpha: Float = 1f,
   isBold: Boolean = false,
   includeSign: Boolean = false,
-  amountColor: Color = colors.pageText,
+  amountColor: Color = colors.text,
 ) =
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
@@ -153,7 +153,7 @@ private fun BreakdownRow(
     Text(
       modifier = Modifier.weight(1f),
       text = name,
-      color = colors.pageText.copy(alpha = alpha),
+      color = colors.text.copy(alpha = alpha),
       style = typography.bodyMedium,
       fontWeight = if (isBold) Bold else null,
       maxLines = 1,

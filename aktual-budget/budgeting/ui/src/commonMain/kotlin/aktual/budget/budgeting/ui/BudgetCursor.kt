@@ -201,7 +201,7 @@ internal fun RowScope.BudgetedCell(
         .height(BudgetDS.rowHeight - CellDS.verticalInset * 2)
         .then(
           if (isSelected) {
-            Modifier.background(colors.tableRowBackgroundHover, CellShape)
+            Modifier.background(colors.backgroundHover, CellShape)
               .border(1.dp, colors.formInputBorderSelected, CellShape)
           } else {
             Modifier
@@ -242,7 +242,7 @@ internal fun RowScope.BudgetedCell(
           },
         imageVector = AktualIcons.DotsHorizontalTriple,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
     }
 
@@ -318,7 +318,7 @@ private fun InlineAmountEditor(
     state = state,
     lineLimits = SingleLine,
     keyboardOptions = KeyboardOptions(keyboardType = Decimal),
-    cursorBrush = SolidColor(colors.pageText),
+    cursorBrush = SolidColor(colors.text),
     textStyle =
       TextStyle(
         fontSize = textSizes.medium,

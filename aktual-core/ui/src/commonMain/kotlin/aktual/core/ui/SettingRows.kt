@@ -80,11 +80,7 @@ fun SettingRow(
 fun SettingDivider(modifier: Modifier = Modifier) =
   Box(
     modifier =
-      modifier
-        .padding(horizontal = 16.dp)
-        .fillMaxWidth()
-        .height(1.dp)
-        .background(colors.tableBorder),
+      modifier.padding(horizontal = 16.dp).fillMaxWidth().height(1.dp).background(colors.border),
   )
 
 private val CHEVRON_SIZE = 20.dp

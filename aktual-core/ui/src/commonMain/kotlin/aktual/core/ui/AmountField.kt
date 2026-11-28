@@ -75,7 +75,7 @@ fun AmountField(
           imeAction = if (onKeyboardAction != null) Done else Default,
         ),
       onKeyboardAction = onKeyboardAction,
-      textStyle = typography.headlineSmall.copy(color = colors.pageText),
+      textStyle = typography.headlineSmall.copy(color = colors.text),
     )
 
     if (arithmetic) {

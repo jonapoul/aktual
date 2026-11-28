@@ -142,17 +142,17 @@ private fun AccountMenuSheet(
           Text(
             text = details.joinToString(),
             style = typography.bodyMedium,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
         Text(
           text = account.balance.formattedText(),
           style = typography.titleMedium,
-          color = if (account.balance < Zero) colors.numberNegative else colors.pageText,
+          color = if (account.balance < Zero) colors.numberNegative else colors.text,
         )
       }
 
-      HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colors.tableBorder)
+      HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = colors.border)
 
       MenuItem(Strings.accountsManageMenuEdit, AktualIcons.Pencil1) {
         close { onAction(Show(EditAccount(account.id))) }
@@ -173,7 +173,7 @@ private fun AccountMenuSheet(
 private fun MenuItem(
   label: String,
   icon: ImageVector,
-  color: Color = colors.pageText,
+  color: Color = colors.text,
   onClick: () -> Unit,
 ) =
   BottomSheetListItem(

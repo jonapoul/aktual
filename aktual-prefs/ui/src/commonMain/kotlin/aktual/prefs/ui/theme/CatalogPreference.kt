@@ -254,7 +254,7 @@ private fun CatalogThemeItem(
           Text(
             text = item.summary.repo.toString(),
             style = typography.bodySmall,
-            color = colors.pageTextSubdued.disabledIf(!enabled),
+            color = colors.textTertiary.disabledIf(!enabled),
             maxLines = 1,
             overflow = Ellipsis,
           )
@@ -288,8 +288,8 @@ internal fun DownloadStateIcon(
 ) {
   when (state) {
     Downloading -> AktualProgressIndicator(Modifier.padding(4.dp), size = StateIconSize)
-    Downloaded -> Icon(MaterialIcons.OfflinePin, null, StateIconModifier, colors.pageText)
-    Remote -> Icon(AktualIcons.Cloud, null, StateIconModifier, colors.pageText)
+    Downloaded -> Icon(MaterialIcons.OfflinePin, null, StateIconModifier, colors.text)
+    Remote -> Icon(AktualIcons.Cloud, null, StateIconModifier, colors.text)
     is Failed -> {
       val failure = DownloadFailure(name, state.reason)
       Icon(

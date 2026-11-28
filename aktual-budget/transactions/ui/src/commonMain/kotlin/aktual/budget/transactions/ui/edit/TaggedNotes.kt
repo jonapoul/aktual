@@ -239,7 +239,7 @@ private fun PreviewTaggedNotes(
       notes = this,
       tags = PREVIEW_TAGS,
       fontSize = ValueSize,
-      color = colors.pageText,
+      color = colors.text,
       maxLines = 2,
     )
   }
@@ -258,7 +258,7 @@ private fun PreviewTaggedNotesTruncated(
           notes = "Lunch with #food and #holiday",
           tags = PREVIEW_TAGS,
           fontSize = ValueSize,
-          color = colors.pageText,
+          color = colors.text,
         )
       }
     }

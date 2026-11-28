@@ -58,7 +58,7 @@ internal fun RuleStageHeader(stage: RuleStage, count: Int, modifier: Modifier = 
     modifier =
       modifier
         .fillMaxWidth()
-        .background(colors.pageBackground)
+        .background(colors.backgroundPage)
         .padding(horizontal = 8.dp, vertical = 4.dp),
     horizontalArrangement = Arrangement.spacedBy(Dimens.Large),
     verticalAlignment = Alignment.Bottom,
@@ -72,13 +72,13 @@ internal fun RuleStageHeader(stage: RuleStage, count: Int, modifier: Modifier = 
     Text(
       modifier = Modifier.weight(1f),
       text = stage.hint().orEmpty(),
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       fontSize = textSizes.small,
     )
 
     Text(
       text = Plurals.rulesStageCount(count, count),
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
       fontSize = textSizes.small,
     )
   }

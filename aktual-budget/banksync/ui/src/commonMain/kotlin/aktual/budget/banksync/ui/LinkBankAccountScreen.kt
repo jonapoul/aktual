@@ -302,7 +302,7 @@ private fun LazyListScope.choosing(
         Text(
           text = providerName(state.selected),
           style = typography.titleSmall,
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
         )
       }
     }
@@ -331,7 +331,7 @@ private fun LazyListScope.choosing(
             modifier = Modifier.padding(BankSyncDS.headerPadding),
             text = Strings.bankSyncLinkEmpty,
             style = typography.bodyMedium,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
       }
@@ -384,8 +384,8 @@ private fun ExternalAccountRow(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .clickable(enabled = enabled, onClick = onClick)
         .padding(BankSyncDS.itemCardPadding),
     horizontalArrangement = Arrangement.spacedBy(BankSyncDS.itemHorizontalSpacing),
@@ -399,7 +399,7 @@ private fun ExternalAccountRow(
         text = item.name,
         style = typography.bodyMedium,
         fontWeight = SemiBold,
-        color = if (item.linkedTo == null) colors.tableText else colors.pageTextSubdued,
+        color = if (item.linkedTo == null) colors.tableText else colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -408,7 +408,7 @@ private fun ExternalAccountRow(
         Text(
           text = institution,
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
           overflow = Ellipsis,
         )
@@ -418,7 +418,7 @@ private fun ExternalAccountRow(
         Text(
           text = Strings.bankSyncLinkLinkedTo(linkedTo),
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
           overflow = Ellipsis,
         )

@@ -94,7 +94,7 @@ internal fun SankeyChart(
       Box(modifier = chartModifier.padding(16.dp), contentAlignment = Center) {
         Text(
           text = Strings.reportsSankeyEmpty,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           textAlign = Center,
         )
       }
@@ -130,10 +130,10 @@ private fun Chart(data: SankeyData, modifier: Modifier = Modifier) =
     val theme = colors
     val nameStyle =
       remember(theme) {
-        TextStyle(color = theme.pageText, fontSize = textSizes.small, fontWeight = Bold)
+        TextStyle(color = theme.text, fontSize = textSizes.small, fontWeight = Bold)
       }
     val valueStyle =
-      remember(theme) { TextStyle(color = theme.pageText, fontSize = textSizes.extraSmall) }
+      remember(theme) { TextStyle(color = theme.text, fontSize = textSizes.extraSmall) }
     val labels = data.nodes.map { it.label.string() }
     val values =
       data.nodes.map { node ->
@@ -478,7 +478,7 @@ private fun PreviewSankeyChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       SankeyChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .height(if (compact) 300.dp else 500.dp)
             .padding(5.dp),

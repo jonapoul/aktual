@@ -98,7 +98,7 @@ private fun AmountsPreview(state: AmountSettingsState) {
     Text(
       text = LargeAmount.format(state),
       style = typography.headlineMedium,
-      color = colors.pageText,
+      color = colors.text,
     )
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
       SmallAmounts.fastForEach { amount ->

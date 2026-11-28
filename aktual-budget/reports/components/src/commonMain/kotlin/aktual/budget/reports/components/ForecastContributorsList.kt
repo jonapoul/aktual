@@ -87,7 +87,7 @@ internal fun ForecastContributorsList(
     Text(
       modifier = Modifier.padding(horizontal = 4.dp),
       text = Strings.reportsBalanceForecastContributorsDescription,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       style = typography.bodySmall,
     )
 
@@ -131,7 +131,7 @@ internal fun ForecastContributorsList(
       Text(
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
         text = Plurals.reportsBalanceForecastInternalTransfers(transfers, transfers),
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         style = typography.bodySmall,
       )
     }
@@ -172,7 +172,7 @@ private fun ContributorsTable(
         name = Plurals.reportsBalanceForecastOtherSchedules(count, count),
         subtitle = Plurals.reportsBalanceForecastOccurrences(occurrences, occurrences),
         amount = remaining.map { it.amount }.sum(),
-        nameColor = colors.pageTextSubdued,
+        nameColor = colors.textTertiary,
       )
     }
 
@@ -180,7 +180,7 @@ private fun ContributorsTable(
       Text(
         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
         text = Strings.reportsBalanceForecastNoContributors,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         style = typography.bodyMedium,
       )
     }
@@ -234,7 +234,7 @@ private fun AmountRow(
   subtitle: String? = null,
   includeSign: Boolean = false,
   isBold: Boolean = false,
-  nameColor: Color = colors.pageText,
+  nameColor: Color = colors.text,
   onClickName: (() -> Unit)? = null,
 ) =
   Row(
@@ -256,7 +256,7 @@ private fun AmountRow(
       )
 
       if (subtitle != null) {
-        Text(text = subtitle, color = colors.pageTextSubdued, style = typography.bodySmall)
+        Text(text = subtitle, color = colors.textTertiary, style = typography.bodySmall)
       }
     }
 
@@ -266,7 +266,7 @@ private fun AmountRow(
       text = amount.formattedText(includeSign = includeSign),
       color =
         when {
-          amount == Zero -> colors.pageText
+          amount == Zero -> colors.text
           amount.isPositive() -> colors.reportsNumberPositive
           else -> colors.reportsNumberNegative
         },
@@ -282,7 +282,7 @@ private fun AmountRow(
         modifier = Modifier.padding(start = CHEVRON_PADDING).size(CHEVRON_SIZE),
         imageVector = AktualIcons.CheveronRight,
         contentDescription = null,
-        tint = colors.pageTextSubdued,
+        tint = colors.textTertiary,
       )
     }
   }
@@ -298,7 +298,7 @@ private fun PreviewForecastContributorsList(
 ) =
   PreviewWithColorParams(params) {
     ForecastContributorsList(
-      modifier = Modifier.background(colors.tableBackground, CardShape).width(400.dp).padding(5.dp),
+      modifier = Modifier.background(colors.background, CardShape).width(400.dp).padding(5.dp),
       contributors = this,
       onEditSchedule = {},
     )

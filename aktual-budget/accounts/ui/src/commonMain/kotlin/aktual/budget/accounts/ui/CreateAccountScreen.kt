@@ -206,7 +206,7 @@ private fun ColumnScope.CreateAccountForm(
       Text(
         text = Strings.accountsCreateOffBudgetHint,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
     Switch(

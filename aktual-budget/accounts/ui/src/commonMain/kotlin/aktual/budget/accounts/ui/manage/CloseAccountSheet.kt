@@ -145,7 +145,7 @@ private fun CloseAccountFields(
             Text(
               text = Strings.accountsCloseCategoryHint,
               style = typography.bodySmall,
-              color = colors.pageTextSubdued,
+              color = colors.textTertiary,
             )
           }
         }
@@ -281,7 +281,7 @@ private fun DeleteAccountMessage(state: Ready) {
       Text("• ${Plurals.accountsDeleteTransfers(state.transferCount, state.transferCount)}")
     }
     if (state.isLinked) Text("• ${Strings.accountsDeleteUnlink}")
-    Text(text = Strings.accountsDeleteKeepHint, color = colors.pageTextSubdued)
+    Text(text = Strings.accountsDeleteKeepHint, color = colors.textTertiary)
     state.error?.let { error -> ErrorText(error) }
   }
 }

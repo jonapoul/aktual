@@ -217,8 +217,8 @@ private fun ScheduleItem(
         color =
           when {
             isSelected -> colors.accentSubtleText
-            schedule.name == null || schedule.isCompleted -> colors.pageTextSubdued
-            else -> colors.pageText
+            schedule.name == null || schedule.isCompleted -> colors.textTertiary
+            else -> colors.text
           },
         fontWeight = if (isSelected) Medium else null,
         maxLines = 1,
@@ -229,13 +229,13 @@ private fun ScheduleItem(
       Column {
         Text(
           text = schedule.payeeName,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
           overflow = Ellipsis,
         )
         Text(
           text = schedule.accountName,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
           maxLines = 1,
           overflow = Ellipsis,
         )
@@ -267,7 +267,7 @@ private fun ScheduleAmount(schedule: Schedule) =
     Text(
       text = schedule.nextDate.formatted(),
       fontSize = BalanceSize,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
     )
     ScheduleStatusBadge(schedule.status)

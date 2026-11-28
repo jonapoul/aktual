@@ -37,7 +37,7 @@ internal fun BalanceStrip(
   modifier: Modifier = Modifier,
   clearedBalances: ClearedBalances? = null,
 ) =
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
     Row(
       modifier = Modifier.fillMaxWidth().height(StripHeight).padding(horizontal = 16.dp),
       verticalAlignment = CenterVertically,
@@ -46,7 +46,7 @@ internal fun BalanceStrip(
       Text(
         text = Strings.transactionsHeaderBalance,
         fontSize = textSizes.smallPlus,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
       )
 
       Text(
@@ -83,7 +83,7 @@ private fun ExtraBalance(label: String, amount: Amount) =
     verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(6.dp),
   ) {
-    Text(text = label, fontSize = textSizes.small, color = colors.pageTextLight)
+    Text(text = label, fontSize = textSizes.small, color = colors.textSecondary)
     Text(
       text = amount.formattedText(),
       fontSize = textSizes.small,

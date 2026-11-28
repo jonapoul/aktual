@@ -223,7 +223,7 @@ private fun CrashReportsSummary(count: Int, modifier: Modifier = Modifier) =
     Text(
       text = Strings.crashesSummaryTitle,
       style = typography.labelMedium,
-      color = colors.pageTextLight,
+      color = colors.textSecondary,
     )
     Text(
       text = Plurals.crashesSummaryCount(count, count),
@@ -232,7 +232,7 @@ private fun CrashReportsSummary(count: Int, modifier: Modifier = Modifier) =
     Text(
       text = Strings.crashesSummaryRetention,
       style = typography.labelMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 
@@ -275,7 +275,7 @@ private fun CrashReportItem(
       Text(
         text = report.summary.substringAfter(": ", missingDelimiterValue = ""),
         style = typography.labelSmall,
-        color = colors.pageTextLight,
+        color = colors.textSecondary,
         maxLines = 2,
         overflow = Ellipsis,
       )
@@ -283,12 +283,12 @@ private fun CrashReportItem(
         Text(
           text = report.timeLabel(),
           style = typography.labelSmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
         Text(
           text = report.version,
           style = typography.labelSmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       }
     }
@@ -296,7 +296,7 @@ private fun CrashReportItem(
     Icon(
       imageVector = AktualIcons.CheveronRight,
       contentDescription = null,
-      tint = colors.pageTextSubdued,
+      tint = colors.textTertiary,
     )
   }
 

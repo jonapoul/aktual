@@ -77,7 +77,7 @@ fun AktualModalBottomSheet(
         shouldDismissOnClickOutside = isDismissible,
       ),
     containerColor = colors.modalBackground,
-    contentColor = colors.pageText,
+    contentColor = colors.text,
     dragHandle = {
       Box(modifier = Modifier.fillMaxWidth()) {
         if (onBack != null) {

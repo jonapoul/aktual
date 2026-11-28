@@ -89,7 +89,7 @@ internal fun <T> ColumnScope.SortSection(
     modifier = Modifier.fillMaxWidth(),
     text = label,
     style = typography.labelLarge,
-    color = colors.pageTextSubdued,
+    color = colors.textTertiary,
   )
 
   Column(Modifier.fillMaxWidth().selectableGroup()) {

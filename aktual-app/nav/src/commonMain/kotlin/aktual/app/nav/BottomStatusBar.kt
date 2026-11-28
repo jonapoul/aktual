@@ -138,7 +138,7 @@ private fun PingState.tint(colors: Colors) =
   when (this) {
     Success -> colors.noticeText
     Failure -> colors.warningText
-    Unknown -> colors.pageTextSubdued
+    Unknown -> colors.textTertiary
   }
 
 @Composable

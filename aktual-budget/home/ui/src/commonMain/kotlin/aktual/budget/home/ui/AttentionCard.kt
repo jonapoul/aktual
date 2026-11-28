@@ -109,7 +109,7 @@ private fun AttentionContent(
       text = Strings.homeAttentionTitle,
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )

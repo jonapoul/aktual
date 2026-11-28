@@ -193,7 +193,7 @@ internal fun ReorderCategoriesScaffold(
     },
   ) { innerPadding ->
     when (state) {
-      Loading -> LoadingScreen(Modifier.padding(innerPadding), colors.pageTextSubdued)
+      Loading -> LoadingScreen(Modifier.padding(innerPadding), colors.textTertiary)
 
       Failed ->
         FailureScreen(
@@ -291,7 +291,7 @@ private fun ReorderList(
         modifier = Modifier.padding(horizontal = Dimens.ScreenPadding, vertical = 12.dp),
         text = Strings.budgetingReorderHint,
         fontSize = textSizes.smallPlus,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
 
@@ -304,7 +304,7 @@ private fun ReorderList(
             modifier = Modifier.padding(horizontal = Dimens.ScreenPadding, vertical = 12.dp),
             text = Strings.budgetingReorderIncomeLocked,
             fontSize = textSizes.smallPlus,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
       }
@@ -421,8 +421,8 @@ private fun ReorderItem(
   handleModifier: Modifier = Modifier,
 ) {
   val category = row.category
-  Column(modifier = modifier.fillMaxWidth().background(colors.tableBackground)) {
-    HorizontalDivider(color = colors.tableBorder)
+  Column(modifier = modifier.fillMaxWidth().background(colors.background)) {
+    HorizontalDivider(color = colors.border)
     TableRow(height = BudgetDS.rowHeight) {
       Row(
         modifier =

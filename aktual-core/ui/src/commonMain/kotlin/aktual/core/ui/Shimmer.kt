@@ -30,14 +30,14 @@ fun ShimmerLine(style: TextStyle, modifier: Modifier = Modifier) {
 /** A solid shimmer placeholder for non-text content like icons and charts */
 @Composable
 fun ShimmerBlock(modifier: Modifier = Modifier, shape: Shape = CardShape) {
-  Box(modifier = modifier.background(colors.pageText, shape))
+  Box(modifier = modifier.background(colors.text, shape))
 }
 
 /** A shimmer placeholder the same height as a [Chip] of [size] showing one line of [textStyle] */
 @Composable
 fun ShimmerChip(textStyle: TextStyle, modifier: Modifier = Modifier, size: ChipSize = Regular) {
   Box(
-    modifier = modifier.background(colors.pageText, size.shape).padding(size.contentPadding),
+    modifier = modifier.background(colors.text, size.shape).padding(size.contentPadding),
   ) {
     Text(text = "", style = textStyle, maxLines = 1)
   }

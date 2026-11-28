@@ -53,15 +53,15 @@ internal fun ListSchedulesItem(
 ) {
   val amountPrefix = schedule.amountOp.amountPrefix()
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
-  val textColor = if (schedule.isCompleted) colors.pageTextSubdued else colors.pageText
+  val textColor = if (schedule.isCompleted) colors.textTertiary else colors.text
 
   Column(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .clickable(onClick = onClick)
         .padding(ListSchedulesDS.itemCardPadding),
     verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
@@ -77,7 +77,7 @@ internal fun ListSchedulesItem(
             ?: AnnotatedString(Strings.listSchedulesUnnamedSchedule),
         style = typography.bodyMedium,
         fontWeight = SemiBold,
-        color = if (schedule.name != null) textColor else colors.pageTextSubdued,
+        color = if (schedule.name != null) textColor else colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -132,7 +132,7 @@ private fun LabelValue(
   label: String,
   value: String,
   modifier: Modifier = Modifier,
-  valueColor: Color = colors.pageText,
+  valueColor: Color = colors.text,
   query: String = "",
 ) {
   Row(
@@ -140,7 +140,7 @@ private fun LabelValue(
     horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
     verticalAlignment = CenterVertically,
   ) {
-    Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
+    Text(label, style = typography.bodySmall, color = colors.textTertiary)
     Text(
       text = rememberHighlighted(value, query).redacted(),
       style = typography.bodySmall,
@@ -158,8 +158,8 @@ internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Hairline, colors.tableBorder, RowShape)
+        .background(colors.background, RowShape)
+        .border(Hairline, colors.border, RowShape)
         .padding(ListSchedulesDS.itemCardPadding)
         .shimmer(shimmer),
     verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),

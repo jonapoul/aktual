@@ -210,7 +210,7 @@ private fun ApiKeysContent(
         Text(
           text = Strings.apiKeysMessage,
           style = typography.bodyMedium,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
 
         VerticalSpacer(4.dp)
@@ -258,13 +258,13 @@ private fun KeyItem(
       Text(
         text = Strings.apiKeysCreated(key.created.formatted()),
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
       if (key.canSyncSharedBanks) {
         Text(
           text = Strings.apiKeysSharedBankSyncAllowed,
           style = typography.bodySmall,
-          color = colors.pageTextSubdued,
+          color = colors.textTertiary,
         )
       }
     }
@@ -283,12 +283,12 @@ private fun ShimmerKeyItem(modifier: Modifier = Modifier) {
       Box(
         Modifier.fillMaxWidth(fraction = 0.5f)
           .height(18.dp)
-          .background(colors.pageTextSubdued, CardShape),
+          .background(colors.textTertiary, CardShape),
       )
       Box(
         Modifier.fillMaxWidth(fraction = 0.3f)
           .height(12.dp)
-          .background(colors.pageTextSubdued, CardShape),
+          .background(colors.textTertiary, CardShape),
       )
     }
   }

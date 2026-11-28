@@ -160,7 +160,7 @@ private fun rememberCashFlowChart(
       lineProvider =
         LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
+            fill = LineCartesianLayer.LineFill.single(Fill(colors.textSecondary)),
             stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
           ),
         ),
@@ -233,11 +233,11 @@ private fun RegularHeader(
       text = dateRange(data.items.keys),
       zoom = zoom,
       toMonth = { x -> YearMonth.fromMonthNumber(x.roundToLong()) },
-      color = colors.pageText,
+      color = colors.text,
     )
 
     val padding = PaddingValues(horizontal = 2.dp)
-    val normalStyle = typography.labelMedium.copy(textAlign = Start, color = colors.pageText)
+    val normalStyle = typography.labelMedium.copy(textAlign = Start, color = colors.text)
     val boldStyle = normalStyle.copy(textAlign = End, fontWeight = W600)
     val summaryData = summaryData(data)
 
@@ -318,7 +318,7 @@ private fun PreviewCashFlowChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       CashFlowChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .let { m -> if (compact) m.height(300.dp) else m }
             .width(WIDTH.dp)
             .padding(5.dp),

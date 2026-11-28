@@ -117,7 +117,7 @@ private fun ColumnScope.BalanceForecastDisplay(
         modifier = Modifier.padding(horizontal = 4.dp),
         text = Strings.reportsBalanceForecastStartTodayNote,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
   }

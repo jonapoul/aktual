@@ -442,13 +442,13 @@ private fun <S> AnimatedContentTransitionScope<S>.swap(): ContentTransform =
 // While editing, a dashed outline and a label mark the card as a preview of the draft
 @Composable
 private fun ResultCard(preview: FormulaData?, isEditing: Boolean) {
-  val border = colors.tableBorder
+  val border = colors.border
   val outlineAlpha by animateFloatAsState(if (isEditing) 1f else 0f)
   Box(
     modifier =
       Modifier.fillMaxWidth()
         .height(RESULT_HEIGHT)
-        .background(colors.tableBackground, CardShape)
+        .background(colors.background, CardShape)
         .drawWithCache {
           val outline = CardShape.createOutline(size, layoutDirection, this)
           val stroke = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(DASHES))

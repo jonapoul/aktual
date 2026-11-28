@@ -97,7 +97,7 @@ internal fun SettingsList(
           text = description,
           fontWeight = Light,
           style = typography.bodyMedium,
-          color = colors.pageTextLight,
+          color = colors.textSecondary,
         )
       }
     }

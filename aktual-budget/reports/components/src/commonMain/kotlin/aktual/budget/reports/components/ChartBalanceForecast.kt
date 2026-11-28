@@ -101,7 +101,7 @@ internal fun BalanceForecastChart(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
         text = data.summary(),
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
 
@@ -163,7 +163,7 @@ private fun Header(
         text = ending.formattedText(),
         textAlign = End,
         style = typography.bodyLarge,
-        color = if (ending.isPositive()) colors.pageText else colors.errorText,
+        color = if (ending.isPositive()) colors.text else colors.errorText,
       )
 
       VerticalSpacer(4.dp)
@@ -172,7 +172,7 @@ private fun Header(
         text = Strings.reportsBalanceForecastEnding,
         textAlign = End,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
 
       // Like upstream, the low point only shows when it isn't the ending balance
@@ -183,7 +183,7 @@ private fun Header(
           text = Strings.reportsBalanceForecastLow(lowest.value.formattedString()).redacted(),
           textAlign = End,
           style = typography.bodySmall,
-          color = if (lowest.value.isPositive()) colors.pageTextSubdued else colors.errorText,
+          color = if (lowest.value.isPositive()) colors.textTertiary else colors.errorText,
         )
       }
     }
@@ -196,7 +196,7 @@ private fun Empty(modifier: Modifier = Modifier) =
       text = Strings.reportsBalanceForecastEmpty,
       textAlign = Center,
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
     )
   }
 
@@ -351,7 +351,7 @@ private fun rememberTodayLine(data: BalanceForecastData): Decoration? {
 
 @Composable
 private fun rememberZeroLine(data: BalanceForecastData): Decoration? {
-  val line = rememberLineComponent(fill = Fill(colors.pageTextSubdued), thickness = 1.dp)
+  val line = rememberLineComponent(fill = Fill(colors.textTertiary), thickness = 1.dp)
   val hasNegative = remember(data) { data.items.values.any { !it.isPositive() } }
   if (!hasNegative) return null
   return remember(line) { HorizontalLine(y = { 0.0 }, line = line) }
@@ -400,7 +400,7 @@ private fun PreviewBalanceForecastChart(
     CompositionLocalProvider(LocalCompactChart provides compact) {
       BalanceForecastChart(
         modifier =
-          Modifier.background(colors.tableBackground, CardShape)
+          Modifier.background(colors.background, CardShape)
             .width(WIDTH.dp)
             .let { m -> if (compact) m.height(300.dp) else m }
             .padding(5.dp),

@@ -73,7 +73,7 @@ private fun AppIconSettingsScaffold(
           AppIconImage(
             icon = icon,
             modifier =
-              Modifier.size(ListIconSize).border(HairlineWidth, colors.tableBorder, AppIconShape),
+              Modifier.size(ListIconSize).border(HairlineWidth, colors.border, AppIconShape),
           )
         },
       )
@@ -112,9 +112,9 @@ private fun ShapePreviews(icon: AppIcon, modifier: Modifier = Modifier) {
           icon = icon,
           shape = mask.shape,
           modifier =
-            Modifier.size(PreviewIconSize).border(HairlineWidth, colors.tableBorder, mask.shape),
+            Modifier.size(PreviewIconSize).border(HairlineWidth, colors.border, mask.shape),
         )
-        Text(text = mask.label(), style = typography.bodySmall, color = colors.pageTextSubdued)
+        Text(text = mask.label(), style = typography.bodySmall, color = colors.textTertiary)
       }
     }
   }

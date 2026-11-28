@@ -132,7 +132,7 @@ private fun ThisMonthContent(state: Loaded, modifier: Modifier = Modifier) {
             } else {
               Strings.homeThisMonthRemaining
             },
-          color = if (state.remaining < Zero) colors.numberNegative else colors.pageText,
+          color = if (state.remaining < Zero) colors.numberNegative else colors.text,
         )
     }
 
@@ -147,7 +147,7 @@ private fun ThisMonthContent(state: Loaded, modifier: Modifier = Modifier) {
             )
             .redacted(),
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -167,7 +167,7 @@ private fun ThisMonthHeader(month: YearMonth, daysLeft: Int, modifier: Modifier 
       text = month.month.stringLong(),
       style = typography.titleSmall,
       fontWeight = SemiBold,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -180,7 +180,7 @@ private fun ThisMonthHeader(month: YearMonth, daysLeft: Int, modifier: Modifier 
           Strings.homeThisMonthLastDay
         },
       style = typography.labelMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
     )
   }
@@ -206,7 +206,7 @@ private fun Headline(amount: Amount, label: String, color: Color, modifier: Modi
       modifier = Modifier.weight(1f).alignByBaseline(),
       text = label,
       style = typography.bodyMedium,
-      color = colors.pageTextSubdued,
+      color = colors.textTertiary,
       maxLines = 1,
       overflow = Ellipsis,
     )
@@ -243,7 +243,7 @@ private fun SpentProgress(state: Loaded, modifier: Modifier = Modifier) {
         modifier = Modifier.weight(1f),
         text = Strings.homeThisMonthSpent(state.spent.formattedString()).redacted(),
         style = typography.bodySmall.tabularFigures(),
-        color = if (isOverspent) colors.numberNegative else colors.pageTextSubdued,
+        color = if (isOverspent) colors.numberNegative else colors.textTertiary,
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -251,7 +251,7 @@ private fun SpentProgress(state: Loaded, modifier: Modifier = Modifier) {
       Text(
         text = Strings.homeThisMonthOfBudgeted(state.budgeted.formattedString()).redacted(),
         style = typography.bodySmall.tabularFigures(),
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
         maxLines = 1,
       )
     }

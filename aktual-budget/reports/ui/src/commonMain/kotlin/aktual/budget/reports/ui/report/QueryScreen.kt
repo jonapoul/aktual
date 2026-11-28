@@ -235,7 +235,7 @@ private fun QueryContent(
 
 @Composable
 internal fun TimeFrameRow(timeFrame: TimeFrame?, onClick: () -> Unit) =
-  Box(modifier = Modifier.clip(CardShape).background(colors.tableBackground)) {
+  Box(modifier = Modifier.clip(CardShape).background(colors.background)) {
     SettingRow(modifier = Modifier.testTag(Tags.TimeFrameRow), onClick = onClick) {
       Icon(
         modifier = Modifier.size(20.dp),

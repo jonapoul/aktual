@@ -91,7 +91,7 @@ private fun ExportBudgetDialogContent(
         Text(
           text = Strings.budgetExportDescription,
           style = typography.bodyMedium,
-          color = colors.pageText,
+          color = colors.text,
         )
 
         if (isEncrypted) {

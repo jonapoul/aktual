@@ -74,7 +74,7 @@ internal fun ContentSuccess(
 private fun PreviewContentSuccess(@PreviewParameter(ColorParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
     ContentSuccess(
-      modifier = Modifier.background(colors.pageBackground),
+      modifier = Modifier.background(colors.backgroundPage),
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
       onClickOpen = {},
       onClickDelete = {},

@@ -151,7 +151,7 @@ private fun FormulaFieldScaffold(
             modifier = Modifier.padding(horizontal = 4.dp),
             text = Strings.reportsFormulaEditorColorFormulaHelp,
             style = typography.bodySmall,
-            color = colors.pageTextSubdued,
+            color = colors.textTertiary,
           )
         }
 
@@ -178,7 +178,7 @@ private fun Result(preview: FormulaData?) {
     Row(
       modifier =
         Modifier.fillMaxWidth()
-          .background(colors.tableBackground, CardShape)
+          .background(colors.background, CardShape)
           .padding(horizontal = 14.dp, vertical = 12.dp),
       verticalAlignment = CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -196,7 +196,7 @@ private fun Result(preview: FormulaData?) {
           modifier = Modifier.testTag(Tags.FormulaResult),
           text = output.displayString(),
           style = typography.titleMedium.copy(fontWeight = SemiBold),
-          color = preview.resolveColor() ?: colors.pageText,
+          color = preview.resolveColor() ?: colors.text,
         )
       }
     }
@@ -209,7 +209,7 @@ private fun Result(preview: FormulaData?) {
         modifier = Modifier.padding(horizontal = 4.dp),
         text = message,
         style = typography.bodySmall,
-        color = colors.pageTextSubdued,
+        color = colors.textTertiary,
       )
     }
   }

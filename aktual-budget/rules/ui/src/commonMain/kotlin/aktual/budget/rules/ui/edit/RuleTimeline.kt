@@ -48,7 +48,7 @@ internal fun TimelineRow(
   isEndOfStep: Boolean = false,
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  val railColor = colors.tableBorderSeparator
+  val railColor = colors.borderStrong
   Row(
     modifier =
       modifier.fillMaxWidth().drawBehind {
@@ -80,7 +80,7 @@ internal fun TimelineRow(
 
 @Composable
 internal fun DotNode(modifier: Modifier = Modifier) =
-  Box(modifier = modifier.size(DotSize).background(colors.pageTextSubdued, CircleShape))
+  Box(modifier = modifier.size(DotSize).background(colors.textTertiary, CircleShape))
 
 @Composable
 internal fun IconNode(
@@ -113,7 +113,7 @@ internal fun NodeHeading(
     horizontalArrangement = Arrangement.spacedBy(Dimens.VeryLarge),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text(text = text, style = typography.titleMedium, color = colors.pageText)
+    Text(text = text, style = typography.titleMedium, color = colors.text)
     trailing()
   }
 
@@ -124,8 +124,8 @@ internal fun AddCard(
   isEnabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  val border = colors.tableBorderSeparator
-  val content = if (isEnabled) colors.pageTextSubdued else colors.tableTextInactive
+  val border = colors.borderStrong
+  val content = if (isEnabled) colors.textTertiary else colors.tableTextInactive
   Row(
     modifier =
       modifier
