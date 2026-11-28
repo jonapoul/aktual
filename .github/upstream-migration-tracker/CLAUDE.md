@@ -4,7 +4,7 @@ Automated system that checks daily for new database migrations in [actualbudget/
 
 ## How It Works
 
-1. The GitHub Action (`.github/workflows/check-upstream-changes.yml`) runs daily at 08:00 UTC and can be triggered manually.
+1. The GitHub Action (`.github/workflows/check-upstream-changes.yml`) runs daily at 08:00 UTC and can be triggered manually. It authenticates with the `UPSTREAM_TRACKER_TOKEN` PAT secret rather than `GITHUB_TOKEN`, so CI runs on the PRs it opens.
 2. `check-migrations.sh` sparse-clones the upstream repo and compares migration files against `last-known-migration.txt`.
 3. If new migrations are found:
    - Updates `last-known-migration.txt` to the newest migration.

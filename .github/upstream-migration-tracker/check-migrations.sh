@@ -14,7 +14,8 @@
 # Environment variables:
 #   GITHUB_REPOSITORY  Required for full runs. The owner/repo to create the PR in.
 #   DRY_RUN            Set to any value to skip GitHub operations and just print results.
-#   GITHUB_TOKEN       Used by gh CLI for authentication (set automatically in GitHub Actions).
+#   GITHUB_TOKEN       Used by gh CLI for authentication. In Actions it's the UPSTREAM_TRACKER_TOKEN
+#                      PAT, since PRs made with the built-in token don't run CI.
 #
 set -euo pipefail
 

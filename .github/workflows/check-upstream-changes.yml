@@ -15,15 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      # A PAT rather than GITHUB_TOKEN, so CI runs on the PR it opens
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          token: ${{ secrets.UPSTREAM_TRACKER_TOKEN }}
 
       - run: chmod +x .github/upstream-migration-tracker/check-migrations.sh
 
       - run: .github/upstream-migration-tracker/check-migrations.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.UPSTREAM_TRACKER_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
 
   check-theme-attributes:
