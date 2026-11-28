@@ -11,6 +11,7 @@ import aktual.core.ui.AktualTheme.textSizes
 import aktual.core.ui.AktualTheme.typography
 import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -22,6 +23,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -365,13 +367,30 @@ private fun RowScope.DefaultTextButtonContent(
   fontSize: TextUnit,
   icon: ImageVector?,
 ) {
-  if (icon != null) {
-    Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(ButtonIconSize))
-    HorizontalSpacer(ButtonIconSpacing)
+  // Also animates the width when the icon comes or goes
+  AnimatedContent(
+    targetState = icon,
+    transitionSpec = {
+      (fadeIn() + scaleIn(initialScale = BUTTON_ICON_HIDDEN_SCALE)) togetherWith
+        (fadeOut() + scaleOut(targetScale = BUTTON_ICON_HIDDEN_SCALE))
+    },
+    label = "ButtonIcon",
+  ) { shown ->
+    if (shown != null) {
+      Row(verticalAlignment = CenterVertically) {
+        Icon(
+          imageVector = shown,
+          contentDescription = null,
+          modifier = Modifier.size(ButtonIconSize),
+        )
+        HorizontalSpacer(ButtonIconSpacing)
+      }
+    }
   }
   Text(text = text, style = style, fontSize = fontSize, textAlign = Center)
 }
 
+private const val BUTTON_ICON_HIDDEN_SCALE = 0.6f
 private val ButtonIconSize = 18.dp
 private val ButtonIconSpacing = 8.dp
 
