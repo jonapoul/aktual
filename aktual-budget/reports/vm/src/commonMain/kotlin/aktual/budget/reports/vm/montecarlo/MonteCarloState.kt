@@ -118,6 +118,7 @@ data class MonteCarloFanBand(
 
 @Immutable data class MonteCarloDepletion(val age: Int, val count: Int)
 
+@Immutable
 data class MonteCarloRun(
   val index: Int,
   // null when the run survived
