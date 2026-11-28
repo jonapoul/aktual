@@ -11,15 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 
-// Chevron that points down when expanded and turns to point right when collapsed
+// Chevron that animates between its collapsed and expanded directions, given by [style]
 @Composable
 fun ExpandChevron(
   isExpanded: Boolean,
   contentDescription: String?,
   modifier: Modifier = Modifier,
+  style: ExpandChevronStyle = RightToDown,
   tint: Color = LocalContentColor.current,
 ) {
-  val rotation by animateExpandRotation(isExpanded)
+  val rotation by animateExpandRotation(isExpanded, style)
   Icon(
     modifier = modifier.graphicsLayer { rotationZ = rotation },
     imageVector = AktualIcons.CheveronDown,
@@ -28,8 +29,17 @@ fun ExpandChevron(
   )
 }
 
-@Composable
-fun animateExpandRotation(isExpanded: Boolean) =
-  animateFloatAsState(if (isExpanded) 0f else COLLAPSED_ROTATION, label = "ExpandRotation")
+enum class ExpandChevronStyle(val collapsedRotation: Float, val expandedRotation: Float) {
+  // Points right when collapsed, down when expanded
+  RightToDown(collapsedRotation = -90f, expandedRotation = 0f),
 
-private const val COLLAPSED_ROTATION = -90f
+  // Points down when collapsed, up when expanded
+  DownToUp(collapsedRotation = 0f, expandedRotation = 180f),
+}
+
+@Composable
+fun animateExpandRotation(isExpanded: Boolean, style: ExpandChevronStyle = RightToDown) =
+  animateFloatAsState(
+    targetValue = if (isExpanded) style.expandedRotation else style.collapsedRotation,
+    label = "ExpandRotation",
+  )
