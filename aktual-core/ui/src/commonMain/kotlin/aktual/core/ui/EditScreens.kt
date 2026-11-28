@@ -2,15 +2,19 @@ package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Check
+import aktual.core.icons.CheveronLeft
 import aktual.core.icons.Close
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Undo
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Modifier
@@ -27,17 +31,13 @@ fun BackOrDiscardButton(
   onDiscard: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  if (hasChanges) {
-    BasicIconButton(
-      modifier = modifier,
-      imageVector = AktualIcons.Close,
-      contentDescription = discardText,
-      colors = DiscardColors,
-      onClick = onDiscard,
-    )
-  } else {
-    NavBackIconButton(modifier = modifier, onClick = onBack)
-  }
+  BasicIconButton(
+    modifier = modifier,
+    imageVector = if (hasChanges) AktualIcons.Close else AktualIcons.CheveronLeft,
+    contentDescription = if (hasChanges) discardText else Strings.navBack,
+    colors = if (hasChanges) DiscardColors else BackColors,
+    onClick = if (hasChanges) onDiscard else onBack,
+  )
 }
 
 @Composable
@@ -110,6 +110,10 @@ fun EditFabs(
       onClick = onSave,
     )
   }
+}
+
+private val BackColors = IconButtonColorProvider { colors, isPressed ->
+  colors.bareIconButton(isPressed)
 }
 
 private val DiscardColors = IconButtonColorProvider { colors, isPressed ->

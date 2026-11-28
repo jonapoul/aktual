@@ -12,6 +12,7 @@ import aktual.core.ui.AktualTheme.typography
 import aktual.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
@@ -162,7 +163,7 @@ fun AktualFab(
 @Composable
 private fun FabContent(text: String, icon: ImageVector, isExpanded: Boolean) {
   Row(modifier = Modifier.height(FabContentHeight), verticalAlignment = CenterVertically) {
-    Icon(
+    AnimatedIcon(
       imageVector = icon,
       contentDescription = text.takeUnless { isExpanded },
       modifier = Modifier.size(FabIconSize),
@@ -443,10 +444,15 @@ fun BasicIconButton(
 ) {
   val isPressed by interactionSource.collectIsPressedAsState()
   val buttonColors = colors(AktualTheme.colors, isPressed)
-  val background =
-    if (isEnabled) buttonColors.containerColor else buttonColors.disabledContainerColor
+  val background by
+    animateColorAsState(
+      if (isEnabled) buttonColors.containerColor else buttonColors.disabledContainerColor,
+    )
 
-  val contentColor = if (isEnabled) buttonColors.contentColor else buttonColors.disabledContentColor
+  val contentColor by
+    animateColorAsState(
+      if (isEnabled) buttonColors.contentColor else buttonColors.disabledContentColor,
+    )
 
   Box(
     modifier =
@@ -492,7 +498,7 @@ private fun DefaultIconButtonContent(
   size: Dp?,
   modifier: Modifier = Modifier,
 ) {
-  Icon(
+  AnimatedIcon(
     modifier = if (size == null) modifier else modifier.size(size),
     imageVector = imageVector,
     contentDescription = contentDescription,
